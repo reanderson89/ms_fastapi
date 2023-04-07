@@ -1,0 +1,31 @@
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from src.engines.users.router import router as users_router
+
+app = FastAPI()
+app.include_router(users_router)
+client = TestClient(app)
+
+
+def test_get_users():
+    response = client.get("/users")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Got all users"}
+
+def test_get_user():
+    user_id = 1
+    response = client.get(f"/users/{user_id}")
+    assert response.status_code == 200
+    assert response.json() == {"message": f"Got users for {user_id}"}
+
+def test_create_user():
+    response = client.post("/users")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Created user"}
+
+def test_update_user():
+    user_id = 1
+    response = client.put(f"/users/{user_id}")
+    assert response.status_code == 200
+    assert response.json() == {"message": f"Updated user for {user_id}"}
