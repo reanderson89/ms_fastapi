@@ -1,4 +1,3 @@
-import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from src.engines.users.router import router as users_router
