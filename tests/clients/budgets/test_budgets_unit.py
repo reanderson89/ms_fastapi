@@ -15,7 +15,7 @@ def test_get_budgets():
 
 def test_get_budget():
 	client_uuid = "test_client_uuid"
-	budget_uuid = 1
+	budget_uuid = "test_budget_uuid"
 	response = client.get(f"/clients/{client_uuid}/budgets/{budget_uuid}")
 	assert response.status_code == 200
 	assert response.json() == {"message": f"Got budgets for {budget_uuid}"}
@@ -28,14 +28,14 @@ def test_create_budget():
 
 def test_update_budget():
 	client_uuid = "test_client_uuid"
-	budget_uuid = 1
+	budget_uuid = "test_budget_uuid"
 	response = client.put(f"/clients/{client_uuid}/budgets/{budget_uuid}")
 	assert response.status_code == 200
 	assert response.json() == {"message": f"Updated budget for {budget_uuid}"}
 
 def test_delete_budget():
 	client_uuid = "test_client_uuid"
-	budget_uuid = 1
+	budget_uuid = "test_budget_uuid"
 	response = client.delete(f"/clients/{client_uuid}/budgets/{budget_uuid}")
 	assert response.status_code == 200
 	assert response.json() == {"message": f"Deleted budget for {budget_uuid}"}

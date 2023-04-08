@@ -25,7 +25,7 @@ async def test_integration_get_clients():
 
 @pytest.mark.asyncio
 async def test_integration_get_client():
-	client_uuid = 1
+	client_uuid = "test_client_uuid"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
 		response = await ac.get(f"/clients/{client_uuid}")
 		assert response.status_code == 200
@@ -33,7 +33,7 @@ async def test_integration_get_client():
 
 @pytest.mark.asyncio
 async def test_integration_update_client():
-	client_uuid = 1
+	client_uuid = "test_client_uuid"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
 		response = await ac.put(f"/clients/{client_uuid}")
 		assert response.status_code == 200
