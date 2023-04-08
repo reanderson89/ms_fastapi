@@ -15,10 +15,10 @@ def test_get_awards():
 
 def test_get_award():
     client_uuid = "test_client_uuid"
-    award_uuid = 1
-    response = client.get(f"/clients/{client_uuid}/awards/{award_uuid}")
+    award_7char = "testchr"
+    response = client.get(f"/clients/{client_uuid}/awards/{award_7char}")
     assert response.status_code == 200
-    assert response.json() == {"message": f"Got awards for {award_uuid}"}
+    assert response.json() == {"message": f"Got awards for {award_7char}"}
 
 def test_create_award():
     client_uuid = "test_client_uuid"
@@ -28,14 +28,14 @@ def test_create_award():
 
 def test_update_award():
     client_uuid = "test_client_uuid"
-    award_uuid = 1
-    response = client.put(f"/clients/{client_uuid}/awards/{award_uuid}")
+    award_7char = "testchr"
+    response = client.put(f"/clients/{client_uuid}/awards/{award_7char}")
     assert response.status_code == 200
-    assert response.json() == {"message": f"Updated award for {award_uuid}"}
+    assert response.json() == {"message": f"Updated award for {award_7char}"}
 
 def test_delete_award():
     client_uuid = "test_client_uuid"
-    award_uuid = 1
-    response = client.delete(f"/clients/{client_uuid}/awards/{award_uuid}")
+    award_7char = "testchr"
+    response = client.delete(f"/clients/{client_uuid}/awards/{award_7char}")
     assert response.status_code == 200
-    assert response.json() == {"message": f"Deleted award for {award_uuid}"}
+    assert response.json() == {"message": f"Deleted award for {award_7char}"}

@@ -12,52 +12,52 @@ client = TestClient(app)
 @pytest.mark.asyncio
 async def test_integration_create_rule():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
-	segment_uuid = "test_segment_uuid"
+	program_7char = "testchr"
+	segment_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_uuid}/segments/{segment_uuid}/rules")
+		response = await ac.post(f"clients/{client_uuid}/programs/{program_7char}/segments/{segment_7char}/rules")
 		assert response.status_code == 200
 		assert response.json() == {"message": "Created rule"}
 
 @pytest.mark.asyncio
 async def test_integration_get_rules():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
-	segment_uuid = "test_segment_uuid"
+	program_7char = "testchr"
+	segment_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_uuid}/segments/{segment_uuid}/rules")
+		response = await ac.get(f"clients/{client_uuid}/programs/{program_7char}/segments/{segment_7char}/rules")
 		assert response.status_code == 200
 		assert response.json() == {"message": "Got all rules"}
 
 @pytest.mark.asyncio
 async def test_integration_get_rule():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
-	segment_uuid = "test_segment_uuid"
-	rule_uuid = "test_rule_uuid"
+	program_7char = "testchr"
+	segment_7char = "testchr"
+	rule_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_uuid}/segments/{segment_uuid}/rules/{rule_uuid}")
+		response = await ac.get(f"clients/{client_uuid}/programs/{program_7char}/segments/{segment_7char}/rules/{rule_7char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Got rules for {rule_uuid}"}
+		assert response.json() == {"message": f"Got rules for {rule_7char}"}
 
 @pytest.mark.asyncio
 async def test_integration_update_rule():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
-	segment_uuid = "test_segment_uuid"
-	rule_uuid = "test_rule_uuid"
+	program_7char = "testchr"
+	segment_7char = "testchr"
+	rule_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"clients/{client_uuid}/programs/{program_uuid}/segments/{segment_uuid}/rules/{rule_uuid}")
+		response = await ac.put(f"clients/{client_uuid}/programs/{program_7char}/segments/{segment_7char}/rules/{rule_7char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated rule for {rule_uuid}"}
+		assert response.json() == {"message": f"Updated rule for {rule_7char}"}
 
 @pytest.mark.asyncio
 async def test_integration_delete_rule():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
-	segment_uuid = "test_segment_uuid"
-	rule_uuid = "test_rule_uuid"
+	program_7char = "testchr"
+	segment_7char = "testchr"
+	rule_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.delete(f"clients/{client_uuid}/programs/{program_uuid}/segments/{segment_uuid}/rules/{rule_uuid}")
+		response = await ac.delete(f"clients/{client_uuid}/programs/{program_7char}/segments/{segment_7char}/rules/{rule_7char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Deleted rule for {rule_uuid}"}
+		assert response.json() == {"message": f"Deleted rule for {rule_7char}"}
