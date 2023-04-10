@@ -1,4 +1,8 @@
-# Add to `.zshrc`
+# Setup
+
+Unconfirmed new developer setup steps.
+
+### Add to `.zshrc`
 
 ```
 # Python Blueboard
@@ -17,14 +21,22 @@ plugin=(
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 ```
-#
+
+### Setup pyenv
 
 ```
 source ~/.zshrc
 brew install pyenv pyenv-virtualenv
-pip3 install -r src/reqs.txt
 
 pyenv install 3.11.1
 pyenv versions
 pyenv global 3.11.1
+
+pip3 install -r src/reqs.txt
+```
+
+### Tests
+
+```
+python -m pytest  
 ```
