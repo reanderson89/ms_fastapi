@@ -25,7 +25,7 @@ async def test_integration_get_msg_templates():
 
 @pytest.mark.asyncio
 async def test_integration_get_msg_template():
-	message_template_uuid = 1
+	message_template_uuid = "test_message_template_uuid"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
 		response = await ac.get(f"/messages/{message_template_uuid}")
 		assert response.status_code == 200
@@ -33,7 +33,7 @@ async def test_integration_get_msg_template():
 
 @pytest.mark.asyncio
 async def test_integration_update_msg_template():
-	message_template_uuid = 1
+	message_template_uuid = "test_message_template_uuid"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
 		response = await ac.put(f"/messages/{message_template_uuid}")
 		assert response.status_code == 200
@@ -41,7 +41,7 @@ async def test_integration_update_msg_template():
 
 @pytest.mark.asyncio
 async def test_integration_delete_msg_template():
-	message_template_uuid = 1
+	message_template_uuid = "test_message_template_uuid"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
 		response = await ac.delete(f"/messages/{message_template_uuid}")
 		assert response.status_code == 200

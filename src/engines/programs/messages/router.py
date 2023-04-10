@@ -20,7 +20,7 @@ async def create_message():
 async def create_message_from_template(message_7char: str):
 	return {"message": f"Created message from template for {message_7char}"}
 
-@router.post("/clients/{client_uuid}/programs/{program_uuid}/messages/{message_7char}/test")
+@router.post("/clients/{client_uuid}/programs/{program_7char}/messages/{message_7char}/test")
 async def test_message(message_7char: str):
 	return {"message": f"Tested message for {message_7char}"}
 

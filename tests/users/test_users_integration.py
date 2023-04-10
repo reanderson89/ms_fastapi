@@ -25,16 +25,16 @@ async def test_integration_get_users():
 
 @pytest.mark.asyncio
 async def test_integration_get_user():
-    user_id = 1
+    user_uuid = "test_user_uuid"
     async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.get(f"/users/{user_id}")
+        response = await ac.get(f"/users/{user_uuid}")
         assert response.status_code == 200
-        assert response.json() == {"message": f"Got users for {user_id}"}
+        assert response.json() == {"message": f"Got users for {user_uuid}"}
 
 @pytest.mark.asyncio
 async def test_integration_update_user():
-    user_id = 1
+    user_uuid = "test_user_uuid"
     async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.put(f"/users/{user_id}")
+        response = await ac.put(f"/users/{user_uuid}")
         assert response.status_code == 200
-        assert response.json() == {"message": f"Updated user for {user_id}"}
+        assert response.json() == {"message": f"Updated user for {user_uuid}"}

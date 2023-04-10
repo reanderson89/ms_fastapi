@@ -50,10 +50,10 @@ async def test_integration_create_template_message():
 @pytest.mark.asyncio
 async def test_integration_test_message():
 	client_uuid = "test_client_uuid"
-	program_uuid = "test_program_uuid"
+	program_7char = "testchr"
 	message_7char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_uuid}/messages/{message_7char}/test")
+		response = await ac.post(f"clients/{client_uuid}/programs/{program_7char}/messages/{message_7char}/test")
 		assert response.status_code == 200
 		assert response.json() == {"message": f"Tested message for {message_7char}"}
 
