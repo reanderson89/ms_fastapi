@@ -2,22 +2,22 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/clients/{client_id}/programs/{program_id}/admins")
+@router.get("/clients/{client_uuid}/programs/{program_7char}/admins")
 async def get_admins():
 	return {"message": "Got all admins"}
 
-@router.get("/clients/{client_id}/programs/{program_id}/admins/{admin_id}")
-async def get_admin(admin_id: int):
-	return {"message": f"Got admins for {admin_id}"}
+@router.get("/clients/{client_uuid}/programs/{program_7char}/admins/{admin_uuid}")
+async def get_admin(admin_uuid: str):
+	return {"message": f"Got admins for {admin_uuid}"}
 
-@router.post("/clients/{client_id}/programs/{program_id}/admins")
+@router.post("/clients/{client_uuid}/programs/{program_7char}/admins")
 async def create_admin():
 	return {"message": "Created admin"}
 
-@router.put("/clients/{client_id}/programs/{program_id}/admins/{admin_id}")
-async def update_admin(admin_id: int):
-	return {"message": f"Updated admin for {admin_id}"}
+@router.put("/clients/{client_uuid}/programs/{program_7char}/admins/{admin_uuid}")
+async def update_admin(admin_uuid: str):
+	return {"message": f"Updated admin for {admin_uuid}"}
 
-@router.delete("/clients/{client_id}/programs/{program_id}/admins/{admin_id}")
-async def delete_admin(admin_id: int):
-	return {"message": f"Deleted admin for {admin_id}"}
+@router.delete("/clients/{client_uuid}/programs/{program_7char}/admins/{admin_uuid}")
+async def delete_admin(admin_uuid: str):
+	return {"message": f"Deleted admin for {admin_uuid}"}
