@@ -2,7 +2,7 @@ import pytest
 import httpx
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.engines.message_templates.router import router as msg_templates_router
+from src.engines.messages.router import router as msg_templates_router
 
 app = FastAPI()
 app.include_router(msg_templates_router)
