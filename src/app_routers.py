@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.engines.users.router import router as users_router
+from engines.users.users_router import router as users_router
 from src.engines.clients.router import router as client_router
 from src.engines.clients.users.router import router as client_users_router
 from src.engines.clients.budgets.router import router as client_budgets_router
