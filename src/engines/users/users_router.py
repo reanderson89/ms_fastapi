@@ -7,20 +7,20 @@ from time import time
 
 router = APIRouter()
 
-@router.get("/users")
+@router.get("/users", response_model=List[UsersModel])
 async def get_users():
 	with Session(engine) as session:
 		users = session.exec(select(UsersModel)).all()
 		return users
 
-@router.get("/users/{user_uuid}")
+@router.get("/users/{user_uuid}", response_model=UsersModel)
 async def get_user(user_uuid: str):
 	with Session(engine) as session:
 		statement = select(UsersModel).where(UsersModel.uuid == user_uuid)
-		user = session.exec(statement)
+		user = session.exec(statement).one_or_none()
 		return user
 
-@router.post("/users")
+@router.post("/users", response_model=UsersModel)
 async def create_users(users: (UsersModel|List[UsersModel])):
 	with Session(engine) as session:
 		if isinstance(users, List):
@@ -29,10 +29,10 @@ async def create_users(users: (UsersModel|List[UsersModel])):
 		else:
 			session.add(users)
 		session.commit()
-		session.refresh()
+		session.refresh(users)
 		return users
 
-@router.put("/users/{user_uuid}")
+@router.put("/users/{user_uuid}", response_class=UsersModel)
 async def update_user(user_uuid: str, users_update: UsersUpdate):
 	with Session(engine) as session:
 		statement = select(UsersModel).where(UsersModel.uuid == user_uuid)
