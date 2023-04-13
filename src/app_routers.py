@@ -1,17 +1,17 @@
 from fastapi import APIRouter
-from engines.users.users_router import router as users_router
-from src.engines.clients.router import router as client_router
-from src.engines.clients.users.router import router as client_users_router
-from src.engines.clients.budgets.router import router as client_budgets_router
-from src.engines.clients.awards.router import router as client_awards_router
-from src.engines.programs.router import router as program_router
-from src.engines.programs.admins.router import router as program_admins_router
-from src.engines.programs.events.router import router as program_events_router
-from src.engines.programs.segments.router import router as program_segments_router
-from src.engines.programs.segments.awards.router import router as program_segment_awards_router
-from src.engines.programs.segments.rules.router import router as program_segment_rules_router
-from src.engines.programs.messages.router import router as program_messages_router
-from src.engines.messages.router import router as msg_templates_router
+from api.users.users_router import router as users_router
+from src.api.clients.router import router as client_router
+from src.api.clients.users.router import router as client_users_router
+from src.api.clients.budgets.router import router as client_budgets_router
+from src.api.clients.awards.router import router as client_awards_router
+from src.api.programs.router import router as program_router
+from src.api.programs.admins.router import router as program_admins_router
+from src.api.programs.events.router import router as program_events_router
+from src.api.programs.segments.router import router as program_segments_router
+from src.api.programs.segments.awards.router import router as program_segment_awards_router
+from src.api.programs.segments.rules.router import router as program_segment_rules_router
+from src.api.programs.messages.router import router as program_messages_router
+from src.api.messages.router import router as msg_templates_router
 
 router = APIRouter()
 router.include_router(users_router, tags=["Users"])
