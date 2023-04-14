@@ -2,7 +2,7 @@ from typing import List
 from time import time
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .models import Client as ClientModel
+from .clients_models import Client as ClientModel
 from .schema import Client, ClientCreate, ClientUpdate
 
 router = APIRouter()
