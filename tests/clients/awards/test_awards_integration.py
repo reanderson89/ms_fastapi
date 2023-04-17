@@ -28,26 +28,26 @@ async def test_integration_get_awards():
 @pytest.mark.asyncio
 async def test_integration_get_award():
 	client_uuid = "test_client_uuid"
-	award_7char = "testchr"
+	award_9char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"/clients/{client_uuid}/awards/{award_7char}")
+		response = await ac.get(f"/clients/{client_uuid}/awards/{award_9char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Got awards for {award_7char}"}
+		assert response.json() == {"message": f"Got awards for {award_9char}"}
 
 @pytest.mark.asyncio
 async def test_integration_update_award():
 	client_uuid = "test_client_uuid"
-	award_7char = "testchr"
+	award_9char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"/clients/{client_uuid}/awards/{award_7char}")
+		response = await ac.put(f"/clients/{client_uuid}/awards/{award_9char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated award for {award_7char}"}
+		assert response.json() == {"message": f"Updated award for {award_9char}"}
 
 @pytest.mark.asyncio
 async def test_integration_delete_award():
 	client_uuid = "test_client_uuid"
-	award_7char = "testchr"
+	award_9char = "testchr"
 	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.delete(f"/clients/{client_uuid}/awards/{award_7char}")
+		response = await ac.delete(f"/clients/{client_uuid}/awards/{award_9char}")
 		assert response.status_code == 200
-		assert response.json() == {"message": f"Deleted award for {award_7char}"}
+		assert response.json() == {"message": f"Deleted award for {award_9char}"}
