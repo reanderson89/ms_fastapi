@@ -8,7 +8,7 @@ from src.api.programs.router import router as program_router
 from src.api.programs.admins.router import router as program_admins_router
 from src.api.programs.events.router import router as program_events_router
 from src.api.programs.segments.router import router as program_segments_router
-from src.api.programs.segments.awards.router import router as program_segment_awards_router
+from api.programs.segments.awards.segment_award_router import router as program_segment_awards_router
 from src.api.programs.segments.rules.router import router as program_segment_rules_router
 from src.api.programs.messages.router import router as program_messages_router
 from src.api.messages.router import router as msg_templates_router
