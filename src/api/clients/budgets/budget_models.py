@@ -1,5 +1,4 @@
-from sqlmodel import Field, SQLModel, Relationship
-from typing import List
+from sqlmodel import Field, SQLModel
 
 
 class ClientBudgetModel(SQLModel, table=True):

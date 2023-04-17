@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from api.users.users_router import router as users_router
 from api.clients.client_router import router as client_router
-from src.api.clients.users.router import router as client_users_router
+from src.api.clients.users.client_user_router import router as client_users_router
 from api.clients.budgets.budget_router import router as client_budgets_router
 from src.api.clients.awards.router import router as client_awards_router
 from src.api.programs.router import router as program_router
