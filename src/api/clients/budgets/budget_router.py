@@ -1,6 +1,6 @@
 from .budget_models import ClientBudgetModel, ClientBudgetUpdate
 from src.database.config import engine
-from api.clients.clients_models import ClientModel
+from api.clients.client_models import ClientModel
 from api import CommonRoutes, ExceptionHandling
 from fastapi import APIRouter, Query, Depends
 from typing import List
