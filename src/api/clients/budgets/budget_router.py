@@ -14,7 +14,7 @@ def get_session():
 
 @router.get("/clients/{client_uuid}/budgets", response_model=List[ClientBudgetModel])
 async def get_budgets(session: Session = Depends(get_session),
-		    		offset: int = 0,
+					offset: int = 0,
 					limit: int = Query(default=100, lte=100)):
 	budgets = session.exec(
 		select(ClientBudgetModel)
