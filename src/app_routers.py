@@ -5,7 +5,7 @@ from src.api.clients.users.client_user_router import router as client_users_rout
 from src.api.clients.budgets.budget_router import router as client_budgets_router
 from src.api.clients.awards.client_awards_router import router as client_awards_router
 from src.api.programs.program_router import router as program_router
-from src.api.programs.admins.router import router as program_admins_router
+from src.api.programs.admins.program_admin_router import router as program_admins_router
 from src.api.programs.events.router import router as program_events_router
 from src.api.programs.segments.router import router as program_segments_router
 from src.api.programs.segments.awards.segment_award_router import router as program_segment_awards_router
