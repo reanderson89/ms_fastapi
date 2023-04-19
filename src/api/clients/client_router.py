@@ -22,6 +22,8 @@ async def create_client(client: (ClientModel|List[ClientModel])):
 async def update_client_by_uuid(client_uuid: str, client_update: ClientUpdate):
     return CommonRoutes.update_one(client_uuid, ClientModel, ClientUpdate)
 
+# this should only work if there is nothing else associated with the client
 @router.delete("/{client_uuid}")
 async def delete_client_by_uuid(client_uuid: str):
-    return CommonRoutes.delete_one(client_uuid, ClientModel)
+	#TODO: add check to see if there is anything else associated with the client
+	return CommonRoutes.delete_one(client_uuid, ClientModel)
