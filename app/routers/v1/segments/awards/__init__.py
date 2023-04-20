@@ -9,7 +9,7 @@ from app.models.segments.awards import SegmentAward, SegmentAwardUpdate
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["segment awards"])
 
-@router.get("/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards", response_model=List[SegmentAward])
+@router.get("/awards", response_model=List[SegmentAward])
 async def get_awards(
 	# client_uuid: str,
 	program_9char: str,
@@ -25,7 +25,7 @@ async def get_awards(
 		).all()
 		return awards
 
-@router.get("/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards/{uuid}", response_model=SegmentAward)
+@router.get("/awards/{uuid}", response_model=SegmentAward)
 async def get_award(
 	# client_uuid: str,
 	program_9char: str,
@@ -39,7 +39,7 @@ async def get_award(
 			raise HTTPException(status_code=404, detail="Award not found")
 		return award
 
-@router.post("/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards", response_model=SegmentAward)
+@router.post("/awards", response_model=SegmentAward)
 async def create_award(
 	# client_uuid: str,
 	program_9char: str,
@@ -59,7 +59,7 @@ async def create_award(
 			raise e
 		return award_db
 
-@router.put("/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards/{award_9char}", response_model=SegmentAward)
+@router.put("/awards/{award_9char}", response_model=SegmentAward)
 async def update_award(
 	# client_uuid: str,
 	program_9char: str,

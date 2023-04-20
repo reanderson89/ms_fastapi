@@ -18,6 +18,6 @@ app.include_router(routers, prefix="/v1")
 
 if __name__ == "__main__":
 	uvicorn.run(
-		"app:app",
+		"main:app",
 		**run_config.__dict__
 	)
