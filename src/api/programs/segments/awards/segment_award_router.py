@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from src.database.config import engine
-from .segment_award_models import Award, CreateAward, UpdateAward
+from .segment_award_models import Award, UpdateAward
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["segment awards"])
 
@@ -43,7 +43,7 @@ async def create_award(
 	# client_uuid: str,
 	program_9char: str,
 	segment_9char: str,
-	award: CreateAward,
+	award: Award,
 ):
 	with Session(engine) as session:
 		award_db = Award(**award.dict(), program_9char=program_9char, segment_9char=segment_9char)

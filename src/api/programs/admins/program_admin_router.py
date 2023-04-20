@@ -30,18 +30,18 @@ async def get_admins(
 	ExceptionHandling.check404(admins)
 	return admins
 
-@router.get("/admins/{uuid}", response_model=ProgramAdminModel)
-async def get_admin(uuid: str):
-	return CommonRoutes.get_one(ProgramAdminModel, uuid)
+@router.get("/admins/{user_uuid}", response_model=ProgramAdminModel)
+async def get_admin(user_uuid: str):
+	return CommonRoutes.get_one(ProgramAdminModel, user_uuid)
 
 @router.post("/admins", response_model=ProgramAdminModel)
 async def create_admin(admins: (ProgramAdminModel | List[ProgramAdminModel])):
 	return CommonRoutes.create_one_or_many(admins)
 
-@router.put("/admins/{uuid}", response_model=ProgramAdminModel)
-async def update_admin(uuid: str, admin_updates: ProgramAdminUpdate):
-	return CommonRoutes.update_one(uuid, ProgramAdminModel, admin_updates)
+@router.put("/admins/{user_uuid}", response_model=ProgramAdminModel)
+async def update_admin(user_uuid: str, admin_updates: ProgramAdminUpdate):
+	return CommonRoutes.update_one(user_uuid, ProgramAdminModel, admin_updates)
 
-@router.delete("/admins/{uuid}")
-async def delete_admin(uuid: str):
-	return CommonRoutes.delete_one(uuid, ProgramAdminModel)
+@router.delete("/admins/{user_uuid}")
+async def delete_admin(user_uuid: str):
+	return CommonRoutes.delete_one(user_uuid, ProgramAdminModel)

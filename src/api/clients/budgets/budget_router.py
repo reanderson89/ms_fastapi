@@ -1,10 +1,9 @@
-from .budget_models import ClientBudgetModel, ClientBudgetUpdate
-from src.database.config import engine
-from api.clients.client_models import ClientModel
-from api import CommonRoutes, ExceptionHandling
-from fastapi import APIRouter, Query, Depends
 from typing import List
 from sqlmodel import Session, select
+from fastapi import APIRouter, Query, Depends
+from src.api import CommonRoutes, ExceptionHandling
+from src.database.config import engine
+from .budget_models import ClientBudgetModel, ClientBudgetUpdate
 
 router = APIRouter()
 
@@ -13,13 +12,15 @@ def get_session():
 		yield session
 
 @router.get("/clients/{client_uuid}/budgets", response_model=List[ClientBudgetModel])
-async def get_budgets(session: Session = Depends(get_session),
-					offset: int = 0,
-					limit: int = Query(default=100, lte=100)):
+async def get_budgets(
+	client_uuid: str,
+	offset: int = 0,
+	limit: int = Query(default=100, lte=100),
+	session: Session = Depends(get_session)
+):
 	budgets = session.exec(
 		select(ClientBudgetModel)
-		.join(ClientModel)
-		.where(ClientBudgetModel.client_uuid == ClientModel.uuid)
+		.where(ClientBudgetModel.client_uuid == client_uuid)
 		.offset(offset)
 		.limit(limit)
 		).all()

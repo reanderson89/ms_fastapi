@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Query, Depends
 from typing import List
 from sqlmodel import Session, select
+from fastapi import APIRouter, Query, Depends
 from api import CommonRoutes, ExceptionHandling
-from api.clients.client_models import ClientModel
 from src.database.config import engine
 from .client_awards_models import ClientAwardModel, ClientAwardUpdate
 
@@ -13,13 +12,15 @@ def get_session():
 		yield session
 
 @router.get("/clients/{client_uuid}/awards", response_model=List[ClientAwardModel])
-async def get_awards(session: Session = Depends(get_session),
-					offset: int = 0,
-					limit: int = Query(default=100, lte=100)):
+async def get_awards(
+	client_uuid: str,
+	offset: int = 0,
+	limit: int = Query(default=100, lte=100),
+	session: Session = Depends(get_session),
+):
 	awards = session.exec(
 		select(ClientAwardModel)
-		.join(ClientModel)
-		.where(ClientAwardModel.client_uuid == ClientModel.uuid)
+		.where(ClientAwardModel.client_uuid == client_uuid)
 		.offset(offset)
 		.limit(limit)
 	).all()
