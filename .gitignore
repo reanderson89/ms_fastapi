@@ -1,7 +1,5 @@
 .DS_Store
 _setup
-src/config.py
-src/configs/
 Milestones_v1-Schema.pdf
 *copy.py
 *.pyc
