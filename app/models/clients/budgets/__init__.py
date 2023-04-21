@@ -1,7 +1,7 @@
-from .budget_models import ClientBudgetModel, ClientBudgetUpdate
+# from .budget_models import ClientBudgetModel, ClientBudgetUpdate
 
-class ClientBudgetModel(ClientBudgetModel):
-    pass
+# class ClientBudgetModel(ClientBudgetModel):
+#     pass
 
-class ClientBudgetUpdate(ClientBudgetUpdate):
-    pass
+# class ClientBudgetUpdate(ClientBudgetUpdate):
+#     pass

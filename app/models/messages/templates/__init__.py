@@ -1,7 +1,7 @@
-from .message_templates_models import MessageTemplateModel, MessageTemplateUpdateModel
+# from .message_templates_models import MessageTemplateModel, MessageTemplateUpdateModel
 
-class MessageTemplateModel(MessageTemplateModel):
-    pass
+# class MessageTemplateModel(MessageTemplateModel):
+#     pass
 
-class MessageTemplateUpdateModel(MessageTemplateUpdateModel):
-    pass
+# class MessageTemplateUpdateModel(MessageTemplateUpdateModel):
+#     pass

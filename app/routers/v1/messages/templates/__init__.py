@@ -1,9 +1,10 @@
-from app.models.messages.templates import MessageTemplateModel, MessageTemplateUpdateModel
-from app.routers.v1.v1CommonRouting import CommonRoutes
-from fastapi import APIRouter
 from typing import List
+from fastapi import APIRouter
+from app.routers.v1.v1CommonRouting import CommonRoutes
+# from app.models.messages.templates import MessageTemplateModel, MessageTemplateUpdateModel
+from app.models.messages.templates.message_templates_models import MessageTemplateModel, MessageTemplateUpdateModel
 
-router = APIRouter()
+router = APIRouter(tags=["Message Templates"])
 
 @router.get("/messages")
 async def get_message_templates():

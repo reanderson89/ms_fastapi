@@ -7,7 +7,7 @@ from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments.awards import SegmentAward, SegmentAwardUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["segment awards"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Awards"])
 
 @router.get("/awards", response_model=List[SegmentAward])
 async def get_awards(
@@ -28,8 +28,8 @@ async def get_awards(
 @router.get("/awards/{uuid}", response_model=SegmentAward)
 async def get_award(
 	# client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
+	# program_9char: str,
+	# segment_9char: str,
 	uuid: str,
 ):
 	with Session(engine) as session:
@@ -42,12 +42,12 @@ async def get_award(
 @router.post("/awards", response_model=SegmentAward)
 async def create_award(
 	# client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
+	# program_9char: str,
+	# segment_9char: str,
 	award: SegmentAward,
 ):
 	with Session(engine) as session:
-		award_db = SegmentAward(**award.dict(), program_9char=program_9char, segment_9char=segment_9char)
+		award_db = SegmentAward(**award.dict())#, program_9char=program_9char, segment_9char=segment_9char
 		try:
 			session.add(award_db)
 			session.commit()

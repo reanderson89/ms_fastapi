@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 from typing import List, Optional
 
-class UsersModel(SQLModel, table=False):
+class UsersModel(SQLModel, table=True):
 	__tablename__ = "user"
 
 	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)

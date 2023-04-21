@@ -4,5 +4,5 @@ from fastapi import APIRouter
 
 v1_messages_router = APIRouter()
 
-v1_messages_router.include_router(messages_router, tags=["Messages"])
-v1_messages_router.include_router(templates_router, tags=["Templates"])
+v1_messages_router.include_router(messages_router)
+v1_messages_router.include_router(templates_router)

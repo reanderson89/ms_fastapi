@@ -1,10 +1,11 @@
 from typing import List
 from time import time
 from fastapi import APIRouter
-from app.models.clients import ClientModel, ClientUpdate
+# from app.models.clients import ClientModel, ClientUpdate
+from app.models.clients.clients_model import ClientModel, ClientUpdate
 from app.routers.v1.v1CommonRouting import CommonRoutes
 
-router = APIRouter()
+router = APIRouter(tags=["Clients"])
 
 @router.get("/clients/", response_model=List[ClientModel])
 async def get_clients():

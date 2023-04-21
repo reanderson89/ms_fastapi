@@ -7,8 +7,8 @@ from .users import v1_users_router
 
 v1router = APIRouter()
 
+v1router.include_router(v1_users_router)
 v1router.include_router(v1_clients_router)
 v1router.include_router(v1_program_router)
 v1router.include_router(v1_messages_router)
 v1router.include_router(v1_segments_router)
-v1router.include_router(v1_users_router)

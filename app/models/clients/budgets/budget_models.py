@@ -2,7 +2,7 @@ from typing import List, Optional
 from sqlmodel import Field, SQLModel
 
 
-class ClientBudgetModel(SQLModel, table=False):
+class ClientBudgetModel(SQLModel, table=True):
     __tablename__ = "client_budget"
 
     uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)

@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class ProgramAdminModel(SQLModel, table=False):
+class ProgramAdminModel(SQLModel, table=True):
 	__tablename__ = "program_admin"
 
 	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)

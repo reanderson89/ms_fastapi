@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class ClientModel(SQLModel, table=False):
+class ClientModel(SQLModel, table=True):
 	__tablename__ = "client"
 
 	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)

@@ -5,7 +5,7 @@ from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.programs.admins import ProgramAdminModel, ProgramAdminUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["program admins"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Admins"])
 
 async def get_session():
 	async with Session(engine) as session:

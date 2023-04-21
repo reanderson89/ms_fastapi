@@ -1,7 +1,7 @@
-from .programs_models import ProgramModel, ProgramUpdate
+# from .programs_models import ProgramModel, ProgramUpdate
 
-class ProgramModel(ProgramModel):
-    pass
+# class ProgramModel(ProgramModel):
+#     pass
 
-class ProgramAdminUpdate(ProgramUpdate):
-    pass
+# class ProgramAdminUpdate(ProgramUpdate):
+#     pass

@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class SegmentRuleModel(SQLModel, table=False):
+class SegmentRuleModel(SQLModel, table=True):
 	__tablename__ = "program_segment_rule"
 
 	uuid: str = Field(default=None, primary_key=True, index=True, max_length=81)
@@ -9,7 +9,7 @@ class SegmentRuleModel(SQLModel, table=False):
 	client_uuid: str = Field(default=None, index=True, max_length=56, foreign_key="client.uuid")
 	program_9char: str = Field(default=None, index=True, max_length=9, foreign_key="program.program_9char")
 	segment_9char: str = Field(default=None, index=True, max_length=9, foreign_key="program_segment.segment_9char")
-	rule_9char: str = Field(default=None, index=True, max_length=9, foreign_key="client_rule.rule_9char")
+	rule_9char: str = Field(default=None, index=True, max_length=9)
 	status: int = Field(default=None, index=True)
 	rule_type: int = Field(default=None, index=True)
 	logic: str = Field(default=None)

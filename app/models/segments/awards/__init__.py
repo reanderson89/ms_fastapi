@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
 
-class SegmentAward(SQLModel, table=False):
+class SegmentAward(SQLModel, table=True):
 	__tablename__ = "program_segment_award"
 
 	uuid: str = Field(default=None, primary_key=True, max_length=81)

@@ -1,16 +1,16 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class ProgramEventModel(SQLModel, table=False):
+class ProgramEventModel(SQLModel, table=True):
 	__tablename__ = "program_event"
 
 	uuid: str = Field(default=None, primary_key=True, index=True, max_length=72)
 	program_uuid: str = Field(default=None, index=True, max_length=65, foreign_key="program.uuid")
 	client_uuid: str = Field(default=None, index=True, max_length=56, foreign_key="client.uuid")
 	program_9char: str = Field(default=None, index=True, max_length=9, foreign_key="program.program_9char")
-	event_9char: str = Field(default=None, index=True, max_length=9, foreign_key="client_event.event_9char")
+	event_9char: str = Field(default=None, index=True, max_length=9)
 	event_type: int = Field(default=None, index=True)
-	parent_9char: str = Field(default=None, index=True, max_length=9, foreign_key="client_event.event_9char")
+	parent_9char: str = Field(default=None, index=True, max_length=9)
 	segment_9char: str = Field(default=None, index=True, max_length=9, foreign_key="program_segment.segment_9char")
 	event_data: str = Field(default=None)
 	status: int = Field(default=None, index=True)

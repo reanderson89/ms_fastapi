@@ -3,9 +3,10 @@ from fastapi import APIRouter, Query, Depends
 from sqlmodel import Session, select
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.programs import ProgramModel, ProgramUpdate
+# from app.models.programs import ProgramModel, ProgramUpdate
+from app.models.programs.programs_models import ProgramModel, ProgramUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}", tags=["client programs"])
+router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Programs"])
 
 async def get_session():
 	async with Session(engine) as session:

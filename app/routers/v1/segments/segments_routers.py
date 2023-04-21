@@ -3,9 +3,9 @@ from fastapi import APIRouter, Query, Depends
 from sqlmodel import Session, select
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.segments import SegmentModel, SegmentUpdate
+from app.models.segments.segment_models import SegmentModel, SegmentUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["program segments"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Segments"])
 
 async def get_session():
 	async with Session(engine) as session:

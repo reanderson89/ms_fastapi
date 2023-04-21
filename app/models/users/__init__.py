@@ -1,7 +1,7 @@
-from .users_models import UsersModel, UsersUpdate
+# from .users_models import UsersModel, UsersUpdate
 
-class UsersModel(UsersModel):
-    pass
+# class UsersModel(UsersModel):
+#     pass
 
-class UserUpdate(UsersUpdate):
-    pass
+# class UserUpdate(UsersUpdate):
+#     pass

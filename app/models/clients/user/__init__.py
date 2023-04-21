@@ -1,7 +1,7 @@
-from .client_user_models import ClientUserModel, ClientUserUpdate
+# from .client_user_models import ClientUserModel, ClientUserUpdate
 
-class ClientUserModel(ClientUserModel):
-    pass
+# class ClientUserModel(ClientUserModel):
+#     pass
 
-class ClientUserUpdate(ClientUserUpdate):
-    pass
+# class ClientUserUpdate(ClientUserUpdate):
+#     pass

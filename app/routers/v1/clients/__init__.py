@@ -5,7 +5,7 @@ from .users import router as users_router
 from fastapi import APIRouter
 
 v1_clients_router = APIRouter()
-v1_clients_router.include_router(client_router, tags=["Clients"])
-v1_clients_router.include_router(awards_router, tags=["Awards"])
-v1_clients_router.include_router(budgets_router, tags=["Budget"])
-v1_clients_router.include_router(users_router, tags=["Users"])
+v1_clients_router.include_router(client_router)
+v1_clients_router.include_router(awards_router)
+v1_clients_router.include_router(budgets_router)
+v1_clients_router.include_router(users_router)

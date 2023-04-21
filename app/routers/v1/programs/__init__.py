@@ -4,6 +4,6 @@ from .programs_routers import router as program_router
 from fastapi import APIRouter
 
 v1_program_router = APIRouter()
-v1_program_router.include_router(admin_router, tags=["Admin"])
-v1_program_router.include_router(event_router, tags=["Events"])
-v1_program_router.include_router(program_router, tags=["Programs"])
+v1_program_router.include_router(program_router)
+v1_program_router.include_router(admin_router)
+v1_program_router.include_router(event_router)

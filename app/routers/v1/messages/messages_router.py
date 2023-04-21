@@ -1,11 +1,12 @@
 from typing import List
-from fastapi import APIRouter, Query, Depends
 from sqlmodel import Session, select
+from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.messages import MessageModel, MessageUpdate
+# from app.models.messages import MessageModel, MessageUpdate
+from app.models.messages.message_models import MessageModel, MessageUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["program messages"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Messages"])
 
 async def get_session():
 	async with Session(engine) as session:

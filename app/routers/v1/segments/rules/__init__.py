@@ -5,7 +5,7 @@ from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments.rules import SegmentRuleModel, SegmentRuleUpdate
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["segment rules"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Rules"])
 
 def get_session():
 	with Session(engine) as session:
