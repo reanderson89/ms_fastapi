@@ -1,100 +1,130 @@
-# milestones-api
+# Docker
 
-milestones-api is a FastAPI based web application that provides an intuitive and efficient way to manage project milestones. The application is built on the Unicorn web server and utilizes a MariaDB MySQL database for data storage. This ReadMe file serves as a comprehensive guide to help you understand, install, and set up milestones-api, as well as run its unit and integration tests.
+## TL;DR
 
-## Table of Contents
+[Docker](https://docs.docker.com/get-started/overview/) is a software tool for building and running applications based on containers.  Containers are small, lightweight execution environments that make shared use of the operating system's kernel but otherwise run in isolation from one another.
 
-- [Requirements](#requirements)
-- [Local Setup](#local-environment-setup)
-- [Installation](#installation)
-- [Database Setup](#database-setup)
-- [Running the Application](#running-the-application)
-- [Running Unit and Integration Tests](#running-tests)
+At a very high level, containers can be thought of as being similar to virtual machines.  A developer, who is maybe running OS/X on their laptop, is developing/running/testing against an application that is, itself, running in its own container with all of its own dependencies.
 
-## Local Environment Setup
+The application is likely running in a Linux continaer, using Docker, on a computer that is running OS/X.  In other words, the application is _not_ using tools that are installed in the developer's operating system, rather the application is running, in isolation, in a container and is fully isloated from the developer's own operating system.
 
-See wiki: [pyenv setup](https://github.com/blueboard/milestones-api/wiki/MacOS-Local-Development-Setup)
+[Docker Compose](https://docs.docker.com/get-started/08_using_compose/#:~:text=Docker%20Compose%20is%20a%20tool,or%20tear%20it%20all%20down.) is a tool for orchistrating one or many Docker containers.  A common use case for Docker Compose would be to start a database server in one container, then start an application server in another container, and finally to establish a virtual network between the two containers.  This would very closely mimic how an application would be configured in production.
 
-## Requirements
+There are literally thousands of tutorials, YouTube videos, blogs, and so on, on how to use Docker.
+- https://www.docker.com/101-tutorial/
 
-- Python 3.11 or higher
-- Docker Desktop
-- pip (Python package manager)
+## Links
 
+- [uvicorn-gunicorn-fastapi-docker](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker)
+- [Hot Reloading with Local Docker Development](https://olshansky.medium.com/hot-reloading-with-local-docker-development-1ec5dbaa4a65)
 
-## Installation
+## Prereququisites
 
-1. Clone the repository:
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), licensing is TBD
+
+## Docker files used in milestones-api
+
+- `docker-compose.yml` orchistrates two containers:
+  - The first container is named `milestones_db` -- it is simply runs an instance of `mariadb:latest`.  Note the use of environment variables.
+  - The second container is named `milestones_server` -- it has its own `Dockerfile` that specifies how it works.
+- `Dockerfile` specifies how the application server itself is built.  It defines the dependencies that are needed by the application, and a sequential order of execution.  Note the use of `FROM` at the top -- this specifies that this container is based on a pre-built image named [tiangolo/uvicorn-gunicorn-fastapi](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker), which incudes numerous pre-bundled dependencies (unicorn, uvicorn, etc.) that are part of the "base container".  The sequential steps in the `Dockerfile` tell Docker how the application is to be assembled.
+- `./run.sh` starts Docker Compose in a non-detached state (which is easier for debugging) -- this is a simple wrapper for `docker-compose up` command.  This brings up the containers that are defined in `docker-compose.yml`.
+- `./stop.sh` stops the running containers -- it is a simple wrapper for the `docker-compose down` command.
+
+## Useful Docker Commands
+
+This README is not a Docker tutorial, and there are probably hundreds of useful command line commands.  [docker exec](https://docs.docker.com/engine/reference/commandline/exec/) is one that is very useful to get familar with.
+
+## Examples
+
+### Example 1 -- What is running?
+
+In this example, we use `docker ps` to list running containers.
+
 ```
-git clone https://github.com/blueboard/milestones-api.git
-```
-2. Navicate to the project root directory:
-```
-cd ../milestones-api
-```
-
-3. (optional) Create a virtual environment
-
-basic format:
-```
-pyenv virtualenv <python-version> <environemnt name>
-```
-if `pythin-version` is not specified, the current pyenv global version is used
-
-example command:
-```
-pyenv virtualenv 3.11.1 myproject
-```
-
-4. Install the required dependencies
-(optional) be sure that the local environment is activated
-
-```bash
-pip install -r requirements.txt
+❯ docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED        STATUS        PORTS                    NAMES
+429850ef1ab4   milestones-api-server   "/start.sh"              16 hours ago   Up 16 hours   0.0.0.0:80->80/tcp       milestones_app
+4b1654034516   mariadb:latest          "docker-entrypoint.s…"   16 hours ago   Up 16 hours   0.0.0.0:3306->3306/tcp   milestones_db
 ```
 
-5. Create coonfig.py
-Get the config file content, create a file in the `src` directory called config.py, and copy the config content into it.
+### Example 2 -- Get a shell in a running container
 
+Using a container's ID (see `docker ps`) to get a `bash` shell in the running container.  You are now `root` in `/app`.
 
-## Database Setup
-
-To set up the database for the milestones-api application, you need to follow these steps:
-
-1. Create a now MariaDB container in Docker
-
-Note: feel free to change `MYSQL_ROOT_PASSWORD`
 ```
-docker run --name my-mariadb -e MYSQL_ROOT_PASSWORD=password -d -p 32776:3306 mariadb:latest
+❯ docker exec -it 429850ef1ab4 bash
+root@429850ef1ab4:/app#
 ```
 
-2. Use `.sql` config file to create new MySQL database in MariaDB container
+### Example 3 -- Dump the logs from a currently running container
 
-Note: local path to the config file must changed. On MacOS, `right-click + option` allows for full file path to be copied
+In this example, we use `docker logs` along with the a container ID, to dump STDOUT for the database server.
+
 ```
-docker exec -i my-mariadb sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' < /path/to/your/config/file.sql
+❯ docker logs 4b1654034516
+2023-04-20 23:58:17+00:00 [Note] [Entrypoint]: Entrypoint script for MariaDB Server 1:10.11.2+maria~ubu2204 started.
+2023-04-20 23:58:17+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2023-04-20 23:58:17+00:00 [Note] [Entrypoint]: Entrypoint script for MariaDB Server 1:10.11.2+maria~ubu2204 started.
+2023-04-20 23:58:17+00:00 [Note] [Entrypoint]: Initializing database files
+
+
+PLEASE REMEMBER TO SET A PASSWORD FOR THE MariaDB root USER !
+To do so, start the server, then issue the following command:
+
+'/usr/bin/mariadb-secure-installation'
+
+which will also give you the option of removing the test
+databases and anonymous user created by default.  This is
+strongly recommended for production servers.
+
+See the MariaDB Knowledgebase at https://mariadb.com/kb
+
+Please report any problems at https://mariadb.org/jira
+
+The latest information about MariaDB is available at https://mariadb.org/.
+
+Consider joining MariaDB's strong and vibrant community:
+https://mariadb.org/get-involved/
+
+2023-04-20 23:58:18+00:00 [Note] [Entrypoint]: Database files initialized
+2023-04-20 23:58:18+00:00 [Note] [Entrypoint]: Starting temporary server
+2023-04-20 23:58:18+00:00 [Note] [Entrypoint]: Waiting for server startup
+...
 ```
 
-3. (Optional) Log into MariaDB container
+## Docker Caching
+
+A lot of work remains to optimize our use of Docker caching.  This is an area that is work in progress.
+
+### Links
+
+- [Fast Docker Builds With Caching (Not Only) For Python](https://towardsdatascience.com/fast-docker-builds-with-caching-for-python-533ddc3b0057)
+
+### Example
+
+Using the approach above, with no changes to `requirements.txt`, note the two build times here -- 27.40 and 1.010.
+
 ```
-docker run -it --link my-mariadb:mysql --rm mariadb sh -c 'exec mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
+❯ time Docker build .
+[+] Building 1.8s (10/14)
+[+] Building 2.2s (10/14)
+[+] Building 26.9s (15/15) FINISHED
+ => [internal] load build definition from Dockerfile                                                                                                      0.0s
+ => => transferring dockerfile: 807B                                                                                                                      ...                                                                                        0.3s
+ => exporting to image                                                                                                                                    0.2s
+ => => exporting layers                                                                                                                                   0.1s
+ => => writing image sha256:84af8f93a7311b2caff02d1fd75b35ee1edfd8cf159ab03d84d1e2449038f9fd                                                              0.0s
+Docker build .  0.22s user 0.32s system 1% cpu 27.401 total
 ```
 
-## Running the Application
-
-From root run:
 ```
-python src/app.py
-```
-
-## Running Tests
-
-To run the unit and integration tests:
-```
-pytest
-```
-
-or alrernativelty:
-```
-python -m pytest
+❯ time Docker build .                                                                 28s
+[+] Building 0.7s (15/15) FINISHED
+ => [internal] load build definition from Dockerfile                                                                                                      0.0s
+ => => transferring dockerfile: 37B                                                                                                                     ...
+ => exporting to image                                                                                                                                    0.0s
+ => => exporting layers                                                                                                                                   0.0s
+ => => writing image sha256:84af8f93a7311b2caff02d1fd75b35ee1edfd8cf159ab03d84d1e2449038f9fd                                                              0.0s
+Docker build .  0.09s user 0.13s system 22% cpu 1.010 total
 ```

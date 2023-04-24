@@ -9,59 +9,33 @@ class BaseDB:
 	HOST: str
 	USER: str
 	PASSWD: str
+	PORT: str # int?
 	DB: str
-	# SERVER: str
-	# FRONTEND: str
-	# S3: dict = field(default_factory = lambda:{})
 
 @dataclass
 class LocalDB(BaseDB):
-	HOST: str = 'localhost'
-	PORT: int = 32776
-	USER: str = 'root'
-	PASSWD: str = 'password'
-	DB: str = 'blueboard_milestones'
-	#SERVER: str = 'milestone.blueboard.app'
-	#FRONTEND: str = 'milestone.blueboard.app'
-	# S3: dict = field(default_factory= lambda:{
-	# 	'keys': {
-	# 			'S3AccessKey' : '',
-	# 			'S3SecretKey' : ''
-	# 		},
-	# 	'media': 'local-media-blueboard-app'
-	# 	})
+	# these env vars are coming from docker-compose.yml
+	HOST: str =  os.environ.get('MYSQL_HOSTNAME', '127.0.0.1')
+	PORT: int = os.environ.get('MYSQL_PORT', '3306')
+	USER: str = os.environ.get('MYSQL_USER', 'milestones')
+	PASSWD: str = os.environ.get('MYSQL_PASSWORD', 'password')
+	DB: str = os.environ.get('MYSQL_DATABASE', 'milestones')
 
 @dataclass
 class StagingDB(BaseDB):
 	HOST: str = '10.100.1.22'
+	PORT: str = '3306'
 	USER: str = 'USERNAME'
 	PASSWD: str = 'PASSWORD'
 	DB: str = 'milestone_staging'
-	SERVER: str = 'milestone.blueboard.app'
-	FRONTEND: str = 'milestone.blueboard.app'
-	S3: dict = field(default_factory= lambda:{
-		'keys': {
-				'S3AccessKey' : '',
-				'S3SecretKey' : ''
-			},
-		'media': 'staging-media-blueboard-app'
-		})
 
 @dataclass
 class ProdDB(BaseDB):
 	HOST: str = '10.100.1.21'
+	PORT: str = '3306'
 	USER: str = 'USERNAME'
 	PASSWD: str = 'PASSWORD'
 	DB: str = 'milestone_prod'
-	SERVER: str = 'milestone.blueboard.app'
-	FRONTEND: str = 'milestone.blueboard.app'
-	S3: dict = field(default_factory= lambda:{
-		'keys': {
-				'S3AccessKey' : '',
-				'S3SecretKey' : ''
-			},
-		'media': 'media-blueboard-app'
-		})
 
 configs = {
 	'local':LocalDB(),
