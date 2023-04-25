@@ -1,3 +1,9 @@
+# Running Locally
+From root run:
+```
+uvicorn app.main:app
+```
+
 # Docker
 
 ## TL;DR

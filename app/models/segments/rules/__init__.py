@@ -13,8 +13,8 @@ class SegmentRuleModel(SQLModel, table=True):
 	status: int = Field(default=None, index=True)
 	rule_type: int = Field(default=None, index=True)
 	logic: str = Field(default=None)
-	time_created: int
-	time_updated: int
+	time_created: int = None
+	time_updated: int = None
 
 class SegmentRuleUpdate(SQLModel, table=False):
 	program_uuid: Optional[str] = Field(default=None, max_length=65)

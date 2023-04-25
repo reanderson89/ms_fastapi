@@ -22,11 +22,19 @@ class CommonRoutes():
 		with Session(engine) as session:
 			if isinstance(items, List):
 				for item in items:
+					item.time_created = item.time_updated = int(time())
 					session.add(item)
 			else:
+				items.time_created = items.time_updated = int(time())
 				session.add(items)
+
 			session.commit()
-			session.refresh(items)
+			
+			if isinstance(items, List):
+				for item in items:
+					session.refresh(item)
+			else:
+				session.refresh(items)
 			return items
 	
 	def update_one(search_by, original_model, update_model):
@@ -41,7 +49,6 @@ class CommonRoutes():
 			session.add(db_item)
 			session.commit()
 			session.refresh(db_item)
-			print(db_item)
 			return db_item
 
 	def delete_one(search_by, model):

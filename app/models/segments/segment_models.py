@@ -12,8 +12,8 @@ class SegmentModel(SQLModel, table=True):
 	name: str = Field(default=None, max_length=255)
 	description: str = Field(default=None)
 	status: int = Field(default=None, index=True)
-	time_created: int
-	time_updated: int
+	time_created: int = None
+	time_updated: int = None
 
 class SegmentUpdate(SQLModel, table=False):
 	name: Optional[str] = Field(default=None, max_length=255)

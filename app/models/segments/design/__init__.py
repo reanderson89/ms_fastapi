@@ -13,8 +13,8 @@ class SegmentDesignModel(SQLModel, table=True):
 	template_uuid: str = Field(default=None, index=True, max_length=56, foreign_key="message_template.uuid")
 	channel: int = Field(default=None, index=True)
 	status: int = Field(default=None, index=True)
-	time_created: int
-	time_updated: int
+	time_created: int = None
+	time_updated: int = None
 
 class SegmentDesignUpdate(SQLModel, table=False):
 	program_uuid: Optional[str] = Field(default=None, max_length=65)

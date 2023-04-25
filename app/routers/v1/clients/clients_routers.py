@@ -1,8 +1,6 @@
 from typing import List
-from time import time
 from fastapi import APIRouter
-# from app.models.clients import ClientModel, ClientUpdate
-from app.models.clients.clients_model import ClientModel, ClientUpdate
+from app.models.clients import ClientModel, ClientUpdate
 from app.routers.v1.v1CommonRouting import CommonRoutes
 
 router = APIRouter(tags=["Clients"])
@@ -15,13 +13,13 @@ async def get_clients():
 async def get_client_by_uuid(client_uuid: str):
     return CommonRoutes.get_one(ClientModel, client_uuid)
 
-@router.post("/clients/", response_model=ClientModel)
-async def create_client(client: (ClientModel|List[ClientModel])):
+@router.post("/clients/", response_model=(List[ClientModel] | ClientModel))
+async def create_client(client: (List[ClientModel] | ClientModel)):
     return CommonRoutes.create_one_or_many(client)
 
 @router.put("/clients/{client_uuid}", response_model=ClientModel)
 async def update_client_by_uuid(client_uuid: str, client_update: ClientUpdate):
-    return CommonRoutes.update_one(client_uuid, ClientModel, ClientUpdate)
+    return CommonRoutes.update_one(client_uuid, ClientModel, client_update)
 
 # this should only work if there is nothing else associated with the client
 @router.delete("/clients/{client_uuid}")

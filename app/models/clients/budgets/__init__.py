@@ -1,7 +1,22 @@
-# from .budget_models import ClientBudgetModel, ClientBudgetUpdate
+from typing import List, Optional
+from sqlmodel import Field, SQLModel
 
-# class ClientBudgetModel(ClientBudgetModel):
-#     pass
 
-# class ClientBudgetUpdate(ClientBudgetUpdate):
-#     pass
+class ClientBudgetModel(SQLModel, table=True):
+    __tablename__ = "client_budget"
+
+    uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
+    client_uuid: str = Field(default=None, index=True, max_length=56)
+    budget_9char: str = Field(default=None, index=True, max_length=9)
+    parent_9char: str = Field(default=None, index=True, max_length=9)
+    name: str = Field(default=None, max_length=255)
+    value: int = Field(default=0)
+    time_created: int = None
+    time_updated: int = None
+    active: int
+
+class ClientBudgetUpdate(SQLModel, table=False):
+    name: Optional[str] = Field(default=None, max_length=255)
+    value: Optional[int] = 0
+    time_updated: Optional[int] = 0
+    active: Optional[int] = 0

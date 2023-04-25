@@ -9,7 +9,7 @@ class UsersModel(SQLModel, table=True):
 	last_name: str = Field(default=None, max_length=255)
 	latitude: int = None
 	longitude: int = None
-	time_created: int
+	time_created: int = None
 	time_updated: int = None
 	time_ping: int = None
 	time_birthday: int = None
@@ -20,4 +20,4 @@ class UsersUpdate(SQLModel, table=False):
 	latitude: Optional[int] = None
 	longitude: Optional[int] = None
 	time_updated: Optional[int] = None
-	time_ping: Optional[str] = None
+	time_ping: Optional[int] = None

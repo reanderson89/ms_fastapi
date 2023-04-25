@@ -1,11 +1,11 @@
 from typing import List
 from fastapi import APIRouter
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.models.users.users_models import UsersModel, UsersUpdate
+from app.models.users import UsersModel, UsersUpdate
 
 router = APIRouter(tags=["Users"])
 
-@router.get("/users", response_model=List[UsersModel])
+@router.get("/users/", response_model=List[UsersModel])
 async def get_users():
 	return CommonRoutes.get_all(UsersModel)
 
@@ -13,12 +13,11 @@ async def get_users():
 async def get_user(user_uuid: str):
 	return CommonRoutes.get_one(UsersModel, user_uuid)
 
-@router.post("/users", response_model=UsersModel)
-async def create_users(users: (UsersModel|List[UsersModel])):
+@router.post("/users/", response_model=(List[UsersModel] | UsersModel))
+async def create_users(users: (List[UsersModel] | UsersModel)):
 	return CommonRoutes.create_one_or_many(users)
 
-@router.put("/users/{user_uuid}")#, response_class=UsersModel)
-#TODO: unable to return as the model
+@router.put("/users/{user_uuid}", response_model=UsersModel)
 async def update_user(user_uuid: str, users_update: UsersUpdate):
 	return CommonRoutes.update_one(user_uuid, UsersModel, users_update)
 

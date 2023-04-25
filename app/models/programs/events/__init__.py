@@ -14,8 +14,8 @@ class ProgramEventModel(SQLModel, table=True):
 	segment_9char: str = Field(default=None, index=True, max_length=9, foreign_key="program_segment.segment_9char")
 	event_data: str = Field(default=None)
 	status: int = Field(default=None, index=True)
-	time_created: int
-	time_updated: int
+	time_created: int = None
+	time_updated: int = None
 
 class ProgramEventUpdate(SQLModel, table=False):
 	program_uuid: Optional[str] = Field(default=None, max_length=65)
