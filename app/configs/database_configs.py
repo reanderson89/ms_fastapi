@@ -9,22 +9,22 @@ class BaseDB:
 	HOST: str
 	USER: str
 	PASSWD: str
-	PORT: str # int?
+	PORT: int
 	DB: str
 
 @dataclass
 class LocalDB(BaseDB):
 	# these env vars are coming from docker-compose.yml
-	HOST: str =  os.environ.get('MYSQL_HOSTNAME', '127.0.0.1')
-	PORT: int = os.environ.get('MYSQL_PORT', '3306')
-	USER: str = os.environ.get('MYSQL_USER', 'milestones')
+	HOST: str =  os.environ.get('MYSQL_HOSTNAME', 'localhost')
+	PORT: int = os.environ.get('MYSQL_PORT', 32776)
+	USER: str = os.environ.get('MYSQL_USER', 'root')
 	PASSWD: str = os.environ.get('MYSQL_PASSWORD', 'password')
-	DB: str = os.environ.get('MYSQL_DATABASE', 'milestones')
+	DB: str = os.environ.get('MYSQL_DATABASE', 'blueboard_milestones')
 
 @dataclass
 class StagingDB(BaseDB):
 	HOST: str = '10.100.1.22'
-	PORT: str = '3306'
+	PORT: int = 3306
 	USER: str = 'USERNAME'
 	PASSWD: str = 'PASSWORD'
 	DB: str = 'milestone_staging'
@@ -32,7 +32,7 @@ class StagingDB(BaseDB):
 @dataclass
 class ProdDB(BaseDB):
 	HOST: str = '10.100.1.21'
-	PORT: str = '3306'
+	PORT: int = 3306
 	USER: str = 'USERNAME'
 	PASSWD: str = 'PASSWORD'
 	DB: str = 'milestone_prod'
