@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.engines.programs.segments.router import router as segments_router
+from app.routers.v1.segments.segments_routers import router as segments_router
 
 app = FastAPI()
 app.include_router(segments_router)

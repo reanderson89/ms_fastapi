@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.engines.clients.budgets.router import router as budgets_router
+from app.routers.v1.clients.budgets import router as budgets_router
 
 app = FastAPI()
 app.include_router(budgets_router)

@@ -2,7 +2,7 @@ import pytest
 import httpx
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.engines.clients.router import router as clients_router
+from app.routers.v1.clients.clients_routers import router as clients_router
 
 app = FastAPI()
 app.include_router(clients_router)
