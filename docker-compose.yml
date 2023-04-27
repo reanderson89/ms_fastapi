@@ -2,7 +2,11 @@ version: '3'
 services:
   milestones_db:
     container_name: milestones_db
-    image: mariadb:latest
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.milestones_db
+    volumes:
+      - './mariadb-data/:/var/lib/mysql'
     environment:
       # server settings
       MYSQL_ROOT_PASSWORD: password
@@ -19,6 +23,7 @@ services:
   milestones_server:
     build:
       context: .
+      dockerfile: ./docker/Dockerfile.milestones_app
     container_name: milestones_app
     environment:
       LOG_LEVEL: debug

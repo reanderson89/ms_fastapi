@@ -134,3 +134,17 @@ Docker build .  0.22s user 0.32s system 1% cpu 27.401 total
  => => writing image sha256:84af8f93a7311b2caff02d1fd75b35ee1edfd8cf159ab03d84d1e2449038f9fd                                                              0.0s
 Docker build .  0.09s user 0.13s system 22% cpu 1.010 total
 ```
+
+## Errata
+
+### Dockerfile Expose vs. Ports
+
+The expose section allows us to expose specific ports from our container only to other services on the same network. We can do this simply by specifying the container ports.
+
+The ports section also exposes specified ports from containers. Unlike the previous section, ports are open not only for other services on the same network, but also to the host. The configuration is a bit more complex, where we can configure the exposed port, local binding address, and restricted protocol. Finally, depending on our preferences, we can choose between the two different syntaxes.
+
+
+### Dockerfile Networks
+
+- [Docker Compose Network](https://medium.com/@caysever/docker-compose-network-b86e424fad82)
+- `network_mode: "host"` [Host networking](https://docs.docker.com/network/host/)
