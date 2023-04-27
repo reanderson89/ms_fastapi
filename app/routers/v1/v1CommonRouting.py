@@ -1,8 +1,10 @@
 from app.database.config import engine
+from app.utilities import SHA224Hash
 from sqlmodel import Session, select
 from fastapi import HTTPException
 from typing import List
 from time import time
+from uuid import uuid4
 
 class CommonRoutes():
 	
@@ -22,9 +24,11 @@ class CommonRoutes():
 		with Session(engine) as session:
 			if isinstance(items, List):
 				for item in items:
+					item.uuid = SHA224Hash() if item.uuid is None else None
 					item.time_created = item.time_updated = int(time())
 					session.add(item)
 			else:
+				items.uuid = SHA224Hash() if items.uuid is None else None
 				items.time_created = items.time_updated = int(time())
 				session.add(items)
 
@@ -44,7 +48,7 @@ class CommonRoutes():
 			updated_fields = update_model.dict(exclude_unset=True)
 			for key, value in updated_fields.items():
 				setattr(db_item, key, value)
-			if(update_model.time_updated):
+			if(db_item.time_updated):
 				db_item.time_updated = int(time())
 			session.add(db_item)
 			session.commit()

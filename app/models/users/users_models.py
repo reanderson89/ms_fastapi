@@ -1,5 +1,6 @@
 from sqlmodel import Field, SQLModel
-from typing import List, Optional
+from typing import Optional
+
 
 class UsersModel(SQLModel, table=True):
 	__tablename__ = "user"

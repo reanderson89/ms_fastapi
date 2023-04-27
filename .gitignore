@@ -6,6 +6,7 @@ Milestones_v1-Schema.pdf
 *.log
 db/
 *.sql
+*.csv
 
 #VS Code settings
 .vscode/

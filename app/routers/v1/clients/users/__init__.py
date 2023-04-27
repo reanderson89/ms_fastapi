@@ -58,7 +58,6 @@ async def update_user(
 		.where(ClientUserModel.client_uuid == client_uuid,
 				ClientUserModel.user_uuid == user_uuid)
 		).one_or_none()
-	print(user)
 	ExceptionHandling.check404(user)
 	update_user = user_updates.dict(exclude_unset=True)
 	for key, value in update_user.items():
