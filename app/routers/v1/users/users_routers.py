@@ -1,8 +1,8 @@
 from typing import List
 from fastapi import APIRouter, UploadFile, File
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.actions.users.users_actions import UsersActions
-from app.models.users import UsersModel, UsersUpdate, UsersServiceModel
+from app.actions.users import UsersActions, UsersServiceActions
+from app.models.users import UsersModel, UsersUpdate
 
 router = APIRouter(tags=["Users"])
 
@@ -18,14 +18,14 @@ async def get_user(user_uuid: str):
 async def create_users(users: dict):
 	if users is List:
 		for user in users:
-			user = await UsersActions.create_service_user(user)
+			user = await UsersServiceActions.create_service_user(user)
 	else:
-		users = await UsersActions.create_service_user(users)
+		users = await UsersServiceActions.create_service_user(users)
 	return users
 
 @router.post("/users/upload/")
 async def user_service(user_data: UploadFile = File(...)):
-	return await UsersActions.process_csv(user_data)
+	return await UsersServiceActions.process_csv(user_data)
 
 @router.put("/users/{user_uuid}", response_model=UsersModel)
 async def update_user(user_uuid: str, users_update: UsersUpdate):
