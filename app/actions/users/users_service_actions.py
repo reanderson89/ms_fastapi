@@ -39,12 +39,12 @@ class UsersServiceActions():
         elif not user:
             #get_coordinates(employee_data["location"]) # ask Jason, is this a call to Nominatim???
             new_user = UsersModel(
-                first_name = employee_data['Legal First Name'],
-                last_name= employee_data['Legal Last Name'],
+                first_name = (employee_data['legal_first_name'] or employee_data['Legal First Name']),
+                last_name= (employee_data['legal_last_name'] or employee_data['Legal Last Name']),
                 latitude = 407127281,
                 longitude = -740060152,
                 time_ping= int(time()),
-                time_birthday=  UsersActions.getTimeFromBday(employee_data['Hire Date']),
+                time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
             )
             new_user = CommonRoutes.create_one_or_many(new_user)
 
@@ -58,7 +58,5 @@ class UsersServiceActions():
                 service_access_secret= "secret token",
                 service_refresh_token= "refresh token",
             )
-            new_user_service = CommonRoutes.create_one_or_many(new_user_service)
-
-
-            return new_user, new_user_service # or add to list of users
+            CommonRoutes.create_one_or_many(new_user_service)
+            return new_user # or add to list of users

@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File
 from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.actions.users import UsersActions, UsersServiceActions
-from app.models.users import UsersModel, UsersUpdate
+from app.models.users import UsersModel, UsersUpdate, UsersServiceModel
 
 router = APIRouter(tags=["Users"])
 

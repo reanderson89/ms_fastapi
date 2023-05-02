@@ -14,14 +14,15 @@ class UsersActions():
 
     @classmethod
     async def check_for_existing(cls, email):
-        user = await cls.get_user_by(email)
+        user = await cls.get_user_by_service_user_id(email)
         if not user:
             return None
         else:
-            return CommonRoutes.get_one(UsersModel, user.user_uuid)
+            return user
 
     @classmethod
-    async def get_user_by(cls, search_by):
+    async def get_user_by_service_user_id(cls, search_by):
         with Session(engine) as session:
-            return session.exec(select(UsersServiceModel)
-                                .where(UsersServiceModel.service_user_id == search_by)).one_or_none()
+            return session.exec(select(UsersModel)
+                                .where(UsersServiceModel.service_user_id == search_by)
+                                .where(UsersServiceModel.user_uuid == UsersModel.uuid)).one_or_none()
