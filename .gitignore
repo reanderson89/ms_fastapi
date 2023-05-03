@@ -5,7 +5,6 @@ Milestones_v1-Schema.pdf
 *.pyc
 *.log
 db/
-*.sql
 *.csv
 
 #VS Code settings
