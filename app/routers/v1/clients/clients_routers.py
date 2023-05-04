@@ -1,7 +1,9 @@
-from typing import List
+from typing import List, Union
 from fastapi import APIRouter
 from app.models.clients import ClientModel, ClientUpdate
+from app.models.clients.clients_model import ClientExpanded
 from app.routers.v1.v1CommonRouting import CommonRoutes
+from app.actions.clients.clients_actions import ClientActions
 
 router = APIRouter(tags=["Clients"])
 
@@ -9,13 +11,17 @@ router = APIRouter(tags=["Clients"])
 async def get_clients():
     return CommonRoutes.get_all(ClientModel)
 
-@router.get("/clients/{client_uuid}", response_model=ClientModel)
+@router.get("/clients/{client_uuid}", response_model_by_alias=True)
 async def get_client_by_uuid(client_uuid: str):
-    return CommonRoutes.get_one(ClientModel, client_uuid)
+    client = CommonRoutes.get_one(ClientModel, client_uuid)
+    response_model = ClientModel
+    return response_model.from_orm(client)
 
-@router.post("/clients/", response_model=(List[ClientModel] | ClientModel))
-async def create_client(client: (List[ClientModel] | ClientModel)):
-    return CommonRoutes.create_one_or_many(client)
+
+@router.post("/clients/", response_model_by_alias=True)
+async def create_client(clients: Union[List[ClientModel], ClientModel]):
+    client_return = await ClientActions.create_client_handler(clients)
+    return client_return
 
 @router.put("/clients/{client_uuid}", response_model=ClientModel)
 async def update_client_by_uuid(client_uuid: str, client_update: ClientUpdate):
@@ -24,5 +30,5 @@ async def update_client_by_uuid(client_uuid: str, client_update: ClientUpdate):
 # this should only work if there is nothing else associated with the client
 @router.delete("/clients/{client_uuid}")
 async def delete_client_by_uuid(client_uuid: str):
-	#TODO: add check to see if there is anything else associated with the client
-	return CommonRoutes.delete_one(client_uuid, ClientModel)
+    #TODO: add check to see if there is anything else associated with the client
+    return CommonRoutes.delete_one(client_uuid, ClientModel)
