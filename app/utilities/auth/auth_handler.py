@@ -14,9 +14,10 @@ class UnAuthedMessage(SQLModel, table=False):
 async def get_token(
         auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)
 ) -> str:
-    if auth is None or (token := auth.credentials) not in valid_tokens:
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail = UnAuthedMessage().detail
-        )
-    return token
+    pass
+   # if auth is None or (token := auth.credentials) not in valid_tokens:
+    #    raise HTTPException(
+     #       status_code = status.HTTP_401_UNAUTHORIZED,
+      #      detail = UnAuthedMessage().detail
+      #  )
+   # return token
