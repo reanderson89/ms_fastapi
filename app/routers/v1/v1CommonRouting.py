@@ -4,7 +4,6 @@ from sqlmodel import Session, select
 from fastapi import HTTPException
 from typing import List
 from time import time
-from uuid import uuid4
 
 class CommonRoutes():
 	
@@ -28,12 +27,12 @@ class CommonRoutes():
 					item.time_created = item.time_updated = int(time())
 					session.add(item)
 			else:
-				items.uuid = SHA224Hash() if items.uuid is None else None
+				items.uuid = SHA224Hash() if items.uuid is None else items.uuid
 				items.time_created = items.time_updated = int(time())
 				session.add(items)
 
 			session.commit()
-			
+
 			if isinstance(items, List):
 				for item in items:
 					session.refresh(item)
