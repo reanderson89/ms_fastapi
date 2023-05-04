@@ -9,8 +9,9 @@ on:
       environment:
         description: 'To which environment?'
         type: choice
-        default: 'staging'
+        default: 'development'
         options:
+          - development
           - staging
           - production
 jobs:
