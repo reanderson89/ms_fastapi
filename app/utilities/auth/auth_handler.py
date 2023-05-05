@@ -3,10 +3,11 @@ from fastapi import Depends, HTTPException
 from sqlmodel import SQLModel
 from starlette import status
 from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
+import os
 
 get_bearer_token = HTTPBearer(auto_error=False)
 
-valid_tokens = set(["4c402a7d-83ea-472f-8670-a31750fa2ab2"])
+valid_tokens = set([os.getenv("BEARER_TOKEN")])
 
 class UnAuthedMessage(SQLModel, table=False):
     detail: str = "Bearer token missing or unknown"

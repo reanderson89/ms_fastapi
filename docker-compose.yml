@@ -26,6 +26,7 @@ services:
       dockerfile: ./docker/Dockerfile.milestones_app
     container_name: milestones_app
     environment:
+      BEARER_TOKEN: ${BEARER_TOKEN}
       LOG_LEVEL: debug
       # connection settings for the app, these should match server's config (above)
       MYSQL_DATABASE: blueboard_milestones
