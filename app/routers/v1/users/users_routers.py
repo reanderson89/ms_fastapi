@@ -1,9 +1,8 @@
 from typing import List, Union
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter
 from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.actions.users.services import UserServiceActions
-from app.models.users import UsersModel, UsersUpdate, UserExpanded
-from app.actions.commonActions import CommonActions
+from app.models.users import UsersModel, UsersUpdate, UserExpanded, UserService
 
 router = APIRouter(tags=["Users"])
 
@@ -23,19 +22,21 @@ async def get_user(user_uuid: str, expand_services: bool = False):
 	return response_model.from_orm(user)
 
 @router.post("/users/", response_model=UsersModel)
-async def create_user(users: Union[List[UsersModel], UsersModel]):
-	if isinstance(users, UsersModel):
-		users = await UserServiceActions.create_service_user(users)
-		return users
-	else:
-		created_users = []
+async def create_user(users: dict):#(List[UserService] | UserService)):
+	if users is List:
 		for user in users:
-			created_users.append(await UserServiceActions.create_service_user(user))
-		return created_users
-
-@router.post("/users/upload/")
-async def user_service(user_data: UploadFile = File(...)):
-	return await CommonActions.process_csv(user_data)
+			user = await UserServiceActions.create_service_user(user)
+	else:
+		users = await UserServiceActions.create_service_user(users)
+	return users
+	# if isinstance(users, UserService):
+	# 	users = await UserServiceActions.create_service_user(users)
+	# 	return users
+	# else:
+	# 	created_users = []
+	# 	for user in users:
+	# 		created_users.append(await UserServiceActions.create_service_user(user))
+	# 	return created_users
 
 @router.put("/users/{user_uuid}", response_model=UsersModel)
 async def update_user(user_uuid: str, users_update: UsersUpdate):

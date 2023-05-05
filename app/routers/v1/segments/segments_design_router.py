@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.segments.design import SegmentDesignModel, SegmentDesignUpdate
+from app.models.segments import SegmentDesignModel, SegmentDesignUpdate
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Designs"])
 

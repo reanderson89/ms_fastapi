@@ -1,7 +1,6 @@
 from typing import List, Union
 from fastapi import APIRouter
 from app.models.clients import ClientModel, ClientUpdate
-from app.models.clients.clients_model import ClientExpanded
 from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.actions.clients.clients_actions import ClientActions
 

@@ -1,6 +1,6 @@
-from .admins import router as admin_router
-from .events import router as event_router
-from .programs_routers import router as program_router
+from .program_admins_router import router as admin_router
+from .program_events_router import router as event_router
+from .program_router import router as program_router
 from fastapi import APIRouter
 
 v1_program_router = APIRouter()

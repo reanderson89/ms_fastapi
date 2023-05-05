@@ -2,8 +2,7 @@ from datetime import datetime
 from sqlmodel import Session, select
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.models.users import UsersModel
-from app.models.users.services import UserService
+from app.models.users import UsersModel, UserService
 
 class UsersActions():
 
@@ -23,5 +22,6 @@ class UsersActions():
     async def get_user_by_service_user_id(cls, user_id):
         with Session(engine) as session:
             return session.exec(select(UsersModel)
-                                .where(UsersServiceModel.service_user_id == user_id)
-                                .where(UsersServiceModel.user_uuid == UsersModel.uuid)).one_or_none()
+                                .where(UserService.service_user_id == user_id)
+                                .where(UserService.user_uuid == UsersModel.uuid)
+                                ).one_or_none()

@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.programs.events import ProgramEventModel, ProgramEventUpdate
+from app.models.programs import ProgramEventModel, ProgramEventUpdate
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Events"])
 

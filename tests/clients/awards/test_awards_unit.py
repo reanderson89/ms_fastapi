@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routers.v1.clients.awards import router as awards_router
+from app.routers.v1.clients.client_award_router import router as awards_router
 
 app = FastAPI()
 app.include_router(awards_router)

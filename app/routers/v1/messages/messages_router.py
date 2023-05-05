@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.messages.message_models import MessageModel, MessageUpdate
+from app.models.messages import MessageModel, MessageUpdate
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Messages"])
 

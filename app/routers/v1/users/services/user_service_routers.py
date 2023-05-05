@@ -1,8 +1,9 @@
 from typing import List, Union
 from fastapi import APIRouter, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.models.users.services import UserService, UserServiceCreate, UsersServiceUpdate, ServiceDelete, Exists, ServiceBulk
+from app.models.users import UsersServiceUpdate, UserService, UserServiceCreate, ServiceDelete, Exists, ServiceBulk
 from app.actions.users.services import UserServiceActions
+from app.actions.commonActions import CommonActions
 
 router = APIRouter(tags=["Users Service"], prefix="/users/{user_uuid}")
 

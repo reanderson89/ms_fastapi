@@ -1,6 +1,7 @@
 from app.actions.users import UsersActions
 from app.actions.users.services import UserServiceActions
-from app.models.clients.user import ClientUserModel
+from app.models.clients import ClientUserModel
+from app.models.users import UsersModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
@@ -59,7 +60,7 @@ class ClientUserActions():
         user = session.exec(
             select(ClientUserModel)
             .where(ClientUserModel.client_uuid == client_uuid,
-                    ClientUserModel.uuid == user_uuid)
+                    UsersModel.uuid == user_uuid)
         ).one_or_none()
         ExceptionHandling.check404(user)
         return user

@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from fastapi import APIRouter, Query, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
-from app.models.clients.awards import ClientAwardModel, ClientAwardUpdate
+from app.models.clients import ClientAwardModel, ClientAwardUpdate
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"])
 

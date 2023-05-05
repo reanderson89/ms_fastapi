@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.models.messages.templates import MessageTemplateModel, MessageTemplateUpdateModel
+from app.models.messages import MessageTemplateModel, MessageTemplateUpdateModel
 
 router = APIRouter(tags=["Message Templates"])
 

@@ -1,11 +1,9 @@
 from typing import List
-from time import time
-from sqlmodel import Session, select
+from sqlmodel import Session
 from fastapi import APIRouter, Query, Depends
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
 from app.actions.clients.budgets import BudgetActions as actions
-from app.models.clients.budgets import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate
+from app.models.clients import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"])
 

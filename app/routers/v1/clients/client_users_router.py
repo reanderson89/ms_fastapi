@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from app.models.clients.user import ClientUserModel, ClientUserUpdate
+from app.models.clients import ClientUserModel, ClientUserUpdate
 from app.actions.clients.user import ClientUserActions
 from app.actions.commonActions import CommonActions
 from sqlmodel import Session

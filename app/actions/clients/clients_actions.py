@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from app.database.config import engine
 from app.models.clients import ClientModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.clients.budgets.budget_models import ClientBudgetModel
+from app.models.clients.client_budget import ClientBudgetModel
 
 
 class ClientActions():
@@ -38,6 +38,7 @@ class ClientActions():
             return None
         else:
             return client
+        
     @classmethod
     async def get_client_by_name(cls, search_by):
         with Session(engine) as session:
