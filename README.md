@@ -50,7 +50,7 @@ In this example, we use `docker ps` to list running containers.
 ```
 ❯ docker ps
 CONTAINER ID   IMAGE                   COMMAND                  CREATED        STATUS        PORTS                    NAMES
-429850ef1ab4   milestones-api-server   "/start.sh"              16 hours ago   Up 16 hours   0.0.0.0:80->80/tcp       milestones_app
+429850ef1ab4   milestones-api-server   "/start.sh"              16 hours ago   Up 16 hours   0.0.0.0:80->80/tcp       milestones_api
 4b1654034516   mariadb:latest          "docker-entrypoint.s…"   16 hours ago   Up 16 hours   0.0.0.0:3306->3306/tcp   milestones_db
 ```
 

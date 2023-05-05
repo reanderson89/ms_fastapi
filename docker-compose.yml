@@ -4,7 +4,7 @@ services:
     container_name: milestones_db
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.milestones_db
+      dockerfile: Dockerfile.milestones_db
     volumes:
       - './mariadb-data/:/var/lib/mysql'
     environment:
@@ -20,11 +20,13 @@ services:
       - 3306
     ports:
       - 3306:3306
-  milestones_server:
+  milestones_api:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.milestones_app
-    container_name: milestones_app
+      dockerfile: Dockerfile.milestones_api
+    # use existing image:
+    # image: blueboardinc/milestones-api:0.0.2
+    container_name: milestones_api
     environment:
       BEARER_TOKEN: ${BEARER_TOKEN}
       LOG_LEVEL: debug

@@ -1,0 +1,59 @@
+#
+# Use with a .env file like:
+# TAG=latest
+#
+# test with: docker compose config
+#
+#
+# docker-compose --file docker-compose-dev.yml up --build
+#
+version: '3'
+services:
+  milestones_db:
+    container_name: milestones_db
+    hostname: milestones_db
+    image:  mariadb:latest
+    volumes:
+      - '/opt/mariadb-data/:/var/lib/mysql'
+    environment:
+      # server settings
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_LOG_CONSOLE: true
+      # bootstrap a db and db user
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_USER: milestones
+      MYSQL_PASSWORD: milestones
+    ports:
+      - 3306:3306 # probably don't need this
+    restart: always
+  milestones_api:
+    container_name: milestones_api
+    image:  "blueboardinc/milestones-api:${TAG}"
+    environment:
+      LOG_LEVEL: debug
+      # connection settings for the app, these should match server's config (above)
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_USER: milestones
+      MYSQL_PASSWORD: milestones
+      MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
+      MYSQL_PORT: 3306
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.1.sql"
+    ports:
+      - 8080:80 # probably don't need this
+    depends_on:
+      - milestones_db
+    entrypoint: /start.sh
+    restart: always
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+      args:
+        - AKEYLESS_TOKEN=${AKEYLESS_TOKEN}
+        - DOCS_USERNAME=milestones
+        - DOCS_PASSWORD=happybirthday
+    image: custom-nginx-proxy:latest # custom name
+    ports:
+      - 80:80 # host:container
+    restart: always

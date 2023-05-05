@@ -11,9 +11,12 @@ alias bb-mysql="mysql -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MY
 EOF
 
 # temporary solution to bootstrapping db
+echo "Checking if bootstrap file ${MILESTONES_BOOTSTRAP} exists"
 if [ -f "${MILESTONES_BOOTSTRAP}" ]; then
     echo "Bootstrapping ${MYSQL_DATABASE} with SQL file ${MILESTONES_BOOTSTRAP}..."
     mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE} < ${MILESTONES_BOOTSTRAP}
+else
+    echo "Bootstrap file ${MILESTONES_BOOTSTRAP} does not exist, skipping database bootstrapping..."
 fi
 
 INI_FILE="alembic.ini"
