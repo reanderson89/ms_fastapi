@@ -5,6 +5,7 @@ from json import loads, JSONEncoder
 from codecs import getencoder
 from decimal import Decimal
 from .Helpers import _encodeutf8
+from PositiveNumbers import PositiveNumbers
 
 import html.entities as entity
 from html import unescape
@@ -460,3 +461,9 @@ class UtilityClass:
 			raise Exception(f'Missing required field(s): {missing_fields}')
 		else:
 			return True
+
+	@staticmethod
+	def generate_9char(self):
+		generator = PositiveNumbers(size=9)
+		char_9 = generator.encode(nowSeconds())
+		return char_9
