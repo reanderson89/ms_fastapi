@@ -7,20 +7,15 @@ USERNAME="ubuntu"
 HOST="milestones-dev-1.blueboard.app" # 34.216.9.177
 DEST_PATH="/home/ubuntu/config"
 
+# copy and rename the run script
 scp run-dev.sh "${USERNAME}@${HOST}:${DEST_PATH}/run.sh"
-# rename this one so that it's the compose default
+# copy and rename the docker-compose config
 scp docker-compose-dev.yml "${USERNAME}@${HOST}:${DEST_PATH}/docker-compose.yml"
-
-# rename this one to .env
-# scp -i ${PEM_FILE} dev.env "${USERNAME}@${HOST}:${DEST_PATH}/.env"
-
 # Dockerfile for Nginx host, Nginx config
 scp Dockerfile.nginx "${USERNAME}@${HOST}:${DEST_PATH}/"
 scp milestones-nginx.conf "${USERNAME}@${HOST}:${DEST_PATH}/"
-
-# Akeyless scripts
-scp ~/Projects/blueboard/akeyless/src/rotate.* "${USERNAME}@${HOST}:${DEST_PATH}/"
-scp ~/Projects/blueboard/akeyless/src/generate-child-tokens* "${USERNAME}@${HOST}:${DEST_PATH}/"
+# dotenv Python script
+scp ~/Projects/blueboard/akeyless/src/dotenv.py "${USERNAME}@${HOST}:${DEST_PATH}/"
 
 # SSH keys
 TMP_FILE=$(mktemp)

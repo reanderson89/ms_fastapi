@@ -31,16 +31,11 @@ if [ ! -f ${COMPOSE_FILE} ]; then
     exit 1
 fi
 
-echo "Writing tag \"${TAG}\" to .env file"
-cat << EOF > /home/ubuntu/config/.env
-TAG=${TAG}
-EOF
-
 echo ${DH_PASSWORD} | docker login --username ${DH_USERNAME} --password-stdin
 
 echo "Building new containers..."
-AKEYLESS_TOKEN=${AK_TOKEN} docker compose build
+docker compose build
 
 echo "Stopping and starting containers..."
 docker compose down
-AKEYLESS_TOKEN=${AK_TOKEN} docker compose --file ${COMPOSE_FILE} up --detach
+docker compose --file ${COMPOSE_FILE} up --detach

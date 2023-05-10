@@ -2,40 +2,13 @@ FROM nginx:latest
 # args we're passing into Docker from the command line
 ARG DOCS_USERNAME
 ARG DOCS_PASSWORD
-ARG AKEYLESS_TOKEN
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY milestones-nginx.conf /etc/nginx/conf.d/milestones.conf
 
-RUN mkdir -p /opt/util
-RUN chmod 700 /opt/util
-COPY rotate.py /opt/util/
-COPY rotate.sh /opt/util/
-COPY generate-child-tokens.py /opt/util/
-COPY generate-child-tokens.sh /opt/util/
-
-RUN chmod 700 /opt/util/*sh
-RUN chmod 700 /opt/util/*py
-
 RUN apt update
-RUN apt install -y apache2-utils iputils-ping vim cron python3 pip procps
-RUN pip3 install akeyless
+RUN apt install -y apache2-utils iputils-ping vim procps
 
 # use basic .htaccess to password-protect the /docs route
 RUN echo "the .htaccess username is ${DOCS_USERNAME}"
 RUN htpasswd -cb /opt/milestones.htpasswd ${DOCS_USERNAME} ${DOCS_PASSWORD}
-
-# this is commented out until Akeyless usage patterns are sorted out
-# /opt/uid_token is the text file that will keep our most current token
-# RUN touch /opt/uid_token
-# RUN chmod 600 /opt/uid_token
-# # immediately rotate the token, then create a cronjob to rotate it regularly
-# RUN /opt/util/rotate.sh /opt/uid_token ${AKEYLESS_TOKEN} > /opt/rotate.log 2>&1
-# RUN echo "00 */2 * * * root /opt/util/rotate.sh /opt/uid_token > /opt/rotate.log 2>&1" >> /etc/crontab
-# # generate client tokens using the root token
-# # this is temporary
-# RUN touch /opt/milestones-child-token
-# RUN echo "/milestones-api-dev=/opt/milestones-child-token" > /opt/util/config
-# RUN /opt/util/generate-child-tokens.sh /opt/uid_token /opt/util/config > /opt/child.log 2>&1
-# RUN echo "00 */2 * * * root /opt/util/generate-child-tokens.sh /opt/uid_token /opt/util/config > /opt/rotate.log 2>&1" >> /etc/crontab
-# RUN service cron start

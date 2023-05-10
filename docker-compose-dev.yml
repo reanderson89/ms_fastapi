@@ -31,6 +31,12 @@ services:
     container_name: milestones_api
     image:  "blueboardinc/milestones-api:${TAG}"
     environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      BEARER_TOKEN: ${BEARER_TOKEN}
+      DD_API_KEY: ${DD_API_KEY}
+      DD_APP_KEY: ${DD_APP_KEY}
+      ENV: dev
       LOG_LEVEL: debug
       # connection settings for the app, these should match server's config (above)
       MYSQL_DATABASE: blueboard_milestones
