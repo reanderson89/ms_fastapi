@@ -5,7 +5,7 @@ from json import loads, JSONEncoder
 from codecs import getencoder
 from decimal import Decimal
 from .Helpers import _encodeutf8
-from PositiveNumbers import PositiveNumbers
+from .PositiveNumbers import PositiveNumbers
 
 import html.entities as entity
 from html import unescape
