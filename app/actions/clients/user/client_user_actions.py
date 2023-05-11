@@ -5,7 +5,7 @@ from app.models.users import UsersModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
-from sqlmodel import select
+from sqlmodel import select, Session
 
 class ClientUserActions():
 
@@ -39,7 +39,7 @@ class ClientUserActions():
             time_start=int(time()),
             admin= data['Admin'] if 'Admin' in data else 0,
         )
-        newClientUser = CommonRoutes.create_one_or_many(newClientUser)
+        newClientUser = await CommonRoutes.create_one_or_many(newClientUser)
         return newClientUser
 
     @classmethod
@@ -47,32 +47,32 @@ class ClientUserActions():
         pass
 
     @staticmethod
-    async def getAllUsers(client_uuid, session):
+    async def getAllUsers(client_uuid, session: Session):
         users = session.exec(
             select(ClientUserModel)
             .where(ClientUserModel.client_uuid == client_uuid)
         ).all()
-        ExceptionHandling.check404(users)
+        await ExceptionHandling.check404(users)
         return users
 
     @staticmethod
-    async def getUser(client_uuid, user_uuid, session):
+    async def getUser(client_uuid, user_uuid, session: Session):
         user = session.exec(
             select(ClientUserModel)
             .where(ClientUserModel.client_uuid == client_uuid,
                     UsersModel.uuid == user_uuid)
         ).one_or_none()
-        ExceptionHandling.check404(user)
+        await ExceptionHandling.check404(user)
         return user
 
     @staticmethod
-    async def updateUser(client_uuid, user_uuid, user_updates, session):
+    async def updateUser(client_uuid, user_uuid, user_updates, session: Session):
         user = session.exec(
             select(ClientUserModel)
             .where(ClientUserModel.client_uuid == client_uuid,
                     ClientUserModel.uuid == user_uuid)
             ).one_or_none()
-        ExceptionHandling.check404(user)
+        await ExceptionHandling.check404(user)
         update_user = user_updates.dict(exclude_unset=True)
         for key, value in update_user.items():
             setattr(user, key, value)
@@ -83,13 +83,13 @@ class ClientUserActions():
         return user
 
     @staticmethod
-    async def deleteUser(client_uuid, user_uuid, session):
+    async def deleteUser(client_uuid, user_uuid, session: Session):
         user = session.exec(
             select(ClientUserModel)
             .where(ClientUserModel.client_uuid == client_uuid,
                     ClientUserModel.uuid == user_uuid)
         ).one_or_none()
-        ExceptionHandling.check404(user)
+        await ExceptionHandling.check404(user)
         session.delete(user)
         session.commit()
         return {"ok": True, "Deleted": user}

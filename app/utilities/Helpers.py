@@ -121,15 +121,15 @@ def converttime(t):
 
 
 class GMT0(tzinfo):
-	def utcoffset(self, dt): return timedelta(hours=0) + self.dst(dt);
-	def tzname(self,dt): return "GMT +0";
-	def dst(self, dt): return timedelta(0);
+	def utcoffset(self, dt): return timedelta(hours=0) + self.dst(dt)
+	def tzname(self,dt): return "GMT +0"
+	def dst(self, dt): return timedelta(0)
 
 gmt0 = GMT0()
 epoch = datetime(1970,1,1,0,0, tzinfo=gmt0)
 
 
-def makedatetime(d): return epoch+timedelta(microseconds=d);
+def makedatetime(d): return epoch+timedelta(microseconds=d)
 
 
 def epochMidnight():

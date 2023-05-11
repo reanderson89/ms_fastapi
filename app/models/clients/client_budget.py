@@ -1,7 +1,5 @@
-from typing import List, Optional
+from typing import Optional, List
 from sqlmodel import Field, SQLModel
-from time import time
-# from pydantic import UUID4
 
 
 class ClientBudgetModel(SQLModel, table=True):
@@ -15,23 +13,23 @@ class ClientBudgetModel(SQLModel, table=True):
     value: int = Field(default=0)
     time_created: int = None
     time_updated: int = None
-    active: int
+    active: bool = Field(default=True)
 
 class ClientBudgetCreate(SQLModel, table=False):
-    budget_9char: str = None
-    parent_9char: str = None
-    name: str = None
+    budget_9char: Optional[str] = None
+    parent_9char: Optional[str] = None
+    name: Optional[str] = None
     value: int = None
-    active: int
-
-    # def __init__(self, **data):
-    #     super().__init__(**data)
-    #     current_time = int(time())
-    #     self.time_created = current_time
-    #     self.time_updated = current_time
+    active: Optional[bool]
 
 class ClientBudgetUpdate(SQLModel, table=False):
     name: Optional[str] = Field(default=None, max_length=255)
     value: Optional[int] = 0
+    parent_9char: Optional[str] = None
     time_updated: Optional[int] = 0
-    active: Optional[int] = 0
+    active: Optional[bool]
+
+# class ClientBudgetExpanded(ClientBudgetModel):
+#     client: Optional[List[ClientModel]]
+#     #subbudgets: Optional[List[SubBudgetModel]]
+    

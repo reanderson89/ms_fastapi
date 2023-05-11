@@ -1,1 +1,1 @@
-from .client_budget_actions import BudgetActions
+from .client_budget_actions import ClientBudgetActions

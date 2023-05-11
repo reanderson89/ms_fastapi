@@ -5,7 +5,6 @@ from json import loads, JSONEncoder
 from codecs import getencoder
 from decimal import Decimal
 from .Helpers import _encodeutf8
-from .PositiveNumbers import PositiveNumbers
 
 import html.entities as entity
 from html import unescape
@@ -25,14 +24,14 @@ def verifyEmail(s):
 	return emailpattern.search(s) is not None
 
 
-def isList(data): return (type(data) is list);
-def isTuple(data): return (type(data) is tuple);
-def isDict(data): return (type(data) is dict);
-def isString(data): return (type(data) is bytes);
-def isUnicode(data): return (type(data) is str);
-def isInt(data): return (type(data) is int);
-def isFloat(data): return (type(data) is float);
-def isLong(data): return (type(data) is int);
+def isList(data): return (type(data) is list)
+def isTuple(data): return (type(data) is tuple)
+def isDict(data): return (type(data) is dict)
+def isString(data): return (type(data) is bytes)
+def isUnicode(data): return (type(data) is str)
+def isInt(data): return (type(data) is int)
+def isFloat(data): return (type(data) is float)
+def isLong(data): return (type(data) is int)
 def isNumber(data):
 	return (
 		type(data) in [
@@ -86,7 +85,7 @@ def encodeFromEntity(string):
 def parseAndDelistArguments(args):
 	if type(args) in [bytes, str] and args[:1] in ['{', '[']:
 		args = loads(args)
-		if type(args) in [list, list]: return args;
+		if type(args) in [list, list]: return args
 	else:
 		args = parse_qs(args)
 
@@ -101,7 +100,7 @@ def delistArguments(args):
 	'''
 
 	def flatten(k,v):
-		if len(v) == 1 and type(v) is list: return (str(k), v[0]);
+		if len(v) == 1 and type(v) is list: return (str(k), v[0])
 		return (str(k), v)
 
 	return dict([flatten(k,v) for k,v in list(args.items())])
@@ -181,14 +180,14 @@ def bigFileGet(filename, display_exceptions=True):
 
 
 def timestampMilliseconds(timestamp=None):
-	if not timestamp: timestamp = time.time()*1000;
+	if not timestamp: timestamp = time.time()*1000
 	return int(timestamp)
 
 def now():
 	return timestampMilliseconds()
 
 def timestampSeconds(timestamp=None):
-	if not timestamp: timestamp = time.time();
+	if not timestamp: timestamp = time.time()
 	return int(timestamp)
 
 def nowSeconds():
@@ -204,7 +203,7 @@ def putFile(filename, content, mode='w', make_if_missing=False):
 			a_dir = filename.split('/')
 			a_dir.pop()
 			dir = '/'.join(a_dir)
-			if not os.path.exists(dir): os.makedirs(dir);
+			if not os.path.exists(dir): os.makedirs(dir)
 	except Exception as inst:
 		pass
 
@@ -330,13 +329,13 @@ class JSONDateTimeEncoder(JSONEncoder):
 		if isinstance(obj, time.struct_time):
 			return convert(datetime.datetime(*obj[:6]))
 		if isinstance(obj, (datetime.date, datetime.datetime)):
-			return obj.isoformat();
+			return obj.isoformat()
 		return JSONEncoder.default(self, obj)
 
 
 def bisectSearchRC(haystack, item, index_pos=None, return_type=None):
 
-	if not return_type: return_type = int;
+	if not return_type: return_type = int
 
 	def returnValue(value):
 		if return_type is bool and value == -1:
@@ -361,9 +360,9 @@ def bisectSearchRC(haystack, item, index_pos=None, return_type=None):
 
 
 def parseBooleanArg(arg):
-	if arg is None: return False;
-	if type(arg) is bool: return arg;
-	if arg.lower() == 'true': return True;
+	if arg is None: return False
+	if type(arg) is bool: return arg
+	if arg.lower() == 'true': return True
 	return False
 
 
@@ -461,9 +460,3 @@ class UtilityClass:
 			raise Exception(f'Missing required field(s): {missing_fields}')
 		else:
 			return True
-
-	@staticmethod
-	def generate_9char(self):
-		generator = PositiveNumbers(size=9)
-		char_9 = generator.encode(nowSeconds())
-		return char_9

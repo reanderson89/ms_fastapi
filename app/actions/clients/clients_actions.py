@@ -44,3 +44,9 @@ class ClientActions():
         with Session(engine) as session:
             return session.exec(select(ClientModel)
                                 .where(ClientModel.name == search_by)).one_or_none()
+        
+    @staticmethod
+    async def get_name_by_uuid(search_by):
+        with Session(engine) as session:
+            return session.exec(select(ClientModel.name)
+                                .where(ClientModel.uuid == search_by)).one_or_none()

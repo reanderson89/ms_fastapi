@@ -7,19 +7,19 @@ from time import time
 
 class CommonRoutes():
 	
-	def get_all(model):
+	async def get_all(model):
 		with Session(engine) as session:
 			items = session.exec(select(model)).all()
 			ExceptionHandling.check404(items)
 			return items
 		
-	def get_one(model, search_by):
+	async def get_one(model, search_by):
 		with Session(engine) as session:
 			item = session.get(model, search_by)
 			ExceptionHandling.check404(item)
 			return item
 		
-	def create_one_or_many(items):
+	async def create_one_or_many(items):
 		with Session(engine) as session:
 			if isinstance(items, List):
 				for item in items:
@@ -40,7 +40,7 @@ class CommonRoutes():
 				session.refresh(items)
 			return items
 	
-	def update_one(search_by, original_model, update_model):
+	async def update_one(search_by, original_model, update_model):
 		with Session(engine) as session:
 			db_item = session.get(original_model, search_by)
 			ExceptionHandling.check404(db_item)
@@ -54,7 +54,7 @@ class CommonRoutes():
 			session.refresh(db_item)
 			return db_item
 
-	def delete_one(search_by, model):
+	async def delete_one(search_by, model):
 		with Session(engine) as session:
 			item = session.get(model, search_by)
 			ExceptionHandling.check404(item)
@@ -65,6 +65,9 @@ class CommonRoutes():
 
 class ExceptionHandling():
 
-	def check404(item):
+	async def check404(item):
 		if not item:
 			raise HTTPException(status_code=404, detail="Not Found")
+	
+	async def custom500(message):
+		raise HTTPException(status_code=500, detail=message)

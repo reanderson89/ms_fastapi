@@ -1,11 +1,13 @@
 import csv
 import codecs
 import json
+import time
 
-from fastapi import UploadFile, File, Query, Depends
+from fastapi import UploadFile, File
 from sqlmodel import Session
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import ExceptionHandling
+from app.utilities.PositiveNumbers import PositiveNumbers
 
 class CommonActions():
 
@@ -74,3 +76,10 @@ class CommonActions():
 			session.commit()
 			session.refresh(response)
 			return response
+	
+	@staticmethod
+	async def generate_9char():
+		generator = PositiveNumbers(size=9)
+		uuid_time = int(str(time.time()).replace('.', '')[:16])
+		char_9 = generator.encode(uuid_time)
+		return char_9
