@@ -23,8 +23,8 @@ services:
   milestones_api:
     build:
       context: .
-      dockerfile: Dockerfile.milestones_api_v2
-    # use existing image:
+      dockerfile: Dockerfile.milestones_api_v1
+    # You can also use existing image like this:
     # image: blueboardinc/milestones-api:0.0.2
     container_name: milestones_api
     environment:
