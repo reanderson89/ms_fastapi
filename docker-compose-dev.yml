@@ -33,10 +33,9 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DD_AGENT_HOST: datadog_agent
+      DD_PROFILING_ENABLED: true
       BEARER_TOKEN: ${BEARER_TOKEN}
-      DD_API_KEY: ${DD_API_KEY}
-      DD_APP_KEY: ${DD_APP_KEY}
-      ENV: dev
       LOG_LEVEL: debug
       # connection settings for the app, these should match server's config (above)
       MYSQL_DATABASE: blueboard_milestones
@@ -49,17 +48,39 @@ services:
       - 8080:80 # probably don't need this
     depends_on:
       - milestones_db
-    entrypoint: /start.sh
+    # entrypoint: /start.sh
     restart: always
   nginx:
+    container_name: nginx
     build:
       context: .
       dockerfile: Dockerfile.nginx
       args:
-        - AKEYLESS_TOKEN=${AKEYLESS_TOKEN}
         - DOCS_USERNAME=milestones
-        - DOCS_PASSWORD=happybirthday
+        - DOCS_PASSWORD=${DOCS_PASSWORD}
     image: custom-nginx-proxy:latest # custom name
     ports:
       - 80:80 # host:container
     restart: always
+  datadog_agent:
+    container_name: datadog_agent
+    build:
+      context: .
+      dockerfile: Dockerfile.datadog
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    environment:
+      DD_APM_ENABLED: true
+      DD_APM_NON_LOCAL_TRAFFIC: true
+      DD_LOGS_ENABLED: true
+      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: true
+      DD_SERVICE: "milestones-api"
+      DD_ENV: "dev"
+      DD_API_KEY: ${DD_API_KEY}
+      DD_CONTAINER_INCLUDE: "name:milestones_api"
+      DD_CONTAINER_EXCLUDE: "name:milestones_db name:datadog name:nginx" 
+    restart: always
+  

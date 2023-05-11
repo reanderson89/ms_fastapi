@@ -4,25 +4,31 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Docker image tag?'
+        description: 'Whcih Docker image tag?'
         required: true
         default: 'latest'
       environment:
-        description: 'Environment?'
+        description: 'To what environment?'
         type: choice
         default: 'development'
         options:
           - development
           - staging
           - production
+      ref:
+        description: 'Branch with correct secrets.txt file?'
+        default: 'staging'
 jobs:
   deploy:
     name: Deploy ${{ github.event.inputs.tag }} to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     steps:
+      # the purpose of the checkout here is to obtain the secrets.txt file, which will come from the default branch
+      # unless told otherwise
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.inputs.ref }}
           fetch-depth: 1
 
       - name: Copy secrets config file

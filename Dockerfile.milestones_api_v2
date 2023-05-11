@@ -1,0 +1,25 @@
+# more stripped down Dockerfile for the Milestones API
+FROM python:3.11
+WORKDIR /app
+
+ENV DD_SERVICE=${DD_SERVICE}
+ENV DD_ENV=${DD_ENV}
+ENV DD_VERSION=${DD_VERSION}
+LABEL com.datadoghq.tags.service=${DD_SERVICE}
+LABEL com.datadoghq.tags.env=${DD_ENV}
+LABEL com.datadoghq.tags.version=${DD_VERSION}
+
+RUN apt-get update
+RUN apt -y install iputils-ping lsof vim
+RUN apt -y install default-mysql-client python3-pymysql alembic
+# DataDog
+RUN pip install ddtrace
+# install dependencies first so that changes in application code do not invalidate
+# the cache of the layer with installed dependencies
+COPY requirements.txt ./
+# when pip install is here, docker caches all the pip dependencies
+RUN pip install -r requirements.txt
+# copy the application
+COPY app/ /app/app
+# run the app via DataDog with "ddtrace-run", 
+CMD ["ddtrace-run", "uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]

@@ -23,11 +23,17 @@ services:
   milestones_api:
     build:
       context: .
-      dockerfile: Dockerfile.milestones_api
+      dockerfile: Dockerfile.milestones_api_v2
     # use existing image:
     # image: blueboardinc/milestones-api:0.0.2
     container_name: milestones_api
     environment:
+      # temporary!
+      DD_SERVICE: "milestones-api-local"
+      DD_ENV: "local"
+      DD_VERSION: "0.1.0"
+      DD_TRACE_AGENT_URL: http://datadog:8126
+
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       BEARER_TOKEN: ${BEARER_TOKEN}
@@ -46,5 +52,15 @@ services:
       - '80:80'
     depends_on:
       - milestones_db
-    entrypoint: /start-reload.sh
+    # use this entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api
+    # entrypoint: /start-reload.sh
     restart: on-failure
+  datadog-agent:
+    container_name: datadog
+    image: datadog/agent:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+    environment:
+      DD_API_KEY: "d4603a5b487ebcc378f492dff74cbd7d"

@@ -14,6 +14,10 @@ scp docker-compose-dev.yml "${USERNAME}@${HOST}:${DEST_PATH}/docker-compose.yml"
 # Dockerfile for Nginx host, Nginx config
 scp Dockerfile.nginx "${USERNAME}@${HOST}:${DEST_PATH}/"
 scp milestones-nginx.conf "${USERNAME}@${HOST}:${DEST_PATH}/"
+# Datadog
+scp Dockerfile.datadog "${USERNAME}@${HOST}:${DEST_PATH}/"
+scp datadog.yaml "${USERNAME}@${HOST}:${DEST_PATH}/"
+
 # dotenv Python script
 scp ~/Projects/blueboard/akeyless/src/dotenv.py "${USERNAME}@${HOST}:${DEST_PATH}/"
 
