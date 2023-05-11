@@ -55,12 +55,3 @@ services:
     # use this entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api
     # entrypoint: /start-reload.sh
     restart: on-failure
-  datadog-agent:
-    container_name: datadog
-    image: datadog/agent:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-    environment:
-      DD_API_KEY: "d4603a5b487ebcc378f492dff74cbd7d"
