@@ -10,13 +10,13 @@ class CommonRoutes():
 	async def get_all(model):
 		with Session(engine) as session:
 			items = session.exec(select(model)).all()
-			ExceptionHandling.check404(items)
+			await ExceptionHandling.check404(items)
 			return items
 		
 	async def get_one(model, search_by):
 		with Session(engine) as session:
 			item = session.get(model, search_by)
-			ExceptionHandling.check404(item)
+			await ExceptionHandling.check404(item)
 			return item
 		
 	async def create_one_or_many(items):
@@ -43,7 +43,7 @@ class CommonRoutes():
 	async def update_one(search_by, original_model, update_model):
 		with Session(engine) as session:
 			db_item = session.get(original_model, search_by)
-			ExceptionHandling.check404(db_item)
+			await ExceptionHandling.check404(db_item)
 			updated_fields = update_model.dict(exclude_unset=True)
 			for key, value in updated_fields.items():
 				setattr(db_item, key, value)
@@ -57,7 +57,7 @@ class CommonRoutes():
 	async def delete_one(search_by, model):
 		with Session(engine) as session:
 			item = session.get(model, search_by)
-			ExceptionHandling.check404(item)
+			await ExceptionHandling.check404(item)
 			session.delete(item)
 			session.commit()
 			return {'ok': True, 'Deleted:': item}

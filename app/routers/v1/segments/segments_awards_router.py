@@ -31,7 +31,7 @@ async def get_awards(
 		.offset(offset)
 		.limit(limit)
 	).all()
-	ExceptionHandling.check404(awards)
+	await ExceptionHandling.check404(awards)
 	return awards
 
 @router.get("/awards/{award_9char}", response_model=SegmentAward)
@@ -51,12 +51,12 @@ async def get_award(
 			SegmentAward.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	return award
 
 @router.post("/awards", response_model=(List[SegmentAward] | SegmentAward))
 async def create_award(award: (List[SegmentAward] | SegmentAward)):
-	return CommonRoutes.create_one_or_many(award)
+	return await CommonRoutes.create_one_or_many(award)
 
 @router.put("/awards/{award_9char}", response_model=SegmentAward)
 async def update_award(
@@ -76,7 +76,7 @@ async def update_award(
 			SegmentAward.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	update_award = award_update.dict(exclude_unset=True)
 	for k, v in update_award.items():
 		setattr(award, k, v)
@@ -103,7 +103,7 @@ async def delete_award(
 			SegmentAward.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	session.delete(award)
 	session.commit()
 	return {"ok": "true", "Deleted": award}

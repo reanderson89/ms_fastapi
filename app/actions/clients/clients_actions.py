@@ -29,7 +29,7 @@ class ClientActions():
                 name=client_data.name,
                 description=client_data.description,
             )
-            return CommonRoutes.create_one_or_many(new_client)
+            return await CommonRoutes.create_one_or_many(new_client)
 
     @classmethod
     async def check_for_existing(cls, name):

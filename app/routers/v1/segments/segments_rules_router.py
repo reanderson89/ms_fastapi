@@ -31,7 +31,7 @@ async def get_rules(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(rules)
+	await ExceptionHandling.check404(rules)
 	return rules
 
 @router.get("/rules/{rule_9char}", response_model=SegmentRuleModel)
@@ -51,12 +51,12 @@ async def get_rule(
 			SegmentRuleModel.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(rule)
+	await ExceptionHandling.check404(rule)
 	return rule
 
 @router.post("/rules", response_model=(List[SegmentRuleModel] | SegmentRuleModel))
 async def create_rule(rules: (List[SegmentRuleModel] | SegmentRuleModel)):
-	return CommonRoutes.create_one_or_many(rules)
+	return await CommonRoutes.create_one_or_many(rules)
 
 @router.put("/rules/{rule_9char}", response_model=SegmentRuleModel)
 async def update_rule(
@@ -76,7 +76,7 @@ async def update_rule(
 			SegmentRuleModel.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(rule)
+	await ExceptionHandling.check404(rule)
 	update_rule = rule_updates.dict(exclude_unset=True)
 	for k, v in update_rule.items():
 		setattr(rule, k, v)

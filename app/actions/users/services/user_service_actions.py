@@ -39,7 +39,7 @@ class UserServiceActions():
 				time_ping= int(time()),
 				#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 			)
-			new_user = CommonRoutes.create_one_or_many(new_user)
+			new_user = await CommonRoutes.create_one_or_many(new_user)
 
 			new_user_service = UserService(
 				user_uuid = new_user.uuid,
@@ -51,7 +51,7 @@ class UserServiceActions():
 				service_access_secret = "secret token",
 				service_refresh_token = "refresh token",
 			)
-			CommonRoutes.create_one_or_many(new_user_service)
+			await CommonRoutes.create_one_or_many(new_user_service)
 			return new_user # or add to list of users
 
 	@classmethod
@@ -64,7 +64,7 @@ class UserServiceActions():
 				UserService.uuid == service_uuid
 				)
 			).one_or_none()
-			ExceptionHandling.check404(service)
+			await ExceptionHandling.check404(service)
 			return service
 
 	@classmethod
@@ -74,7 +74,7 @@ class UserServiceActions():
 				select(UserService)
 				.where(UserService.user_uuid == user_uuid)
 			).all()
-			ExceptionHandling.check404(services)
+			await ExceptionHandling.check404(services)
 
 		result = {}
 		for service in services:

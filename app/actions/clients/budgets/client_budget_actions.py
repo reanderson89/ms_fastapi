@@ -91,7 +91,7 @@ class ClientBudgetActions():
 	@classmethod
 	async def update_budget(cls, budget_updates, budget_9char: str, client_uuid: str, session: Session):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session)
-		ExceptionHandling.check404(budget)
+		await ExceptionHandling.check404(budget)
 		if budget_updates.parent_9char:
 			if budget_updates.parent_9char == budget_9char:
 				return await ExceptionHandling.custom500("Cannot set same value for parent_9char and budget_9char.")
@@ -108,7 +108,7 @@ class ClientBudgetActions():
 	@classmethod
 	async def delete_budget(cls, budget_9char: str, client_uuid: str, session: Session):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session)
-		ExceptionHandling.check404(budget)
+		await ExceptionHandling.check404(budget)
 		sub_budget = await cls.get_sub_budgets(budget_9char, client_uuid, session)
 		if sub_budget:
 			return await ExceptionHandling.custom500(f"Unable to delete budget named: {budget.name}. Budget has sub-budgets attached.")

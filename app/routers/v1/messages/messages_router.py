@@ -28,7 +28,7 @@ async def get_messages(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(messages)
+	await ExceptionHandling.check404(messages)
 	return messages
 
 @router.get("/messages/{message_9char}", response_model=MessageModel)
@@ -45,12 +45,12 @@ async def get_message(
 			MessageModel.message_9char == message_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(message)
+	await ExceptionHandling.check404(message)
 	return message
 
 @router.post("/messages", response_model=(List[MessageModel] | MessageModel))
 async def create_message(message: (List[MessageModel] | MessageModel)):
-	return CommonRoutes.create_one_or_many(message)
+	return await CommonRoutes.create_one_or_many(message)
 
 # the endpoint might needs to be different for this not to conflict with create_message()
 # @router.post("/messages/{message_9char}/template") # possible solution
@@ -86,7 +86,7 @@ async def update_message(
 			MessageModel.message_9char == message_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(message)
+	await ExceptionHandling.check404(message)
 	update_message = message_updates.dict(exclude_unset=True)
 	for k, v in update_message.items():
 		setattr(message, k, v)
@@ -111,7 +111,7 @@ async def delete_message(
 			MessageModel.message_9char == message_9char
 		)
 	).one_or_none()
-	ExceptionHandling(message)
+	await ExceptionHandling.check404(message)
 	session.delete(message)
 	session.commit()
 	return {'ok': True, 'Deleted:': message}

@@ -30,7 +30,7 @@ async def get_designs(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(designs)
+	await ExceptionHandling.check404(designs)
 	return designs
 
 @router.get("/designs/{design_9char}", response_model=SegmentDesignModel)
@@ -50,12 +50,12 @@ async def get_design(
 			SegmentDesignModel.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(design)
+	await ExceptionHandling.check404(design)
 	return design
 
 @router.post("/designs", response_model=(List[SegmentDesignModel] | SegmentDesignModel))
 async def create_design(designs: (List[SegmentDesignModel] | SegmentDesignModel)):
-	return CommonRoutes.create_one_or_many(designs)
+	return await CommonRoutes.create_one_or_many(designs)
 
 @router.put("/designs/{design_9char}", response_model=SegmentDesignModel)
 async def update_design(
@@ -75,7 +75,7 @@ async def update_design(
 			SegmentDesignModel.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(design)
+	await ExceptionHandling.check404(design)
 	update_design = design_updates.dict(exclude_unset=True)
 	for k, v in update_design.items():
 		setattr(design, k, v)
@@ -102,7 +102,7 @@ async def delete_design(
 			SegmentDesignModel.segment_9char == segment_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(design)
+	await ExceptionHandling.check404(design)
 	session.delete(design)
 	session.commit()
 	return {"ok": True, "Deleted": design}

@@ -28,7 +28,7 @@ async def get_events(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(events)
+	await ExceptionHandling.check404(events)
 	return events
 
 @router.get("/events/{event_9char}", response_model=ProgramEventModel)
@@ -46,12 +46,12 @@ async def get_event(
 			ProgramEventModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(event)
+	await ExceptionHandling.check404(event)
 	return event
 
 @router.post("/events", response_model=(List[ProgramEventModel] | ProgramEventModel))
 async def create_event(events: (List[ProgramEventModel] | ProgramEventModel)):
-	return CommonRoutes.create_one_or_many(events)
+	return await CommonRoutes.create_one_or_many(events)
 
 @router.put("/events/{event_9char}", response_model=ProgramEventModel)
 async def update_event(
@@ -69,7 +69,7 @@ async def update_event(
 			ProgramEventModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(event)
+	await ExceptionHandling.check404(event)
 	update_event = event_updates.dict(exclude_unset=True)
 	for k, v in update_event.items():
 		setattr(event, k, v)
@@ -96,7 +96,7 @@ async def delete_event(
 			ProgramEventModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(event)
+	await ExceptionHandling.check404(event)
 	session.delete(event)
 	session.commit()
 	return {"ok": True, "Deleted:": event}

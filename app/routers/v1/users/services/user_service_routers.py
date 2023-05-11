@@ -36,19 +36,19 @@ async def bulk_update_services(user_uuid: str, updates: List[ServiceBulk]):
 	for update in updates:
 		db_update = UsersServiceUpdate.from_orm(update)
 		update_list.append(
-			CommonRoutes.update_one(update.uuid, UserService, db_update)
+			await CommonRoutes.update_one(update.uuid, UserService, db_update)
 		)
 	return update_list
 
 @router.delete("/services/{service_uuid}/")
 async def delete_service(service_uuid: str):
-	return CommonRoutes.delete_one(service_uuid, UserService)
+	return await CommonRoutes.delete_one(service_uuid, UserService)
 
 @router.delete("/services/")
 async def bulk_delete_service(service_delete: List[ServiceDelete]):
 	deleted_services = []
 	for service in service_delete:
 		deleted_services.append(
-			CommonRoutes.delete_one(service.service_uuid, UserService)
+			await CommonRoutes.delete_one(service.service_uuid, UserService)
 		)
 	return deleted_services

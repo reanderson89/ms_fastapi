@@ -25,7 +25,7 @@ async def get_awards(
 		.offset(offset)
 		.limit(limit)
 	).all()
-	ExceptionHandling.check404(awards)
+	await ExceptionHandling.check404(awards)
 	return awards
 
 @router.get("/awards/{award_9char}", response_model=ClientAwardModel)
@@ -39,12 +39,12 @@ async def get_award(
 		.where(ClientAwardModel.award_9char == award_9char,
 				ClientAwardModel.client_uuid == client_uuid)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	return award
 
 @router.post("/awards", response_model=(List[ClientAwardModel] | ClientAwardModel))
 async def create_award(awards: (List[ClientAwardModel] | ClientAwardModel)):
-	return CommonRoutes.create_one_or_many(awards)
+	return await CommonRoutes.create_one_or_many(awards)
 
 @router.put("/awards/{award_9char}", response_model=ClientAwardModel)
 async def update_award(
@@ -60,7 +60,7 @@ async def update_award(
 			ClientAwardModel.client_uuid == client_uuid
 		)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	update_award = award_updates.dict(exclude_unset=True)
 	for k,v in update_award.items():
 		setattr(award, k, v)
@@ -81,7 +81,7 @@ async def delete_award(award_9char: str, client_uuid: str,
 		.where(ClientAwardModel.award_9char == award_9char,
 				ClientAwardModel.client_uuid == client_uuid)
 	).one_or_none()
-	ExceptionHandling.check404(award)
+	await ExceptionHandling.check404(award)
 	session.delete(award)
 	session.commit()
 	return {'ok': True, 'Deleted:': award} 

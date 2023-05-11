@@ -8,11 +8,11 @@ router = APIRouter(tags=["Users"])
 
 @router.get("/users/", response_model=List[UsersModel])
 async def get_users():
-	return CommonRoutes.get_all(UsersModel)
+	return await CommonRoutes.get_all(UsersModel)
 
 @router.get("/users/{user_uuid}", response_model_by_alias=True)
 async def get_user(user_uuid: str, expand_services: bool = False):
-	user = CommonRoutes.get_one(UsersModel, user_uuid)
+	user = await CommonRoutes.get_one(UsersModel, user_uuid)
 	if expand_services:
 		user_expanded = UserExpanded.from_orm(user)
 		user_expanded.services = await UserServiceActions.get_all_services(user_uuid)
@@ -29,19 +29,11 @@ async def create_user(users: dict):#(List[UserService] | UserService)):
 	else:
 		users = await UserServiceActions.create_service_user(users)
 	return users
-	# if isinstance(users, UserService):
-	# 	users = await UserServiceActions.create_service_user(users)
-	# 	return users
-	# else:
-	# 	created_users = []
-	# 	for user in users:
-	# 		created_users.append(await UserServiceActions.create_service_user(user))
-	# 	return created_users
 
 @router.put("/users/{user_uuid}", response_model=UsersModel)
 async def update_user(user_uuid: str, users_update: UsersUpdate):
-	return CommonRoutes.update_one(user_uuid, UsersModel, users_update)
+	return await CommonRoutes.update_one(user_uuid, UsersModel, users_update)
 
 @router.delete("/users/{user_uuid}")
 async def delete_user(user_uuid: str):
-	return CommonRoutes.delete_one(user_uuid, UsersModel)
+	return await CommonRoutes.delete_one(user_uuid, UsersModel)

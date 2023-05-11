@@ -28,7 +28,7 @@ async def get_admins(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(admins)
+	await ExceptionHandling.check404(admins)
 	return admins
 
 @router.get("/admins/{user_uuid}", response_model=ProgramAdminModel)
@@ -46,12 +46,12 @@ async def get_admin(
 			ProgramAdminModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(admin)
+	await ExceptionHandling.check404(admin)
 	return admin
 
 @router.post("/admins", response_model=(List[ProgramAdminModel] | ProgramAdminModel))
 async def create_admin(admins: (List[ProgramAdminModel] | ProgramAdminModel)):
-	return CommonRoutes.create_one_or_many(admins)
+	return await CommonRoutes.create_one_or_many(admins)
 
 @router.put("/admins/{user_uuid}", response_model=ProgramAdminModel)
 async def update_admin(
@@ -69,7 +69,7 @@ async def update_admin(
 			ProgramAdminModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(admin)
+	await ExceptionHandling.check404(admin)
 	admin_updates_dict = admin_updates.dict(exclude_unset=True)
 	for k, v in admin_updates_dict.items():
 		setattr(admin, k, v)
@@ -94,7 +94,7 @@ async def delete_admin(
 			ProgramAdminModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(admin)
+	await ExceptionHandling.check404(admin)
 	session.delete(admin)
 	session.commit()
 	return {"ok": True, "Deleted:": admin}

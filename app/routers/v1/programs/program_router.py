@@ -26,7 +26,7 @@ async def get_programs(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(programs)
+	await ExceptionHandling.check404(programs)
 	return programs
 
 @router.get("/programs/{program_9char}", response_model=ProgramModel)
@@ -42,12 +42,12 @@ async def get_program(
 			ProgramModel.client_uuid == client_uuid
 		)
 	).one_or_none()
-	ExceptionHandling.check404(program)
+	await ExceptionHandling.check404(program)
 	return program
 
 @router.post("/programs/", response_model=(List[ProgramModel] | ProgramModel))
 async def create_program(programs: (List[ProgramModel] | ProgramModel)):
-	return CommonRoutes.create_one_or_many(programs)
+	return await CommonRoutes.create_one_or_many(programs)
 
 @router.put("/programs/{program_9char}", response_model=ProgramModel)
 async def update_program(
@@ -63,7 +63,7 @@ async def update_program(
 			ProgramModel.client_uuid == client_uuid
 		)
 	).one_or_none()
-	ExceptionHandling.check404(program)
+	await ExceptionHandling.check404(program)
 	update_program = program_updates.dict(exclude_unset=True)
 	for k, v in update_program.items():
 		setattr(program, k, v)
@@ -87,7 +87,7 @@ async def delete_program(
 			ProgramModel.client_uuid == client_uuid
 		)
 	).one_or_none()
-	ExceptionHandling.check404(program)
+	await ExceptionHandling.check404(program)
 	session.delete(program)
 	session.commit()
 	return {"ok": True, "Deleted": program}

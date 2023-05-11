@@ -67,7 +67,7 @@ class CommonActions():
 	async def update(statement, updates):
 		with Session(engine) as session:
 			response = session.exec(statement).one_or_none()
-			ExceptionHandling.check404(response)
+			await ExceptionHandling.check404(response)
 
 			updated_fields = updates.dict(exclude_unset=True)
 			for key, value in updated_fields.items():

@@ -10,7 +10,6 @@ router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"])
 @router.get("/budgets", response_model=List[ClientBudgetModel])
 async def get_budgets(client_uuid: str, session: Session = Depends(CommonActions.get_session)):
 	return await ClientBudgetActions.get_all_budgets(client_uuid, session)
-	#return budgets
 
 @router.get("/budgets/{budget_9char}", response_model=ClientBudgetModel)
 async def get_budget(client_uuid: str, budget_9char: str, session: Session = Depends(CommonActions.get_session)):

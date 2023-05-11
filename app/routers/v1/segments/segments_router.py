@@ -28,7 +28,7 @@ async def get_segments(
 		.offset(offset)
 		.limit(limit)
 		).all()
-	ExceptionHandling.check404(segments)
+	await ExceptionHandling.check404(segments)
 	return segments
 
 @router.get("/segments/{segment_9char}", response_model=SegmentModel)
@@ -46,12 +46,12 @@ async def get_segment(
 			SegmentModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(segment)
+	await ExceptionHandling.check404(segment)
 	return segment
 
 @router.post("/segments", response_model=(List[SegmentModel] | SegmentModel))
 async def create_segment(segment: (List[SegmentModel] | SegmentModel)):
-	return CommonRoutes.create_one_or_many(segment)
+	return await CommonRoutes.create_one_or_many(segment)
 
 @router.put("/segments/{segment_9char}", response_model=SegmentModel)
 async def update_segment(
@@ -69,7 +69,7 @@ async def update_segment(
 			SegmentModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(segment)
+	await ExceptionHandling.check404(segment)
 	update_segment = segment_updates.dict(exclude_unset=True)
 	for k, v in update_segment.items():
 		setattr(segment, k, v)
@@ -94,7 +94,7 @@ async def delete_segment(
 			SegmentModel.program_9char == program_9char
 		)
 	).one_or_none()
-	ExceptionHandling.check404(segment)
+	await ExceptionHandling.check404(segment)
 	session.delete(segment)
 	session.commit()
 	return {"ok": True, "Deleted:": segment}
