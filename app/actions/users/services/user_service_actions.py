@@ -22,11 +22,19 @@ class UserServiceActions():
 		if result:
 			return result
 		return item
+	
+	@staticmethod
+	async def check_service_id_for_existing_service_user(service_id):
+		with Session(engine) as session:
+			return session.exec(
+				select(UsersModel)
+				.where(UserService.service_user_id == service_id)
+			).one_or_none()		
 
 	@classmethod
 	async def create_service_user(cls, employee_data):
 		employee_email = await CommonActions.get_email_from_header(employee_data)
-		user = await CommonActions.check_for_existing(UserService, employee_email)
+		user = await cls.check_service_id_for_existing_service_user(employee_email)
 		if user:
 			return user
 		elif not user:
@@ -52,7 +60,7 @@ class UserServiceActions():
 				service_refresh_token = "refresh token",
 			)
 			await CommonRoutes.create_one_or_many(new_user_service)
-			return new_user # or add to list of users
+			return new_user
 
 	@classmethod
 	async def get_service(cls, user_uuid: str, service_uuid: str):
