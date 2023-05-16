@@ -16,12 +16,12 @@ async def get_user(client_uuid: str, user_uuid: str, session: Session = Depends(
 	return await ClientUserActions.getUser(client_uuid, user_uuid, session)
 
 @router.post("/users", response_model=(List[ClientUserModel] | ClientUserModel))
-async def create_user(client_uuid: str,	users: (List[dict] | dict)):
+async def create_user(client_uuid: str,	users: (List[dict] | dict), session: Session = Depends(CommonActions.get_session)):
 	if users is List:
 		for user in users:
-			user = await ClientUserActions.createClientUser(user, client_uuid)
+			user = await ClientUserActions.createClientUser(user, client_uuid, session)
 	else:
-		users = await ClientUserActions.createClientUser(users, client_uuid)
+		users = await ClientUserActions.createClientUser(users, client_uuid, session)
 	return users
 
 @router.put("/users/{user_uuid}", response_model=ClientUserModel)
