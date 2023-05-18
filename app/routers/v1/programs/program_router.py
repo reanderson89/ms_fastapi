@@ -5,6 +5,7 @@ from fastapi import APIRouter, Query, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
 from app.models.programs import ProgramModel, ProgramUpdate
+from app.actions.programs.program_actions import ProgramActions
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Programs"])
 
@@ -16,62 +17,32 @@ def get_session():
 async def get_programs(
 	client_uuid: str,
 	offset: int = 0,
-	limit: int = Query(default=100, lte=100),
-	session: Session = Depends(get_session)
+	limit: int = Query(default=100, lte=100)
 ):
-	programs = session.exec(
-		select(ProgramModel).where(
-			ProgramModel.client_uuid == client_uuid
-		)
-		.offset(offset)
-		.limit(limit)
-		).all()
-	await ExceptionHandling.check404(programs)
-	return programs
+	return await ProgramActions.get_by_client_uuid(client_uuid, offset, limit)
 
 @router.get("/programs/{program_9char}", response_model=ProgramModel)
 async def get_program(
 	client_uuid: str,
-	program_9char: str,
-	session: Session = Depends(get_session)
+	program_9char: str
 ):
-	program = session.exec(
-		select(ProgramModel)
-		.where(
-			ProgramModel.program_9char == program_9char,
-			ProgramModel.client_uuid == client_uuid
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(program)
-	return program
+	return await ProgramActions.get_by_program_9char(client_uuid, program_9char)
 
-@router.post("/programs/", response_model=(List[ProgramModel] | ProgramModel))
-async def create_program(programs: (List[ProgramModel] | ProgramModel)):
-	return await CommonRoutes.create_one_or_many(programs)
+
+@router.post("/programs/", response_model_by_alias=True)
+async def create_program(
+		programs: (List[ProgramModel] | ProgramModel),
+		client_uuid: str
+):
+	return await ProgramActions.create_program_handler(programs, client_uuid)
 
 @router.put("/programs/{program_9char}", response_model=ProgramModel)
 async def update_program(
 	client_uuid: str,
 	program_9char: str,
-	program_updates: ProgramUpdate,
-	session: Session = Depends(get_session)
+	program_updates: ProgramUpdate
 ):
-	program = session.exec(
-		select(ProgramModel)
-		.where(
-			ProgramModel.program_9char == program_9char,
-			ProgramModel.client_uuid == client_uuid
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(program)
-	update_program = program_updates.dict(exclude_unset=True)
-	for k, v in update_program.items():
-		setattr(program, k, v)
-	program.time_updated = int(time())
-	session.add(program)
-	session.commit()
-	session.refresh(program)
-	return program
+	return await ProgramActions.update_program(client_uuid, program_9char, program_updates)
 
 # should only work if there are no segments or events associated with the program
 @router.delete("/programs/{program_9char}")
