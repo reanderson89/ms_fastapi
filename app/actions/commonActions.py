@@ -7,7 +7,7 @@ from fastapi import UploadFile, File
 from sqlmodel import Session
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import ExceptionHandling
-from app.utilities.PositiveNumbers import PositiveNumbers
+from app.utilities import SHA224Hash, PositiveNumbers
 
 class CommonActions():
 
@@ -79,7 +79,11 @@ class CommonActions():
 	
 	@staticmethod
 	async def generate_9char():
-		generator = PositiveNumbers(size=9)
+		generator = PositiveNumbers.PositiveNumbers(size=9)
 		uuid_time = int(str(time.time()).replace('.', '')[:16])
 		char_9 = generator.encode(uuid_time)
 		return char_9
+	
+	@staticmethod
+	async def generate_SHA224():
+		return SHA224Hash()

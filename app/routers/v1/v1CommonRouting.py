@@ -71,3 +71,6 @@ class ExceptionHandling():
 	
 	async def custom500(message):
 		raise HTTPException(status_code=500, detail=message)
+	
+	async def custom405(message):
+		raise HTTPException(status_code=405, detail=message)
