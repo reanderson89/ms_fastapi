@@ -22,14 +22,14 @@ class UserServiceActions():
 		if result:
 			return result
 		return item
-	
+
 	@staticmethod
 	async def check_service_id_for_existing_service_user(service_id):
 		with Session(engine) as session:
 			return session.exec(
 				select(UsersModel)
 				.where(UserService.service_user_id == service_id)
-			).one_or_none()		
+			).one_or_none()
 
 	@classmethod
 	async def create_service_user(cls, employee_data):
@@ -51,7 +51,7 @@ class UserServiceActions():
 
 			new_user_service = UserService(
 				user_uuid = new_user.uuid,
-				service_uuid = SHA224Hash(),
+				service_uuid = "email",
 				service_user_id = employee_email,
 				service_user_screenname = f"{new_user.first_name} {new_user.last_name}",
 				service_user_name = await CommonActions.make_username(new_user.first_name, new_user.last_name),

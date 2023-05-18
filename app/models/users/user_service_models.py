@@ -1,10 +1,10 @@
-from enum import Enum
+from enum import IntEnum
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class Service(str, Enum):
-	email = "email"
-	cell = "cell"
+class Service(IntEnum):
+	email = 1
+	cell = 2
 
 class UserServiceBase(SQLModel):
 	user_uuid: Optional[str] = Field(default=None, description="UUID set from `users` table")

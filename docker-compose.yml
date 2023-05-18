@@ -49,6 +49,7 @@ services:
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.1.sql"
     volumes:
       - ./app:/app/app
+      - ./tests:/app/tests
     ports:
       - '80:80'
     depends_on:

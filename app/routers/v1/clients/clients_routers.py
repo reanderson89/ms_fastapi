@@ -6,7 +6,7 @@ from app.actions.clients.clients_actions import ClientActions
 
 router = APIRouter(tags=["Clients"])
 
-@router.get("/clients/", response_model=List[ClientModel])
+@router.get("/clients", response_model=List[ClientModel])
 async def get_clients():
     return await CommonRoutes.get_all(ClientModel)
 
@@ -15,8 +15,7 @@ async def get_client_by_uuid(client_uuid: str):
     client = await CommonRoutes.get_one(ClientModel, client_uuid)
     return ClientModel.from_orm(client)
 
-
-@router.post("/clients/", response_model_by_alias=True)
+@router.post("/clients", response_model_by_alias=True)
 async def create_client(clients: Union[List[ClientModel], ClientModel]):
     return await ClientActions.create_client_handler(clients)
 

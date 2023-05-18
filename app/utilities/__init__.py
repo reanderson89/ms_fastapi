@@ -4,7 +4,7 @@ from urllib.parse import parse_qs
 from json import loads, JSONEncoder
 from codecs import getencoder
 from decimal import Decimal
-from .Helpers import _encodeutf8
+from app.utilities.Helpers import _encodeutf8
 
 import html.entities as entity
 from html import unescape

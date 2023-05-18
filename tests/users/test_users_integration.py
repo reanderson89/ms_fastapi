@@ -8,6 +8,9 @@ app = FastAPI()
 app.include_router(users_router)
 client = TestClient(app)
 
+def test_get_all_users(test_app):
+	response = test_app.get("/v1/users/")
+	assert response.status_code == 200
 
 @pytest.mark.asyncio
 async def test_integration_create_user():

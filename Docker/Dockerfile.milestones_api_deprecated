@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 # next, copy everything else
 # TODO tighten this up
 COPY . .
-
+COPY tests/ .
 # for initialization sequences and Gunicorn/uvicorn configs, see the docs: https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
 # in particular, note:
 # - pre-start.sh

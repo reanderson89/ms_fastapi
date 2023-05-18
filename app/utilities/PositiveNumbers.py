@@ -13,23 +13,15 @@ class PositiveNumbers:
         self.WkgSize = len(self.Code)
         self.MaxValue = int(self.WkgSize**self.EncodedLength)
 
-        print('EncodedLength:', self.EncodedLength)
-        print('WkgSize:', self.WkgSize)
-        print('MaxValue:', self.MaxValue)
-
     def encode(self, n):
         if n < 0 or n > self.MaxValue: return
         if n < self.WkgSize:
             return str(self.Code[int(n-self.WkgSize)]).rjust(self.EncodedLength, '0')
         else:
             def getchar(n, i):
-                print('getchar:', n, i)
                 tmpn = n-self.WkgSize
-                print('tmpn(b4):', tmpn)
                 if i != self.EncodedLength:
-                    print('tmpn -> i != self.EncodedLength:', tmpn, self.WkgSize, i, (self.WkgSize**i))
                     tmpn = (tmpn/self.WkgSize**i)
-                print('tmpn:', tmpn, '\n')
                 return self.Code[int(tmpn%self.WkgSize)]
             return ''.join([getchar(n,i) for i in range(1, self.EncodedLength+1)])
 
@@ -42,8 +34,7 @@ class PositiveNumbers:
 
         for i in range(1, self.EncodedLength+1):
             wkg_char = c[i-1:i]
-            print("wkg_character:", wkg_char)
-            if wkg_char == '0': continue
+            if wkg_char == '0': continue;
             char = self.bisectSearchRC(self.Code, wkg_char)
             if i != self.EncodedLength: item_alt += char*(self.WkgSize**i)
             else: item_alt += char
