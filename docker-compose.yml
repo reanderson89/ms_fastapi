@@ -4,7 +4,7 @@ services:
     container_name: milestones_db
     build:
       context: .
-      dockerfile: Dockerfile.milestones_db
+      dockerfile: Docker/Dockerfile.milestones_db
     volumes:
       - './mariadb-data/:/var/lib/mysql'
     environment:
@@ -23,11 +23,12 @@ services:
   milestones_api:
     build:
       context: .
-      dockerfile: Dockerfile.milestones_api_v1
+      dockerfile: Docker/Dockerfile.milestones_api_localhost
     # You can also use existing image like this:
     # image: blueboardinc/milestones-api:0.0.2
     container_name: milestones_api
     environment:
+      ALEMBIC_INI_FILE: "alembic.ini"
       # temporary!
       DD_SERVICE: "milestones-api-local"
       DD_ENV: "local"
@@ -45,13 +46,12 @@ services:
       MYSQL_PASSWORD: milestones
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
       MYSQL_PORT: 3306
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.sql"
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.1.sql"
     volumes:
       - ./app:/app/app
     ports:
       - '80:80'
     depends_on:
       - milestones_db
-    # use this entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api
-    # entrypoint: /start-reload.sh
-    restart: on-failure
+    entrypoint: /entrypoint.sh # use start-reload.sh as the entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api_deprecated
+    restart: always

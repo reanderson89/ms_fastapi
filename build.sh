@@ -13,14 +13,18 @@ fi
 
 # append the v
 TAG=v${TAG}
- 
+# append the current gitsha
+SHA=$(git rev-parse --short HEAD)
+TAG=${TAG}-${SHA}
+
 if [ -z ${DELETE} ]; then
-    read -p "Push tag ${TAG}?  Are you sure? " -n 1 -r
+    read -p "Tag and push as ${TAG}?  Are you sure? " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         git tag ${TAG}
         git push origin ${TAG}
-    fi
+    fi    
+    echo "Release tag:  $TAG"
 else
     read -p "Delete tag ${TAG}?  Are you sure? " -n 1 -r
     echo

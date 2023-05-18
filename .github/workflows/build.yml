@@ -7,7 +7,7 @@ on:
     # branches:
     #   - '*'
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]-*'
 
 jobs:
   build:
@@ -29,8 +29,8 @@ jobs:
         with:
           images: blueboardinc/milestones-api
           # prefix and suffix
-          flavor: |
-            suffix=-{{sha}}
+          # flavor: |
+          #  suffix=-{{sha}}
           # sets 'latest' tag when on default branch only -- this will create a discrepancy between the Git tag and the Docker images!
           # does not work?  @see https://github.com/actions/runner/issues/1173
           # type=raw,value=latest,enable={{is_default_branch}}
@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile.milestones_api_v2
+          file: Docker/Dockerfile.milestones_api_v2
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

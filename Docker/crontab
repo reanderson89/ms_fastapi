@@ -1,0 +1,3 @@
+# Milestones cron jobs go here
+*  *    * * *   root    /usr/bin/curl -s http://milestones_worker/v1/health
+# This file must end with a newline

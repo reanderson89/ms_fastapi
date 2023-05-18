@@ -1,18 +1,20 @@
-# This is a more stripped down Dockerfile for the Milestones API with Datadog
-FROM python:3.11
+# This is a more stripped down Dockerfile for the Milestones API for localhost development
+FROM python:3.11.3
 WORKDIR /app
 
 RUN apt-get update
-RUN apt -y install iputils-ping lsof vim
+RUN apt -y install iputils-ping vim
 RUN apt -y install default-mysql-client python3-pymysql alembic
-# DataDog
-RUN pip install ddtrace
+
 # install dependencies first so that changes in application code do not invalidate
 # the cache of the layer with installed dependencies
 COPY requirements.txt ./
 # when pip install is here, docker caches all the pip dependencies
 RUN pip install -r requirements.txt
-# copy the application
-COPY app/ /app/app
-# run the app via DataDog with "ddtrace-run", 
-CMD ["ddtrace-run", "uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
+# copy the application and tests
+COPY ./app/ /app/app
+COPY ./migrations /app/migrations
+COPY alembic.ini /app
+COPY ./tests/ /app/tests
+COPY Docker/entrypoint_localhost.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh

@@ -16,14 +16,15 @@ services:
     volumes:
       - '/opt/mariadb-data/:/var/lib/mysql'
     environment:
-      # server settings
-      MYSQL_ROOT_PASSWORD: password
+      # because /opt/mariadb-data is being exposed into the container, changing the root
+      # password env var (once the data dir exists) will not work, you must do that
+      # through mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_ROOT_HOST: '%'
       MYSQL_LOG_CONSOLE: true
-      # bootstrap a db and db user
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_USER: milestones
-      MYSQL_PASSWORD: milestones
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - 3306:3306 # probably don't need this
     restart: always
@@ -31,6 +32,7 @@ services:
     container_name: milestones_api
     image:  "blueboardinc/milestones-api:${TAG}"
     environment:
+      ALEMBIC_INI_FILE: "alembic.ini"
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       DD_AGENT_HOST: datadog_agent
@@ -39,8 +41,8 @@ services:
       LOG_LEVEL: debug
       # connection settings for the app, these should match server's config (above)
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_USER: milestones
-      MYSQL_PASSWORD: milestones
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
       MYSQL_PORT: 3306
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.1.sql"
@@ -48,7 +50,31 @@ services:
       - 8080:80 # probably don't need this
     depends_on:
       - milestones_db
-    # entrypoint: /start.sh
+    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
+    restart: always
+  milestones_worker:
+    container_name: milestones_worker
+    image:  "blueboardinc/milestones-api:${TAG}"
+    environment:
+      # No ALEMBIC_INI_FILE
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      CRON: true
+      DD_AGENT_HOST: datadog_agent
+      DD_PROFILING_ENABLED: true
+      BEARER_TOKEN: ${BEARER_TOKEN}
+      LOG_LEVEL: debug
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOSTNAME: milestones_db
+      MYSQL_PORT: 3306
+      # No MILESTONES_BOOTSTRAP
+    ports:
+      - 8081:80 # probably don't need this
+    depends_on:
+      - milestones_db
+    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
     restart: always
   nginx:
     container_name: nginx
