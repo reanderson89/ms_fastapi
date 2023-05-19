@@ -1,10 +1,10 @@
-from enum import IntEnum
+from enum import Enum
 from sqlmodel import Field, SQLModel
 from typing import Optional
 
-class Service(IntEnum):
-	email = 1
-	cell = 2
+class Service(str, Enum):
+	email = "email"
+	cell = "cell"
 
 class UserServiceBase(SQLModel):
 	user_uuid: Optional[str] = Field(default=None, description="UUID set from `users` table")
@@ -17,6 +17,9 @@ class UserServiceBase(SQLModel):
 	service_refresh_token: Optional[str] = Field(default=None, max_length=255)
 	time_created: Optional[int] = None
 	time_updated: Optional[int] = None
+	#TODO: implement when secret and token are added to db schema
+	# login_secret: Optional[str] = Field(default=None, max_length=56)
+	# login_token: Optional[str] = Field(default=None, max_length=56)
 
 class UserService(UserServiceBase, table=True):
 	__tablename__ = "user_service"
