@@ -6,7 +6,12 @@ class Service(str, Enum):
 	email = "email"
 	cell = "cell"
 
+class UserServiceStatus(str, Enum):
+	exists = "exists"
+	created = "service created"
+
 class UserServiceBase(SQLModel):
+	uuid: str = Field(primary_key=True, default=None, max_length=56)
 	user_uuid: Optional[str] = Field(default=None, description="UUID set from `users` table")
 	service_uuid: Optional[str] = Field(default=None)
 	service_user_id: Optional[str] = Field(default=None, max_length=255)
@@ -24,14 +29,12 @@ class UserServiceBase(SQLModel):
 class UserService(UserServiceBase, table=True):
 	__tablename__ = "user_service"
 
-	uuid: str = Field(primary_key=True, default=None, max_length=56)
-
 class UserServiceCreate(SQLModel):
 	service_uuid: Service
 	service_user_id: str
 
-class Exists(UserServiceBase):
-	status: str = "exists"
+class ServiceStatus(UserServiceBase):
+	status: UserServiceStatus = Field(description="This field can have the values 'exists' or 'admin created'.")
 
 class UsersServiceUpdate(SQLModel):
 	service_user_screenname: Optional[str]

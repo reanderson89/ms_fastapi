@@ -7,7 +7,7 @@ class AdminPermissions(IntEnum):
 	supervisor = 1
 	manager = 2
 
-class AdminStatus(str, Enum):
+class ProgramAdminStatus(str, Enum):
 	exists = "exists"
 	created = "admin created"
 
@@ -35,7 +35,7 @@ class AdminCreate(SQLModel):
 	permissions: Optional[int]
 
 class AdminStatus(AdminBase):
-	status: AdminStatus = Field(description="This field can have the values 'exists' or 'admin created'.")
+	status: ProgramAdminStatus = Field(description="This field can have the values 'exists' or 'admin created'.")
 
 class AdminUpdate(SQLModel):
 	permissions: Optional[int]

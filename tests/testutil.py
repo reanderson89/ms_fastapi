@@ -16,7 +16,7 @@ new_user = {
 }
 
 new_service = {
-	"service_uuid": 1,
+	"service_uuid": "email",
 	"service_user_id": "test.user2@testclient.com"
 }
 

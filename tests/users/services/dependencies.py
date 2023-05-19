@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
 from app.actions.users.services import UserServiceActions
-from app.models.users import UserService, UserServiceCreate, Exists
+from app.models.users import UserService, UserServiceCreate, ServiceStatus
 from app.main import app
 
 client = TestClient(app)

@@ -5,7 +5,7 @@ from app.utilities import SHA224Hash
 from app.routers.v1.v1CommonRouting import ExceptionHandling, CommonRoutes
 from app.models.users import UsersModel
 from app.actions.users import UsersActions
-from app.models.users import UserService, UsersServiceUpdate, UserServiceCreate
+from app.models.users import UserService, UsersServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.commonActions import CommonActions
 
 class UserServiceActions():
@@ -14,13 +14,13 @@ class UserServiceActions():
 	async def check_existing(item:UserServiceCreate):
 		id = item.service_user_id
 		with Session(engine) as session:
-			result =  session.exec(
+			service =  session.exec(
 				select(UserService)
 				.where(UserService.service_user_id == id)
 				.where(UserService.user_uuid == UsersModel.uuid)
 			).one_or_none()
-		if result:
-			return result
+		if service:
+			return ServiceStatus.from_orm(service, {"status":"exists"})
 		return item
 
 	@staticmethod
@@ -95,7 +95,6 @@ class UserServiceActions():
 	@classmethod
 	async def create_user_service(cls, user_uuid: str, user_service):
 		current_time = int(time())
-
 		new_service = UserService.from_orm(user_service)
 		new_service.user_uuid = user_uuid
 		new_service.uuid = SHA224Hash()
@@ -106,7 +105,8 @@ class UserServiceActions():
 			session.add(new_service)
 			session.commit()
 			session.refresh(new_service)
-			return new_service
+
+		return ServiceStatus.from_orm(new_service, {"status":"service created"})
 
 	@classmethod
 	async def update_service(cls, user_uuid: str, service_uuid: str, updates: UsersServiceUpdate):
