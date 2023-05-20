@@ -1,0 +1,506 @@
+{
+	"info": {
+		"_postman_id": "6e8b1bbe-b995-4000-915a-1966da5c21a5",
+		"name": "Milestones_Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27311106"
+	},
+	"item": [
+		{
+			"name": "Get Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"No users should return 404\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([404]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Test User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got a UUID back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('uuid')",
+							"    pm.collectionVariables.set('userUuid', responseJson.uuid);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"legal_first_name\": \"Testing\",\n    \"legal_last_name\": \"User\",\n    \"primary_work_email\": \"test.user@testclient.com\",\n    \"hire_date\": \"1/1/2015\",\n    \"continuous_service_date\": \"1/1/2015\",\n    \"employee_id\": 1139,\n    \"manager_id\": 200405,\n    \"cost_center_id\": 21121,\n    \"worker_type\": \"Employee\",\n    \"department\": \"Engineering\",\n    \"manager\": \"Jason W\",\n    \"location\": \"Seattle\",\n    \"business_title\": \"Blueboard Engineer\",\n    \"department_leader\": 200405\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful GET request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got at least one user back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson.length).to.be.greaterThan(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Test User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful GET request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got the correct user back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    var userUuid = pm.collectionVariables.get('userUuid');",
+							"    pm.expect(responseJson.uuid).to.eql(userUuid);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got the updated user back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson.first_name).to.eql(pm.variables.get('firstName'));",
+							"    pm.expect(responseJson.last_name).to.eql(pm.variables.get('lastName'));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"firstName\", \"Jane\")",
+							"pm.variables.set(\"lastName\", \"Doe\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"first_name\": \"{{firstName}}\",\n  \"last_name\": \"{{lastName}}\",\n  \"latitude\": 1234,\n  \"longitude\": 1234,\n  \"time_updated\": 1234,\n  \"time_ping\": 1234\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Services",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got the email service back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('email');",
+							"    pm.expect(responseJson.email.length).to.be.greaterThan(0)",
+							"    // serviceUuid was already captured",
+							"    pm.collectionVariables.set('serviceUuid',responseJson.email[0].uuid)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}",
+						"services",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create 2nd User Service of type \"email\"",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var userUuid = pm.collectionVariables.get('userUuid');",
+							"console.log(`user uuid is ${userUuid}`)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got the service back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('uuid');",
+							"    pm.collectionVariables.set('serviceUuid2', responseJson.uuid)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"hello@foo.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}",
+						"services",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get 2nd User Service",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"pm.test(\"Check that we got the 2nd email service back\", () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('uuid');",
+							"    pm.collectionVariables.set('serviceUuid2',responseJson.uuid)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/{{serviceUuid2}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}",
+						"services",
+						"{{serviceUuid2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User Service",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"service_user_screenname\": \"hello\",\n  \"service_user_name\": \"thing\",\n  \"service_access_token\": \"foo\",\n  \"service_access_secret\": \"bar\",\n  \"service_refresh_token\": \"lolz\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/{{serviceUuid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}",
+						"services",
+						"{{serviceUuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Update Services",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var serviceUuid = pm.collectionVariables.get('serviceUuid');",
+							"var serviceUuid2 = pm.collectionVariables.get('serviceUuid2');"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", () => {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"uuid\": \"{{serviceUuid}}\",\n    \"service_user_screenname\": \"<test>\",\n    \"service_user_name\": \"<test>\",\n    \"service_access_token\": \"<test>\",\n    \"service_access_secret\": \"<test>\",\n    \"service_refresh_token\": \"<test>\"\n  },\n  {\n    \"uuid\": \"{{serviceUuid2}}\",\n    \"service_user_screenname\": \"<test>\",\n    \"service_user_name\": \"<test>\",\n    \"service_access_token\": \"<test>\",\n    \"service_access_secret\": \"<test>\",\n    \"service_refresh_token\": \"<test>\"\n  }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{userUuid}}",
+						"services"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1",
+			"type": "string"
+		},
+		{
+			"key": "userUuid",
+			"value": ""
+		},
+		{
+			"key": "serviceUuid",
+			"value": ""
+		},
+		{
+			"key": "serviceUserId",
+			"value": ""
+		},
+		{
+			"key": "serviceUuid2",
+			"value": ""
+		}
+	]
+}

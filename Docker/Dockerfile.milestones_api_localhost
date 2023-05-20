@@ -5,6 +5,9 @@ WORKDIR /app
 RUN apt-get update
 RUN apt -y install iputils-ping vim
 RUN apt -y install default-mysql-client python3-pymysql alembic
+# Newman for tests
+RUN apt install -y nodejs npm
+RUN npm install -g newman
 
 # install dependencies first so that changes in application code do not invalidate
 # the cache of the layer with installed dependencies
