@@ -18,11 +18,13 @@ class ProgramAdminActions():
 
 	@staticmethod
 	async def get_program_admin(ids):
-		statement = select(AdminModel).where(
+		conditions = (
 			AdminModel.user_uuid == ids['user_uuid'],
 			AdminModel.client_uuid == ids['client_uuid'],
 			AdminModel.program_9char == ids['program_9char']
 		)
+
+		statement = select(AdminModel).where(*conditions)
 		return await CommonRoutes.exec_get_one(statement)
 
 	@staticmethod

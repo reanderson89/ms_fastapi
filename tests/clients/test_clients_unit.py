@@ -2,8 +2,8 @@ import pytest
 from typing import List
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
-from app.models.clients.clients_model import ClientModel
-from app.routers.v1.clients.clients_routers import router as clients_router
+from app.models.clients.clients_models import ClientModel
+from app.routers.v1.clients.client_router import router as clients_router
 from app.routers.v1.v1CommonRouting import CommonRoutes
 
 @pytest.fixture

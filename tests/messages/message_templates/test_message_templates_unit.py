@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routers.v1.messages.message_templates_router import router as msg_templates_router
+from app.routers.v1.messages.message_template_router import router as msg_templates_router
 
 app = FastAPI()
 app.include_router(msg_templates_router)

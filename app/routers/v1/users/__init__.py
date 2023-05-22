@@ -1,5 +1,5 @@
-from .users_routers import router as users_router
-from .services.user_service_routers import router as user_service_router
+from .user_router import router as users_router
+from .services.user_service_router import router as user_service_router
 from fastapi import APIRouter
 
 v1_users_router = APIRouter()

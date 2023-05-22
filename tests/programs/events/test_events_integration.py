@@ -2,7 +2,7 @@ import pytest
 import httpx
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routers.v1.programs.program_events_router import router as events_router
+from app.routers.v1.programs.program_event_router import router as events_router
 
 app = FastAPI()
 app.include_router(events_router)

@@ -3,8 +3,8 @@ import csv
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from app.routers.v1.users.users_routers import router as users_router
-from app.actions.users import users_actions
+from app.routers.v1.users.user_router import router as users_router
+from app.actions.users import user_actions
 from .dependencies import override_check_existing
 
 app = FastAPI()

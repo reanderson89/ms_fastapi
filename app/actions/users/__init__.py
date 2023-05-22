@@ -1,1 +1,1 @@
-from .users_actions import UsersActions
+from .user_actions import UsersActions

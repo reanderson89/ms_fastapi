@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routers.v1.programs.program_admins_router import router as admins_router
+from app.routers.v1.programs.program_admin_router import router as admins_router
 
 app = FastAPI()
 app.include_router(admins_router)
