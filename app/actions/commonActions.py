@@ -4,7 +4,7 @@ import json
 import time
 
 from fastapi import UploadFile, File
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import ExceptionHandling
 from app.utilities import SHA224Hash, PositiveNumbers
@@ -66,11 +66,11 @@ class CommonActions():
 	@staticmethod
 	async def update(statement, updates):
 		with Session(engine) as session:
-			response = session.exec(statement).one_or_none()
+			response = session.scalars(statement).one_or_none()
 			await ExceptionHandling.check404(response)
 
-			updated_fields = updates.dict(exclude_unset=True)
-			for key, value in updated_fields.items():
+			updated_mapped_columns = updates.dict(exclude_unset=True)
+			for key, value in updated_mapped_columns.items():
 				setattr(response, key, value)
 			session.add(response)
 			session.commit()

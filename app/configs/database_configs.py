@@ -1,6 +1,6 @@
 import os
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 env = os.environ.get('ENV', 'local')
 

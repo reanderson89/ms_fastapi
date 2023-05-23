@@ -1,10 +1,10 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.messages import MessageModel, MessageUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Messages"])
 
@@ -12,7 +12,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/messages", response_model=List[MessageModel])
+@router.get("/messages", response_model=list[MessageModel])
 async def get_messages(
 	client_uuid: str,
 	program_9char: str,
@@ -20,7 +20,7 @@ async def get_messages(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	messages = session.exec(
+	messages = session.scalars(
 		select(MessageModel).where(
 			MessageModel.client_uuid == client_uuid,
 			MessageModel.program_9char == program_9char
@@ -38,7 +38,7 @@ async def get_message(
 	message_9char: str,
 	session: Session = Depends(get_session)
 ):
-	message = session.exec(
+	message = session.scalars(
 		select(MessageModel).where(
 			MessageModel.client_uuid == client_uuid,
 			MessageModel.program_9char == program_9char,
@@ -48,8 +48,8 @@ async def get_message(
 	await ExceptionHandling.check404(message)
 	return message
 
-@router.post("/messages", response_model=(List[MessageModel] | MessageModel))
-async def create_message(message: (List[MessageModel] | MessageModel)):
+@router.post("/messages", response_model=(list[MessageModel] | MessageModel))
+async def create_message(message: (list[MessageModel] | MessageModel)):
 	return await CommonRoutes.create_one_or_many(message)
 
 # the endpoint might needs to be different for this not to conflict with create_message()
@@ -78,7 +78,7 @@ async def update_message(
 	message_updates: MessageUpdate,
 	session: Session = Depends(get_session)
 ):
-	message = session.exec(
+	message = session.scalars(
 		select(MessageModel)
 		.where(
 			MessageModel.client_uuid == client_uuid,
@@ -103,7 +103,7 @@ async def delete_message(
 	message_9char: str,
 	session: Session = Depends(get_session)
 ):
-	message = session.exec(
+	message = session.scalars(
 		select(MessageModel)
 		.where(
 			MessageModel.client_uuid == client_uuid,

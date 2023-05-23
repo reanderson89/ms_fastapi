@@ -1,11 +1,11 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
 from app.models.programs import ProgramModel, ProgramUpdate
 from app.actions.programs.program_actions import ProgramActions
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Programs"])
 
@@ -13,7 +13,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/programs/", response_model=List[ProgramModel])
+@router.get("/programs/", response_model=list[ProgramModel])
 async def get_programs(
 	client_uuid: str,
 	offset: int = 0,
@@ -31,7 +31,7 @@ async def get_program(
 
 @router.post("/programs/", response_model_by_alias=True)
 async def create_program(
-		programs: (List[ProgramModel] | ProgramModel),
+		programs: (list[ProgramModel] | ProgramModel),
 		client_uuid: str
 ):
 	return await ProgramActions.create_program_handler(programs, client_uuid)
@@ -51,7 +51,7 @@ async def delete_program(
 	program_9char: str,
 	session: Session = Depends(get_session)
 ):
-	program = session.exec(
+	program = session.scalars(
 		select(ProgramModel)
 		.where(
 			ProgramModel.program_9char == program_9char,

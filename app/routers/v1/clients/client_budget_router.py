@@ -1,5 +1,5 @@
-from typing import List, Optional
-from sqlmodel import Session
+from typing import Optional
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends
 from app.actions.clients.budgets import ClientBudgetActions
 from app.models.clients import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetExpanded
@@ -7,7 +7,7 @@ from app.actions.commonActions import CommonActions
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"])
 
-@router.get("/budgets", response_model=List[ClientBudgetModel])
+@router.get("/budgets", response_model=list[ClientBudgetModel])
 async def get_budgets(client_uuid: str, session: Session = Depends(CommonActions.get_session)):
 	return await ClientBudgetActions.get_all_budgets(client_uuid, session)
 

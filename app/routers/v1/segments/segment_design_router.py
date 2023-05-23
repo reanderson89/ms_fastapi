@@ -1,10 +1,10 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments import SegmentDesignModel, SegmentDesignUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Designs"])
 
@@ -12,7 +12,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/designs", response_model=List[SegmentDesignModel])
+@router.get("/designs", response_model=list[SegmentDesignModel])
 async def get_designs(
 	client_uuid: str,
 	program_9char: str,
@@ -21,7 +21,7 @@ async def get_designs(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	designs = session.exec(
+	designs = session.scalars(
 		select(SegmentDesignModel).where(
 			SegmentDesignModel.client_uuid == client_uuid,
 			SegmentDesignModel.program_9char == program_9char,
@@ -41,7 +41,7 @@ async def get_design(
 	design_9char: str,
 	session: Session = Depends(get_session)
 ):
-	design = session.exec(
+	design = session.scalars(
 		select(SegmentDesignModel)
 		.where(
 			SegmentDesignModel.design_9char == design_9char,
@@ -53,8 +53,8 @@ async def get_design(
 	await ExceptionHandling.check404(design)
 	return design
 
-@router.post("/designs", response_model=(List[SegmentDesignModel] | SegmentDesignModel))
-async def create_design(designs: (List[SegmentDesignModel] | SegmentDesignModel)):
+@router.post("/designs", response_model=(list[SegmentDesignModel] | SegmentDesignModel))
+async def create_design(designs: (list[SegmentDesignModel] | SegmentDesignModel)):
 	return await CommonRoutes.create_one_or_many(designs)
 
 @router.put("/designs/{design_9char}", response_model=SegmentDesignModel)
@@ -66,7 +66,7 @@ async def update_design(
 	design_updates: SegmentDesignUpdate,
 	session: Session = Depends(get_session)
 ):
-	design = session.exec(
+	design = session.scalars(
 		select(SegmentDesignModel)
 		.where(
 			SegmentDesignModel.design_9char == design_9char,
@@ -93,7 +93,7 @@ async def delete_design(
 	design_9char: str,
 	session: Session = Depends(get_session)
 ):
-	design = session.exec(
+	design = session.scalars(
 		select(SegmentDesignModel)
 		.where(
 			SegmentDesignModel.design_9char == design_9char,

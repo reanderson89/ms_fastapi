@@ -1,4 +1,5 @@
-from sqlmodel import Session, select
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
@@ -6,7 +7,6 @@ from app.utilities import SHA224Hash
 from app.actions.commonActions import CommonActions
 from app.actions.clients import ClientActions
 from app.models.clients import ClientBudgetModel, ClientBudgetExpanded, ClientModel, ClientBudgetShortExpand
-from typing import List, Optional
 from .client_sub_budget_actions import ClientSubBudgetActions
 
 class ClientBudgetActions():
@@ -27,7 +27,7 @@ class ClientBudgetActions():
 	@staticmethod
 	async def check_for_existing_budget_by_name(budget, client_uuid):
 		with Session(engine) as session:
-			existingBudget = session.exec(
+			existingBudget = session.scalars(
 				select(ClientBudgetModel)
 				.where(
 					ClientBudgetModel.name == budget.name, 
@@ -41,7 +41,7 @@ class ClientBudgetActions():
 
 	@staticmethod
 	async def get_all_budgets(client_uuid: str, session: Session):
-		budgets = session.exec(
+		budgets = session.scalars(
 			select(ClientBudgetModel)
 			.where(ClientBudgetModel.client_uuid == client_uuid)
 		).all()
@@ -50,7 +50,7 @@ class ClientBudgetActions():
 	
 	@staticmethod #this goes from child --> parent
 	async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session: Session):
-		return session.exec(
+		return session.scalars(
 			select(ClientBudgetModel)
 			.where(ClientBudgetModel.budget_9char == budget_9char,
 					ClientBudgetModel.client_uuid == client_uuid)
@@ -58,7 +58,7 @@ class ClientBudgetActions():
 	
 	@staticmethod #this goes from parent --> children
 	async def get_budgets_by_parent_9char(budget, session):
-		return session.exec(
+		return session.scalars(
 				select(ClientBudgetModel)
 				.where(ClientBudgetModel.parent_9char == budget.budget_9char,
 						ClientBudgetModel.client_uuid == budget.client_uuid)
@@ -155,7 +155,7 @@ class ClientBudgetActions():
 				if not await ClientSubBudgetActions.valid_child_budget(child_budget, parent):
 					return await ExceptionHandling.custom405("Unable to set new parent budget.")
 				else:
-					budget.budget_type = update_budget.budget_type
+					budget.budget_type = budget_updates.budget_type
 		if 'value' in budget_updates.dict(exclude_unset=True):
 			if budget.budget_type != 0  and await ClientSubBudgetActions.valid_child_budget(budget, parent):
 				budget_updates.value, parent, passthroughList = await ClientSubBudgetActions.sub_budget_expenditure(budget, parent, budget_updates.value, session)

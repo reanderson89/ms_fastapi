@@ -1,6 +1,6 @@
 # import time as time
-# from sqlalchemy.orm import Session
-# from sqlalchemy.exc import IntegrityError
+# from sqlalchemy.orm.orm import Session
+# from sqlalchemy.orm.exc import IntegrityError
 # from fastapi import HTTPException
 # from src.database.config import get_db
 
@@ -31,8 +31,8 @@
 # 	if instance is None:
 # 		return None
 
-# 	updated_fields = schema.dict(exclude_unset=True)
-# 	for key, value in updated_fields.items():
+# 	updated_mapped_columns = schema.dict(exclude_unset=True)
+# 	for key, value in updated_mapped_columns.items():
 # 		setattr(instance, key, value)
 
 # 	if hasattr(instance, 'update_time'):

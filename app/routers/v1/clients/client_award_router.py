@@ -1,10 +1,10 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
 from app.models.clients import ClientAwardModel, ClientAwardUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"])
 
@@ -12,14 +12,14 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/awards", response_model=List[ClientAwardModel])
+@router.get("/awards", response_model=list[ClientAwardModel])
 async def get_awards(
 	client_uuid: str,
 	offset: int = 0,
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	awards = session.exec(
+	awards = session.scalars(
 		select(ClientAwardModel)
 		.where(ClientAwardModel.client_uuid == client_uuid)
 		.offset(offset)
@@ -34,7 +34,7 @@ async def get_award(
 	award_9char: str,
 	session: Session = Depends(get_session),
 ):
-	award = session.exec(
+	award = session.scalars(
 		select(ClientAwardModel)
 		.where(ClientAwardModel.award_9char == award_9char,
 				ClientAwardModel.client_uuid == client_uuid)
@@ -42,8 +42,8 @@ async def get_award(
 	await ExceptionHandling.check404(award)
 	return award
 
-@router.post("/awards", response_model=(List[ClientAwardModel] | ClientAwardModel))
-async def create_award(awards: (List[ClientAwardModel] | ClientAwardModel)):
+@router.post("/awards", response_model=(list[ClientAwardModel] | ClientAwardModel))
+async def create_award(awards: (list[ClientAwardModel] | ClientAwardModel)):
 	return await CommonRoutes.create_one_or_many(awards)
 
 @router.put("/awards/{award_9char}", response_model=ClientAwardModel)
@@ -53,7 +53,7 @@ async def update_award(
 	award_updates: ClientAwardUpdate,
 	session: Session = Depends(get_session)
 ):
-	award = session.exec(
+	award = session.scalars(
 		select(ClientAwardModel)
 		.where(
 			ClientAwardModel.award_9char == award_9char,
@@ -76,7 +76,7 @@ async def update_award(
 async def delete_award(award_9char: str, client_uuid: str,
 			session: Session = Depends(get_session)):
 	#TODO: add check for programs
-	award = session.exec(
+	award = session.scalars(
 		select(ClientAwardModel)
 		.where(ClientAwardModel.award_9char == award_9char,
 				ClientAwardModel.client_uuid == client_uuid)

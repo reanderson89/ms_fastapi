@@ -1,10 +1,10 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments import SegmentModel, SegmentUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Segments"])
 
@@ -12,7 +12,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/segments", response_model=List[SegmentModel])
+@router.get("/segments", response_model=list[SegmentModel])
 async def get_segments(
 	client_uuid: str,
 	program_9char: str,
@@ -20,7 +20,7 @@ async def get_segments(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	segments = session.exec(
+	segments = session.scalars(
 		select(SegmentModel).where(
 			SegmentModel.client_uuid == client_uuid,
 			SegmentModel.program_9char == program_9char
@@ -38,7 +38,7 @@ async def get_segment(
 	segment_9char: str,
 	session: Session = Depends(get_session)
 ):
-	segment = session.exec(
+	segment = session.scalars(
 		select(SegmentModel)
 		.where(
 			SegmentModel.segment_9char == segment_9char,
@@ -49,8 +49,8 @@ async def get_segment(
 	await ExceptionHandling.check404(segment)
 	return segment
 
-@router.post("/segments", response_model=(List[SegmentModel] | SegmentModel))
-async def create_segment(segment: (List[SegmentModel] | SegmentModel)):
+@router.post("/segments", response_model=(list[SegmentModel] | SegmentModel))
+async def create_segment(segment: (list[SegmentModel] | SegmentModel)):
 	return await CommonRoutes.create_one_or_many(segment)
 
 @router.put("/segments/{segment_9char}", response_model=SegmentModel)
@@ -61,7 +61,7 @@ async def update_segment(
 	segment_updates: SegmentUpdate,
 	session: Session = Depends(get_session)
 ):
-	segment = session.exec(
+	segment = session.scalars(
 		select(SegmentModel)
 		.where(
 			SegmentModel.segment_9char == segment_9char,
@@ -86,7 +86,7 @@ async def delete_segment(
 	segment_9char: str,
 	session: Session = Depends(get_session)
 ):
-	segment = session.exec(
+	segment = session.scalars(
 		select(SegmentModel)
 		.where(
 			SegmentModel.segment_9char == segment_9char,

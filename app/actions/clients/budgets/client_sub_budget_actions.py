@@ -1,4 +1,5 @@
-from sqlmodel import Session, select
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.clients import ClientBudgetModel, budget_types
 from app.actions.commonActions import CommonActions
@@ -32,7 +33,7 @@ class ClientSubBudgetActions:
 	
 	@staticmethod
 	async def get_all_sub_budgets(budget_9char, client_uuid, session):
-		return session.exec(
+		return session.scalars(
 			select(ClientBudgetModel)
 			.where(ClientBudgetModel.client_uuid == client_uuid,
 					ClientBudgetModel.parent_9char == budget_9char)
@@ -62,7 +63,7 @@ class ClientSubBudgetActions:
 	async def find_next_static_budget(budget, session):
 		budgetExpendList = []
 		while budget.budget_type != 0:
-			budget = session.exec(
+			budget = session.scalars(
 				select(ClientBudgetModel)
 				.where(ClientBudgetModel.budget_9char == budget.parent_9char,
 						ClientBudgetModel.client_uuid == budget.client_uuid)

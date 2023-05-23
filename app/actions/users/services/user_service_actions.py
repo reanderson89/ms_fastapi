@@ -1,5 +1,5 @@
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.routers.v1.v1CommonRouting import ExceptionHandling, CommonRoutes
@@ -7,6 +7,7 @@ from app.models.users import UsersModel
 from app.actions.users import UsersActions
 from app.models.users import UserService, UsersServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.commonActions import CommonActions
+from sqlalchemy.orm import Session
 
 class UserServiceActions():
 
@@ -14,7 +15,7 @@ class UserServiceActions():
 	async def check_existing(item:UserServiceCreate):
 		id = item.service_user_id
 		with Session(engine) as session:
-			service =  session.exec(
+			service =  session.scalars(
 				select(UserService)
 				.where(UserService.service_user_id == id)
 				.where(UserService.user_uuid == UsersModel.uuid)
@@ -26,7 +27,7 @@ class UserServiceActions():
 	@staticmethod
 	async def check_service_id_for_existing_service_user(service_id):
 		with Session(engine) as session:
-			return session.exec(
+			return session.scalars(
 				select(UsersModel)
 				.where(UserService.service_user_id == service_id)
 			).one_or_none()
@@ -65,7 +66,7 @@ class UserServiceActions():
 	@classmethod
 	async def get_service(cls, user_uuid: str, service_uuid: str):
 		with Session(engine) as session:
-			service = session.exec(
+			service = session.scalars(
 				select(UserService)
 				.where(
 				UserService.user_uuid == user_uuid,
@@ -78,7 +79,7 @@ class UserServiceActions():
 	@classmethod
 	async def get_all_services(cls, user_uuid: str):
 		with Session(engine) as session:
-			services = session.exec(
+			services = session.scalars(
 				select(UserService)
 				.where(UserService.user_uuid == user_uuid)
 			).all()

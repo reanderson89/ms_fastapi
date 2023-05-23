@@ -1,5 +1,5 @@
 import pytest
-from typing import List
+
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 from app.models.clients.clients_models import ClientModel
@@ -89,8 +89,8 @@ def test_create_client(monkeypatch, client):
         "time_ping": 1,
     }
     response_data1 = request_data1
-    async def mock_create_one_or_many(items: (List[ClientModel] | ClientModel)):
-        if isinstance(items, List):
+    async def mock_create_one_or_many(items: (list[ClientModel] | ClientModel)):
+        if isinstance(items, list):
             return items
         else:
             return response_data1
@@ -119,8 +119,8 @@ def test_create_clients(monkeypatch, client):
     }
     response_data1 = request_data1
     response_data2 = request_data2
-    async def mock_create_one_or_many(items: (List[ClientModel] | ClientModel)):
-        if isinstance(items, List):
+    async def mock_create_one_or_many(items: (list[ClientModel] | ClientModel)):
+        if isinstance(items, list):
             return items
         else:
             return response_data1

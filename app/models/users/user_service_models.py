@@ -1,6 +1,7 @@
 from enum import Enum
-from sqlmodel import Field, SQLModel
+from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional
+from app.models.base_class import Base, BasePydantic
 
 class Service(str, Enum):
 	email = "email"
@@ -10,33 +11,33 @@ class UserServiceStatus(str, Enum):
 	exists = "exists"
 	created = "service created"
 
-class UserServiceBase(SQLModel):
-	uuid: str = Field(primary_key=True, default=None, max_length=56)
-	user_uuid: Optional[str] = Field(default=None, description="UUID set from `users` table")
-	service_uuid: Optional[str] = Field(default=None)
-	service_user_id: Optional[str] = Field(default=None, max_length=255)
-	service_user_screenname: Optional[str] = Field(default=None, max_length=255)
-	service_user_name: Optional[str] = Field(default=None, max_length=255)
-	service_access_token: Optional[str] = Field(default=None, max_length=255)
-	service_access_secret: Optional[str] = Field(default=None, max_length=255)
-	service_refresh_token: Optional[str] = Field(default=None, max_length=255)
-	time_created: Optional[int] = None
-	time_updated: Optional[int] = None
-	#TODO: implement when secret and token are added to db schema
-	# login_secret: Optional[str] = Field(default=None, max_length=56)
-	# login_token: Optional[str] = Field(default=None, max_length=56)
-
-class UserService(UserServiceBase, table=True):
+class UserService(Base):
 	__tablename__ = "user_service"
+	
+	uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
+	user_uuid: Mapped[Optional[str]] = mapped_column(default=None)
+	service_uuid: Mapped[Optional[str]] = mapped_column(default=None)
+	service_user_id: Mapped[Optional[str]] = mapped_column(default=None)
+	service_user_screenname: Mapped[Optional[str]] = mapped_column(default=None)
+	service_user_name: Mapped[Optional[str]] = mapped_column(default=None)
+	service_access_token: Mapped[Optional[str]] = mapped_column(default=None)
+	service_access_secret: Mapped[Optional[str]] = mapped_column(default=None)
+	service_refresh_token: Mapped[Optional[str]] = mapped_column(default=None)
+	time_created: Mapped[Optional[int]] = mapped_column(default=None)
+	time_updated: Mapped[Optional[int]] = mapped_column(default=None)
+	#TODO: implement when secret and token are added to db schema
+	# login_secret: Optional[str] = mapped_column(default=None)
+	# login_token: Optional[str] = mapped_column(default=None)
+	
 
-class UserServiceCreate(SQLModel):
+class UserServiceCreate(BasePydantic):
 	service_uuid: Service
 	service_user_id: str
 
-class ServiceStatus(UserServiceBase):
-	status: UserServiceStatus = Field(description="This field can have the values 'exists' or 'admin created'.")
+class ServiceStatus(BasePydantic):
+	status: UserServiceStatus = None#(description="This mapped_column can have the values 'exists' or 'admin created'.")
 
-class UsersServiceUpdate(SQLModel):
+class UsersServiceUpdate(BasePydantic):
 	service_user_screenname: Optional[str]
 	service_user_name: Optional[str]
 	service_access_token: Optional[str]
@@ -46,6 +47,5 @@ class UsersServiceUpdate(SQLModel):
 class ServiceBulk(UsersServiceUpdate):
 	uuid: str
 
-
-class ServiceDelete(SQLModel):
+class ServiceDelete(BasePydantic):
 	service_uuid: str

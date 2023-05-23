@@ -1,36 +1,31 @@
-from sqlmodel import Field, SQLModel
+from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional
-from uuid import uuid4
+from app.models.base_class import Base, BasePydantic
 
-class ClientModel(SQLModel, table=True):
+
+class ClientModel(Base):
 	__tablename__ = "client"
 
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
-	name: str = Field(default=None, index=True, max_length=255)
-	description: str = Field(default=None, index=True)
-	time_created: int = None
-	time_updated: int = None
-	time_ping: int = None
+	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
+	name: Mapped[str] = mapped_column(default=None, index=True)
+	description: Mapped[str] = mapped_column(default=None, index=True)
+	time_created: Mapped[int] = mapped_column(default=None)
+	time_updated: Mapped[int] = mapped_column(default=None)
+	time_ping: Mapped[int] = mapped_column(default=None)
 
-class ClientBase(SQLModel):
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
-	name: str = Field(default=None, index=True, max_length=255)
-	description: str = Field(default=None, index=True)
-	time_created: int = None
-	time_updated: int = None
-	time_ping: int = None
+# class ClientBase(ClientTable):
+# 	uuid: Mapped[str] = mapped_column(default=None, index=True)
+# 	name: Mapped[str] = mapped_column(default=None, index=True)
+# 	description: Mapped[str] = mapped_column(default=None, index=True)
+# 	time_created: Mapped[int] = None
+# 	time_updated: Mapped[int] = None
+# 	time_ping: Mapped[int] = None
 
-
-class Client(ClientBase):
-	__tablename__ = "user"
-
-
-class ClientExpanded(ClientBase):
+class ClientExpanded(BasePydantic):
 	budgets: dict = None
 
-
-class ClientUpdate(SQLModel, table=False):
-	name: Optional[str] = Field(default=None, max_length=255)
+class ClientUpdate(BasePydantic):
+	name: Optional[str] = None
 	description: Optional[str] = None
 	time_updated: Optional[int] = None
 	time_ping: Optional[int] = None

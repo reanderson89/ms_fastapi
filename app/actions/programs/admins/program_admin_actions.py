@@ -1,6 +1,6 @@
 from time import time
-from typing import List
-from sqlmodel import select
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.routers.v1.v1CommonRouting import CommonRoutes
@@ -41,14 +41,17 @@ class ProgramAdminActions():
 			time_updated=current_time
 		)
 		admin = await CommonRoutes.exec_add_one(admin)
-		return AdminStatus.from_orm(admin, {"status":"admin created"})
+		admin = AdminStatus.from_orm(admin)
+		admin.status = "admind created"
+		return admin
 
 	@classmethod
-	async def create_program_admins(cls, ids: dict, admins: List):
+	async def create_program_admins(cls, ids: dict, admins: list):
 		for admin in admins:
 			if isinstance(admin, AdminCreate):
 				new_admin = await cls.create_program_admin(ids, admin)
-				admin = AdminStatus.from_orm(new_admin, {"status":"admin created"})
+				admin = AdminStatus.from_orm(new_admin)
+				admin.status = "admin created"
 
 	@staticmethod
 	async def update_program_admin(ids: dict, updates: AdminUpdate):
@@ -83,5 +86,7 @@ class ProgramAdminActions():
 			return users
 		admin = await ProgramAdminActions.get_admin_by_user_id(users.user_uuid)
 		if admin:
-			return AdminStatus.from_orm(admin, {"status":"exists"})
+			admin = AdminStatus.from_orm(admin)#, {"status":"exists"})
+			admin.status = "exists"
+			return admin
 		return users

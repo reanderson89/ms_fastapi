@@ -1,42 +1,28 @@
 from typing import Optional
-from sqlmodel import Field, SQLModel
+from sqlalchemy.orm import Mapped, mapped_column
+from app.models.base_class import Base, BasePydantic
 
+class UsersBase():
+	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
+	first_name: Mapped[str] = mapped_column(default=None)
+	last_name: Mapped[str] = mapped_column(default=None)
+	latitude: Mapped[int] = mapped_column(default=None)
+	longitude: Mapped[int] = mapped_column(default=None)
+	time_created: Mapped[int] = mapped_column(default=None)
+	time_updated: Mapped[int] = mapped_column(default=None)
+	time_ping: Mapped[int] = mapped_column(default=None)
+	time_birthday: Mapped[int] = mapped_column(default=None)
 
-class UserBase(SQLModel):
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
-	first_name: str = Field(default=None, max_length=255)
-	last_name: str = Field(default=None, max_length=255)
-	latitude: int = None
-	longitude: int = None
-	time_created: int = None
-	time_updated: int = None
-	time_ping: int = None
-	time_birthday: int = None
-
-# Alternate implemetnation for SQMModel table using inheritance
-class User(UserBase):
+class UsersModel(Base, UsersBase):
 	__tablename__ = "user"
 
-class UserExpanded(UserBase):
-	services: dict = None
-
-class UsersModel(SQLModel, table=True):
-	__tablename__ = "user"
-
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
-	first_name: str = Field(default=None, max_length=255)
-	last_name: str = Field(default=None, max_length=255)
-	latitude: int = None
-	longitude: int = None
-	time_created: int = None
-	time_updated: int = None
-	time_ping: int = None
-	time_birthday: int = None
-
-class UsersUpdate(SQLModel, table=False):
-	first_name: Optional[str] = Field(default=None, max_length=255)
-	last_name: Optional[str] = Field(default=None, max_length=255)
+class UsersUpdate(BasePydantic):
+	first_name: Optional[str] = mapped_column(default=None)
+	last_name: Optional[str] = mapped_column(default=None)
 	latitude: Optional[int] = None
 	longitude: Optional[int] = None
 	time_updated: Optional[int] = None
 	time_ping: Optional[int] = None
+
+class UserExpanded(BasePydantic):
+	services: dict = None

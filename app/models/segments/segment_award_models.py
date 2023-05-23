@@ -1,20 +1,21 @@
-from sqlmodel import SQLModel, Field
+from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional
+from app.models.base_class import Base, BasePydantic
 
-class SegmentAward(SQLModel, table=True):
+class SegmentAward(Base):
 	__tablename__ = "program_segment_award"
 
-	uuid: str = Field(default=None, primary_key=True, max_length=81)
-	program_uuid: str = Field(default=None, index=True, max_length=65, foreign_key="program.uuid")
-	program_9char: str = Field(default=None, max_length=9, foreign_key="program.program_9char")
-	segment_9char: str = Field(default=None, max_length=9, foreign_key="program_segment_rule.segment_9char")
-	award_9char: str = Field(default=None, max_length=9)
-	client_uuid: str = Field(default=None, max_length=56, foreign_key="client.uuid")
-	time_created: int = None
-	time_updated: int = None
+	uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
+	program_uuid: Mapped[str] = mapped_column(default=None, index=True)
+	program_9char: Mapped[str] = mapped_column(default=None)
+	segment_9char: Mapped[str] = mapped_column(default=None)
+	award_9char: Mapped[str] = mapped_column(default=None)
+	client_uuid: Mapped[str] = mapped_column(default=None)
+	time_created: Mapped[int] = mapped_column(default=None)
+	time_updated: Mapped[int] = mapped_column(default=None)
 
-class SegmentAwardUpdate(SQLModel):
-	program_9char: str = Field(default=None, max_length=9)
-	segment_9char: str = Field(default=None, max_length=9)
-	award_9char: str = Field(default=None, max_length=9)
-	time_updated: int = None
+class SegmentAwardUpdate(BasePydantic):
+	program_9char: Optional[str] = None
+	segment_9char: Optional[str] = None
+	award_9char: Optional[str] = None
+	time_updated: Optional[int] = None

@@ -1,13 +1,12 @@
-from typing import List
 from fastapi import APIRouter, Depends
 from app.models.clients import ClientUserModel, ClientUserUpdate
 from app.actions.clients.user import ClientUserActions
 from app.actions.commonActions import CommonActions
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Users"])
 
-@router.get("/users", response_model=List[ClientUserModel])
+@router.get("/users", response_model=list[ClientUserModel])
 async def get_users(client_uuid: str, session: Session = Depends(CommonActions.get_session)):
 	return await ClientUserActions.getAllUsers(client_uuid, session)
 
@@ -15,9 +14,9 @@ async def get_users(client_uuid: str, session: Session = Depends(CommonActions.g
 async def get_user(client_uuid: str, user_uuid: str, session: Session = Depends(CommonActions.get_session)):
 	return await ClientUserActions.getUser(client_uuid, user_uuid, session)
 
-@router.post("/users", response_model=(List[ClientUserModel] | ClientUserModel))
-async def create_user(client_uuid: str,	users: (List[dict] | dict), session: Session = Depends(CommonActions.get_session)):
-	if users is List:
+@router.post("/users", response_model=(list[ClientUserModel] | ClientUserModel))
+async def create_user(client_uuid: str,	users: (list[dict] | dict), session: Session = Depends(CommonActions.get_session)):
+	if users is list:
 		for user in users:
 			user = await ClientUserActions.createClientUser(user, client_uuid, session)
 	else:

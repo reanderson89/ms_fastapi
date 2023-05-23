@@ -1,10 +1,10 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments import SegmentRuleModel, SegmentRuleUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Rules"])
 
@@ -12,7 +12,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/rules", response_model=List[SegmentRuleModel])
+@router.get("/rules", response_model=list[SegmentRuleModel])
 async def get_rules(
 	client_uuid: str,
 	program_9char: str,
@@ -21,7 +21,7 @@ async def get_rules(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	rules = session.exec(
+	rules = session.scalars(
 		select(SegmentRuleModel)
 		.where(
 			SegmentRuleModel.client_uuid == client_uuid,
@@ -42,7 +42,7 @@ async def get_rule(
 	rule_9char: str,
 	session: Session = Depends(get_session)
 ):
-	rule = session.exec(
+	rule = session.scalars(
 		select(SegmentRuleModel)
 		.where(
 			SegmentRuleModel.rule_9char == rule_9char,
@@ -54,8 +54,8 @@ async def get_rule(
 	await ExceptionHandling.check404(rule)
 	return rule
 
-@router.post("/rules", response_model=(List[SegmentRuleModel] | SegmentRuleModel))
-async def create_rule(rules: (List[SegmentRuleModel] | SegmentRuleModel)):
+@router.post("/rules", response_model=(list[SegmentRuleModel] | SegmentRuleModel))
+async def create_rule(rules: (list[SegmentRuleModel] | SegmentRuleModel)):
 	return await CommonRoutes.create_one_or_many(rules)
 
 @router.put("/rules/{rule_9char}", response_model=SegmentRuleModel)
@@ -67,7 +67,7 @@ async def update_rule(
 	rule_updates: SegmentRuleUpdate,
 	session: Session = Depends(get_session)
 ):
-	rule = session.exec(
+	rule = session.scalars(
 		select(SegmentRuleModel)
 		.where(
 			SegmentRuleModel.rule_9char == rule_9char,
@@ -94,7 +94,7 @@ async def delete_rule(
 	rule_9char: str,
 	session: Session = Depends(get_session)
 ):
-	rule = session.exec(
+	rule = session.scalars(
 		select(SegmentRuleModel)
 		.where(
 			SegmentRuleModel.rule_9char == rule_9char,

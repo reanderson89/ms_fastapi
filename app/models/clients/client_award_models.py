@@ -1,24 +1,25 @@
-from sqlmodel import Field, SQLModel
-from typing import List, Optional
+from sqlalchemy.orm import Mapped, mapped_column
+from app.models.base_class import Base, BasePydantic
+from typing import Optional
 
-class ClientAwardModel(SQLModel, table=True):
+class ClientAwardModel(Base):
 	__tablename__ = "client_award"
 
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=65)
-	client_uuid: str = Field(default=None, index=True, foreign_key="client.uuid", max_length=56)
-	award_9char: str = Field(default=None, index=None, max_length=9)
-	award_type: int = Field(default=0)
-	name: str = Field(default=None, max_length=255)
-	description: str = Field(default=None)
-	hero_image: str = Field(default=None, max_length=255)
-	channel: int = Field(default=0)
-	time_created: int = None
-	time_updated: int = None
+	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
+	client_uuid: Mapped[str] = mapped_column(default=None, index=True)
+	award_9char: Mapped[str] = mapped_column(default=None, index=None)
+	award_type: Mapped[int] = mapped_column(default=0)
+	name: Mapped[str] = mapped_column(default=None)
+	description: Mapped[str] = mapped_column(default=None)
+	hero_image: Mapped[str] = mapped_column(default=None)
+	channel: Mapped[int] = mapped_column(default=0)
+	time_created: Mapped[int] = mapped_column(default=None)
+	time_updated: Mapped[int] = mapped_column(default=None)
 
-class ClientAwardUpdate(SQLModel, table=False):
+class ClientAwardUpdate(BasePydantic):
 	award_type: Optional[int] = None
-	name: Optional[str] = Field(default=None, max_length=255)
+	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[str] = Field(default=None, max_length=255)
+	hero_image: Optional[str] = None
 	channel: Optional[int] = 0
 	time_updated: Optional[int] = 0

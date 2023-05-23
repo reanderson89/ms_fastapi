@@ -5,14 +5,15 @@ from app.models.users import UsersModel, UserService
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
-from sqlmodel import select, Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from app.database.config import engine
 
 class ClientUserActions():
 
 	@staticmethod
 	async def get_client_user_by_user_uuid(uuid: str, session: Session):
-		return session.exec(
+		return session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.user_uuid == uuid)
 		).one_or_none()
@@ -24,7 +25,7 @@ class ClientUserActions():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please inclue either email address or the user_uuid.")
 		
 		if 'email_address' in data.keys():
-			user = session.exec(
+			user = session.scalars(
 				select(UsersModel)
 				.where(UserService.service_user_id == data['email_address'])
 			).one_or_none()
@@ -34,7 +35,7 @@ class ClientUserActions():
 			client_user = await cls.get_client_user_by_user_uuid(uuid, session)
 			if client_user:
 				return client_user
-		
+
 		if not user and 'email_address' in data.keys():
 			user = await UserServiceActions.create_service_user(data)
 
@@ -63,7 +64,7 @@ class ClientUserActions():
 
 	@staticmethod
 	async def getAllUsers(client_uuid, session: Session):
-		users = session.exec(
+		users = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid)
 		).all()
@@ -74,7 +75,7 @@ class ClientUserActions():
 	async def getUser(client_uuid, user_uuid, session: Session):
 		if not session:
 			session = Session(engine)
-		user = session.exec(
+		user = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid,
 					UsersModel.uuid == user_uuid)
@@ -84,7 +85,7 @@ class ClientUserActions():
 
 	@staticmethod
 	async def updateUser(client_uuid, user_uuid, user_updates, session: Session):
-		user = session.exec(
+		user = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid,
 					ClientUserModel.uuid == user_uuid)
@@ -101,7 +102,7 @@ class ClientUserActions():
 
 	@staticmethod
 	async def deleteUser(client_uuid, user_uuid, session: Session):
-		user = session.exec(
+		user = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid,
 					ClientUserModel.uuid == user_uuid)

@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 from fastapi import APIRouter, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.models.users import UsersServiceUpdate, UserService, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk
@@ -33,8 +33,8 @@ async def update_service(
 ):
 	return await UserServiceActions.update_service(user_uuid, service_uuid, service_updates)
 
-@router.put("/services/", response_model=List[UserService])
-async def bulk_update_services(user_uuid: str, updates: List[ServiceBulk]):
+@router.put("/services/", response_model=list[UserService])
+async def bulk_update_services(user_uuid: str, updates: list[ServiceBulk]):
 	update_list = []
 	for update in updates:
 		db_update = UsersServiceUpdate.from_orm(update)
@@ -48,7 +48,7 @@ async def delete_service(service_uuid: str):
 	return await CommonRoutes.delete_one(service_uuid, UserService)
 
 @router.delete("/services")
-async def bulk_delete_service(service_delete: List[ServiceDelete]):
+async def bulk_delete_service(service_delete: list[ServiceDelete]):
 	deleted_services = []
 	for service in service_delete:
 		deleted_services.append(

@@ -1,16 +1,17 @@
-from typing import List, Optional
-from sqlmodel import Field, SQLModel
+from typing import Optional
+from sqlalchemy.orm import Mapped, mapped_column
+from app.models.base_class import Base, BasePydantic
 
-class MessageTemplateModel(SQLModel, table=True):
-	__tablename__ = "message_template"
+class MessageTemplateModel(Base):
+    __tablename__ = "message_template"
 
-	uuid: str = Field(default=None, primary_key=True, index=True, max_length=56)
-	channel: int = Field(default=None)
-	body: str = Field(default=None)
-	time_created: int = None
-	time_updated: int = None
+    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
+    channel: Mapped[int] = mapped_column(default=None)
+    body: Mapped[str] = mapped_column(default=None)
+    time_created: Mapped[int] = mapped_column(default=None)
+    time_updated: Mapped[int] = mapped_column(default=None)
 
-class MessageTemplateUpdateModel(SQLModel, table=False):
-	channel: Optional[int]
-	body: Optional[str]
-	time_updated: Optional[int]
+class MessageTemplateUpdateModel(BasePydantic):
+    channel: Optional[int]
+    body: Optional[str]
+    time_updated: Optional[int]

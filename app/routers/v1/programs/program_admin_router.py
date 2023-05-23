@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 from fastapi import APIRouter, Query, Depends
 from app.models.programs import AdminModel, AdminUpdate, AdminCreate, AdminStatus, AdminExpand
 from app.actions.programs.admins import ProgramAdminActions
@@ -12,7 +12,7 @@ def common_uuids(client_uuid: str, program_9char: str, user_uuid: str=None):
 def common_args(offset: int, limit: int = Query(default=100, lte=100)):
 	return {"offset": offset, "limit": limit}
 
-@router.get("/admins", response_model=List[AdminModel])
+@router.get("/admins", response_model=list[AdminModel])
 async def get_admins(
 	args: dict = Depends(common_args),
 	ids: dict = Depends(common_uuids)
@@ -26,10 +26,10 @@ async def get_admin(
 ):
 	return await ProgramAdminActions.get_program_admin(ids)
 
-@router.post("/admins", response_model= Union[AdminStatus, List[AdminStatus]])
+@router.post("/admins", response_model= Union[AdminStatus, list[AdminStatus]])
 async def create_admin(
 	ids: dict = Depends(common_uuids),
-	admins: Union[AdminCreate, List[AdminCreate]] = Depends(ProgramAdminActions.check_existing)
+	admins: Union[AdminCreate, list[AdminCreate]] = Depends(ProgramAdminActions.check_existing)
 ):
 	if isinstance(admins, list):
 		for admin in admins:

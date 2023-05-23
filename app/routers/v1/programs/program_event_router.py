@@ -1,6 +1,6 @@
-from typing import List
 from time import time
-from sqlmodel import Session, select
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, Query, Depends
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
@@ -12,7 +12,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/events", response_model=List[ProgramEventModel])
+@router.get("/events", response_model=list[ProgramEventModel])
 async def get_events(
 	client_uuid: str,
 	program_9char: str,
@@ -20,7 +20,7 @@ async def get_events(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	events = session.exec(
+	events = session.scalars(
 		select(ProgramEventModel).where(
 			ProgramEventModel.client_uuid == client_uuid,
 			ProgramEventModel.program_9char == program_9char
@@ -38,7 +38,7 @@ async def get_event(
 	event_9char: str,
 	session: Session = Depends(get_session)
 ):
-	event = session.exec(
+	event = session.scalars(
 		select(ProgramEventModel)
 		.where(
 			ProgramEventModel.event_9char == event_9char,
@@ -49,8 +49,8 @@ async def get_event(
 	await ExceptionHandling.check404(event)
 	return event
 
-@router.post("/events", response_model=(List[ProgramEventModel] | ProgramEventModel))
-async def create_event(events: (List[ProgramEventModel] | ProgramEventModel)):
+@router.post("/events", response_model=(list[ProgramEventModel] | ProgramEventModel))
+async def create_event(events: (list[ProgramEventModel] | ProgramEventModel)):
 	return await CommonRoutes.create_one_or_many(events)
 
 @router.put("/events/{event_9char}", response_model=ProgramEventModel)
@@ -61,7 +61,7 @@ async def update_event(
 	event_updates: ProgramEventUpdate,
 	session: Session = Depends(get_session)
 ):
-	event = session.exec(
+	event = session.scalars(
 		select(ProgramEventModel)
 		.where(
 			ProgramEventModel.event_9char == event_9char,
@@ -88,7 +88,7 @@ async def delete_event(
 	event_9char: str,
 	session: Session = Depends(get_session)
 ):
-	event = session.exec(
+	event = session.scalars(
 		select(ProgramEventModel)
 		.where(
 			ProgramEventModel.event_9char == event_9char,

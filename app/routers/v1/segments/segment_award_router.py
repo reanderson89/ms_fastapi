@@ -1,10 +1,11 @@
 from time import time
-from typing import List
+
 from fastapi import APIRouter, Query, Depends
-from sqlmodel import Session, select
+from sqlalchemy import select
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments import SegmentAward, SegmentAwardUpdate
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Awards"])
 
@@ -12,7 +13,7 @@ def get_session():
 	with Session(engine) as session:
 		yield session
 
-@router.get("/awards", response_model=List[SegmentAward])
+@router.get("/awards", response_model=list[SegmentAward])
 async def get_awards(
 	client_uuid: str,
 	program_9char: str,
@@ -21,7 +22,7 @@ async def get_awards(
 	limit: int = Query(default=100, lte=100),
 	session: Session = Depends(get_session)
 ):
-	awards = session.exec(
+	awards = session.scalars(
 		select(SegmentAward)
 		.where(
 			SegmentAward.client_uuid == client_uuid,
@@ -42,7 +43,7 @@ async def get_award(
 	award_9char: str,
 	session: Session = Depends(get_session)
 ):
-	award = session.exec(
+	award = session.scalars(
 		select(SegmentAward)
 		.where(
 			SegmentAward.award_9char == award_9char,
@@ -54,8 +55,8 @@ async def get_award(
 	await ExceptionHandling.check404(award)
 	return award
 
-@router.post("/awards", response_model=(List[SegmentAward] | SegmentAward))
-async def create_award(award: (List[SegmentAward] | SegmentAward)):
+@router.post("/awards", response_model=(list[SegmentAward] | SegmentAward))
+async def create_award(award: (list[SegmentAward] | SegmentAward)):
 	return await CommonRoutes.create_one_or_many(award)
 
 @router.put("/awards/{award_9char}", response_model=SegmentAward)
@@ -67,7 +68,7 @@ async def update_award(
 	award_update: SegmentAwardUpdate,
 	session: Session = Depends(get_session)
 ):
-	award = session.exec(
+	award = session.scalars(
 		select(SegmentAward)
 		.where(
 			SegmentAward.award_9char == award_9char,
@@ -94,7 +95,7 @@ async def delete_award(
 	award_9char: str,
 	session: Session = Depends(get_session)
 ):
-	award = session.exec(
+	award = session.scalars(
 		select(SegmentAward)
 		.where(
 			SegmentAward.award_9char == award_9char,

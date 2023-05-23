@@ -1,32 +1,32 @@
 from app.database.config import engine
+from sqlalchemy.orm import Session
 from app.utilities import SHA224Hash
-from sqlmodel import Session, select
+from sqlalchemy import select
 from fastapi import HTTPException
-from typing import List
 from time import time
 
 class CommonRoutes():
 
 	async def get_all(model):
 		with Session(engine) as session:
-			items = session.exec(select(model)).all()
+			items = session.scalars(select(model)).all()
 			await ExceptionHandling.check404(items)
 			return items
 
 	async def exec_get_all(statement):
 		with Session(engine) as session:
-			items = session.exec(statement).all()
+			items = session.scalars(statement).all()
 			await ExceptionHandling.check404(items)
 			return items
 
 	async def exec_get_one(statement):
 		with Session(engine) as session:
-			response = session.exec(statement).one_or_none()
+			response = session.scalars(statement).one_or_none()
 			return response
 
 	# Test Implementation of async Sessions, rest of the test code is in db_configs.py
-	# from sqlalchemy.ext.asyncio import AsyncSession
-	# from sqlalchemy.future import select
+	# from sqlalchemy.orm.ext.asyncio import AsyncSession
+	# from sqlalchemy.orm.future import select
 	# async def get_all(model):
 	# 	async with AsyncSession(engine) as session:
 	# 		items = await session.execute(select(model))
@@ -42,7 +42,7 @@ class CommonRoutes():
 
 	async def create_one_or_many(items):
 		with Session(engine) as session:
-			if isinstance(items, List):
+			if isinstance(items, list):
 				for item in items:
 					item.uuid = SHA224Hash() if item.uuid is None else None
 					item.time_created = item.time_updated = int(time())
@@ -54,7 +54,7 @@ class CommonRoutes():
 
 			session.commit()
 
-			if isinstance(items, List):
+			if isinstance(items, list):
 				for item in items:
 					session.refresh(item)
 			else:
@@ -72,8 +72,8 @@ class CommonRoutes():
 		with Session(engine) as session:
 			db_item = session.get(original_model, search_by)
 			await ExceptionHandling.check404(db_item)
-			updated_fields = update_model.dict(exclude_unset=True)
-			for key, value in updated_fields.items():
+			updated_mapped_columns = update_model.dict(exclude_unset=True)
+			for key, value in updated_mapped_columns.items():
 				setattr(db_item, key, value)
 			if(db_item.time_updated):
 				db_item.time_updated = int(time())
@@ -87,8 +87,8 @@ class CommonRoutes():
 			response = session.exec(statement).one_or_none()
 			await ExceptionHandling.check404(response)
 
-			updated_fields = updates.dict(exclude_unset=True)
-			for key, value in updated_fields.items():
+			updated_mapped_columns = updates.dict(exclude_unset=True)
+			for key, value in updated_mapped_columns.items():
 				setattr(response, key, value)
 			session.add(response)
 			session.commit()

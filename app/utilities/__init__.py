@@ -120,7 +120,7 @@ def processFormArgs(env, args):
 		post_env['QUERY_STRING'] = ''
 
 		if 'CONTENT_TYPE' not in env or env['CONTENT_TYPE'] != 'application/json':
-			form = cgi.FieldStorage(
+			form = cgi.mapped_columnStorage(
 				fp=wsgi_input,
 				environ=post_env,
 				keep_blank_values=True
@@ -426,8 +426,8 @@ class UtilityClass:
 			if value is not None
 		}
 
-	#TODO: check if d2(existing obj) has null values or None values. If NUlls, check if a None to null compare is passing or not. if so, might be a good reason to remove None values in BaseActions.get_fields()
-	#TODO: possibly, rename d1 to required_fields and d2 to existing_obj
+	#TODO: check if d2(existing obj) has null values or None values. If NUlls, check if a None to null compare is passing or not. if so, might be a good reason to remove None values in BaseActions.get_mapped_columns()
+	#TODO: possibly, rename d1 to required_mapped_columns and d2 to existing_obj
 	@staticmethod
 	def check_value_match(d1, d2):
 		for key, value in d1.items():
@@ -455,8 +455,8 @@ class UtilityClass:
 
 	@staticmethod
 	def validate_args(self, args):
-		missing_fields = [field for field in args if not getattr(self, field)]
-		if missing_fields:
-			raise Exception(f'Missing required field(s): {missing_fields}')
+		missing_mapped_columns = [mapped_column for mapped_column in args if not getattr(self, mapped_column)]
+		if missing_mapped_columns:
+			raise Exception(f'Missing required mapped_column(s): {missing_mapped_columns}')
 		else:
 			return True

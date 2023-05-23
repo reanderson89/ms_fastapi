@@ -1,5 +1,5 @@
 import os
-from typing import List, Union
+from typing import Union
 from fastapi import APIRouter, Depends, HTTPException, Response
 from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.actions.users.services import UserServiceActions
@@ -9,7 +9,7 @@ test_mode = os.getenv("TEST_MODE", False)
 
 router = APIRouter(tags=["Users"])
 
-@router.get("/users", response_model=List[UsersModel])
+@router.get("/users", response_model=list[UsersModel])
 async def get_users():
 	return await CommonRoutes.get_all(UsersModel)
 
@@ -21,12 +21,11 @@ async def get_user(user_uuid: str, expand_services: bool = False):
 		user_expanded.services = await UserServiceActions.get_all_services(user_uuid)
 		response_model = UserExpanded
 		return response_model.from_orm(user_expanded)
-	response_model = UsersModel
-	return response_model.from_orm(user)
+	return user
 
 @router.post("/users", response_model=UsersModel)
-async def create_user(users: dict):#(List[UserService] | UserService)):
-	if users is List:
+async def create_user(users: dict):#(list[UserService] | UserService)):
+	if users is list:
 		for user in users:
 			user = await UserServiceActions.create_service_user(user)
 	else:
