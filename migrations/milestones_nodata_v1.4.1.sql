@@ -534,6 +534,9 @@ UNLOCK TABLES;
 --
 -- Table structure for table `user_service`
 --
+--
+-- Table structure for table `user_service`
+--
 
 DROP TABLE IF EXISTS `user_service`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -550,10 +553,14 @@ CREATE TABLE `user_service` (
   `service_refresh_token` varchar(255) DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
+  `login_secret` varchar(56) DEFAULT NULL,
+  `login_token` varchar(56) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `USUSER` (`user_uuid`),
   KEY `USSERVICE` (`service_uuid`),
-  KEY `USSERVICEID` (`service_user_id`)
+  KEY `USSERVICEID` (`service_user_id`),
+  KEY `USLOGINSECRET` (`login_secret`),
+  KEY `USLOGINTOKEN` (`login_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

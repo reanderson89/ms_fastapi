@@ -25,9 +25,8 @@ class UserService(Base):
 	service_refresh_token: Mapped[Optional[str]] = mapped_column(default=None)
 	time_created: Mapped[Optional[int]] = mapped_column(default=None)
 	time_updated: Mapped[Optional[int]] = mapped_column(default=None)
-	#TODO: implement when secret and token are added to db schema
-	# login_secret: Optional[str] = mapped_column(default=None)
-	# login_token: Optional[str] = mapped_column(default=None)
+	login_secret: Mapped[Optional[str]] = mapped_column(default=None)
+	login_token: Mapped[Optional[str]] = mapped_column(default=None)
 	
 
 class UserServiceCreate(BasePydantic):
@@ -43,7 +42,8 @@ class UsersServiceUpdate(BasePydantic):
 	service_access_token: Optional[str]
 	service_access_secret: Optional[str]
 	service_refresh_token: Optional[str]
-
+	login_secret: Optional[str]
+	login_token: Optional[str]
 class ServiceBulk(UsersServiceUpdate):
 	uuid: str
 
