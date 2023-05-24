@@ -103,6 +103,7 @@ CREATE TABLE `client_budget` (
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   `active` tinyint(4) DEFAULT NULL,
+  `budget_type` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `CBCLIENTUUID` (`client_uuid`),
   KEY `CBBUDGET9CHAR` (`budget_9char`),
