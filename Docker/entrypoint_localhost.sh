@@ -33,7 +33,7 @@ if [ -f "${ALEMBIC_INI_FILE}" ]; then
     # back up original ini file for good measure
     cp ${ALEMBIC_INI_FILE} "${ALEMBIC_INI_FILE}.bak"
     echo "Setting alembic connection string to use env vars for sqlalchemy.url..."
-    
+
     # replace the connection string with the new connection string
     sed -i "s/sqlalchemy.url.*/$CONN/" ${ALEMBIC_INI_FILE}
 
@@ -43,4 +43,4 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' does not exist, skipping Alembic migrations..."
 fi
 
-uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80
+uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload

@@ -1,11 +1,11 @@
 from time import time
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.actions.commonActions import CommonActions
 from app.database.config import engine
 from app.models.programs import ProgramModel
 from app.models.clients import ClientUserModel
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
+from app.actions.helper_actions import HelperActions
+from app.routers.v1.v1CommonRouting import CommonRoutes
 
 
 class ProgramActions():
@@ -37,7 +37,7 @@ class ProgramActions():
 					user_uuid=program_data.user_uuid,
 					client_uuid=client_uuid
 				)
-				new_program.program_9char = await CommonActions.generate_9char()
+				new_program.program_9char = await HelperActions.generate_9char()
 			return await CommonRoutes.create_one_or_many(new_program)
 		else:
 			return admin_check
@@ -53,7 +53,7 @@ class ProgramActions():
 	@classmethod
 	def get_program_by_name(cls, name):
 		with Session(engine) as session:
-			return session.exec(select(ProgramModel)
+			return session.scalars(select(ProgramModel)
 								.where(ProgramModel.name == name)).one_or_none()
 
 	@classmethod

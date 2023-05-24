@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from app.database.config import engine
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
-from app.actions.commonActions import CommonActions
+from app.actions.helper_actions import HelperActions
 from app.actions.clients import ClientActions
 from app.models.clients import ClientBudgetModel, ClientBudgetExpanded, ClientModel, ClientBudgetShortExpand
 from .client_sub_budget_actions import ClientSubBudgetActions
@@ -23,14 +23,14 @@ class ClientBudgetActions():
 		client_name = await ClientActions.get_name_by_uuid(client_uuid)
 		budgetCreationTime = datetime.now(timezone.utc).strftime('%m/%d/%Y %H:%M:%S %Z')
 		return f"New {client_name} Budget (created: {budgetCreationTime})"
-	
+
 	@staticmethod
 	async def check_for_existing_budget_by_name(budget, client_uuid):
 		with Session(engine) as session:
 			existingBudget = session.scalars(
 				select(ClientBudgetModel)
 				.where(
-					ClientBudgetModel.name == budget.name, 
+					ClientBudgetModel.name == budget.name,
 					ClientBudgetModel.client_uuid == client_uuid
 				)).one_or_none()
 		if existingBudget:
@@ -47,7 +47,7 @@ class ClientBudgetActions():
 		).all()
 		await ExceptionHandling.check404(budgets)
 		return budgets
-	
+
 	@staticmethod #this goes from child --> parent
 	async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session: Session):
 		return session.scalars(
@@ -55,7 +55,7 @@ class ClientBudgetActions():
 			.where(ClientBudgetModel.budget_9char == budget_9char,
 					ClientBudgetModel.client_uuid == client_uuid)
 		).one_or_none()
-	
+
 	@staticmethod #this goes from parent --> children
 	async def get_budgets_by_parent_9char(budget, session):
 		return session.scalars(
@@ -63,7 +63,7 @@ class ClientBudgetActions():
 				.where(ClientBudgetModel.parent_9char == budget.budget_9char,
 						ClientBudgetModel.client_uuid == budget.client_uuid)
 			).all()
-	
+
 	@classmethod
 	async def check_for_valid_parent(cls, parent_9char, client_uuid, session:Session):
 		parent = await cls.get_budget_by_9char_and_client_uuid(parent_9char, client_uuid, session)
@@ -76,7 +76,7 @@ class ClientBudgetActions():
 	async def get_one_budget(cls, budget_9char: str, client_uuid: str, expanded, session: Session):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session)
 		await ExceptionHandling.check404(budget)
-		
+
 		subbudgets = await cls.get_all_subbudgets(budget, session)
 		client = await CommonRoutes.get_one(ClientModel, client_uuid)
 		if expanded:
@@ -99,7 +99,7 @@ class ClientBudgetActions():
 		for budget in subbudgets:
 			total += abs(budget.value)
 		return total
-	
+
 	@classmethod
 	async def get_all_subbudgets(cls, budget, session):
 		stack = []
@@ -115,7 +115,7 @@ class ClientBudgetActions():
 				stack.append(i) if i else None
 			return_budgets.append(budget) if budget else None
 		return return_budgets
-	
+
 	@classmethod
 	async def create_budget(cls, new_budget, client_uuid: str, session: Session):
 		new_budget.name = await cls.validate_new_budget_name(new_budget, client_uuid)
@@ -132,7 +132,7 @@ class ClientBudgetActions():
 			)
 
 			#reason why this isnt part of declaration above: https://stackoverflow.com/questions/18950054/class-method-generates-typeerror-got-multiple-values-for-keyword-argument
-			budget.budget_9char = await CommonActions.generate_9char()	
+			budget.budget_9char = await HelperActions.generate_9char()
 			return await CommonRoutes.create_one_or_many(budget)
 
 	@classmethod
@@ -182,7 +182,7 @@ class ClientBudgetActions():
 			session.commit()
 			session.refresh(budget)
 			return budget
-		
+
 	@classmethod
 	async def delete_budget(cls, budget_9char: str, client_uuid: str, session: Session):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, session)

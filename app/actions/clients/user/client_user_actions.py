@@ -1,7 +1,6 @@
-from app.actions.users import UsersActions
 from app.actions.users.services import UserServiceActions
 from app.models.clients import ClientUserModel
-from app.models.users import UsersModel, UserService
+from app.models.users import UserModel, UserServiceModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
@@ -23,11 +22,11 @@ class ClientUserActions():
 		user = None
 		if 'email_address' not in data.keys() and 'user_uuid' not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please inclue either email address or the user_uuid.")
-		
+
 		if 'email_address' in data.keys():
 			user = session.scalars(
-				select(UsersModel)
-				.where(UserService.service_user_id == data['email_address'])
+				select(UserModel)
+				.where(UserServiceModel.service_user_id == data['email_address'])
 			).one_or_none()
 
 		if 'user_uuid' in data.keys() or user is not None:
@@ -41,7 +40,7 @@ class ClientUserActions():
 
 		if not user and 'email_address' not in data.keys() and 'user_uuid' not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
-		
+
 		newClientUser = ClientUserModel(
 			uuid=SHA224Hash(),
 			user_uuid= user.uuid,
@@ -78,7 +77,7 @@ class ClientUserActions():
 		user = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid,
-					UsersModel.uuid == user_uuid)
+					UserModel.uuid == user_uuid)
 		).one_or_none()
 		await ExceptionHandling.check404(user)
 		return user

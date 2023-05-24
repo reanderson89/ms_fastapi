@@ -1,12 +1,11 @@
 import random
 from uuid import uuid4
 
-from app.actions.commonActions import CommonActions
 from app.actions.users.services import UserServiceActions
-from app.models.users import UserService, UsersServiceUpdate
+from app.models.users import UserServiceModel, UserServiceUpdate
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 from app.database.config import engine
-from app.actions.users import UsersActions
+from app.actions.users import UserActions
 from app.routers.v1.v1CommonRouting import ExceptionHandling
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -32,15 +31,15 @@ class AuthActions():
     async def post_auth_creation(cls, auth_model):
         with Session(engine) as session:
             service = session.scalars(
-                select(UserService)
-                .where(UserService.service_uuid == auth_model.service_uuid)
-                .where(UserService.service_user_id == auth_model.service_user_id)
+                select(UserServiceModel)
+                .where(UserServiceModel.service_uuid == auth_model.service_uuid)
+                .where(UserServiceModel.service_user_id == auth_model.service_user_id)
             ).one_or_none()
             await ExceptionHandling.check404(service)
 
             auth_object = await cls.generate_auth(service)
 
-            updates = UsersServiceUpdate(
+            updates = UserServiceUpdate(
                 login_token=auth_object.login_token,
                 login_secret=auth_object.login_secret
             )
@@ -65,9 +64,9 @@ class AuthActions():
     async def check_for_match_put(cls, redeem_auth_model: RedeemAuthModel):
         with Session(engine) as session:
             service = session.scalars(
-                select(UserService)
-                .where(UserService.login_token == redeem_auth_model.login_token)
-                .where(UserService.login_secret == redeem_auth_model.login_secret)
+                select(UserServiceModel)
+                .where(UserServiceModel.login_token == redeem_auth_model.login_token)
+                .where(UserServiceModel.login_secret == redeem_auth_model.login_secret)
             ).one_or_none()
             await ExceptionHandling.check404(service)
             return service
@@ -83,6 +82,3 @@ class AuthActions():
             user_service_model.login_secret = uuid4().hex
 
         return user_service_model
-
-
-

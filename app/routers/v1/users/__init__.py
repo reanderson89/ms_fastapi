@@ -1,5 +1,5 @@
 from .user_router import router as users_router
-from .services.user_service_router import router as user_service_router
+from .user_service_router import router as user_service_router
 from fastapi import APIRouter
 from .auth.auth_routers import router as auth_router
 
