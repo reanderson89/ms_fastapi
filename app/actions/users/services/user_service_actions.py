@@ -60,7 +60,7 @@ class UserServiceActions():
 				service_access_secret = "secret token",
 				service_refresh_token = "refresh token",
 				login_token="place_holder",
-				login_key="place_holder"
+				login_secret="place_holder"
 			)
 			await CommonRoutes.create_one_or_many(new_user_service)
 			return new_user
