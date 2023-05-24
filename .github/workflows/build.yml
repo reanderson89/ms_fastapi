@@ -1,8 +1,6 @@
-name: Build Docker Image
+name: Build Docker Images
 
 on:
-  # release:
-  #   types: [published]
   push:
     # branches:
     #   - '*'
@@ -10,8 +8,8 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]-*'
 
 jobs:
-  build:
-    name: Build
+  build-api:
+    name: Build API
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -28,21 +26,43 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: blueboardinc/milestones-api
-          # prefix and suffix
-          # flavor: |
-          #  suffix=-{{sha}}
-          # sets 'latest' tag when on default branch only -- this will create a discrepancy between the Git tag and the Docker images!
-          # does not work?  @see https://github.com/actions/runner/issues/1173
-          # type=raw,value=latest,enable={{is_default_branch}}
-          # tags: |
-          #   type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-          #   type=semver,pattern={{version}}
+
+      - name: Build, tag and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Docker/Dockerfile.milestones_api_hosted
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-nginx:
+    name: Build Nginx
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_RW }}
+      
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: blueboardinc/milestones-nginx
       
       - name: Build, tag and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Docker/Dockerfile.milestones_api_v2
+          build-args: |
+            DOCS_USERNAME=${{ secrets.DOCS_USERNAME }}
+            DOCS_PASSWORD=${{ secrets.DOCS_PASSWORD }}
+          file: Docker/Dockerfile.nginx
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

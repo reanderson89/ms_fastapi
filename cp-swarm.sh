@@ -1,36 +1,19 @@
 #!/usr/bin/env bash
 #
-# this is just a quick and dirty way to copy files onto the development EC2
+# This is just a quick and dirty way to copy necerssary config files onto the development Docker Swarm cluster
 #
-# PEM_FILE="~/.ssh/aws/milestones-api.pem"
 
-if [ -z "$1" ]; then
-    declare -a HOSTS=(milestones-dev-1.blueboard.app)
-    USERNAME="ubuntu"
-else
-    declare -a HOSTS=(192.168.128.75)
-    USERNAME="blueboard"
-fi
+declare -a HOSTS=(192.168.128.75)
+USERNAME="blueboard"
+DEST_PATH="/home/${USERNAME}"
 
 for HOST in "${HOSTS[@]}"
 do
-    echo "Copying config files to ${HOST}..."
-    DEST_PATH="/home/${USERNAME}/config"
-    ssh "${USERNAME}@${HOST}" "mkdir -p ${DEST_PATH}"
+    # copy the run script
+    scp run-swarm.sh "${USERNAME}@${HOST}:${DEST_PATH}/run.sh"
 
-    # copy and rename the run script
-    scp run-dev.sh "${USERNAME}@${HOST}:${DEST_PATH}/run.sh"
-    # copy and rename the docker-compose config
-    scp docker-compose-hosted.yml "${USERNAME}@${HOST}:${DEST_PATH}/docker-compose.yml"
-    # Dockerfile for Nginx host, Nginx config
-    scp Docker/Dockerfile.nginx "${USERNAME}@${HOST}:${DEST_PATH}/"
-    scp milestones-nginx.conf "${USERNAME}@${HOST}:${DEST_PATH}/"
-    # Datadog
-    scp Docker/Dockerfile.datadog "${USERNAME}@${HOST}:${DEST_PATH}/"
-    scp datadog.yaml "${USERNAME}@${HOST}:${DEST_PATH}/"
-
-    # dotenv Python script
-    scp ~/Projects/blueboard/akeyless/src/dotenv.py "${USERNAME}@${HOST}:${DEST_PATH}/"
+    # copy the swarm stack definition
+    scp docker-swarm.yml "${USERNAME}@${HOST}:${DEST_PATH}/docker-swarm.yml"
 
     # SSH keys
     TMP_FILE=$(mktemp)

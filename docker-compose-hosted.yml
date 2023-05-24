@@ -5,7 +5,7 @@
 # test with: docker compose config
 #
 #
-# docker-compose --file docker-compose-dev.yml up --build
+# docker-compose --file docker-cdocker imompose-dev.yml up --build
 #
 version: '3'
 services:

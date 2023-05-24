@@ -1,0 +1,69 @@
+# This is the Docker stack file that describes the Milestones application
+#
+# Do a Docker login then:
+# docker stack deploy --compose-file docker-swarm.yml --with-registry-auth milestones
+#
+# Compose file deploy reference:
+# https://docs.docker.com/compose/compose-file/deploy/
+#
+# Note that Docker stacks do not support .env files  :-(
+#
+version: "3.9"
+services:
+  api:
+    image:  blueboardinc/milestones-api:v0.0.1-8765976
+    deploy:
+      mode: replicated
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 350M
+      #   reservations:
+      #     cpus: '0.1'
+      #     memory: 100M
+    environment:
+      ALEMBIC_INI_FILE: "alembic.ini"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DD_AGENT_HOST: datadog_agent
+      DD_PROFILING_ENABLED: "true"
+      BEARER_TOKEN: ${BEARER_TOKEN}
+      LOG_LEVEL: debug
+      # connection settings for the app, these should match server"s config (above)
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
+      MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
+      MYSQL_PORT: 3306
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.1.sql"
+    ports:
+      - 8080:80
+    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
+  nginx:
+    image:  blueboardinc/milestones-nginx:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 80:80
+  db:
+    image: mariadb:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+    # volumes:
+    #   - './mariadb-data/:/var/lib/mysql'
+    environment:
+      # server settings
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_LOG_CONSOLE: "true"
+      # bootstrap a db and db user
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_USER: milestones
+      MYSQL_PASSWORD: milestones
+    ports:
+      - 3306:3306
