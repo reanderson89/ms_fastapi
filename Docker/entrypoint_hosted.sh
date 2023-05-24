@@ -25,7 +25,6 @@ if [ -f "${ALEMBIC_INI_FILE}" ]; then
     echo "Alembic config file '${ALEMBIC_INI_FILE}' exists, getting Alembic ready..."
     export CONN="sqlalchemy.url = mysql+pymysql\:\/\/${MYSQL_USER}\:${MYSQL_PASSWORD}\@${MYSQL_HOSTNAME}\:${MYSQL_PORT}\/${MYSQL_DATABASE}"
 
-    ec
     # back up original ini file for good measure
     cp ${ALEMBIC_INI_FILE} "${ALEMBIC_INI_FILE}.bak"
     echo "Setting alembic connection string to use env vars for sqlalchemy.url..."
