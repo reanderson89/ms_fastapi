@@ -250,7 +250,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/",
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -258,8 +258,7 @@
 						"v1",
 						"users",
 						"{{userUuid}}",
-						"services",
-						""
+						"services"
 					]
 				}
 			},
@@ -309,7 +308,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services/",
+					"raw": "{{baseUrl}}/v1/users/{{userUuid}}/services",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -317,8 +316,7 @@
 						"v1",
 						"users",
 						"{{userUuid}}",
-						"services",
-						""
+						"services"
 					]
 				}
 			},
