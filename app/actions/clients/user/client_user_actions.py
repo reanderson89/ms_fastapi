@@ -26,7 +26,8 @@ class ClientUserActions():
 		if 'email_address' in data.keys():
 			user = session.scalars(
 				select(UserModel)
-				.where(UserServiceModel.service_user_id == data['email_address'])
+				.where(UserServiceModel.service_user_id == data['email_address'], 
+						UserModel.uuid == UserServiceModel.user_uuid)
 			).one_or_none()
 
 		if 'user_uuid' in data.keys() or user is not None:
@@ -77,7 +78,7 @@ class ClientUserActions():
 		user = session.scalars(
 			select(ClientUserModel)
 			.where(ClientUserModel.client_uuid == client_uuid,
-					UserModel.uuid == user_uuid)
+					ClientUserModel.user_uuid == user_uuid)
 		).one_or_none()
 		await ExceptionHandling.check404(user)
 		return user
