@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.routers.v1.v1CommonRouting import CommonRoutes
-from app.models.messages import MessageTemplateModel, MessageTemplateUpdateModel
+from app.models.messages import MessageTemplateModel, MessageTemplateUpdate
 
 router = APIRouter(tags=["Message Templates"])
 
@@ -17,7 +17,7 @@ async def create_message_template(templates: (list[MessageTemplateModel] | Messa
     return await CommonRoutes.create_one_or_many(templates)
 
 @router.put("/messages/{message_template_uuid}", response_model=MessageTemplateModel)
-async def update_message_template(message_template_uuid: str, template_updates: MessageTemplateUpdateModel):
+async def update_message_template(message_template_uuid: str, template_updates: MessageTemplateUpdate):
 	return await CommonRoutes.update_one(message_template_uuid, MessageTemplateModel, template_updates)
 
 @router.delete("/messages/{message_template_uuid}")

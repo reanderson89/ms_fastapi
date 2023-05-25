@@ -3,7 +3,7 @@ from sqlalchemy import select
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.routers.v1.v1CommonRouting import ExceptionHandling, CommonRoutes
-from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus, Service
+from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus, ServiceBase
 from app.actions.helper_actions import HelperActions
 from sqlalchemy.orm import Session
 

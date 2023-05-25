@@ -3,7 +3,7 @@ from sqlalchemy import select
 from fastapi import APIRouter, Query, Depends
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.database.config import engine
-from app.models.programs import ProgramModel, ProgramUpdate
+from app.models.programs import ProgramModel, ProgramBase, ProgramCreate, ProgramUpdate
 from app.actions.programs.program_actions import ProgramActions
 from sqlalchemy.orm import Session
 
@@ -31,7 +31,7 @@ async def get_program(
 
 @router.post("/programs/", response_model_by_alias=True)
 async def create_program(
-		programs: (list[ProgramModel] | ProgramModel),
+		programs: (list[ProgramCreate] | ProgramCreate),
 		client_uuid: str
 ):
 	return await ProgramActions.create_program_handler(programs, client_uuid)

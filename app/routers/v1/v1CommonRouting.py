@@ -75,7 +75,7 @@ class CommonRoutes():
 			updated_mapped_columns = update_model.dict(exclude_unset=True)
 			for key, value in updated_mapped_columns.items():
 				setattr(db_item, key, value)
-			if(db_item.time_updated):
+			if hasattr(db_item, 'time_updated'):
 				db_item.time_updated = int(time())
 			session.add(db_item)
 			session.commit()
@@ -129,6 +129,6 @@ class ExceptionHandling():
 
 	async def custom500(message):
 		raise HTTPException(status_code=500, detail=message)
-	
+
 	async def custom405(message):
 		raise HTTPException(status_code=405, detail=message)

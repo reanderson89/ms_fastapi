@@ -15,7 +15,7 @@ class SegmentAward(Base):
 	time_updated: Mapped[int] = mapped_column(default=None)
 
 class SegmentAwardUpdate(BasePydantic):
-	program_9char: Optional[str] = None
-	segment_9char: Optional[str] = None
-	award_9char: Optional[str] = None
-	time_updated: Optional[int] = None
+	program_9char: Optional[str]
+	segment_9char: Optional[str]
+	award_9char: Optional[str]
+	time_updated: Optional[int]

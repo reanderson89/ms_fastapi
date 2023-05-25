@@ -11,7 +11,7 @@ class MessageTemplateModel(Base):
     time_created: Mapped[int] = mapped_column(default=None)
     time_updated: Mapped[int] = mapped_column(default=None)
 
-class MessageTemplateUpdateModel(BasePydantic):
+class MessageTemplateUpdate(BasePydantic):
     channel: Optional[int]
     body: Optional[str]
     time_updated: Optional[int]

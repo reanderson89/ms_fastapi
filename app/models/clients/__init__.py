@@ -1,4 +1,4 @@
-from .clients_models import ClientModel, ClientUpdate
+from .clients_models import ClientModel, ClientUpdate, ClientBase, ClientExpanded
 from .client_award_models import ClientAwardModel, ClientAwardUpdate
 from .client_budget_models import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetExpanded, ClientBudgetShortExpand
 from .client_user_models import ClientUserModel, ClientUserUpdate

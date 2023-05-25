@@ -1,5 +1,5 @@
 
-from app.models.base_class import Base, BasePydantic
+from app.models.base_class import BasePydantic
 from typing import Optional
 
 

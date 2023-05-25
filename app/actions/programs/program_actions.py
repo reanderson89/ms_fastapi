@@ -2,10 +2,10 @@ from time import time
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database.config import engine
-from app.models.programs import ProgramModel
+from app.models.programs import ProgramModel, ProgramBase
 from app.models.clients import ClientUserModel
 from app.actions.helper_actions import HelperActions
-from app.routers.v1.v1CommonRouting import CommonRoutes
+from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 
 
 class ProgramActions():
@@ -28,17 +28,21 @@ class ProgramActions():
 		if admin_check:
 			check = await cls.check_for_existing(program_data.name)
 			if check:
-				return check
+				return ProgramBase.from_orm(check)
 			else:
 				new_program = ProgramModel(
 					name=program_data.name,
 					cadence=program_data.cadence,
+					cadence_value=program_data.cadence_value,
+					program_type=program_data.program_type,
+					status=program_data.status,
 					description=program_data.description,
 					user_uuid=program_data.user_uuid,
 					client_uuid=client_uuid
 				)
 				new_program.program_9char = await HelperActions.generate_9char()
-			return await CommonRoutes.create_one_or_many(new_program)
+			program =  await CommonRoutes.create_one_or_many(new_program)
+			return ProgramBase.from_orm(program)
 		else:
 			return admin_check
 
@@ -51,7 +55,7 @@ class ProgramActions():
 			return program
 
 	@classmethod
-	def get_program_by_name(cls, name):
+	async def get_program_by_name(cls, name):
 		with Session(engine) as session:
 			return session.scalars(select(ProgramModel)
 								.where(ProgramModel.name == name)).one_or_none()
@@ -59,6 +63,7 @@ class ProgramActions():
 	@classmethod
 	async def is_admin(cls, user_uuid):
 		admin = await cls.check_is_admin(user_uuid)
+		await ExceptionHandling.check404(admin)
 		if admin.admin == 1:
 			return True
 		else:
@@ -68,8 +73,8 @@ class ProgramActions():
 	async def check_is_admin(cls, user_uuid):
 		with Session(engine) as session:
 			return session.scalars(select(ClientUserModel)
-								.where(ClientUserModel.uuid == user_uuid))
-		#TODO: current bug - if no user is found, this returns the execution call and no empty list
+								.where(ClientUserModel.user_uuid == user_uuid)
+								).one_or_none()
 
 	@classmethod
 	async def get_by_program_9char(cls, client_uuid, program_9char):
@@ -94,7 +99,7 @@ class ProgramActions():
 			).all()
 
 	@classmethod
-	def update_program(cls, client_uuid, program_9char, program_updates):
+	async def update_program(cls, client_uuid, program_9char, program_updates):
 		with Session(engine) as session:
 			program = session.scalars(
 				select(ProgramModel)

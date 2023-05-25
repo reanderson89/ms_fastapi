@@ -11,16 +11,16 @@ router = APIRouter(tags=["Clients"])
 async def get_clients():
 	return await CommonRoutes.get_all(ClientModel)
 
-@router.get("/clients/{client_uuid}", response_model_by_alias=True)
-async def get_client_by_uuid(client_uuid: str):
-    return await CommonRoutes.get_one(ClientModel, client_uuid)
+@router.get("/clients/{client_uuid}", response_model=ClientModel)
+async def get_client(client_uuid: str):
+	return await CommonRoutes.get_one(ClientModel, client_uuid)
 
-@router.post("/clients", response_model_by_alias=True)
+@router.post("/clients", response_model=list[ClientModel]|ClientModel)
 async def create_client(clients: Union[list[ClientModel], ClientModel]):
-    return await ClientActions.create_client_handler(clients)
+	return await ClientActions.create_client_handler(clients)
 
 @router.put("/clients/{client_uuid}", response_model=ClientModel)
-async def update_client_by_uuid(client_uuid: str, client_update: ClientUpdate):
+async def update_client(client_uuid: str, client_update: ClientUpdate):
 	return await CommonRoutes.update_one(client_uuid, ClientModel, client_update)
 
 # this should only work if there is nothing else associated with the client
