@@ -56,7 +56,7 @@ class AuthActions():
     async def redeem_auth_handler(cls, redeem_auth_model):
         check_redeem = await cls.check_for_match_put(redeem_auth_model)
         if check_redeem:
-            return await UsersActions.get_user_by_uuid(check_redeem.user_uuid)
+            return await UserActions.get_user_by_uuid(check_redeem.user_uuid)
         else:
             return check_redeem
 
