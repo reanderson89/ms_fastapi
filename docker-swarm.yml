@@ -74,3 +74,8 @@ services:
       MYSQL_PASSWORD: milestones
     ports:
       - 3306:3306
+  beanstalkd:
+    image: schickling/beanstalkd
+    replicas: 1
+    ports:
+      - 11300:11300
