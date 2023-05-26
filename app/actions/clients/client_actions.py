@@ -28,6 +28,7 @@ class ClientActions():
 			new_client = ClientModel(
 				name=client_data.name,
 				description=client_data.description,
+				status=client_data.status
 			)
 			return await CommonRoutes.create_one_or_many(new_client)
 
