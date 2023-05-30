@@ -1,6 +1,6 @@
 
-from app.models.base_class import BasePydantic
 from typing import Optional
+from app.models.base_class import BasePydantic
 
 
 class CreateAuthModel(BasePydantic):

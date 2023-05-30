@@ -20,7 +20,7 @@ class UserActions(BaseActions):
 
 	@classmethod
 	async def get_user_by_service_id(cls, service_id):
-		return await cls.get_one_where(
+		return await cls.check_if_exists(
 			UserModel,
 			(
 			UserServiceModel.service_user_id == service_id,
@@ -46,7 +46,7 @@ class UserActions(BaseActions):
 	async def create_user(cls, user):
 		if isinstance(user, list):
 			for user_obj in user:
-				user_obj = await UserServiceActions.create_service_user(user_obj)
+				user_obj = await cls.create_user_and_service(user_obj)
 		else:
 			user = await cls.create_user_and_service(user)
 		return user
@@ -59,14 +59,11 @@ class UserActions(BaseActions):
 			# TODO: change to status = exists class format
 			return user
 		new_user = UserModel(
-			uuid = await HelperActions.generate_SHA224(),
 			first_name = await HelperActions.get_fname_from_header(new_user),
 			last_name= await HelperActions.get_lname_from_header(new_user),
 			latitude = 407127281,
 			longitude = -740060152,
-			time_ping = int(datetime.now().timestamp()),
-			time_created = int(time()),
-			time_updated = int(time()),
+			time_ping = int(time())
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)
 		new_user = await cls.create(new_user)

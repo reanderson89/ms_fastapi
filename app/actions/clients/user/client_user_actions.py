@@ -1,4 +1,5 @@
-from app.actions.users.services import UserServiceActions
+# from app.actions.users.services import UserServiceActions
+from app.actions.users import UserActions
 from app.models.clients import ClientUserModel
 from app.models.users import UserModel, UserServiceModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
@@ -26,7 +27,7 @@ class ClientUserActions():
 		if 'email_address' in data.keys():
 			user = session.scalars(
 				select(UserModel)
-				.where(UserServiceModel.service_user_id == data['email_address'], 
+				.where(UserServiceModel.service_user_id == data['email_address'],
 						UserModel.uuid == UserServiceModel.user_uuid)
 			).one_or_none()
 
@@ -37,7 +38,7 @@ class ClientUserActions():
 				return client_user
 
 		if not user and 'email_address' in data.keys():
-			user = await UserServiceActions.create_service_user(data)
+			user = await UserActions.create_user_and_service(data)
 
 		if not user and 'email_address' not in data.keys() and 'user_uuid' not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User, User, and Service User. Please include an email address.")

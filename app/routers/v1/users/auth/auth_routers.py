@@ -1,15 +1,10 @@
-import os
-
 from fastapi import APIRouter
-
+from app.models.users import UserModel
 from app.models.users.auth.auth_models import CreateAuthModel, RedeemAuthModel, AuthResponseModel
 from app.actions.users.auth.auth_actions import AuthActions
-from app.models.users import UserModel
 
 
-test_mode = os.getenv("TEST_MODE", False)
-
-router = APIRouter(tags=["Users"], prefix="/users")
+router = APIRouter(tags=["Users"], prefix="/users/{user_uuid}")
 
 
 @router.post("/auth", response_model=AuthResponseModel)

@@ -1,8 +1,8 @@
 from enum import Enum
-from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional
-from app.models.base_class import Base, BasePydantic
 from pydantic import Field
+from sqlalchemy.orm import Mapped, mapped_column
+from app.models.base_class import Base, BasePydantic
 
 class ServiceID(str, Enum):
 	email = "email"
@@ -11,6 +11,7 @@ class ServiceID(str, Enum):
 class UserServiceStatus(str, Enum):
 	exists = "exists"
 	created = "service created"
+	updated = "service updated"
 
 class UserServiceModel(Base):
 	__tablename__ = "user_service"
@@ -49,7 +50,10 @@ class UserServiceCreate(BasePydantic):
 	service_user_id: str
 
 class ServiceStatus(ServiceBase):
-	status: UserServiceStatus = Field(default=None,description="This mapped_column can have the values 'exists' or 'admin created'.")
+	status: UserServiceStatus = Field(
+		default=None,
+		description="This mapped_column can have the values 'exists' or 'admin created'."
+	)
 
 class UserServiceUpdate(BasePydantic):
 	service_user_screenname: Optional[str]
