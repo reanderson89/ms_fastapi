@@ -79,24 +79,28 @@ class ProgramActions():
 	@classmethod
 	async def get_by_program_9char(cls, client_uuid, program_9char):
 		with Session(engine) as session:
-			return session.scalars(
+			program = session.scalars(
 				select(ProgramModel)
 				.where(
 					ProgramModel.program_9char == program_9char,
 					ProgramModel.client_uuid == client_uuid
 				)
 			).one_or_none()
+			await ExceptionHandling.check404(program)
+			return program
 
 	@classmethod
 	async def get_by_client_uuid(cls, client_uuid, offset, limit):
 		with Session(engine) as session:
-			return session.scalars(
+			programs = session.scalars(
 				select(ProgramModel).where(
 					ProgramModel.client_uuid == client_uuid
 				)
 				.offset(offset)
 				.limit(limit)
 			).all()
+			await ExceptionHandling.check404(programs)
+			return programs
 
 	@classmethod
 	async def update_program(cls, client_uuid, program_9char, program_updates):
@@ -108,6 +112,7 @@ class ProgramActions():
 					ProgramModel.client_uuid == client_uuid
 				)
 			).one_or_none()
+			await ExceptionHandling.check404(program)
 			update_program = program_updates.dict(exclude_unset=True)
 			for k, v in update_program.items():
 				setattr(program, k, v)
