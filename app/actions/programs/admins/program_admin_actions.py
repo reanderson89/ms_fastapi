@@ -41,7 +41,7 @@ class ProgramAdminActions():
 			time_updated=current_time
 		)
 		admin = await CommonRoutes.exec_add_one(admin)
-		new_admin = AdminStatus.from_orm(new_admin)
+		new_admin = AdminStatus.from_orm(admin)
 		new_admin.status = "admin created"
 		return new_admin
 

@@ -84,7 +84,7 @@ class CommonRoutes():
 
 	async def exec_update(statement, updates):
 		with Session(engine) as session:
-			response = session.exec(statement).one_or_none()
+			response = session.scalars(statement).one_or_none()
 			await ExceptionHandling.check404(response)
 
 			updated_mapped_columns = updates.dict(exclude_unset=True)
@@ -105,7 +105,7 @@ class CommonRoutes():
 
 	async def exec_delete(statement):
 		with Session(engine) as session:
-			item = session.exec(statement).one_or_none()
+			item = session.scalars(statement).one_or_none()
 			await ExceptionHandling.check404(item)
 			session.delete(item)
 			session.commit()
@@ -113,7 +113,7 @@ class CommonRoutes():
 
 	async def delete_all(search_by, model):
 		with Session(engine) as session:
-			items = session.exec(select(model).where(search_by)).all()
+			items = session.scalars(select(model).where(search_by)).all()
 			ExceptionHandling.check404(items)
 			for item in items:
 				session.delete(item)

@@ -55,6 +55,9 @@ Currently the `Milestones_in_order.postman_collection.json` file has multiple fo
         - placeholder
             - programs (running this folder will create a client, a client_user and a program associated for the client, it will get the program, update it, and then delete the program, the client_user, and the client)
             - budgets (running this folder will create a client and then it will create a static budget, parent budget, and sub budget, it will then run full CRUD checks on all of the budgets and also delete the client in the end)
+            - events (running this folder will create a client, client_user, program, program_event and a sub event. It will GET the events and update them and then delete them along with everything else created)
+            - admins (running this folder will create a client, client_user, program, and then a program_admin, it will the GET the admin, update the permissions, and then delete them along with everything else)
+            - WIP (Work In Progress, has the other routes in it that don't have tests complete yet)
 
 ## Milestones_Users.postman_collection.json
 

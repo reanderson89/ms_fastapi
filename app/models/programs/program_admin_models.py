@@ -46,7 +46,7 @@ class AdminCreate(BasePydantic):
 	permissions: Optional[int]
 
 class AdminStatus(AdminBase):
-	status: ProgramAdminStatus = Field(description="This mapped_column can have the values 'exists' or 'admin created'.")
+	status: Optional[ProgramAdminStatus] = Field(description="This mapped_column can have the values 'exists' or 'admin created'.")
 
 class AdminUpdate(BasePydantic):
 	permissions: Optional[int]
