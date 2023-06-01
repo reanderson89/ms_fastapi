@@ -45,19 +45,52 @@ docker exec -it milestones_api newman run /app/tests/postman/Milestones_Users.po
 ```
 
 
-## Milestones_in_order.postman_collection.json
+## Milestones_all_routes.postman_collection.json
 
-Currently the `Milestones_in_order.postman_collection.json` file has multiple folders in it that will eventually be separated for easier upkeep.
+This collection currently has all of the routes in it. It is essentially a backup of the separate collections and also has the routes in it that are not fully testable yet. It will become outdated as the other collections are updated and is just currently being kept as a backup. Eventually it will be removed and we will just have the separate collections.
 
-- Milestones_in_order
-     - v1
-        - clients (running this folder will create a client and two client_users, it will get them all and individually, update them both, and then delete everything and check that it has been deleted)
-        - placeholder
-            - programs (running this folder will create a client, a client_user and a program associated for the client, it will get the program, update it, and then delete the program, the client_user, and the client)
-            - budgets (running this folder will create a client and then it will create a static budget, parent budget, and sub budget, it will then run full CRUD checks on all of the budgets and also delete the client in the end)
-            - events (running this folder will create a client, client_user, program, program_event and a sub event. It will GET the events and update them and then delete them along with everything else created)
-            - admins (running this folder will create a client, client_user, program, and then a program_admin, it will the GET the admin, update the permissions, and then delete them along with everything else)
-            - WIP (Work In Progress, has the other routes in it that don't have tests complete yet)
+## Milestones_admins.postman_collection.json
+
+Running this collection will create a client, client_user, program, and then a program_admin, it will the GET the admin, update the permissions, and then delete them along with everything else.
+
+You should see 24 tests pass
+
+
+## Milestones_budgets.postman_collection.json
+
+Running this collection will create a client and then it will create a static budget, parent budget, and sub budget, it will then run full CRUD checks on all of the budgets and also delete the client in the end.
+
+You should see 38 tests pass
+
+## Milestones_clients.postman_collection.json
+
+Running this collection will create a client and two client_users, it will get them all and individually, update them both, and then delete everything and check that it has been deleted.
+
+You should see 33 tests pass
+
+## Milestones_events.postman_collection.json
+
+Running this collection will create a client, client_user, program, program_event and a sub event. It will GET the events and update them and then delete them along with everything else created.
+
+You should see 24 tests pass
+
+## Milestones_message_templates.postman_collection.json
+
+Running his collection will create a message_template, then get them all and get the one created specifically. It will then update the message_template and then delete it.
+
+You should see 5 tests pass
+
+## Milestones_messages.postman_collection.json
+
+Running this collection will create a client, a client_user and a program associated for the client, it will then create a message, get all messages and the one created specifically. Then it will update the message and delete it along with the program, client_user, client, and user.
+
+You should see 29 tests pass
+
+## Milestones_programs.postman_collection.json
+
+Running this collection will create a client, a client_user and a program associated for the client, it will get the program, update it, and then delete the program, the client_user, and the client.
+
+You should see 25 tests pass
 
 ## Milestones_Users.postman_collection.json
 
@@ -72,3 +105,5 @@ This collection is a series of sequential tests regarding users.  In essence:
 - Gets the 2nd service for the test user, should get the service back
 - Updates the user service, should succeed
 - Does a bulk update of services
+
+You should see 17 tests pass
