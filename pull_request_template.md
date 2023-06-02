@@ -9,6 +9,10 @@
 - [ ] Include needed api calls and documentation to test changes.
 - [ ] Should be reproducible be the reviewer with the information provided.
 
+## Postman Tests
+
+- [] Run `docker exec -it milestones_api /app/tests/postman.sh`
+
 ## Tests Added
 
 - [ ] I've added/updated tests for this issue.
