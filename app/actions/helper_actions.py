@@ -6,7 +6,7 @@ import time
 from fastapi import UploadFile, File
 from sqlalchemy.orm import Session
 from app.database.config import engine
-from app.routers.v1.v1CommonRouting import ExceptionHandling
+from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash, PositiveNumbers
 
 class HelperActions():
@@ -85,5 +85,5 @@ class HelperActions():
 		return char_9
 
 	@staticmethod
-	async def generate_SHA224(input_string=None):
+	def generate_UUID(input_string=None):
 		return SHA224Hash(input_string)

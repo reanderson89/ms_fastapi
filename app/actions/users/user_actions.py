@@ -16,21 +16,21 @@ class UserActions(BaseActions):
 
 	@classmethod
 	async def get_user_by_uuid(cls, uuid):
-		return await cls.get_one_where(UserModel, (UserModel.uuid == uuid,))
+		return await cls.get_one_where(UserModel, [UserModel.uuid == uuid])
 
 	@classmethod
 	async def get_user_by_service_id(cls, service_id):
 		return await cls.check_if_exists(
 			UserModel,
-			(
+			[
 			UserServiceModel.service_user_id == service_id,
 			UserServiceModel.user_uuid == UserModel.uuid
-			)
+			]
 		)
 
 	@classmethod
-	async def get_all_users(cls):
-		return await cls.get_all(UserModel)
+	async def get_all_users(cls, query_params: dict):
+		return await cls.get_all(UserModel, query_params)
 
 	@classmethod
 	async def get_user(cls, user_uuid, expand_services=False):
@@ -72,14 +72,13 @@ class UserActions(BaseActions):
 			raise Exception
 		return new_user
 
-
 	@classmethod
 	async def update_user(cls, user_uuid, updates):
-		return await cls.update(UserModel, (UserModel.uuid == user_uuid,), updates)
+		return await cls.update(UserModel, [UserModel.uuid == user_uuid], updates)
 
 	@classmethod
 	async def delete_user(cls, user_uuid):
-		return await cls.delete(UserModel, (UserModel.uuid == user_uuid,))
+		return await cls.delete_one(UserModel, [UserModel.uuid == user_uuid])
 
 	@classmethod
 	async def delete_test_user(cls, user_uuid):
@@ -87,4 +86,4 @@ class UserActions(BaseActions):
 		services = await UserServiceActions.get_all_services(user_uuid)
 		for key, value in services.items():
 			for item in value:
-				await cls.delete(UserServiceModel, (UserServiceModel.uuid == item.uuid,))
+				await cls.delete_one(UserServiceModel, [UserServiceModel.uuid == item.uuid])

@@ -17,7 +17,7 @@ class ClientSubBudgetActions:
 			budget, parent = await budget_class.create_budget(new_budget, parent)
 			budget = ClientBudgetModel(
 				**new_budget.dict(),
-				uuid = await HelperActions.generate_SHA224(),
+				uuid = await HelperActions.generate_UUID(),
 				client_uuid = parent.client_uuid
 			)
 			budget.budget_9char = await HelperActions.generate_9char()

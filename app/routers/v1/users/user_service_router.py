@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from app.routers.v1.dependencies import get_query_params
 from app.models.users import UserServiceUpdate, UserServiceModel, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk
 from app.actions.users.services import UserServiceActions
 
@@ -6,8 +7,11 @@ router = APIRouter(tags=["Users Service"], prefix="/users/{user_uuid}")
 
 
 @router.get("/services", response_model=dict)
-async def get_services(user_uuid: str):
-	return await UserServiceActions.get_all_services(user_uuid)
+async def get_services(
+	user_uuid: str,
+	query_params: dict = Depends(get_query_params)
+):
+	return await UserServiceActions.get_all_services(user_uuid, query_params)
 
 
 @router.get("/services/{service_uuid}", response_model=UserServiceModel)

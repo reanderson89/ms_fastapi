@@ -25,10 +25,10 @@ class AuthActions(BaseActions):
     async def post_auth_creation(cls, auth_model):
         service = await cls.get_one_where(
             UserServiceModel,
-            (
+            [
             UserServiceModel.service_uuid == auth_model.service_uuid,
             UserServiceModel.service_user_id == auth_model.service_user_id
-            )
+            ]
         )
 
         auth_object = await cls.generate_auth(service)
@@ -58,10 +58,10 @@ class AuthActions(BaseActions):
     async def check_for_match_put(cls, redeem_auth_model: RedeemAuthModel):
         return await cls.get_one_where(
             UserServiceModel,
-            (
+            [
             UserServiceModel.login_token == redeem_auth_model.login_token,
             UserServiceModel.login_secret == redeem_auth_model.login_secret
-            )
+            ]
         )
 
     @classmethod

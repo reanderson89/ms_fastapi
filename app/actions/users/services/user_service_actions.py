@@ -1,3 +1,4 @@
+from typing import Optional
 from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
@@ -10,10 +11,10 @@ class UserServiceActions(BaseActions):
 
 		service = await cls.check_if_exists(
 			UserServiceModel,
-			(
+			[
 			UserServiceModel.service_user_id == id,
 			UserServiceModel.user_uuid == UserModel.uuid
-			)
+			]
 		)
 
 		if service:
@@ -40,20 +41,22 @@ class UserServiceActions(BaseActions):
 		return await cls.create(new_user_service)
 
 	@classmethod
+	@classmethod
 	async def get_service(cls, user_uuid: str, service_uuid: str):
 		return await cls.get_one_where(
 			UserServiceModel,
-			(
-			UserServiceModel.user_uuid == user_uuid,
-			UserServiceModel.uuid == service_uuid
-			)
+			[
+				UserServiceModel.user_uuid == user_uuid,
+				UserServiceModel.uuid == service_uuid
+			]
 		)
 
 	@classmethod
-	async def get_all_services(cls, user_uuid: str):
+	async def get_all_services(cls, user_uuid: str, query_params: Optional[dict] = None):
 		services = await cls.get_all_where(
 			UserServiceModel,
-			(UserServiceModel.user_uuid == user_uuid,)
+			[UserServiceModel.user_uuid == user_uuid],
+			query_params
 		)
 
 		result = {}
@@ -65,14 +68,14 @@ class UserServiceActions(BaseActions):
 		return result
 
 	@classmethod
-	async def create_user_service(cls, user_uuid: str, user_service):
-		if isinstance(user_service, ServiceStatus):
-			return user_service
+	async def create_user_service(cls, user_uuid: str, service_obj):
+		if isinstance(service_obj, ServiceStatus):
+			return service_obj
 
 		service_obj = UserServiceModel(
 			user_uuid = user_uuid,
-			service_uuid = user_service.service_uuid,
-			service_user_id = user_service.service_user_id
+			service_uuid = service_obj.service_uuid,
+			service_user_id = service_obj.service_user_id
 		)
 		service = await cls.create(service_obj)
 		new_service = ServiceStatus.from_orm(service)
@@ -88,10 +91,10 @@ class UserServiceActions(BaseActions):
 	):
 		return await cls.update(
 			UserServiceModel,
-			(
+			[
 			UserServiceModel.user_uuid == user_uuid,
 			UserServiceModel.uuid == service_uuid
-			),
+			],
 			updates
 		)
 
@@ -107,9 +110,9 @@ class UserServiceActions(BaseActions):
 
 	@classmethod
 	async def delete_service(cls, service_uuid: str):
-		return await cls.delete(
+		return await cls.delete_one(
 			UserServiceModel,
-			(UserServiceModel.uuid == service_uuid,)
+			[UserServiceModel.uuid == service_uuid]
 		)
 
 	@classmethod
@@ -117,9 +120,9 @@ class UserServiceActions(BaseActions):
 		deleted_services = []
 		for service in service_delete:
 			deleted_services.append(
-				await cls.delete(
+				await cls.delete_one(
 					UserServiceModel,
-					(UserServiceModel.uuid == service.service_uuid,)
+					[UserServiceModel.uuid == service.service_uuid]
 				)
 			)
 		return deleted_services

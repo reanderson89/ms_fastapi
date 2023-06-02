@@ -50,7 +50,7 @@ class UserServiceCreate(BasePydantic):
 	service_user_id: str
 
 class ServiceStatus(ServiceBase):
-	status: UserServiceStatus = Field(
+	status: Optional[UserServiceStatus] = Field(
 		default=None,
 		description="This mapped_column can have the values 'exists' or 'admin created'."
 	)

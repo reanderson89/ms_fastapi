@@ -35,4 +35,4 @@ class UserUpdate(BasePydantic):
 	time_birthday: Optional[int]
 
 class UserExpanded(UserBase):
-	services: dict = None
+	services: Optional[dict] = None

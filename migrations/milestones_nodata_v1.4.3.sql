@@ -24,6 +24,41 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `blueboard_milestones` /*!40100 DEFAULT
 USE `blueboard_milestones`;
 
 --
+-- Table structure for table `award`
+--
+
+DROP TABLE IF EXISTS `award`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `award` (
+  `uuid` varchar(56) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` longtext DEFAULT NULL,
+  `hero_image` tinyint(1) DEFAULT 0,
+  `channel` int(11) DEFAULT NULL,
+  `award_type` int(11) DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
+  `time_created` int(11) DEFAULT NULL,
+  `time_updated` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  KEY `ANAME` (`name`),
+  KEY `AHEROIMAGE` (`hero_image`),
+  KEY `ACHANNEL` (`channel`),
+  KEY `AAWARDTYPE` (`award_type`),
+  KEY `AVALUE` (`value`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `award`
+--
+
+LOCK TABLES `award` WRITE;
+/*!40000 ALTER TABLE `award` DISABLE KEYS */;
+/*!40000 ALTER TABLE `award` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `client`
 --
 
@@ -62,19 +97,19 @@ DROP TABLE IF EXISTS `client_award`;
 CREATE TABLE `client_award` (
   `uuid` varchar(65) NOT NULL,
   `client_uuid` varchar(56) DEFAULT NULL,
-  `award_9char` varchar(9) DEFAULT NULL,
-  `award_type` int(11) DEFAULT NULL,
+  `client_award_9char` varchar(9) DEFAULT NULL,
+  `award_uuid` varchar(56) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` longtext DEFAULT NULL,
-  `hero_image` varchar(255) DEFAULT NULL,
-  `channel` int(11) DEFAULT NULL,
+  `hero_image` tinyint(1) DEFAULT 0,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `CACLIENTUUID` (`client_uuid`),
-  KEY `CAAWARD9CHAR` (`award_9char`),
-  KEY `CAAWARDTYPE` (`award_type`),
-  KEY `CACHANNEL` (`channel`)
+  KEY `CACLIENTAWARD9CHAR` (`client_award_9char`),
+  KEY `CAAWARDUUID` (`award_uuid`),
+  KEY `CANAME` (`name`),
+  KEY `CAHEROIMAGE` (`hero_image`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -270,6 +305,41 @@ LOCK TABLES `program_admin` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `program_award`
+--
+
+DROP TABLE IF EXISTS `program_award`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `program_award` (
+  `uuid` varchar(65) NOT NULL,
+  `client_uuid` varchar(56) DEFAULT NULL,
+  `program_9char` varchar(9) DEFAULT NULL,
+  `client_award_9char` varchar(9) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` longtext DEFAULT NULL,
+  `hero_image` tinyint(1) DEFAULT 0,
+  `time_created` int(11) DEFAULT NULL,
+  `time_updated` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  KEY `PACLIENTUUID` (`client_uuid`),
+  KEY `PAPROGRAM9CHAR` (`program_9char`),
+  KEY `PACLIENTAWARD9CHAR` (`client_award_9char`),
+  KEY `PANAME` (`name`),
+  KEY `PAHEROIMAGE` (`hero_image`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `program_award`
+--
+
+LOCK TABLES `program_award` WRITE;
+/*!40000 ALTER TABLE `program_award` DISABLE KEYS */;
+/*!40000 ALTER TABLE `program_award` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `program_event`
 --
 
@@ -392,20 +462,23 @@ DROP TABLE IF EXISTS `program_segment_award`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `program_segment_award` (
-  `uuid` varchar(81) NOT NULL,
-  `program_uuid` varchar(65) DEFAULT NULL,
+  `uuid` varchar(83) NOT NULL,
   `client_uuid` varchar(56) DEFAULT NULL,
   `program_9char` varchar(9) DEFAULT NULL,
-  `segment_9char` varchar(9) DEFAULT NULL,
-  `award_9char` varchar(9) DEFAULT NULL,
+  `program_segment_9char` varchar(9) DEFAULT NULL,
+  `client_award_9char` varchar(9) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` longtext DEFAULT NULL,
+  `hero_image` tinyint(1) DEFAULT 0,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
-  KEY `PSAPROGRAMUUID` (`program_uuid`),
   KEY `PSACLIENTUUID` (`client_uuid`),
   KEY `PSAPROGRAM9CHAR` (`program_9char`),
-  KEY `PSASEGMENT9CHAR` (`segment_9char`),
-  KEY `PSAAWARD9char` (`award_9char`)
+  KEY `PSAPROGRAMSEGMENT9CHAR` (`program_segment_9char`),
+  KEY `PSACLIENTAWARD9char` (`client_award_9char`),
+  KEY `PSANAME` (`name`),
+  KEY `PSAHEROIMAGE` (`hero_image`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -532,9 +605,6 @@ LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `user_service`
---
 --
 -- Table structure for table `user_service`
 --
