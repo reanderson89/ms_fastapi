@@ -28,15 +28,15 @@ async def get_awards(
 	await ExceptionHandling.check404(awards)
 	return awards
 
-@router.get("/awards/{award_9char}", response_model=ClientAwardModel)
+@router.get("/awards/{client_award_9char}", response_model=ClientAwardModel)
 async def get_award(
 	client_uuid: str,
-	award_9char: str,
+	client_award_9char: str,
 	session: Session = Depends(get_session),
 ):
 	award = session.scalars(
 		select(ClientAwardModel)
-		.where(ClientAwardModel.award_9char == award_9char,
+		.where(ClientAwardModel.client_award_9char == client_award_9char,
 				ClientAwardModel.client_uuid == client_uuid)
 	).one_or_none()
 	await ExceptionHandling.check404(award)
@@ -46,17 +46,17 @@ async def get_award(
 async def create_award(awards: (list[ClientAwardModel] | ClientAwardModel)):
 	return await CommonRoutes.create_one_or_many(awards)
 
-@router.put("/awards/{award_9char}", response_model=ClientAwardModel)
+@router.put("/awards/{client_award_9char}", response_model=ClientAwardModel)
 async def update_award(
 	client_uuid: str,
-	award_9char: str,
+	client_award_9char: str,
 	award_updates: ClientAwardUpdate,
 	session: Session = Depends(get_session)
 ):
 	award = session.scalars(
 		select(ClientAwardModel)
 		.where(
-			ClientAwardModel.award_9char == award_9char,
+			ClientAwardModel.client_award_9char == client_award_9char,
 			ClientAwardModel.client_uuid == client_uuid
 		)
 	).one_or_none()
@@ -69,19 +69,19 @@ async def update_award(
 	session.commit()
 	session.refresh(award)
 	return award
-	
+
 
 # this should only work if there is no programs or segments associated with the award
-@router.delete("/awards/{award_9char}")
-async def delete_award(award_9char: str, client_uuid: str,
+@router.delete("/awards/{client_award_9char}")
+async def delete_award(client_award_9char: str, client_uuid: str,
 			session: Session = Depends(get_session)):
 	#TODO: add check for programs
 	award = session.scalars(
 		select(ClientAwardModel)
-		.where(ClientAwardModel.award_9char == award_9char,
+		.where(ClientAwardModel.client_award_9char == client_award_9char,
 				ClientAwardModel.client_uuid == client_uuid)
 	).one_or_none()
 	await ExceptionHandling.check404(award)
 	session.delete(award)
 	session.commit()
-	return {'ok': True, 'Deleted:': award} 
+	return {'ok': True, 'Deleted:': award}
