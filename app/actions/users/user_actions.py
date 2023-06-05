@@ -42,6 +42,20 @@ class UserActions(BaseActions):
 			return response_model.from_orm(user_expanded)
 		return user
 
+	@staticmethod
+	async def get_service_id(new_user_obj):
+		'''
+		Get the service ID from the specified user object
+		:param new_user_obj: The user object to get the service ID from
+		:return: A namedtuple containing the service type and service ID, or None if it couldn't be found
+		'''
+		if (service_id := await HelperActions.get_email_from_header(new_user_obj)):
+			return service_id
+		elif (service_id := await HelperActions.get_cell_from_header(new_user_obj)):
+			return service_id
+		else:
+			return None
+
 	@classmethod
 	async def create_user(cls, user):
 		if isinstance(user, list):
@@ -53,10 +67,12 @@ class UserActions(BaseActions):
 
 	@classmethod
 	async def create_user_and_service(cls, new_user):
-		user_email = await HelperActions.get_email_from_header(new_user)
-		user = await cls.get_user_by_service_id(user_email)
+		service_id = await cls.get_service_id(new_user)
+		if not service_id:
+			raise Exception
+		user = await cls.get_user_by_service_id(service_id.value)
 		if user:
-			# TODO: change to status = exists class format
+			# TODO: change to "status = exists" class format
 			return user
 		new_user = UserModel(
 			first_name = await HelperActions.get_fname_from_header(new_user),
@@ -67,10 +83,11 @@ class UserActions(BaseActions):
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)
 		new_user = await cls.create(new_user)
-		new_service = await UserServiceActions.create_service_for_new_user(new_user, user_email)
+		new_service = await UserServiceActions.create_service_for_new_user(new_user, service_id)
 		if not new_service:
 			raise Exception
 		return new_user
+
 
 	@classmethod
 	async def update_user(cls, user_uuid, updates):

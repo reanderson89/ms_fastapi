@@ -3,6 +3,7 @@ import codecs
 import json
 import time
 
+from collections import namedtuple
 from fastapi import UploadFile, File
 from sqlalchemy.orm import Session
 from app.database.config import engine
@@ -30,14 +31,27 @@ class HelperActions():
 				csv_items.append(json.loads(json.dumps(row)))
 			return csv_items
 
-	@staticmethod
-	async def get_email_from_header(data):
-		email_types = ['Primary Work Email', 'primary_work_email', 'email_address', 'email']
-		email_type = list(set(email_types).intersection(data))
+	ServiceType = namedtuple('ServiceType', ['type', 'value'])
+
+	@classmethod
+	async def get_email_from_header(cls, data):
+		email_types = {'Primary Work Email', 'primary_work_email', 'email_address', 'email'}
+		email_type = list(email_types.intersection(data))
 		if bool(email_type):
-			return data.get(email_type[0])
+			return cls.ServiceType(type='email', value=data.get((email_type[0])))
 		else:
-			raise Exception
+			return None
+
+	@classmethod
+	async def get_cell_from_header(cls, data):
+		cell_types = {'Primary Cell Number', 'primary_cell_number', 'cell_number', 'cell'}
+		cell_type = list(cell_types.intersection(data))
+		if bool(cell_type):
+			cell_value = data.get((cell_type[0]))
+			cell_value = cell_value.replace('-', '').replace('(', '').replace(')', '').strip()
+			return cls.ServiceType(type='cell', value=cell_value)
+		else:
+			return None
 
 	@staticmethod
 	async def get_fname_from_header(data):
@@ -85,5 +99,5 @@ class HelperActions():
 		return char_9
 
 	@staticmethod
-	def generate_UUID(input_string=None):
+	async def generate_UUID(input_string=None):
 		return SHA224Hash(input_string)

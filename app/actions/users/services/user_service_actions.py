@@ -1,4 +1,5 @@
 from typing import Optional
+from collections import namedtuple
 from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
@@ -24,14 +25,14 @@ class UserServiceActions(BaseActions):
 		return item
 
 	@classmethod
-	async def create_service_for_new_user(cls, user, email):
+	async def create_service_for_new_user(cls, user_obj, service_id: namedtuple):
 
 		new_user_service = UserServiceModel(
-			user_uuid = user.uuid,
-			service_uuid = "email",
-			service_user_id = email,
-			service_user_screenname = f"{user.first_name} {user.last_name}",
-			service_user_name = await HelperActions.make_username(user.first_name, user.last_name),
+			user_uuid = user_obj.uuid,
+			service_uuid = service_id.type,
+			service_user_id = service_id.value,
+			service_user_screenname = f"{user_obj.first_name} {user_obj.last_name}",
+			service_user_name = await HelperActions.make_username(user_obj.first_name, user_obj.last_name),
 			service_access_token = "access token",
 			service_access_secret = "secret token",
 			service_refresh_token = "refresh token",
@@ -40,7 +41,6 @@ class UserServiceActions(BaseActions):
 		)
 		return await cls.create(new_user_service)
 
-	@classmethod
 	@classmethod
 	async def get_service(cls, user_uuid: str, service_uuid: str):
 		return await cls.get_one_where(

@@ -1,11 +1,25 @@
-from sqlalchemy import select
-from app.database.config import engine
-from app.models.clients import ClientModel
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from sqlalchemy.orm import Session
-from app.models.clients.client_budget_models import ClientBudgetModel
+from app.actions.base_actions import BaseActions
+from app.models.clients import ClientModel, ClientUpdate
 
-class ClientActions():
+class ClientActions(BaseActions):
+
+	@classmethod
+	async def get_all_clients(cls, query_params: dict):
+		return await cls.get_all(ClientModel, query_params)
+
+	@classmethod
+	async def get_client(cls, client_uuid: str):
+		return await cls.get_one_where(
+			ClientModel,
+			[ClientModel.uuid == client_uuid]
+		)
+
+	@classmethod
+	async def get_client_name(cls, client_uuid: str):
+		return await cls.get_one_where(
+			ClientModel.name,
+			[ClientModel.uuid == client_uuid]
+		)
 
 	@classmethod
 	async def create_client_handler(cls, clients):
@@ -21,33 +35,31 @@ class ClientActions():
 
 	@classmethod
 	async def create_client(cls, client_data):
-		check = await cls.check_for_existing(client_data.name)
-		if check:
-			return check
-		else:
-			new_client = ClientModel(
-				name=client_data.name,
-				description=client_data.description,
-				status=client_data.status
-			)
-			return await CommonRoutes.create_one_or_many(new_client)
-
-	@classmethod
-	async def check_for_existing(cls, name):
-		client = await cls.get_client_by_name(name)
-		if not client:
-			return None
-		else:
+		client = await cls.check_if_exists(
+			ClientModel,
+			[ClientModel.name == client_data.name]
+		)
+		if client:
 			return client
 
-	@classmethod
-	async def get_client_by_name(cls, search_by):
-		with Session(engine) as session:
-			return session.scalars(select(ClientModel)
-								.where(ClientModel.name == search_by)).one_or_none()
+		new_client = ClientModel(
+			name=client_data.name,
+			description=client_data.description,
+			status=client_data.status
+		)
+		return await cls.create(new_client)
 
-	@staticmethod
-	async def get_name_by_uuid(search_by):
-		with Session(engine) as session:
-			return session.scalars(select(ClientModel.name)
-								.where(ClientModel.uuid == search_by)).one_or_none()
+	@classmethod
+	def update_client(cls, client_uuid: str, update_obj: ClientUpdate):
+		return cls.update(
+			ClientModel,
+			[ClientModel.uuid ==client_uuid],
+			update_obj
+		)
+
+	@classmethod
+	async def delete_client(cls, client_uuid: str):
+		return await cls.delete_one(
+			ClientModel,
+			[ClientModel.uuid == client_uuid]
+		)

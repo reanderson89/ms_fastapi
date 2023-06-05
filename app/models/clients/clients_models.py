@@ -12,7 +12,7 @@ class ClientModel(Base):
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 	time_ping: Mapped[int] = mapped_column(default=None)
-	status: Mapped[int] = mapped_column(default=None)
+	status: Mapped[int] = mapped_column(default=0)
 
 class ClientBase(BasePydantic):
 	uuid: Optional[str]
@@ -29,6 +29,4 @@ class ClientExpanded(ClientBase):
 class ClientUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
-	time_updated: Optional[int] = None
-	time_ping: Optional[int] = None
 	status: Optional[int] = None

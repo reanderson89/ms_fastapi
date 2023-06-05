@@ -56,7 +56,7 @@ class AuthActions(BaseActions):
 
     @classmethod
     async def check_for_match_put(cls, redeem_auth_model: RedeemAuthModel):
-        return await cls.get_one_where(
+        return await cls.check_if_exists(
             UserServiceModel,
             [
             UserServiceModel.login_token == redeem_auth_model.login_token,

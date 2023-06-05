@@ -20,7 +20,7 @@ class ClientBudgetActions():
 
 	@staticmethod
 	async def default_budget_name(client_uuid):
-		client_name = await ClientActions.get_name_by_uuid(client_uuid)
+		client_name = await ClientActions.get_client_name(client_uuid)
 		budgetCreationTime = datetime.now(timezone.utc).strftime('%m/%d/%Y %H:%M:%S %Z')
 		return f"New {client_name} Budget (created: {budgetCreationTime})"
 

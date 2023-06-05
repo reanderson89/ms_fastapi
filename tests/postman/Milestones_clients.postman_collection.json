@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "9ba0a4bd-00fe-491b-892d-74c26dce1760",
+		"_postman_id": "8bb29861-a831-4be0-b9d6-caa1a56c3b9c",
 		"name": "Milestones_clients",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -1450,7 +1450,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"updated name\",\n  \"description\": \"updated department\",\n  \"time_updated\": 0,\n  \"time_ping\": 0\n}",
+							"raw": "{\n  \"name\": \"new Co\",\n  \"description\": \"It's All new!!!\",\n  \"status\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

@@ -3,8 +3,7 @@ from app.models.users import UserModel
 from app.models.users.auth.auth_models import CreateAuthModel, RedeemAuthModel, AuthResponseModel
 from app.actions.users.auth.auth_actions import AuthActions
 
-
-router = APIRouter(tags=["Users"], prefix="/users/{user_uuid}")
+router = APIRouter(tags=["Users"], prefix="/users")
 
 
 @router.post("/auth", response_model=AuthResponseModel)

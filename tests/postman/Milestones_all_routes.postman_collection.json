@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "174cd3f9-f6fd-4dde-9cdc-e5d7556440c3",
+		"_postman_id": "2d99d6ab-917b-49c3-b6e1-88b04ab7f542",
 		"name": "Milestones_all_routes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -3786,8 +3786,8 @@
 											]
 										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								},
@@ -3837,8 +3837,8 @@
 											]
 										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								},
@@ -3888,8 +3888,8 @@
 											]
 										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								}
@@ -3899,17 +3899,23 @@
 							"name": "Delete Template",
 							"request": {
 								"method": "DELETE",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": [
 								{
 									"name": "Successful Response",
 									"originalRequest": {
 										"method": "DELETE",
-										"header": []
+										"header": [],
+										"url": {
+											"raw": ""
+										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								},
@@ -3917,10 +3923,13 @@
 									"name": "Unauthorized",
 									"originalRequest": {
 										"method": "DELETE",
-										"header": []
+										"header": [],
+										"url": {
+											"raw": ""
+										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								},
@@ -3928,10 +3937,13 @@
 									"name": "Validation Error",
 									"originalRequest": {
 										"method": "DELETE",
-										"header": []
+										"header": [],
+										"url": {
+											"raw": ""
+										}
 									},
-									"_postman_previewlanguage": "",
-									"header": "",
+									"_postman_previewlanguage": "Text",
+									"header": [],
 									"cookie": [],
 									"body": ""
 								}
@@ -4111,14 +4123,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/clients/",
+									"raw": "{{baseUrl}}/v1/clients",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"clients",
-										""
+										"clients"
 									]
 								}
 							},
@@ -4317,14 +4328,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/clients/",
+									"raw": "{{baseUrl}}/v1/clients",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"clients",
-										""
+										"clients"
 									]
 								}
 							},
@@ -5490,7 +5500,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"updated name\",\n  \"description\": \"updated department\",\n  \"time_updated\": 0,\n  \"time_ping\": 0\n}",
+									"raw": "{\n  \"name\": \"new Co\",\n  \"description\": \"It's All new!!!\",\n  \"status\": 1\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -7397,14 +7407,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/v1/clients/",
+											"raw": "{{baseUrl}}/v1/clients",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
 												"v1",
-												"clients",
-												""
+												"clients"
 											]
 										}
 									},
@@ -9708,14 +9717,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/v1/clients/",
+											"raw": "{{baseUrl}}/v1/clients",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
 												"v1",
-												"clients",
-												""
+												"clients"
 											]
 										}
 									},
@@ -13414,14 +13422,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/v1/clients/",
+											"raw": "{{baseUrl}}/v1/clients",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
 												"v1",
-												"clients",
-												""
+												"clients"
 											]
 										}
 									},
@@ -16860,14 +16867,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/v1/clients/",
+											"raw": "{{baseUrl}}/v1/clients",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
 												"v1",
-												"clients",
-												""
+												"clients"
 											]
 										}
 									},
@@ -19424,14 +19430,13 @@
 											}
 										},
 										"url": {
-											"raw": "{{baseUrl}}/v1/clients/",
+											"raw": "{{baseUrl}}/v1/clients",
 											"host": [
 												"{{baseUrl}}"
 											],
 											"path": [
 												"v1",
-												"clients",
-												""
+												"clients"
 											]
 										}
 									},
@@ -20434,8 +20439,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -20484,8 +20489,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -20534,8 +20539,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										}
@@ -21287,8 +21292,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21328,8 +21333,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21369,8 +21374,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										}
@@ -21495,8 +21500,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21550,8 +21555,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21605,8 +21610,8 @@
 													]
 												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										}
@@ -21616,17 +21621,23 @@
 									"name": "Delete Message",
 									"request": {
 										"method": "DELETE",
-										"header": []
+										"header": [],
+										"url": {
+											"raw": ""
+										}
 									},
 									"response": [
 										{
 											"name": "Successful Response",
 											"originalRequest": {
 												"method": "DELETE",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21634,10 +21645,13 @@
 											"name": "Unauthorized",
 											"originalRequest": {
 												"method": "DELETE",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										},
@@ -21645,10 +21659,13 @@
 											"name": "Validation Error",
 											"originalRequest": {
 												"method": "DELETE",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
-											"_postman_previewlanguage": "",
-											"header": "",
+											"_postman_previewlanguage": "Text",
+											"header": [],
 											"cookie": [],
 											"body": ""
 										}
@@ -22820,17 +22837,23 @@
 											"name": "Get Client Award",
 											"request": {
 												"method": "GET",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22838,10 +22861,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22849,10 +22875,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
@@ -22862,17 +22891,23 @@
 											"name": "Update Client Award",
 											"request": {
 												"method": "PUT",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22880,10 +22915,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22891,10 +22929,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
@@ -22904,17 +22945,23 @@
 											"name": "Delete Client Award",
 											"request": {
 												"method": "DELETE",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22922,10 +22969,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -22933,10 +22983,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
@@ -28275,17 +28328,23 @@
 											"name": "Get Program Award",
 											"request": {
 												"method": "GET",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28293,10 +28352,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28304,10 +28366,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "GET",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
@@ -28317,17 +28382,23 @@
 											"name": "Updated Program Award",
 											"request": {
 												"method": "PUT",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28335,10 +28406,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28346,10 +28420,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "PUT",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
@@ -28359,17 +28436,23 @@
 											"name": "Delete Program Award",
 											"request": {
 												"method": "DELETE",
-												"header": []
+												"header": [],
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": [
 												{
 													"name": "Successful Response",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28377,10 +28460,13 @@
 													"name": "Unauthorized",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												},
@@ -28388,10 +28474,13 @@
 													"name": "Validation Error",
 													"originalRequest": {
 														"method": "DELETE",
-														"header": []
+														"header": [],
+														"url": {
+															"raw": ""
+														}
 													},
-													"_postman_previewlanguage": "",
-													"header": "",
+													"_postman_previewlanguage": "Text",
+													"header": [],
 													"cookie": [],
 													"body": ""
 												}
