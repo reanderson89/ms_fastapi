@@ -49,4 +49,4 @@ if [ ! -z ${CRON} ]; then
     service cron status
 fi
 
-ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80
+ddtrace-run ENV='prod' uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors

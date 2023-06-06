@@ -17,3 +17,4 @@ v1router.include_router(v1_segments_router)
 @v1router.get("/health")
 async def read_root():
     return {"message": "milestones is up and making memories"}
+

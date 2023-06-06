@@ -43,4 +43,4 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' does not exist, skipping Alembic migrations..."
 fi
 
-uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload
+uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
