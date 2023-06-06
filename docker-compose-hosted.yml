@@ -35,9 +35,10 @@ services:
       ALEMBIC_INI_FILE: "alembic.ini"
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      BEARER_TOKEN: ${BEARER_TOKEN}
       DD_AGENT_HOST: datadog_agent
       DD_PROFILING_ENABLED: true
-      BEARER_TOKEN: ${BEARER_TOKEN}
+      ENV: dev
       LOG_LEVEL: debug
       # connection settings for the app, these should match server's config (above)
       MYSQL_DATABASE: blueboard_milestones
@@ -60,9 +61,10 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       CRON: true
+      BEARER_TOKEN: ${BEARER_TOKEN}
       DD_AGENT_HOST: datadog_agent
       DD_PROFILING_ENABLED: true
-      BEARER_TOKEN: ${BEARER_TOKEN}
+      ENV: dev
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_USER: ${MYSQL_USER}
