@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8bb29861-a831-4be0-b9d6-caa1a56c3b9c",
+		"_postman_id": "c226e9ee-5485-42f0-841e-22b716636a25",
 		"name": "Milestones_clients",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -2952,6 +2952,220 @@
 					]
 				},
 				{
+					"name": "Get Service UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// this test will fail if no user exists",
+									"pm.test(\"service should exist\", function () {",
+									"    pm.expect(jsonData.status).to.eql(\"exists\");",
+									"});",
+									"",
+									"pm.collectionVariables.set(\"service_uuid\", jsonData.uuid)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user@testclient.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"{{user_uuid_from_client_user}}",
+								"services",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service UUID Two",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// this test will fail if no user exists",
+									"pm.test(\"service should exist\", function () {",
+									"    pm.expect(jsonData.status).to.eql(\"exists\");",
+									"});",
+									"",
+									"pm.collectionVariables.set(\"service_uuid_two\", jsonData.uuid)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"second.user@testclient.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user_two}}/services/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"{{user_uuid_from_client_user_two}}",
+								"services",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services/{{service_uuid}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"{{user_uuid_from_client_user}}",
+								"services",
+								"{{service_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Service Two",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user_two}}/services/{{service_uuid_two}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"{{user_uuid_from_client_user_two}}",
+								"services",
+								"{{service_uuid_two}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete User",
 					"event": [
 						{
@@ -3437,6 +3651,10 @@
 			"key": "message_uuid",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "service_uuid_two",
+			"value": ""
 		}
 	]
 }

@@ -44,6 +44,8 @@ docker exec -it milestones_api newman run /app/tests/postman/Milestones_Users.po
 └───────────────────────────────────────────────────────────────┘
 ```
 
+# Each Postman Collection below should leave the database clean when it is done running.
+
 
 ## Milestones_all_routes.postman_collection.json
 
@@ -53,7 +55,13 @@ This collection currently has all of the routes in it. It is essentially a backu
 
 Running this collection will create a client, client_user, program, and then a program_admin, it will the GET the admin, update the permissions, and then delete them along with everything else.
 
-You should see 24 tests pass
+You should see 27 tests pass
+
+## Milestones_awards.postman_collection.json
+
+Running this collection will create an award, get all awards and one specifically. Then it will update the award added and delete it.
+
+You should see 10 tests pass
 
 
 ## Milestones_budgets.postman_collection.json
@@ -66,13 +74,19 @@ You should see 38 tests pass
 
 Running this collection will create a client and two client_users, it will get them all and individually, update them both, and then delete everything and check that it has been deleted.
 
-You should see 33 tests pass
+You should see 39 tests pass
+
+## Milestones_client_awards.postman_collection.json
+
+Running this collection will create a client and a client_award, it will perform a get all and get one for the client_award. Then it will update the client_award and then delete the client_award and the client.
+
+You should see 14 tests pass
 
 ## Milestones_events.postman_collection.json
 
 Running this collection will create a client, client_user, program, program_event and a sub event. It will GET the events and update them and then delete them along with everything else created.
 
-You should see 24 tests pass
+You should see 27 tests pass
 
 ## Milestones_message_templates.postman_collection.json
 
@@ -84,15 +98,15 @@ You should see 5 tests pass
 
 Running this collection will create a client, a client_user and a program associated for the client, it will then create a message, get all messages and the one created specifically. Then it will update the message and delete it along with the program, client_user, client, and user.
 
-You should see 29 tests pass
+You should see 32 tests pass
 
 ## Milestones_programs.postman_collection.json
 
 Running this collection will create a client, a client_user and a program associated for the client, it will get the program, update it, and then delete the program, the client_user, and the client.
 
-You should see 25 tests pass
+You should see 28 tests pass
 
-## Milestones_Users.postman_collection.json
+## Milestones_users.postman_collection.json
 
 This collection is a series of sequential tests regarding users.  In essence:
 
@@ -105,5 +119,6 @@ This collection is a series of sequential tests regarding users.  In essence:
 - Gets the 2nd service for the test user, should get the service back
 - Updates the user service, should succeed
 - Does a bulk update of services
+- Deletes all users and services
 
-You should see 17 tests pass
+You should see 24 tests pass

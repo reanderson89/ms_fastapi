@@ -1,28 +1,48 @@
 {
 	"info": {
-		"_postman_id": "48d37416-263d-4620-a41a-b72d24774b80",
-		"name": "Milestones_message_templates",
+		"_postman_id": "e5850125-ec5d-4994-9aa5-8d0e501d2a45",
+		"name": "Milestones_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
-			"name": "message_templates",
+			"name": "awards",
 			"item": [
 				{
-					"name": "Create Message Template",
+					"name": "Create Award",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Status test\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.collectionVariables.set(\"message_template_uuid\", jsonData.uuid);"
+									"var jsonData = pm.response.json();",
+									"",
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"award_uuid\", jsonData[0].uuid);",
+									"} else {",
+									"  pm.collectionVariables.set(\"award_uuid\", jsonData.uuid);",
+									"}",
+									"pm.collectionVariables.set(\"create_award\", pm.request);",
+									"",
+									"pm.test(\"uuid should exist\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.uuid).to.exist;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"variable_key\", \"variable_value\");"
 								],
 								"type": "text/javascript"
 							}
@@ -52,7 +72,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"channel\": 1,\n    \"body\": \"Body of the message\"\n  }",
+							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test\",\n    \"hero_image\": 1,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -61,13 +81,20 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/messages",
+							"raw": "{{baseUrl}}/v1/awards",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"messages"
+								"awards"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -89,7 +116,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]",
+									"raw": "{}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -98,13 +125,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										""
 									]
 								}
 							},
@@ -118,7 +146,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]"
+							"body": "{\n  \"uuid\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\",\n  \"time_birthday\": \"<integer>\"\n}"
 						},
 						{
 							"name": "Unauthorized",
@@ -137,7 +165,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]",
+									"raw": "{}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -146,13 +174,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										""
 									]
 								}
 							},
@@ -185,7 +214,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]",
+									"raw": "{}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -194,13 +223,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										""
 									]
 								}
 							},
@@ -219,7 +249,7 @@
 					]
 				},
 				{
-					"name": "Get Message Templates",
+					"name": "Get Awards",
 					"event": [
 						{
 							"listen": "test",
@@ -227,6 +257,149 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"awards length should be greater than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": false
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/awards",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"awards"
+							],
+							"query": [
+								{
+									"key": "order_by",
+									"value": "property name",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "ASC or DESC for ascending and descending",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"uuid\": \"<string>\",\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"latitude\": \"<integer>\",\n    \"longitude\": \"<integer>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\",\n    \"time_ping\": \"<integer>\",\n    \"time_birthday\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"first_name\": \"<string>\",\n    \"last_name\": \"<string>\",\n    \"latitude\": \"<integer>\",\n    \"longitude\": \"<integer>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\",\n    \"time_ping\": \"<integer>\",\n    \"time_birthday\": \"<integer>\"\n  }\n]"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										""
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Award",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"award_uuid from request should match uuid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var award_uuid = pm.collectionVariables.get(\"award_uuid\")",
+									"    pm.expect(jsonData.uuid).to.eql(award_uuid);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -252,13 +425,20 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/messages",
+							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}?expand_services=false",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"messages"
+								"awards",
+								"{{award_uuid}}"
+							],
+							"query": [
+								{
+									"key": "expand_services",
+									"value": "false"
+								}
 							]
 						}
 					},
@@ -275,13 +455,25 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid?expand_services=false",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										":user_uuid"
+									],
+									"query": [
+										{
+											"key": "expand_services",
+											"value": "false"
+										}
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
 									]
 								}
 							},
@@ -295,7 +487,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]"
+							"body": "{}"
 						},
 						{
 							"name": "Unauthorized",
@@ -309,13 +501,25 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid?expand_services=false",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										":user_uuid"
+									],
+									"query": [
+										{
+											"key": "expand_services",
+											"value": "false"
+										}
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
 									]
 								}
 							},
@@ -330,57 +534,9 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Get Message Template",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{bearerToken}}",
-									"type": "string"
-								}
-							]
 						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/v1/messages/{{message_template_uuid}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"messages",
-								"{{message_template_uuid}}"
-							]
-						}
-					},
-					"response": [
 						{
-							"name": "Successful Response",
+							"name": "Validation Error",
 							"originalRequest": {
 								"method": "GET",
 								"header": [
@@ -391,18 +547,30 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid?expand_services=false",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages"
+										"users",
+										":user_uuid"
+									],
+									"query": [
+										{
+											"key": "expand_services",
+											"value": "false"
+										}
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
 									]
 								}
 							},
-							"status": "OK",
-							"code": 200,
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
 							"_postman_previewlanguage": "json",
 							"header": [
 								{
@@ -411,46 +579,12 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  },\n  {\n    \"uuid\": \"<string>\",\n    \"channel\": \"<integer>\",\n    \"body\": \"<string>\",\n    \"time_created\": \"<integer>\",\n    \"time_updated\": \"<integer>\"\n  }\n]"
-						},
-						{
-							"name": "Unauthorized",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"description": "Added as a part of security scheme: bearer",
-										"key": "Authorization",
-										"value": "Bearer <token>"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/v1/messages",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"v1",
-										"messages"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
 						}
 					]
 				},
 				{
-					"name": "Update Message Template",
+					"name": "Updated Award",
 					"event": [
 						{
 							"listen": "test",
@@ -458,6 +592,11 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"name should be UPDATED\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"UPDATED\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -488,7 +627,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"channel\": 0,\n  \"body\": \"UPDATED\"\n  }",
+							"raw": "{\n    \"name\": \"UPDATED\",\n    \"description\": \"UPDATED\",\n    \"hero_image\": 1,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -497,14 +636,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/messages/{{message_template_uuid}}",
+							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"messages",
-								"{{message_template_uuid}}"
+								"awards",
+								"{{award_uuid}}"
 							]
 						}
 					},
@@ -526,7 +665,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"channel\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"raw": "{\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -535,18 +674,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -561,7 +700,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"uuid\": \"<string>\",\n  \"channel\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\"\n}"
+							"body": "{\n  \"uuid\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\",\n  \"time_birthday\": \"<integer>\"\n}"
 						},
 						{
 							"name": "Unauthorized",
@@ -580,7 +719,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"channel\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"raw": "{\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -589,18 +728,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -634,7 +773,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"channel\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"raw": "{\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -643,18 +782,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -674,7 +813,7 @@
 					]
 				},
 				{
-					"name": "Delete Template",
+					"name": "Delete Award",
 					"event": [
 						{
 							"listen": "test",
@@ -682,6 +821,10 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"deleted should be true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.ok).to.eql(true);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -707,14 +850,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/messages/{{message_template_uuid}}",
+							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"messages",
-								"{{message_template_uuid}}"
+								"awards",
+								"{{award_uuid}}"
 							]
 						}
 					},
@@ -731,18 +874,18 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -771,18 +914,18 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -811,18 +954,18 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/messages/:message_template_uuid",
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"messages",
-										":message_template_uuid"
+										"users",
+										":user_uuid"
 									],
 									"variable": [
 										{
-											"key": "message_template_uuid"
+											"key": "user_uuid"
 										}
 									]
 								}
@@ -990,6 +1133,23 @@
 		{
 			"key": "message_uuid",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "award_uuid",
+			"value": ""
+		},
+		{
+			"key": "create_award",
+			"value": ""
+		},
+		{
+			"key": "create_client",
+			"value": ""
+		},
+		{
+			"key": "client_award_9char",
+			"value": "test_char",
 			"type": "string"
 		}
 	]
