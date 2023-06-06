@@ -21,6 +21,7 @@ class LocalDB(BaseDB):
 	PASSWD: str = os.environ.get('MYSQL_PASSWORD', 'password')
 	DB: str = os.environ.get('MYSQL_DATABASE', 'blueboard_milestones')
 
+@dataclass
 class DevDB(BaseDB):
 	# these env vars are coming from docker-compose.yml
 	HOST: str =  os.environ.get('MYSQL_HOSTNAME', 'localhost')
