@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "48d37416-263d-4620-a41a-b72d24774b80",
+		"_postman_id": "ebbfd1d9-25a5-42fa-8913-3c8c5d39757b",
 		"name": "Milestones_message_templates",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -22,7 +22,13 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.collectionVariables.set(\"message_template_uuid\", jsonData.uuid);"
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"message_template_uuid\", jsonData[0].uuid);",
+									"} else {",
+									"  pm.collectionVariables.set(\"message_template_uuid\", jsonData.uuid);",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"create_template_message\", pm.request);"
 								],
 								"type": "text/javascript"
 							}
@@ -991,6 +997,10 @@
 			"key": "message_uuid",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "create_template_message",
+			"value": ""
 		}
 	]
 }

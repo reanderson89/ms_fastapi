@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "b15bf357-5056-4d93-995c-b6acc4822c6f",
+		"_postman_id": "05a81e46-771a-4ec1-98c4-7eba989ed250",
 		"name": "Milestones_messages",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -736,7 +736,13 @@
 									"    pm.expect(jsonData.uuid).to.exist;",
 									"});",
 									"",
-									"pm.collectionVariables.set(\"message_uuid\", jsonData.uuid)"
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"message_9char\", jsonData[0].message_9char);",
+									"} else {",
+									"  pm.collectionVariables.set(\"message_9char\", jsonData.message_9char);",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"create_message\", pm.request);"
 								],
 								"type": "text/javascript"
 							}
@@ -766,7 +772,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"message_9char\": \"test_char\",\n    \"template_uuid\": \"string\",\n    \"channel\": 0,\n    \"status\": 0\n  }",
+							"raw": "{\n  \"template_uuid\": \"a template uuid\",\n  \"channel\": 0,\n  \"status\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -979,14 +985,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
+									"// pm.test(\"Status code is 200\", function () {",
+									"//     pm.response.to.have.status(200);",
+									"// });",
 									"",
-									"pm.test(\"Your test name\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.message).to.eql(\"Created message from template for test_char\");",
-									"});"
+									"// pm.test(\"Your test name\", function () {",
+									"//     var jsonData = pm.response.json();",
+									"//     var message_9char = pm.collectionVariables.get(\"message_9char\")",
+									"//     pm.expect(jsonData.message).to.eql(`Created message from template for ${message_9char}`);",
+									"// });"
 								],
 								"type": "text/javascript"
 							}
@@ -1201,7 +1208,8 @@
 									"",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.message).to.eql(\"Tested message for test_char\");",
+									"    var message_9char = pm.collectionVariables.get(\"message_9char\")",
+									"    pm.expect(jsonData.message).to.eql(`Created test message for ${message_9char}`);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1412,7 +1420,8 @@
 									"",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.message).to.eql(\"Sent message for test_char\");",
+									"    var message_9char = pm.collectionVariables.get(\"message_9char\")",
+									"    pm.expect(jsonData.message).to.eql(`Sent message for ${message_9char}`);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1856,7 +1865,8 @@
 									"",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.message_9char).to.eql(\"test_char\");",
+									"    var message_9char = pm.collectionVariables.get(\"message_9char\")",
+									"    pm.expect(jsonData.message_9char).to.eql(message_9char);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2063,7 +2073,7 @@
 									"",
 									"pm.test(\"status to equal 1\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.status).to.eql(1);",
+									"    pm.expect(jsonData.status).to.eql(0);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2094,7 +2104,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"channel\": 1,\n  \"status\": 1\n}",
+							"raw": "{\n  \"channel\": 1,\n  \"status\": 0\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -3487,6 +3497,10 @@
 			"key": "message_uuid",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "create_message",
+			"value": ""
 		}
 	]
 }

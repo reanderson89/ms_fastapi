@@ -1,117 +1,67 @@
-from time import time
-from sqlalchemy import select
-from fastapi import APIRouter, Query, Depends
-from app.database.config import engine
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.messages import MessageModel, MessageUpdate
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
+from app.models.messages import MessageModel, MessageCreate, MessageUpdate
+from app.actions.messages.message_actions import MessageActions
+from app.routers.v1.dependencies import get_query_params
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Messages"])
 
-def get_session():
-	with Session(engine) as session:
-		yield session
+
+def path_params(client_uuid: str, program_9char: str, message_9char: str=None):
+	return {"client_uuid": client_uuid, "program_9char": program_9char, "message_9char": message_9char}
+
 
 @router.get("/messages", response_model=list[MessageModel])
 async def get_messages(
-	client_uuid: str,
-	program_9char: str,
-	offset: int = 0,
-	limit: int = Query(default=100, lte=100),
-	session: Session = Depends(get_session)
+	query_params: dict = Depends(get_query_params),
+	path_params: dict = Depends(path_params)
 ):
-	messages = session.scalars(
-		select(MessageModel).where(
-			MessageModel.client_uuid == client_uuid,
-			MessageModel.program_9char == program_9char
-		)
-		.offset(offset)
-		.limit(limit)
-		).all()
-	await ExceptionHandling.check404(messages)
-	return messages
+	return await MessageActions.get_all(path_params, query_params)
+
 
 @router.get("/messages/{message_9char}", response_model=MessageModel)
 async def get_message(
-	client_uuid: str,
-	program_9char: str,
-	message_9char: str,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	message = session.scalars(
-		select(MessageModel).where(
-			MessageModel.client_uuid == client_uuid,
-			MessageModel.program_9char == program_9char,
-			MessageModel.message_9char == message_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(message)
-	return message
+	return await MessageActions.get_one(path_params)
 
-@router.post("/messages", response_model=(list[MessageModel] | MessageModel))
-async def create_message(message: (list[MessageModel] | MessageModel)):
-	return await CommonRoutes.create_one_or_many(message)
 
-# the endpoint might needs to be different for this not to conflict with create_message()
-# @router.post("/messages/{message_9char}/template") # possible solution
-# TODO
-@router.post("/messages/{message_9char}")
+@router.post("/messages", response_model=MessageModel)
+async def create_message(
+	new_message_obj: MessageCreate,
+	path_params: dict = Depends(path_params),
+	program_uuid: str = Depends(MessageActions.get_program_uuid)
+):
+	return await MessageActions.create_message(new_message_obj, path_params, program_uuid)
+
+
+# TODO: Role this functionality into create_message
+# only difference is the template_uuid being passed in the body
+@router.post("/messages/{message_9char}/template", deprecated=True)
 async def create_message_from_template(message_9char: str):
 	return {"message": f"Created message from template for {message_9char}"}
 
-# TODO
+
 @router.post("/messages/{message_9char}/test")
 async def test_message(message_9char: str):
-	return {"message": f"Tested message for {message_9char}"}
+	return await MessageActions.send_test_message(message_9char)
 
-# TODO
+
 # send message to program audience
 @router.post("/messages/{message_9char}/send")
 async def send_message(message_9char: str):
-	return {"message": f"Sent message for {message_9char}"}
+	return await MessageActions.send_message(message_9char)
+
 
 @router.put("/messages/{message_9char}", response_model=MessageModel)
 async def update_message(
-	client_uuid: str,
-	program_9char: str,
-	message_9char: str,
 	message_updates: MessageUpdate,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	message = session.scalars(
-		select(MessageModel)
-		.where(
-			MessageModel.client_uuid == client_uuid,
-			MessageModel.program_9char == program_9char,
-			MessageModel.message_9char == message_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(message)
-	update_message = message_updates.dict(exclude_unset=True)
-	for k, v in update_message.items():
-		setattr(message, k, v)
-	message.time_updated = int(time())
-	session.add(message)
-	session.commit()
-	session.refresh(message)
-	return message
+	return await MessageActions.update_message(path_params, message_updates)
+
 
 @router.delete("/messages/{message_9char}")
 async def delete_message(
-	client_uuid: str,
-	program_9char: str,
-	message_9char: str,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	message = session.scalars(
-		select(MessageModel)
-		.where(
-			MessageModel.client_uuid == client_uuid,
-			MessageModel.program_9char == program_9char,
-			MessageModel.message_9char == message_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(message)
-	session.delete(message)
-	session.commit()
-	return {'ok': True, 'Deleted:': message}
+	return await MessageActions.delete_message(path_params)
