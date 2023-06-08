@@ -1,102 +1,57 @@
-from time import time
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from fastapi import APIRouter, Query, Depends
-from app.database.config import engine
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.programs import ProgramEventModel, ProgramEventUpdate
+from fastapi import APIRouter, Depends
+from app.routers.v1.dependencies import get_query_params
+from app.models.programs import ProgramEventModel, ProgramEventUpdate, ProgramEventCreate
+from app.actions.programs.events.program_event_actions import ProgramEventActions
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Events"])
+router = APIRouter(
+	prefix="/clients/{client_uuid}/programs/{program_9char}",
+	tags=["Client Program Events"]
+)
 
-def get_session():
-	with Session(engine) as session:
-		yield session
+
+def path_params(client_uuid: str, program_9char: str, event_9char: str=None):
+	return {
+		"client_uuid": client_uuid,
+		"program_9char": program_9char,
+		"event_9char": event_9char
+	}
+
 
 @router.get("/events", response_model=list[ProgramEventModel])
 async def get_events(
-	client_uuid: str,
-	program_9char: str,
-	offset: int = 0,
-	limit: int = Query(default=100, lte=100),
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params),
+	query_params: dict = Depends(get_query_params)
 ):
-	events = session.scalars(
-		select(ProgramEventModel).where(
-			ProgramEventModel.client_uuid == client_uuid,
-			ProgramEventModel.program_9char == program_9char
-		)
-		.offset(offset)
-		.limit(limit)
-		).all()
-	await ExceptionHandling.check404(events)
-	return events
+	return await ProgramEventActions.get_all_events(path_params, query_params)
+
 
 @router.get("/events/{event_9char}", response_model=ProgramEventModel)
 async def get_event(
-	client_uuid: str,
-	program_9char: str,
-	event_9char: str,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	event = session.scalars(
-		select(ProgramEventModel)
-		.where(
-			ProgramEventModel.event_9char == event_9char,
-			ProgramEventModel.client_uuid == client_uuid,
-			ProgramEventModel.program_9char == program_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(event)
-	return event
+	return await ProgramEventActions.get_event(path_params)
+
 
 @router.post("/events", response_model=(list[ProgramEventModel] | ProgramEventModel))
-async def create_event(events: (list[ProgramEventModel] | ProgramEventModel)):
-	return await CommonRoutes.create_one_or_many(events)
+async def create_event(
+	events: (list[ProgramEventCreate] | ProgramEventCreate),
+	path_params: dict = Depends(path_params),
+	program_uuid: str = Depends(ProgramEventActions.get_program_uuid)
+):
+	return await ProgramEventActions.create_event(events, path_params, program_uuid)
+
 
 @router.put("/events/{event_9char}", response_model=ProgramEventModel)
 async def update_event(
-	client_uuid: str,
-	program_9char: str,
-	event_9char: str,
 	event_updates: ProgramEventUpdate,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	event = session.scalars(
-		select(ProgramEventModel)
-		.where(
-			ProgramEventModel.event_9char == event_9char,
-			ProgramEventModel.client_uuid == client_uuid,
-			ProgramEventModel.program_9char == program_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(event)
-	update_event = event_updates.dict(exclude_unset=True)
-	for k, v in update_event.items():
-		setattr(event, k, v)
-	event.time_updated = int(time())
-	session.add(event)
-	session.commit()
-	session.refresh(event)
-	return event
+	return await ProgramEventActions.update_event(event_updates, path_params)
 
 
-# not in endpoint specs
+#TODO: Check, delete is not in endpoint specs doc
 @router.delete("/events/{event_9char}")
 async def delete_event(
-	client_uuid: str,
-	program_9char: str,
-	event_9char: str,
-	session: Session = Depends(get_session)
+	path_params: dict = Depends(path_params)
 ):
-	event = session.scalars(
-		select(ProgramEventModel)
-		.where(
-			ProgramEventModel.event_9char == event_9char,
-			ProgramEventModel.client_uuid == client_uuid,
-			ProgramEventModel.program_9char == program_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(event)
-	session.delete(event)
-	session.commit()
-	return {"ok": True, "Deleted:": event}
+	return await ProgramEventActions.delete_event(path_params)

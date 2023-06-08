@@ -728,7 +728,19 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
-									"});"
+									"});",
+									"",
+									"// check for array",
+									"",
+									"var jsonData = pm.response.json()",
+									"",
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"event_9char\", jsonData[0].event_9char);",
+									"} else {",
+									"  pm.collectionVariables.set(\"event_9char\", jsonData.event_9char);",
+									"}",
+									"",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -758,7 +770,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"<string>\",\n    \"status\": 1\n  }\n]\n",
+							"raw": "[\n  {\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"TEST\",\n    \"status\": 1\n  }\n]\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -973,7 +985,15 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
-									"});"
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"sub_event_9char\", jsonData[0].event_9char);",
+									"} else {",
+									"  pm.collectionVariables.set(\"sub_event_9char\", jsonData.event_9char);",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -1003,7 +1023,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{sub_event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"<string>\",\n    \"status\": 1\n  }\n]\n",
+							"raw": "\n  {\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"<string>\",\n    \"status\": 1\n  }\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -1871,7 +1891,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"event_type\": 1,\n    \"event_data\": \"UPDATED\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2129,7 +2149,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{sub_event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED SUB EVENT\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"event_type\": 1,\n    \"event_data\": \"UPDATED SUB EVENT\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
