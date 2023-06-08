@@ -50,6 +50,7 @@ services:
       MYSQL_PORT: 3306
       SECRET_KEY: ${SECRET_KEY} # from .env
       SPARKPOST_KEY: ${SPARKPOST_KEY} # from .env
+      TWILIO_FROM: "+16193299600"
     ports:
       - 8080:80 # probably don't need this
     depends_on:
