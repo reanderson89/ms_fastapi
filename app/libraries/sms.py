@@ -1,32 +1,22 @@
-import random
+import os
 
-from _settings import TWILIO
-
+from app.models.users import UserServiceModel
 from twilio.rest import Client
-TwilioClient = Client(*TWILIO)
-
-from Token import addTokenLookup
-from Utilities import SHA224Hash
 
 
-def sendCode(verb, path, args):
-	print ('v1.SMS.sendCode -> verb, path, args', verb, path, args)
-	celNumber = args['cel'].strip()
+ACCOUNT_TOKEN = os.environ["ACCOUNT_TOKEN"]
+ACCOUNT_SID = os.environ["ACCOUNT_SID"]
+TWILIO_FROM = os.environ["TWILIO_FROM"]
+TwilioClient = Client(ACCOUNT_SID, ACCOUNT_TOKEN)
 
-	code = "%04d" % random.randint(0,9999)
+
+async def send_sms_worker(user_service: UserServiceModel):
 
 	message = TwilioClient.messages.create(
-		to='+1'+celNumber, 
-		from_="+12125551212",
-		body='Your verification code is: '+ code+'. Enter it in the app to finish logging in.'
+		to="+1" + user_service.service_user_id,
+		from_=TWILIO_FROM,
+		body=user_service.login_token
 	)
 
-	token = SHA224Hash('sms')
-	addTokenLookup(token, 'sms', celNumber)
+	return message.sid
 
-	return {
-		'status' : 'success',
-		'sid' : message.sid,
-		'code' : code,
-		'token' : token
-	}

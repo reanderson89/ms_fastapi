@@ -32,48 +32,26 @@ services:
     container_name: milestones_api
     image:  "blueboardinc/milestones-api:${TAG}"
     environment:
+      ACCOUNT_SID: ${ACCOUNT_SID} # from .env
+      ACCOUNT_TOKEN: ${ACCOUNT_TOKEN} # from .env
       ALEMBIC_INI_FILE: "alembic.ini"
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      BEARER_TOKEN: ${BEARER_TOKEN}
+      ALGORITHM: ${ALGORITHM}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID} # from .env
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # from .env
       DD_AGENT_HOST: datadog_agent
       DD_PROFILING_ENABLED: true
-      ENV: dev
+      ENV: local
       LOG_LEVEL: debug
-      # connection settings for the app, these should match server's config (above)
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.3.sql"
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
       MYSQL_PORT: 3306
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.4.3.sql"
+      SECRET_KEY: ${SECRET_KEY} # from .env
+      SPARKPOST_KEY: ${SPARKPOST_KEY} # from .env
     ports:
       - 8080:80 # probably don't need this
-    depends_on:
-      - milestones_db
-    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
-    restart: always
-  milestones_worker:
-    container_name: milestones_worker
-    image:  "blueboardinc/milestones-api:${TAG}"
-    environment:
-      # No ALEMBIC_INI_FILE
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      CRON: true
-      BEARER_TOKEN: ${BEARER_TOKEN}
-      DD_AGENT_HOST: datadog_agent
-      DD_PROFILING_ENABLED: true
-      ENV: dev
-      LOG_LEVEL: debug
-      MYSQL_DATABASE: blueboard_milestones
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_HOSTNAME: milestones_db
-      MYSQL_PORT: 3306
-      # No MILESTONES_BOOTSTRAP
-    ports:
-      - 8081:80 # probably don't need this
     depends_on:
       - milestones_db
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh

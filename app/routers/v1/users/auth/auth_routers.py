@@ -1,9 +1,10 @@
-from fastapi import APIRouter
-from app.models.users import UserModel
+from fastapi import APIRouter, Response
+from app.models.users import UserModel, UserBase
 from app.models.users.auth.auth_models import CreateAuthModel, RedeemAuthModel, AuthResponseModel
 from app.actions.users.auth.auth_actions import AuthActions
+from app.utilities.auth.auth_handler import access_token_creation
 
-router = APIRouter(tags=["Users"], prefix="/users")
+router = APIRouter()
 
 
 @router.post("/auth", response_model=AuthResponseModel)
@@ -12,5 +13,10 @@ async def post_auth(create_auth_model: CreateAuthModel):
 
 
 @router.put("/auth/{auth}", response_model=UserModel)
-async def put_auth(redeem_auth_model: RedeemAuthModel):
-    return await AuthActions.redeem_auth_handler(redeem_auth_model)
+async def put_auth(redeem_auth_model: RedeemAuthModel, response: Response):
+    redeem_return = await AuthActions.redeem_auth_handler(redeem_auth_model)
+    user_model = dict(UserBase.from_orm(redeem_return))
+    bearer_token = await access_token_creation(user_model)
+    response.headers["Bearer"] = bearer_token['access_token']
+
+    return redeem_return

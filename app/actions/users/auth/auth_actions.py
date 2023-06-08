@@ -3,9 +3,10 @@ from uuid import uuid4
 from app.actions.base_actions import BaseActions
 from app.actions.users import UserActions
 from app.actions.users.services import UserServiceActions
+from app.libraries.sms import send_sms_worker
+from app.libraries.sparkpost import send_auth_email
 from app.models.users import UserServiceModel, UserServiceUpdate
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
-
 
 class AuthActions(BaseActions):
 
@@ -70,8 +71,41 @@ class AuthActions(BaseActions):
             service_obj.login_token = uuid4().hex
             service_obj.login_secret = uuid4().hex
 
+            sent_email = await cls.send_email_handler(service_obj)
+            if sent_email:
+                return service_obj
+            else:
+                print('error')
+                return service_obj
+
         else:
             service_obj.login_token = str(random.randint(1000, 9999))
             service_obj.login_secret = uuid4().hex
 
-        return service_obj
+            sent_message = await cls.send_sms_handler(service_obj)
+            if sent_message:
+                return service_obj
+            else:
+                print('error')
+                return service_obj
+
+    @classmethod
+    async def send_sms_handler(cls, service_obj_cell):
+        sent_message = await send_sms_worker(service_obj_cell)
+        if sent_message:
+            return sent_message
+        else:
+            # NEED TO MAKE THIS ERROR HANDLING BETTER
+            print("error sending text")
+            return None
+
+    @classmethod
+    async def send_email_handler(cls, service_obj):
+        response = await send_auth_email(service_obj)
+        if response['total_accepted_recipients'] == 1:
+            return response
+        else:
+            # NEED TO MAKE THIS ERROR HANDLING BETTER
+            print("error sending text")
+            return None
+
