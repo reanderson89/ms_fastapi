@@ -26,7 +26,7 @@ for test in "${tests[@]}"; do
    newman run $test
    status=$?
    if [ $status -ne 0 ]; then
-      echo "\nThere was a test failure in ${test}"
+      echo "There was a test failure in ${test}"
       # Knock yourself out:  https://patorjk.com/software/taag/#p=display&f=Doh&t=Test%20Failure
       cat <<EOT
                                                                                                                                               
