@@ -11,7 +11,7 @@ sleep 10;
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
 alias bb-mysql="mysql -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
-alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.4.3.sql"
+alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.1.sql"
 EOF
 
 # temporary solution to bootstrapping db
