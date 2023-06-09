@@ -7,6 +7,30 @@
 
 # set -e
 
+function show_error {
+cat <<EOF
+
+    _____      ____        ________     ____        _________     ____      _____   _____                                                                                                                            
+   / ___ \    / __ \      (___  ___)   / __ \      (_   _____)   (    )    (_   _) (_   _)                                                                                                                           
+  / /   \_)  / /  \ \         ) )     / /  \ \       ) (___      / /\ \      | |     | |                                                                                                                             
+ ( (  ____  ( ()  () )       ( (     ( ()  () )     (   ___)    ( (__) )     | |     | |                                                                                                                             
+ ( ( (__  ) ( ()  () )        ) )    ( ()  () )      ) (         )    (      | |     | |   __                                                                                                                        
+  \ \__/ /   \ \__/ /        ( (      \ \__/ /      (   )       /  /\  \    _| |__ __| |___) )                                                                                                                       
+   \____/     \____/         /__\      \____/        \_/       /__(  )__\  /_____( \________/                                                                                                                        
+                                                                                                                                                                                                                     
+ ______       ____           __      _     ____     ________        ____     ____     _____       _____        _____     ____   ________      __    __   ________   ________   _____      ______     ____     ____   
+(_  __ \     / __ \         /  \    / )   / __ \   (___  ___)      / ___)   / __ \   (_   _)     (_   _)      / ___/    / ___) (___  ___)    (  \  /  ) (___  ___) (___  ___) (  __ \    (____  \   / __ \   / __ \  
+  ) ) \ \   / /  \ \       / /\ \  / /   / /  \ \      ) )        / /      / /  \ \    | |         | |       ( (__     / /         ) )        \ (__) /      ) )        ) )     ) )_) )        ) /  ( (  ) ) ( (  ) ) 
+ ( (   ) ) ( ()  () )      ) ) ) ) ) )  ( ()  () )    ( (        ( (      ( ()  () )   | |         | |        ) __)   ( (         ( (          ) __ (      ( (        ( (     (  ___/    __  / /   ( (  ) ) ( (  ) ) 
+  ) )  ) ) ( ()  () )     ( ( ( ( ( (   ( ()  () )     ) )       ( (      ( ()  () )   | |   __    | |   __  ( (      ( (          ) )        ( (  ) )      ) )        ) )     ) )      /  \/ / __ ( (  ) ) ( (  ) ) 
+ / /__/ /   \ \__/ /      / /  \ \/ /    \ \__/ /     ( (         \ \___   \ \__/ /  __| |___) ) __| |___) )  \ \___   \ \___     ( (          ) )( (      ( (        ( (     ( (      ( () \__/ / ( (__) ) ( (__) ) 
+(______/     \____/      (_/    \__/      \____/      /__\         \____)   \____/   \________/  \________/    \____\   \____)    /__\        /_/  \_\     /__\       /__\    /__\      \__\____(   \____/   \____/  
+                                                                                                                                                                                                                     
+
+EOF
+   return
+}
+
 SOURCE_DIR=/app/tests/postman
 tests=(
    "$SOURCE_DIR"/Milestones_admins.postman_collection.json
@@ -28,28 +52,7 @@ for test in "${tests[@]}"; do
    if [ $status -ne 0 ]; then
       echo "There was a test failure in ${test}"
       # Knock yourself out:  https://patorjk.com/software/taag/#p=display&f=Doh&t=Test%20Failure
-      cat <<EOT
-                                                                                                                                              
-                                                                                                                                                                                                   
-                                                                                                                                                                                                   
-TTTTTTTTTTTTTTTTTTTTTTT                                          tttt               FFFFFFFFFFFFFFFFFFFFFF                  iiii  lllllll                                                          
-T:::::::::::::::::::::T                                       ttt:::t               F::::::::::::::::::::F                 i::::i l:::::l                                                          
-T:::::::::::::::::::::T                                       t:::::t               F::::::::::::::::::::F                  iiii  l:::::l                                                          
-T:::::TT:::::::TT:::::T                                       t:::::t               FF::::::FFFFFFFFF::::F                        l:::::l                                                          
-TTTTTT  T:::::T  TTTTTTeeeeeeeeeeee        ssssssssss   ttttttt:::::ttttttt           F:::::F       FFFFFFaaaaaaaaaaaaa   iiiiiii  l::::l uuuuuu    uuuuuu rrrrr   rrrrrrrrr       eeeeeeeeeeee    
-        T:::::T      ee::::::::::::ee    ss::::::::::s  t:::::::::::::::::t           F:::::F             a::::::::::::a  i:::::i  l::::l u::::u    u::::u r::::rrr:::::::::r    ee::::::::::::ee  
-        T:::::T     e::::::eeeee:::::eess:::::::::::::s t:::::::::::::::::t           F::::::FFFFFFFFFF   aaaaaaaaa:::::a  i::::i  l::::l u::::u    u::::u r:::::::::::::::::r  e::::::eeeee:::::ee
-        T:::::T    e::::::e     e:::::es::::::ssss:::::stttttt:::::::tttttt           F:::::::::::::::F            a::::a  i::::i  l::::l u::::u    u::::u rr::::::rrrrr::::::re::::::e     e:::::e
-        T:::::T    e:::::::eeeee::::::e s:::::s  ssssss       t:::::t                 F:::::::::::::::F     aaaaaaa:::::a  i::::i  l::::l u::::u    u::::u  r:::::r     r:::::re:::::::eeeee::::::e
-        T:::::T    e:::::::::::::::::e    s::::::s            t:::::t                 F::::::FFFFFFFFFF   aa::::::::::::a  i::::i  l::::l u::::u    u::::u  r:::::r     rrrrrrre:::::::::::::::::e 
-        T:::::T    e::::::eeeeeeeeeee        s::::::s         t:::::t                 F:::::F            a::::aaaa::::::a  i::::i  l::::l u::::u    u::::u  r:::::r            e::::::eeeeeeeeeee  
-        T:::::T    e:::::::e           ssssss   s:::::s       t:::::t    tttttt       F:::::F           a::::a    a:::::a  i::::i  l::::l u:::::uuuu:::::u  r:::::r            e:::::::e           
-      TT:::::::TT  e::::::::e          s:::::ssss::::::s      t::::::tttt:::::t     FF:::::::FF         a::::a    a:::::a i::::::il::::::lu:::::::::::::::uur:::::r            e::::::::e          
-      T:::::::::T   e::::::::eeeeeeee  s::::::::::::::s       tt::::::::::::::t     F::::::::FF         a:::::aaaa::::::a i::::::il::::::l u:::::::::::::::ur:::::r             e::::::::eeeeeeee  
-      T:::::::::T    ee:::::::::::::e   s:::::::::::ss          tt:::::::::::tt     F::::::::FF          a::::::::::aa:::ai::::::il::::::l  uu::::::::uu:::ur:::::r              ee:::::::::::::e  
-      TTTTTTTTTTT      eeeeeeeeeeeeee    sssssssssss              ttttttttttt       FFFFFFFFFFF           aaaaaaaaaa  aaaaiiiiiiiillllllll    uuuuuuuu  uuuurrrrrrr                eeeeeeeeeeeeee  
-                                                                                                                                                                                                                                                                                                                                          
-EOT
+      show_error
       exit ${status}
    fi
 done
