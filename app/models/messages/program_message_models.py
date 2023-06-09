@@ -1,37 +1,27 @@
-from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
-
+from typing import Optional
 
 class MessageModel(Base):
-	__tablename__ = "message"
+	__tablename__ = "program_message"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-	name: Mapped[str] = mapped_column(default=None, index=True)
-	message_uuid: Mapped[str] = mapped_column(default=None, index=True)
+	program_uuid: Mapped[str] = mapped_column(default=None, index=True)
 	client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-	message_9char: Mapped[str] = mapped_column(default=None, index=True)
 	program_9char: Mapped[str] = mapped_column(default=None, index=True)
-	segment_9char: Mapped[str] = mapped_column(default=None, index=True)
-	message_type: Mapped[int] = mapped_column(default=1, index=True)
+	message_9char: Mapped[str] = mapped_column(default=None, index=True)
+	template_uuid: Mapped[str] = mapped_column(default=None, index=True)
 	channel: Mapped[int] = mapped_column(default=None, index=True)
 	status: Mapped[int] = mapped_column(default=None, index=True)
-	body: Mapped[str] = mapped_column(default=None)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 
 class MessageCreate(BasePydantic):
-	message_uuid: Optional[str] = None
-	client_uuid: Optional[str] = None
-	program_9char: Optional[str] = None
-	segment_9char: Optional[str] = None
-	message_type: Optional[int] = None
+	template_uuid: Optional[str] = None
 	channel: Optional[int] = None
 	status: Optional[int] = None
-	body: Optional[str] = None
 
 class MessageUpdate(BasePydantic):
-	message_type: Optional[int] = None
+	template_uuid: Optional[str] = None
 	channel: Optional[int] = None
 	status: Optional[int] = None
-	body: Optional[str] = None

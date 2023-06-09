@@ -8,6 +8,7 @@ class ClientModel(Base):
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	name: Mapped[str] = mapped_column(default=None, index=True)
+	url: Mapped[str] = mapped_column(default=None, index=True)
 	description: Mapped[str] = mapped_column(default=None, index=True)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
@@ -17,6 +18,7 @@ class ClientModel(Base):
 class ClientBase(BasePydantic):
 	uuid: Optional[str]
 	name: Optional[str]
+	url: Optional[str]
 	description: Optional[str]
 	time_created: Optional[int]
 	time_updated: Optional[int]

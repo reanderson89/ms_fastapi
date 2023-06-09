@@ -68,6 +68,7 @@ DROP TABLE IF EXISTS `client`;
 CREATE TABLE `client` (
   `uuid` varchar(56) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
   `description` longtext DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
@@ -202,30 +203,46 @@ LOCK TABLES `client_user` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `message_template`
+-- Table structure for table `message`
 --
 
-DROP TABLE IF EXISTS `message_template`;
+DROP TABLE IF EXISTS `message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `message_template` (
-  `uuid` varchar(56) NOT NULL,
+CREATE TABLE `message` (
+  `uuid` varchar(83) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `message_uuid` varchar(74) DEFAULT NULL,
+  `client_uuid` varchar(56) DEFAULT NULL,
+  `message_9char` varchar(9) DEFAULT NULL,
+  `program_9char` varchar(9) DEFAULT NULL,
+  `segment_9char` varchar(9) DEFAULT NULL,
+  `message_type` int(11) DEFAULT 1,
   `channel` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
   `body` longtext DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
-  KEY `MTCHANNEL` (`channel`)
+  KEY `MMESSAGEUUID` (`message_uuid`),
+  KEY `MCLIENTUUID` (`client_uuid`),
+  KEY `MMESSAGE9CHAR` (`message_9char`),
+  KEY `MPROGRAM9CHAR` (`program_9char`),
+  KEY `MSEGMENT9CHAR` (`segment_9char`),
+  KEY `MMESSAGETYPE` (`message_type`),
+  KEY `MCHANNEL` (`channel`),
+  KEY `PMSTATUS` (`status`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `message_template`
+-- Dumping data for table `message`
 --
 
-LOCK TABLES `message_template` WRITE;
-/*!40000 ALTER TABLE `message_template` DISABLE KEYS */;
-/*!40000 ALTER TABLE `message_template` ENABLE KEYS */;
+LOCK TABLES `message` WRITE;
+/*!40000 ALTER TABLE `message` DISABLE KEYS */;
+/*!40000 ALTER TABLE `message` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -315,6 +332,7 @@ CREATE TABLE `program_award` (
   `uuid` varchar(65) NOT NULL,
   `client_uuid` varchar(56) DEFAULT NULL,
   `program_9char` varchar(9) DEFAULT NULL,
+  `program_award_9char` varchar(9) DEFAULT NULL,
   `client_award_9char` varchar(9) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` longtext DEFAULT NULL,
@@ -381,41 +399,39 @@ LOCK TABLES `program_event` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `program_message`
+-- Table structure for table `program_rule`
 --
 
-DROP TABLE IF EXISTS `program_message`;
+DROP TABLE IF EXISTS `program_rule`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `program_message` (
-  `uuid` varchar(65) NOT NULL,
+CREATE TABLE `program_rule` (
+  `uuid` varchar(81) NOT NULL,
   `program_uuid` varchar(65) DEFAULT NULL,
   `client_uuid` varchar(56) DEFAULT NULL,
   `program_9char` varchar(9) DEFAULT NULL,
-  `message_9char` varchar(9) DEFAULT NULL,
-  `template_uuid` varchar(56) DEFAULT NULL,
-  `channel` int(11) DEFAULT NULL,
+  `rule_9char` varchar(9) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
+  `rule_type` int(11) DEFAULT NULL,
+  `logic` longtext DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
-  KEY `PMPROGRAMUUID` (`program_uuid`),
-  KEY `PMCLIENTUUID` (`client_uuid`),
-  KEY `PMPROGRAM9CHAR` (`program_9char`),
-  KEY `PMMESSAGE9CHAR` (`message_9char`),
-  KEY `PMTEMPLATEUUID` (`template_uuid`),
-  KEY `PMCHANNEL` (`channel`),
-  KEY `PMSTATUS` (`status`)
+  KEY `PRPROGRAMUUID` (`program_uuid`),
+  KEY `PRCLIENTUUID` (`client_uuid`),
+  KEY `PRPROGRAM9CHAR` (`program_9char`),
+  KEY `PRSTATUS` (`status`),
+  KEY `PRRULETYPE` (`rule_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `program_message`
+-- Dumping data for table `program_rule`
 --
 
-LOCK TABLES `program_message` WRITE;
-/*!40000 ALTER TABLE `program_message` DISABLE KEYS */;
-/*!40000 ALTER TABLE `program_message` ENABLE KEYS */;
+LOCK TABLES `program_rule` WRITE;
+/*!40000 ALTER TABLE `program_rule` DISABLE KEYS */;
+/*!40000 ALTER TABLE `program_rule` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -505,7 +521,7 @@ CREATE TABLE `program_segment_design` (
   `program_9char` varchar(9) DEFAULT NULL,
   `segment_9char` varchar(9) DEFAULT NULL,
   `design_9char` varchar(9) DEFAULT NULL,
-  `template_uuid` varchar(56) DEFAULT NULL,
+  `message_uuid` varchar(56) DEFAULT NULL,
   `channel` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
@@ -516,7 +532,7 @@ CREATE TABLE `program_segment_design` (
   KEY `PSDPROGRAM9CHAR` (`program_9char`),
   KEY `PSDSEGMENT9CHAR` (`segment_9char`),
   KEY `PSDDESIGN9CHAR` (`design_9char`),
-  KEY `PSDTEMPLATEUUID` (`template_uuid`),
+  KEY `PSDMESSAGEUUID` (`message_uuid`),
   KEY `PSDCHANNEL` (`channel`),
   KEY `PSDSTATUS` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -555,7 +571,6 @@ CREATE TABLE `program_segment_rule` (
   KEY `PSRCLIENTUUID` (`client_uuid`),
   KEY `PSRPROGRAM9CHAR` (`program_9char`),
   KEY `PSRSEGMENT9CHAR` (`segment_9char`),
-  KEY `PSRRULE9CHAR` (`rule_9char`),
   KEY `PSRSTATUS` (`status`),
   KEY `PSRRULETYPE` (`rule_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
