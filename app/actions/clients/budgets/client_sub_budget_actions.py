@@ -1,8 +1,8 @@
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.clients import ClientBudgetModel, budget_types
 from app.actions.helper_actions import HelperActions
+from app.actions.base_actions import BaseActions
 
 class ClientSubBudgetActions:
 
@@ -11,7 +11,7 @@ class ClientSubBudgetActions:
 		return budget_types[budget.budget_type]
 
 	@classmethod
-	async def create_sub_budget(cls, new_budget, parent, session: Session):
+	async def create_sub_budget(cls, new_budget, parent):
 		try:
 			budget_class = await cls.get_sub_budget_type(new_budget)
 			budget, parent = await budget_class.create_budget(new_budget, parent)
@@ -25,26 +25,19 @@ class ClientSubBudgetActions:
 			return await ExceptionHandling.custom405(f"Unable to complete creation of budget: {new_budget.name}.\nReason: {e.detail}")
 		else: #if no exception is generated, then commit changes to db
 			budget = await CommonRoutes.create_one_or_many(budget)
-			session.add(parent)
-			session.commit()
-			session.refresh(parent)
+			await BaseActions.update_without_lookup(parent)
 			return budget
 
 
 	@staticmethod
-	async def get_all_sub_budgets(budget_9char, client_uuid, session):
-		return session.scalars(
-			select(ClientBudgetModel)
-			.where(ClientBudgetModel.client_uuid == client_uuid,
-					ClientBudgetModel.parent_9char == budget_9char)
-		).all()
-
+	async def get_all_sub_budgets(budget_9char, client_uuid):
+		return await BaseActions.get_all_where(ClientBudgetModel, [ClientBudgetModel.client_uuid == client_uuid, ClientBudgetModel.parent_9char == budget_9char], check404=False)
 
 	@classmethod
-	async def sub_budget_expenditure(cls, budget, parent, expenditure, session):
+	async def sub_budget_expenditure(cls, budget, parent, expenditure):
 		budget_class = await cls.get_sub_budget_type(budget)
 		if budget.budget_type != 0:
-			static_parent, passthroughCap = await cls.find_next_static_budget(budget, session)
+			static_parent, passthroughCap = await cls.find_next_static_budget(budget)
 			for item in passthroughCap:
 				item.value += expenditure
 				if item.value + expenditure > 0:
@@ -60,14 +53,11 @@ class ClientSubBudgetActions:
 		return budget.budget_type in budget_types[parent.budget_type].valid_child_type
 
 	@staticmethod
-	async def find_next_static_budget(budget, session):
+	async def find_next_static_budget(budget):
 		budgetExpendList = []
 		while budget.budget_type != 0:
-			budget = session.scalars(
-				select(ClientBudgetModel)
-				.where(ClientBudgetModel.budget_9char == budget.parent_9char,
-						ClientBudgetModel.client_uuid == budget.client_uuid)
-			).one_or_none()
+			budget = await BaseActions.check_if_exists(ClientBudgetModel, [ClientBudgetModel.budget_9char == budget.parent_9char,
+						ClientBudgetModel.client_uuid == budget.client_uuid])
 			if budget.budget_type == 2:
 				budgetExpendList.append(budget)
 		return budget, budgetExpendList

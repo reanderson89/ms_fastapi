@@ -15,7 +15,7 @@ def get_query_params(
 		offset: int = Query(default=0, ge=0),
 		limit: int = Query(default=25, lte=100),
 		order_by: Optional[str] = None,
-		sort: SortOrder = Query(SortOrder.DESC)
+		sort: SortOrder = Query(default = SortOrder.DESC)
 	):
 	return {
 		"offset": offset,

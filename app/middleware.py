@@ -13,7 +13,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 
-class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
+class LoggingMiddleware(BaseHTTPMiddleware):
 	logger = logging.getLogger("uvicorn")
 	logger.setLevel(run_config.log_level)
 	logger.info(f"Current log level: {logger.level}.")

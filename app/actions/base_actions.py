@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.exceptions import ExceptionHandling
+from app.actions.helper_actions import HelperActions
 
 class BaseActions():
 
@@ -23,81 +24,20 @@ class BaseActions():
 
 		model_filter = getattr(model, order_by)
 		model_filter = model_filter.desc() if sort == 'DESC' else model_filter.asc()
-
 		return query.order_by(model_filter)
 
-	@classmethod
-	async def get_all(cls, model, params: dict):
-		'''
-		Get all rows from the database for a given model/table
-		:param model(DataModel): The model/table to query
-		:param params(dict): A dictionary of query parameters
-			- order_by(str): The field to sort by
-			- sort(str): The sort order ('ASC' or 'DESC')
-			- offset(int): The number of results to skip
-			- limit(int): The maximum number of results to return
-		:return: A list of model instances
-		'''
-
-		with Session(engine) as session:
-			query = select(model)
-			query = cls._add_ordering_to_query(
-				model,
-				query,
-				params.get('order_by'),
-				params.get('sort', 'DESC')
-			)
-			db_items = session.scalars(query).all()
-			await ExceptionHandling.check404(db_items)
-			return db_items
-
-	@classmethod
-	async def get_all_where(cls, model, conditions: list, params: Optional[dict]):
-		'''
-		Get all rows from the database that match the specified conditions
-		:param model(DataModel): The model/table to query
-		:param conditions(list): A list of conditions to match
-		:param params(dict): A dictionary of query parameters
-			- order_by(str): The field to sort by
-			- sort(str): The sort order ('ASC' or 'DESC')
-			- offset(int): The number of results to skip
-			- limit(int): The maximum number of results to return
-		:return: A list of model objects, for example [model(DataModel),...]
-		'''
-
-		with Session(engine) as session:
-			query = select(model).where(*conditions)
-
-			if params:
-				query = cls._add_ordering_to_query(
-					model,
-					query,
-					params.get('order_by'),
-					params.get('sort', 'DESC')
-				)
-
-			db_items = session.scalars(query).all()
-			await ExceptionHandling.check404(db_items)
-			return db_items
-
-	# TODO
-	# def GetManyByIds(self, table, fields, field, ids=None, orderby=None, orderby_dir='DESC', joiner='and'):
-	# async def get_all_wherein(model, field, ids: list, order_by=None, sort='DESC'):
-	# 	'''
-	# 	Get all rows from the database
-	# 	:param model(DataModel): model/table to query
-	# 	:param conditions(tuple): conditions to match
-	# 	:param order_by(None|str): the field to sort
-	# 	:param model(None): model/table to query
-	# 	:return: returns [model(DataModel),...]
-	# 	'''
-	# 	with Session(engine) as session:
-	# 		query = select(model).where(*conditions)
-	# 		query = BaseActions._update_query_with_ordering_params(model, query, order_by, sort)
-	# 		return session.scalars(query).all()
-
 	@staticmethod
-	async def get_one_where(model, conditions: list):
+	async def delete_without_lookup(item):
+		'''
+		Deleting an item that has been previously looked up and processed inside its respective Model Action file.
+		'''
+		with Session(engine) as session:
+			session.delete(item)
+			session.commit()
+			return {'ok': True, 'Deleted': item}
+		
+	@staticmethod
+	async def get_one_where(model, conditions: list, check404: bool = True):
 		'''
 		Get one row from the database
 		:param model(DataModel): The model/table to query
@@ -109,7 +49,8 @@ class BaseActions():
 				select(model)
 				.where(*conditions)
 				).one_or_none()
-		await ExceptionHandling.check404(db_item)
+		if check404:
+			await ExceptionHandling.check404(db_item)
 		return db_item
 
 	@staticmethod
@@ -220,3 +161,94 @@ class BaseActions():
 					results.append({'ok': False, 'Not Deleted:': db_items})
 			session.commit()
 			return results
+
+	@classmethod
+	async def get_all(cls, model, params: dict):
+		'''
+		Get all rows from the database for a given model/table
+		:param model(DataModel): The model/table to query
+		:param params(dict): A dictionary of query parameters
+			- order_by(str): The field to sort by
+			- sort(str): The sort order ('ASC' or 'DESC')
+			- offset(int): The number of results to skip
+			- limit(int): The maximum number of results to return
+		:return: A list of model instances
+		'''
+
+		with Session(engine) as session:
+			query = select(model)
+			query = cls._add_ordering_to_query(
+				model,
+				query,
+				params.get('order_by'),
+				params.get('sort', 'DESC')
+			)
+			db_items = session.scalars(query).all()
+			await ExceptionHandling.check404(db_items)
+			return db_items
+
+	@classmethod
+	async def get_all_where(cls, model, conditions: list, params: (Optional[dict] | None) = None, check404: bool = True):
+		'''
+		Get all rows from the database that match the specified conditions
+		:param model(DataModel): The model/table to query
+		:param conditions(list): A list of conditions to match
+		:param params(dict): A dictionary of query parameters
+			- order_by(str): The field to sort by
+			- sort(str): The sort order ('ASC' or 'DESC')
+			- offset(int): The number of results to skip
+			- limit(int): The maximum number of results to return
+		:return: A list of model objects, for example [model(DataModel),...]
+		'''
+
+		with Session(engine) as session:
+			query = select(model).where(*conditions)
+
+			if params:
+				query = cls._add_ordering_to_query(
+					model,
+					query,
+					params.get('order_by'),
+					params.get('sort', 'DESC')
+				)
+
+			db_items = session.scalars(query).all()
+			if check404:
+				await ExceptionHandling.check404(db_items)
+			return db_items
+		
+	@classmethod
+	async def update_without_lookup(cls, item, commit:bool = False):
+		'''
+		Committing a change to an item that has been previously looked up and modified inside its respective Model Action file.
+		'''
+		with Session(engine) as session:
+			if isinstance(item, list):
+				for i in item:
+					i.time_updated = int(time())
+					session.add(i)
+				session.commit()
+				for i in item:
+					session.refresh(i)
+			else:
+				item.time_updated = int(time())
+				session.add(item)
+				session.commit()
+				session.refresh(item)
+			return item
+			
+	# TODO
+	# def GetManyByIds(self, table, fields, field, ids=None, orderby=None, orderby_dir='DESC', joiner='and'):
+	# async def get_all_wherein(model, field, ids: list, order_by=None, sort='DESC'):
+	# 	'''
+	# 	Get all rows from the database
+	# 	:param model(DataModel): model/table to query
+	# 	:param conditions(tuple): conditions to match
+	# 	:param order_by(None|str): the field to sort
+	# 	:param model(None): model/table to query
+	# 	:return: returns [model(DataModel),...]
+	# 	'''
+	# 	with Session(engine) as session:
+	# 		query = select(model).where(*conditions)
+	# 		query = BaseActions._update_query_with_ordering_params(model, query, order_by, sort)
+	# 		return session.scalars(query).all()

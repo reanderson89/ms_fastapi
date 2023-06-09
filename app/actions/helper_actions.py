@@ -34,6 +34,17 @@ class HelperActions():
 	ServiceType = namedtuple('ServiceType', ['type', 'value'])
 
 	@classmethod
+	def flatten(cls, seq):
+		output = []
+		for elt in seq:
+			if type(elt) is tuple or type(elt) is list:
+				for elt2 in cls.flatten(elt):
+					output.append(elt2)
+			else:
+				output.append(elt)
+		return output
+
+	@classmethod
 	async def get_email_from_header(cls, data):
 		email_types = {'Primary Work Email', 'primary_work_email', 'email_address', 'email'}
 		email_type = list(email_types.intersection(data))
