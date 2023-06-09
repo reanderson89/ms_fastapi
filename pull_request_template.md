@@ -11,7 +11,7 @@
 
 ## Postman Tests
 
-- [ ] Run `docker exec -it milestones_api /app/tests/postman.sh`
+- [ ] Run Postman tests `./run-postman.sh`
 
 ## Tests Added
 
