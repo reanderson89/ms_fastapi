@@ -526,7 +526,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"program_9char\": \"<string>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"budget_9char\": \"1234\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"budget_9char\": \"1234\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -987,13 +987,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var jsonData = pm.response.json();",
+									"var jsonData = pm.response.json()",
 									"",
-									"if (Array.isArray(jsonData)) {",
-									"  pm.collectionVariables.set(\"sub_event_9char\", jsonData[0].event_9char);",
-									"} else {",
-									"  pm.collectionVariables.set(\"sub_event_9char\", jsonData.event_9char);",
-									"}"
+									"pm.collectionVariables.set(\"sub_event_9char\", jsonData.event_9char)"
 								],
 								"type": "text/javascript"
 							}
@@ -1204,6 +1200,196 @@
 										"programs",
 										":program_9char",
 										"events"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Program Delete should fail because events exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"should see message that says an event exists\", function(){",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.message).to.eql(\"An event exists for this program. It cannot be deleted at this time.\")",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"{{client_uuid}}",
+								"programs",
+								"{{program_9char}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char"
 									],
 									"variable": [
 										{
@@ -1891,7 +2077,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"event_type\": 1,\n    \"event_data\": \"UPDATED\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2149,7 +2335,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"event_type\": 1,\n    \"event_data\": \"UPDATED SUB EVENT\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{sub_event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED SUB EVENT\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -3580,6 +3766,16 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",

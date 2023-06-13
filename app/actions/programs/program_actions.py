@@ -5,20 +5,23 @@ from app.database.config import engine
 from app.models.programs import ProgramModel, ProgramBase
 from app.models.clients import ClientUserModel
 from app.actions.helper_actions import HelperActions
+from app.models.programs.program_event_models import ProgramEventModel
+from app.models.segments.segment_models import SegmentModel
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
+from app.actions.base_actions import BaseActions
 
 
 class ProgramActions():
 
 	@classmethod
-	async def create_program_handler(cls, programs, client_uuid):
+	async def create_program_handler(cls, programs, path_params):
 		to_return = []
 		if isinstance(programs, list):
 			for i in programs:
-				program = await cls.create_program(i, client_uuid)
+				program = await cls.create_program(i, path_params["client_uuid"])
 				to_return.append(program)
 		else:
-			program = await cls.create_program(programs, client_uuid)
+			program = await cls.create_program(programs, path_params["client_uuid"])
 			to_return.append(program)
 		return to_return
 
@@ -38,10 +41,12 @@ class ProgramActions():
 					status=program_data.status,
 					description=program_data.description,
 					user_uuid=program_data.user_uuid,
-					client_uuid=client_uuid
+					budget_9char=program_data.budget_9char,
+					client_uuid=client_uuid,
+					program_9char = await HelperActions.generate_9char()
 				)
-				new_program.program_9char = await HelperActions.generate_9char()
-			program =  await CommonRoutes.create_one_or_many(new_program)
+				# new_program.program_9char = await HelperActions.generate_9char()
+			program = await BaseActions.create(new_program)
 			return ProgramBase.from_orm(program)
 		else:
 			return admin_check
@@ -77,47 +82,69 @@ class ProgramActions():
 								).one_or_none()
 
 	@classmethod
-	async def get_by_program_9char(cls, client_uuid, program_9char):
-		with Session(engine) as session:
-			program = session.scalars(
-				select(ProgramModel)
-				.where(
-					ProgramModel.program_9char == program_9char,
-					ProgramModel.client_uuid == client_uuid
-				)
-			).one_or_none()
-			await ExceptionHandling.check404(program)
-			return program
+	async def get_by_program_9char(cls, path_params):
+		return await BaseActions.get_one_where(
+			ProgramModel,
+			[
+				ProgramModel.program_9char == path_params["program_9char"],
+				ProgramModel.client_uuid == path_params["client_uuid"]
+			]
+		)
 
 	@classmethod
-	async def get_by_client_uuid(cls, client_uuid, offset, limit):
-		with Session(engine) as session:
-			programs = session.scalars(
-				select(ProgramModel).where(
-					ProgramModel.client_uuid == client_uuid
-				)
-				.offset(offset)
-				.limit(limit)
-			).all()
-			await ExceptionHandling.check404(programs)
-			return programs
+	async def get_by_client_uuid(cls, path_params, query_params):
+		return await BaseActions.get_all_where(
+			ProgramModel,
+			[
+				ProgramModel.client_uuid == path_params["client_uuid"]
+			],
+			query_params)
 
 	@classmethod
-	async def update_program(cls, client_uuid, program_9char, program_updates):
-		with Session(engine) as session:
-			program = session.scalars(
-				select(ProgramModel)
-				.where(
-					ProgramModel.program_9char == program_9char,
-					ProgramModel.client_uuid == client_uuid
-				)
-			).one_or_none()
-			await ExceptionHandling.check404(program)
-			update_program = program_updates.dict(exclude_unset=True)
-			for k, v in update_program.items():
-				setattr(program, k, v)
-			program.time_updated = int(time())
-			session.add(program)
-			session.commit()
-			session.refresh(program)
-			return program
+	async def update_program(cls, program_updates, path_params):
+		return await BaseActions.update(
+			ProgramModel,
+			[
+				ProgramModel.program_9char == path_params["program_9char"],
+				ProgramModel.client_uuid == path_params["client_uuid"]
+			],
+			program_updates
+		)
+	
+	@classmethod
+	async def check_for_program_event(cls, path_params):
+		return await BaseActions.check_if_one_exists(
+			ProgramEventModel,
+			[
+				ProgramEventModel.client_uuid == path_params["client_uuid"],
+				ProgramEventModel.program_9char == path_params["program_9char"]
+			]
+		)
+	
+	@classmethod
+	async def check_for_program_segment(cls, path_params):
+		return await BaseActions.check_if_one_exists(
+			SegmentModel,
+			[
+				SegmentModel.client_uuid == path_params["client_uuid"],
+				SegmentModel.program_9char == path_params["program_9char"]
+			]
+		)
+
+	@classmethod
+	async def delete_program(cls, path_params):
+		segment_check = await cls.check_for_program_segment(path_params)
+		if segment_check:
+			return {"message":"A segment exists for this program. It cannot be deleted at this time."}
+
+		event_check = await cls.check_for_program_event(path_params)
+		if event_check:
+			return {"message":"An event exists for this program. It cannot be deleted at this time."}
+		
+		return await BaseActions.delete_one(
+			ProgramModel,
+			[
+				ProgramModel.program_9char == path_params["program_9char"],
+				ProgramModel.client_uuid == path_params["client_uuid"]
+			]
+		)

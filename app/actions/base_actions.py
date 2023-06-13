@@ -66,6 +66,20 @@ class BaseActions():
 				select(model)
 				.where(*conditions)
 				).one_or_none()
+		
+	@staticmethod
+	async def check_if_one_exists(model, conditions: list):
+		'''
+		Check if a row exists in the database
+		:param model(DataModel): The model/table to query
+		:param conditions(list): The conditions to match
+		:return: The first model(DataModel) found, or None if no match is found
+		'''
+		with Session(engine) as session:
+			return session.scalars(
+				select(model)
+				.where(*conditions)
+				).first()
 
 	@staticmethod
 	async def create(model_objs):

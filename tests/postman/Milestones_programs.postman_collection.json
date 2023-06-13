@@ -525,7 +525,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"program_9char\": \"<string>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"budget_9char\": \"1234\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"program\",\n    \"description\": \"a description for a program\",\n    \"budget_9char\": \"{{sub_budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2177,6 +2177,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -2421,6 +2431,36 @@
 							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
 						}
 					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{bearerToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}
