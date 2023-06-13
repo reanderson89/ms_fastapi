@@ -34,11 +34,11 @@ class ClientBudgetActions():
 		return budgets
 	
 	@staticmethod #this goes from child --> parent
-	async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid):
+	async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, check404=False):
 		return await BaseActions.get_one_where(ClientBudgetModel, [
 			ClientBudgetModel.budget_9char == budget_9char,
 			ClientBudgetModel.client_uuid == client_uuid
-		], check404=False)
+		], check404)
 
 	@staticmethod #this goes from parent --> children
 	async def get_budgets_by_parent_9char(budget):
@@ -69,9 +69,10 @@ class ClientBudgetActions():
 
 	@classmethod
 	async def get_one_budget(cls, budget_9char: str, client_uuid: str, expanded):
-		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid)
+		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, True)
 		subbudgets = await cls.get_all_subbudgets(budget)
 		client = await CommonRoutes.get_one(ClientModel, client_uuid)
+		print("\n\n\n", budget, "\n", client, "\n\n\n")
 		if expanded:
 			budget = ClientBudgetExpanded.from_orm(budget)
 			budget.client = client
@@ -169,6 +170,6 @@ class ClientBudgetActions():
 		if budget.budget_type == 0 and budget.parent_9char is not None:
 			parent = await cls.get_budget_by_9char_and_client_uuid(budget.parent_9char, client_uuid)
 			parent.value += budget.value
-			return {await BaseActions.delete_without_lookup(budget), await BaseActions.update_without_lookup(parent)}
+			return [await BaseActions.delete_without_lookup(budget), await BaseActions.update_without_lookup(parent)]
 		else:
 			return await BaseActions.delete_without_lookup(budget)
