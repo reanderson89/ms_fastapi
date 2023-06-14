@@ -5,6 +5,11 @@ WORKDIR /app
 RUN apt-get update
 RUN apt -y install iputils-ping vim
 RUN apt -y install default-mysql-client python3-pymysql alembic
+RUN pip install --upgrade pip
+# ruff is for linting
+RUN pip install ruff
+COPY pyproject.toml /app
+
 # Newman for tests
 RUN apt install -y nodejs npm
 RUN npm install -g newman

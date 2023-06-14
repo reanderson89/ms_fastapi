@@ -1,4 +1,3 @@
-from sqlalchemy import select
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.clients import ClientBudgetModel, budget_types
 from app.actions.helper_actions import HelperActions

@@ -1,7 +1,7 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_models import ProgramModel
-from app.models.programs.program_event_models import ProgramEventModel, ProgramEventUpdate
+from app.models.programs.program_event_models import ProgramEventModel
 
 class ProgramEventActions():
 

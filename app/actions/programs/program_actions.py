@@ -1,4 +1,3 @@
-from time import time
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database.config import engine
@@ -7,7 +6,7 @@ from app.models.clients import ClientUserModel
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_event_models import ProgramEventModel
 from app.models.segments.segment_models import SegmentModel
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
+from app.routers.v1.v1CommonRouting import ExceptionHandling
 from app.actions.base_actions import BaseActions
 
 

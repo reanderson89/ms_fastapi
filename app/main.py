@@ -66,7 +66,7 @@ async def lifespan(app: FastAPI):
 		login_secret="place_holder",
 		login_token="place_holder"
 	)
-
+ 
 	'''
 	try/except was added because when the container would reload when a change was made,
 	it would error out on the fact that the users already existed.
@@ -80,15 +80,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
-# @app.on_event("startup")
-# async def startup():
-#     app.state.db = session()
-
-# @app.on_event("shutdown")
-# async def shutdown():
-#     app.state.db.close()
-
 app.add_middleware(LoggingMiddleware)
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)

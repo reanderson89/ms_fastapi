@@ -4,7 +4,6 @@ from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.users import UserModel, UserServiceModel, UserExpanded
-from app.models.users import UserModel, UserServiceModel
 
 class UserActions(BaseActions):
 
@@ -99,7 +98,6 @@ class UserActions(BaseActions):
 
 	@classmethod
 	async def delete_test_user(cls, user_uuid):
-		user = cls.delete_user(user_uuid)
 		services = await UserServiceActions.get_all_services(user_uuid)
 		for key, value in services.items():
 			for item in value:

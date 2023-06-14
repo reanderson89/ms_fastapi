@@ -1,0 +1,6 @@
+[tool.ruff]
+# E501 is to avoid checking for line-length violations
+ignore = ["E501"]
+
+# Ignore `F401` violations in any __init__.py file
+per-file-ignores = {"__init__.py" = ["F401"]}
