@@ -49,7 +49,7 @@ class HelperActions():
 		email_types = {'Primary Work Email', 'primary_work_email', 'email_address', 'email'}
 		email_type = list(email_types.intersection(data))
 		if bool(email_type):
-			return cls.ServiceType(type='email', value=data.get(email_type[0]))
+			return cls.ServiceType(type='email', value=data.get((email_type[0])))
 		else:
 			return None
 
