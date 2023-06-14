@@ -1,3 +1,7 @@
+[project]
+# Support Python 3.11+.
+requires-python = ">=3.11"
+
 [tool.ruff]
 # E501 is to avoid checking for line-length violations
 ignore = ["E501"]

@@ -1,4 +1,3 @@
-from typing import Optional
 from collections import namedtuple
 from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.helper_actions import HelperActions
