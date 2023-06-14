@@ -1,31 +1,31 @@
 from time import time
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from app.database.config import engine
+from app.actions.base_actions import BaseActions
 from app.utilities import SHA224Hash
-from app.routers.v1.v1CommonRouting import CommonRoutes
 from app.models.programs import AdminModel, AdminUpdate, AdminCreate, AdminStatus
 
 class ProgramAdminActions():
 
 	@staticmethod
-	async def get_program_admins(ids, args):
-		statement = select(AdminModel).where(
-			AdminModel.client_uuid == ids['client_uuid'],
-			AdminModel.program_9char == ids['program_9char']
-			).offset(args['offset']).limit(args['limit'])
-		return await CommonRoutes.exec_get_all(statement)
-
-	@staticmethod
-	async def get_program_admin(ids):
-		conditions = (
-			AdminModel.user_uuid == ids['user_uuid'],
-			AdminModel.client_uuid == ids['client_uuid'],
-			AdminModel.program_9char == ids['program_9char']
+	async def get_program_admins(path_params, query_params):
+		return await BaseActions.get_all_where(
+			AdminModel,
+			[
+				AdminModel.client_uuid == path_params['client_uuid'],
+				AdminModel.program_9char == path_params['program_9char']
+			],
+			query_params
 		)
 
-		statement = select(AdminModel).where(*conditions)
-		return await CommonRoutes.exec_get_one(statement)
+	@staticmethod
+	async def get_program_admin(path_params):
+		return await BaseActions.get_one_where(
+			AdminModel,
+			[
+				AdminModel.user_uuid == path_params['user_uuid'],
+				AdminModel.client_uuid == path_params['client_uuid'],
+				AdminModel.program_9char == path_params['program_9char']
+			]
+		)
 
 	@staticmethod
 	async def create_program_admin(ids: dict, admins):
@@ -40,7 +40,7 @@ class ProgramAdminActions():
 			time_created=current_time,
 			time_updated=current_time
 		)
-		admin = await CommonRoutes.exec_add_one(admin)
+		admin = await BaseActions.create(admin)
 		new_admin = AdminStatus.from_orm(admin)
 		new_admin.status = "admin created"
 		return new_admin
@@ -54,27 +54,31 @@ class ProgramAdminActions():
 				admin.status = "admin created"
 
 	@staticmethod
-	async def update_program_admin(ids: dict, updates: AdminUpdate):
-		statement = select(AdminModel).where(
-			AdminModel.user_uuid == ids['user_uuid'],
-			AdminModel.client_uuid == ids['client_uuid'],
-			AdminModel.program_9char == ids['program_9char']
+	async def update_program_admin(path_params: dict, updates: AdminUpdate):
+		return await BaseActions.update(
+			AdminModel,
+			[
+				AdminModel.user_uuid == path_params['user_uuid'],
+				AdminModel.client_uuid == path_params['client_uuid'],
+				AdminModel.program_9char == path_params['program_9char']
+			],
+			updates
 		)
-		return await CommonRoutes.exec_update(statement, updates)
 
 	@staticmethod
-	async def delete_program_admin(ids: dict):
-		statement = select(AdminModel).where(
-			AdminModel.user_uuid == ids['user_uuid'],
-			AdminModel.client_uuid == ids['client_uuid'],
-			AdminModel.program_9char == ids['program_9char']
+	async def delete_program_admin(path_params: dict):
+		return await BaseActions.delete_one(
+			AdminModel,
+			[
+				AdminModel.user_uuid == path_params['user_uuid'],
+				AdminModel.client_uuid == path_params['client_uuid'],
+				AdminModel.program_9char == path_params['program_9char']
+			]
 		)
-		return await CommonRoutes.exec_delete(statement)
 
 	@classmethod
 	async def get_admin_by_user_id(cls, user_uuid):
-		statement = select(AdminModel).where(AdminModel.user_uuid == user_uuid)
-		return await CommonRoutes.exec_get_one(statement)
+		return await BaseActions.check_if_exists(AdminModel, [AdminModel.user_uuid == user_uuid])
 
 	@staticmethod
 	async def check_existing(users: AdminCreate):
@@ -82,11 +86,12 @@ class ProgramAdminActions():
 			for user in users:
 				admin = await ProgramAdminActions.get_admin_by_user_id(user.user_uuid)
 				if admin:
-					user = AdminStatus.from_orm(admin, {"status":"exists"})
+					user = AdminStatus.from_orm(admin)
+					user.status = "exists"
 			return users
 		admin = await ProgramAdminActions.get_admin_by_user_id(users.user_uuid)
 		if admin:
-			admin = AdminStatus.from_orm(admin)#, {"status":"exists"})
+			admin = AdminStatus.from_orm(admin)
 			admin.status = "exists"
 			return admin
 		return users
