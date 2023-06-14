@@ -81,6 +81,60 @@ class HelperActions():
 			return data.get(name_type[0])
 		else:
 			raise Exception
+		
+	@staticmethod
+	async def get_manager_uuid(data):
+		name_types = ['manager_uuid', 'Manager ID', 'Manager UUID', 'manager_id']
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
+		
+	@staticmethod
+	async def get_employee_id(data):
+		name_types = ['employee id', 'employee_id', 'Employee ID']
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
+
+	@staticmethod
+	async def get_title(data):
+		name_types = ['title', 'business title', 'Business Title', "Title"]
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
+
+	@staticmethod
+	async def get_department(data):
+		name_types = ['department', 'Department']
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
+
+	@staticmethod
+	async def get_active(data):
+		name_types = ['active', 'Active']
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
+
+	@staticmethod
+	async def get_admin(data):
+		name_types = ['admin', 'Admin']
+		name_type = list(set(name_types).intersection(data))
+		if bool(name_type):
+			return data.get(name_type[0])
+		else:
+			raise Exception
 
 	@classmethod
 	async def check_for_existing(cls, model, search_by):

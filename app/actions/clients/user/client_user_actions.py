@@ -1,39 +1,40 @@
-# from app.actions.users.services import UserServiceActions
+from app.actions.base_actions import BaseActions
+from app.actions.helper_actions import HelperActions
 from app.actions.users import UserActions
 from app.models.clients import ClientUserModel
 from app.models.users import UserModel, UserServiceModel
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
+from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from app.database.config import engine
 
 class ClientUserActions():
 
 	@staticmethod
-	async def get_client_user_by_user_uuid(uuid: str, session: Session):
-		return session.scalars(
-			select(ClientUserModel)
-			.where(ClientUserModel.user_uuid == uuid)
-		).one_or_none()
+	async def get_client_user_by_user_uuid(uuid: str):
+		return await BaseActions.check_if_exists(
+			ClientUserModel,
+			[
+				ClientUserModel.user_uuid == uuid
+			]
+		)
 
 	@classmethod
-	async def createClientUser(cls, data, client_uuid, session: Session):
+	async def create_client_user(cls, data, path_params):
 		user = None
 		if 'email_address' not in data.keys() and 'user_uuid' not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please inclue either email address or the user_uuid.")
 
 		if 'email_address' in data.keys():
-			user = session.scalars(
-				select(UserModel)
-				.where(UserServiceModel.service_user_id == data['email_address'],
-						UserModel.uuid == UserServiceModel.user_uuid)
-			).one_or_none()
+			user = await BaseActions.check_if_exists(
+				UserModel,
+				[
+					UserServiceModel.service_user_id == data['email_address'],
+					UserModel.uuid == UserServiceModel.user_uuid
+				])
 
 		if 'user_uuid' in data.keys() or user is not None:
 			uuid = user.uuid if user is not None else data['user_uuid']
-			client_user = await cls.get_client_user_by_user_uuid(uuid, session)
+			client_user = await cls.get_client_user_by_user_uuid(uuid)
 			if client_user:
 				return client_user
 
@@ -42,73 +43,61 @@ class ClientUserActions():
 
 		if not user and 'email_address' not in data.keys() and 'user_uuid' not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
-
 		newClientUser = ClientUserModel(
 			uuid=SHA224Hash(),
 			user_uuid= user.uuid,
-			client_uuid= client_uuid,
-			manager_uuid= data['Manager ID'] if 'Manager ID' in data else None,
-			employee_id= data['Employee ID'] if 'Employee ID' in data else None,
-			title= data['Business Title'] if 'Business Title' in data else None,
-			department= data['Department'] if 'Department' in data else None,
-			active=data['Active'] if 'Active' in data else True,
+			client_uuid= path_params['client_uuid'],
+			manager_uuid= await HelperActions.get_manager_uuid(data),
+			employee_id= await HelperActions.get_employee_id(data),
+			title= await HelperActions.get_title(data),
+			department= await HelperActions.get_department(data),
+			active=await HelperActions.get_active(data),
 			time_hire=int(time()),
 			time_start=int(time()),
-			admin= data['Admin'] if 'Admin' in data else 0,
+			admin= await HelperActions.get_admin(data),
 		)
-		newClientUser = await CommonRoutes.create_one_or_many(newClientUser)
-		return newClientUser
+		return await BaseActions.create(newClientUser)
 
 	@classmethod
 	async def getExpandedClientUsers(cls, data, client_uuid, expansion):
 		pass
 
 	@staticmethod
-	async def getAllUsers(client_uuid, session: Session):
-		users = session.scalars(
-			select(ClientUserModel)
-			.where(ClientUserModel.client_uuid == client_uuid)
-		).all()
-		await ExceptionHandling.check404(users)
-		return users
+	async def get_all_users(path_params):
+		return await BaseActions.get_all_where(
+			ClientUserModel,
+			[
+				ClientUserModel.client_uuid == path_params['client_uuid']
+			]
+		)
 
 	@staticmethod
-	async def getUser(client_uuid, user_uuid, session: Session):
-		if not session:
-			session = Session(engine)
-		user = session.scalars(
-			select(ClientUserModel)
-			.where(ClientUserModel.client_uuid == client_uuid,
-					ClientUserModel.user_uuid == user_uuid)
-		).one_or_none()
-		await ExceptionHandling.check404(user)
-		return user
+	async def get_user(path_params):
+		return await BaseActions.get_one_where(
+			ClientUserModel,
+			[
+				ClientUserModel.client_uuid == path_params['client_uuid'],
+				ClientUserModel.user_uuid == path_params['user_uuid']
+			]
+		)
 
 	@staticmethod
-	async def updateUser(client_uuid, user_uuid, user_updates, session: Session):
-		user = session.scalars(
-			select(ClientUserModel)
-			.where(ClientUserModel.client_uuid == client_uuid,
-					ClientUserModel.uuid == user_uuid)
-			).one_or_none()
-		await ExceptionHandling.check404(user)
-		update_user = user_updates.dict(exclude_unset=True)
-		for key, value in update_user.items():
-			setattr(user, key, value)
-		user.time_updated = int(time())
-		session.add(user)
-		session.commit()
-		session.refresh(user)
-		return user
+	async def update_user(path_params, user_updates):
+		return await BaseActions.update(
+			ClientUserModel,
+			[
+				ClientUserModel.client_uuid == path_params['client_uuid'],
+				ClientUserModel.uuid == path_params['user_uuid']
+			],
+			user_updates
+		)
 
 	@staticmethod
-	async def deleteUser(client_uuid, user_uuid, session: Session):
-		user = session.scalars(
-			select(ClientUserModel)
-			.where(ClientUserModel.client_uuid == client_uuid,
-					ClientUserModel.uuid == user_uuid)
-		).one_or_none()
-		await ExceptionHandling.check404(user)
-		session.delete(user)
-		session.commit()
-		return {"ok": True, "Deleted": user}
+	async def delete_user(path_params):
+		return await BaseActions.delete_one(
+			ClientUserModel,
+			[
+				ClientUserModel.client_uuid == path_params['client_uuid'],
+				ClientUserModel.uuid == path_params['user_uuid']
+			]
+		)
