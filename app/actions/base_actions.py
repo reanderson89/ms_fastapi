@@ -114,8 +114,8 @@ class BaseActions():
 
 			for obj in model_objs:
 				session.refresh(obj)
-
-			return model_objs[0] if len(model_objs) == 1 else model_objs
+			
+			return (model_objs[0] if len(model_objs) == 1 else model_objs)
 
 	@staticmethod
 	async def update(model, conditions: list, updates_obj):
