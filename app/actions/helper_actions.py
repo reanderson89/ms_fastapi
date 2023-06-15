@@ -89,7 +89,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return
+			# raise Exception
 		
 	@staticmethod
 	async def get_employee_id(data):
@@ -98,7 +99,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return
+			# raise Exception
 
 	@staticmethod
 	async def get_title(data):
@@ -107,7 +109,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return
+			# raise Exception
 
 	@staticmethod
 	async def get_department(data):
@@ -116,7 +119,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return
+			# raise Exception
 
 	@staticmethod
 	async def get_active(data):
@@ -125,7 +129,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return
+			# raise Exception
 
 	@staticmethod
 	async def get_admin(data):
@@ -134,7 +139,8 @@ class HelperActions():
 		if bool(name_type):
 			return data.get(name_type[0])
 		else:
-			raise Exception
+			return 1
+			# raise Exception
 
 	@classmethod
 	async def check_for_existing(cls, model, search_by):
