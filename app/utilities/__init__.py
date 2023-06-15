@@ -1,6 +1,12 @@
-import bisect, cgi, os, time, hashlib, random, datetime, re
+import bisect
+import cgi
+import os
+import time
+import hashlib
+import random
+import datetime
+import re
 from urllib.parse import parse_qs
-#from geventhttpclient import HTTPClient, URL
 from json import loads, JSONEncoder
 from codecs import getencoder
 from decimal import Decimal
@@ -85,7 +91,8 @@ def encodeFromEntity(string):
 def parseAndDelistArguments(args):
 	if type(args) in [bytes, str] and args[:1] in ['{', '[']:
 		args = loads(args)
-		if type(args) in [list, list]: return args
+		if type(args) in [list, list]:
+			return args
 	else:
 		args = parse_qs(args)
 
@@ -100,7 +107,8 @@ def delistArguments(args):
 	'''
 
 	def flatten(k,v):
-		if len(v) == 1 and type(v) is list: return (str(k), v[0])
+		if len(v) == 1 and type(v) is list:
+			return (str(k), v[0])
 		return (str(k), v)
 
 	return dict([flatten(k,v) for k,v in list(args.items())])
@@ -139,16 +147,16 @@ def processFormArgs(env, args):
 	return args
 
 
-def checkRequiredArgs(args, required_args):
-	for arg in required_args:
-		if arg not in args:
-			return get_status_response(500, 'arg: '+arg+' required')
+# def checkRequiredArgs(args, required_args):
+# 	for arg in required_args:
+# 		if arg not in args:
+# 			return get_status_response(500, 'arg: '+arg+' required')
 
 
 def getFile(filename, display_exceptions=True):
 	try:
 		if os.path.exists(filename):
-			return open(filename, 'r').read()
+			return open(filename).read()
 	except Exception as inst:
 		if display_exceptions:
 			print('bigFileGet.error:', filename, inst)
@@ -170,7 +178,7 @@ def unscale(value):
 def bigFileGet(filename, display_exceptions=True):
 	try:
 		if os.path.exists(filename) is True:
-			fread = open(filename, 'r')
+			fread = open(filename)
 			data = fread.read()
 			return data.strip().split('\n')
 
@@ -180,14 +188,16 @@ def bigFileGet(filename, display_exceptions=True):
 
 
 def timestampMilliseconds(timestamp=None):
-	if not timestamp: timestamp = time.time()*1000
+	if not timestamp:
+		timestamp = time.time()*1000
 	return int(timestamp)
 
 def now():
 	return timestampMilliseconds()
 
 def timestampSeconds(timestamp=None):
-	if not timestamp: timestamp = time.time()
+	if not timestamp:
+		timestamp = time.time()
 	return int(timestamp)
 
 def nowSeconds():
@@ -203,8 +213,9 @@ def putFile(filename, content, mode='w', make_if_missing=False):
 			a_dir = filename.split('/')
 			a_dir.pop()
 			dir = '/'.join(a_dir)
-			if not os.path.exists(dir): os.makedirs(dir)
-	except Exception as inst:
+			if not os.path.exists(dir):
+				os.makedirs(dir)
+	except Exception:
 		pass
 
 	try:
@@ -224,7 +235,7 @@ def putForRebuild(filename, content, make_if_missing=False):
 			dir = '/'.join(a_dir)
 			if not os.path.exists(dir):
 				os.makedirs(dir)
-	except Exception as inst:
+	except Exception:
 		pass
 
 	try:
@@ -235,15 +246,13 @@ def putForRebuild(filename, content, make_if_missing=False):
 		print('putForRebuild.ERROR:',  filename, inst)
 
 
-def getREST(url):
-	_url = URL(url)
-	http = HTTPClient.from_url(_url, connection_timeout=1000, network_timeout=1000)
-# 	print 'getREST._url:', _url.request_uri
-	response = http.get(_url.request_uri)
-	content = response.read()
-	http.close()
-# 	print 'getREST.response:', response
-	return loads(content)
+# def getREST(url):
+# 	_url = URL(url)
+# 	http = HTTPClient.from_url(_url, connection_timeout=1000, network_timeout=1000)
+# 	response = http.get(_url.request_uri)
+# 	content = response.read()
+# 	http.close()
+# 	return loads(content)
 
 
 def createHash(input_string):
@@ -324,18 +333,19 @@ def keynat(string):
 	return r
 
 
-class JSONDateTimeEncoder(JSONEncoder):
-	def default(self, obj):
-		if isinstance(obj, time.struct_time):
-			return convert(datetime.datetime(*obj[:6]))
-		if isinstance(obj, (datetime.date, datetime.datetime)):
-			return obj.isoformat()
-		return JSONEncoder.default(self, obj)
+# class JSONDateTimeEncoder(JSONEncoder):
+# 	def default(self, obj):
+# 		if isinstance(obj, time.struct_time):
+# 			return convert(datetime.datetime(*obj[:6]))
+# 		if isinstance(obj, (datetime.date, datetime.datetime)):
+# 			return obj.isoformat()
+# 		return JSONEncoder.default(self, obj)
 
 
 def bisectSearchRC(haystack, item, index_pos=None, return_type=None):
 
-	if not return_type: return_type = int
+	if not return_type:
+		return_type = int
 
 	def returnValue(value):
 		if return_type is bool and value == -1:
@@ -360,9 +370,12 @@ def bisectSearchRC(haystack, item, index_pos=None, return_type=None):
 
 
 def parseBooleanArg(arg):
-	if arg is None: return False
-	if type(arg) is bool: return arg
-	if arg.lower() == 'true': return True
+	if arg is None:
+		return False
+	if type(arg) is bool:
+		return arg
+	if arg.lower() == 'true':
+		return True
 	return False
 
 
@@ -390,7 +403,7 @@ def getDirectoryFiles(path, extension=None):
 def GetContentFiles(path, suffix=None):
 	ret = []
 	for f in os.listdir(path):
-		if(suffix != None):
+		if(suffix is not None):
 			if f.endswith(suffix):
 				ret.append(f)
 		else:

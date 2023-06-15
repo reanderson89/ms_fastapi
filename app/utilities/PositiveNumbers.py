@@ -14,7 +14,8 @@ class PositiveNumbers:
         self.MaxValue = int(self.WkgSize**self.EncodedLength)
 
     def encode(self, n):
-        if n < 0 or n > self.MaxValue: return
+        if n < 0 or n > self.MaxValue:
+            return
         if n < self.WkgSize:
             return str(self.Code[int(n-self.WkgSize)]).rjust(self.EncodedLength, '0')
         else:
@@ -30,14 +31,18 @@ class PositiveNumbers:
             return self.bisectSearchRC(self.Code, c)
 
         item_alt = 0
-        if c[0] != '0': item_alt = self.WkgSize
+        if c[0] != '0':
+            item_alt = self.WkgSize
 
         for i in range(1, self.EncodedLength+1):
             wkg_char = c[i-1:i]
-            if wkg_char == '0': continue;
+            if wkg_char == '0':
+                continue
             char = self.bisectSearchRC(self.Code, wkg_char)
-            if i != self.EncodedLength: item_alt += char*(self.WkgSize**i)
-            else: item_alt += char
+            if i != self.EncodedLength:
+                item_alt += char*(self.WkgSize**i)
+            else:
+                item_alt += char
         return item_alt
 
     def e(self, n):
@@ -46,7 +51,8 @@ class PositiveNumbers:
         return self.decode(n)
     def bisectSearchRC(self, haystack, item, index_pos=None, return_type=None):
 
-        if not return_type: return_type = int
+        if not return_type:
+            return_type = int
 
         def returnValue(value):
             if return_type is bool and value == -1:

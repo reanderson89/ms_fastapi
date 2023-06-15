@@ -9,7 +9,6 @@ RUN pip install --upgrade pip
 # ruff is for linting
 RUN pip install ruff
 COPY pyproject.toml /app
-
 # Newman for tests
 RUN apt install -y nodejs npm
 RUN npm install -g newman

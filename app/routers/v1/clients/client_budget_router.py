@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from app.actions.clients.budgets import ClientBudgetActions
 from app.models.clients import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate
 

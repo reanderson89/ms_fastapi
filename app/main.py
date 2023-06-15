@@ -66,14 +66,14 @@ async def lifespan(app: FastAPI):
 		login_secret="place_holder",
 		login_token="place_holder"
 	)
- 
+
 	'''
 	try/except was added because when the container would reload when a change was made,
 	it would error out on the fact that the users already existed.
 	'''
 	try:
-		added_users = await BaseActions.create([user1, user2])
-		added_services = await BaseActions.create([user1_service, user2_service])
+		await BaseActions.create([user1, user2])
+		await BaseActions.create([user1_service, user2_service])
 		yield
 	except:
 		yield
