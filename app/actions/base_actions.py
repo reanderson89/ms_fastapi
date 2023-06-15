@@ -35,7 +35,7 @@ class BaseActions():
 			session.delete(item)
 			session.commit()
 			return {'ok': True, 'Deleted': item}
-		
+
 	@staticmethod
 	async def get_one_where(model, conditions: list, check404: bool = True):
 		'''
@@ -80,6 +80,20 @@ class BaseActions():
 				select(model)
 				.where(*conditions)
 				).first()
+
+	@staticmethod
+	def get_one(model, conditions: list):
+		'''
+		Non-Async method to get one row from the database
+		:param model(DataModel): The model/table to query
+		:param conditions(list): The conditions to match
+		:return: A model(DataModel), or None if no match is found
+		'''
+		with Session(engine) as session:
+			return session.scalars(
+				select(model)
+				.where(*conditions)
+				).one_or_none()
 
 	@staticmethod
 	async def create(model_objs):
@@ -230,7 +244,7 @@ class BaseActions():
 			if check404:
 				await ExceptionHandling.check404(db_items)
 			return db_items
-		
+
 	@classmethod
 	async def update_without_lookup(cls, item, commit:bool = False):
 		'''
@@ -250,7 +264,7 @@ class BaseActions():
 				session.commit()
 				session.refresh(item)
 			return item
-			
+
 	# TODO
 	# def GetManyByIds(self, table, fields, field, ids=None, orderby=None, orderby_dir='DESC', joiner='and'):
 	# async def get_all_wherein(model, field, ids: list, order_by=None, sort='DESC'):

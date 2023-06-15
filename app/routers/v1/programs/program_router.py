@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import get_query_params
-from app.models.programs import ProgramModel, ProgramCreate, ProgramUpdate
+from app.models.programs import ProgramModel, ProgramCreate, ProgramUpdate, ProgramResponse
 from app.actions.programs.program_actions import ProgramActions
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Programs"])
@@ -13,7 +13,7 @@ def path_params(client_uuid: str, program_9char: str=None):
 	}
 
 
-@router.get("/programs/", response_model=list[ProgramModel])
+@router.get("/programs/", response_model=list[ProgramResponse])
 async def get_programs(
 	path_params: dict = Depends(path_params),
 	query_params: dict = Depends(get_query_params)
@@ -50,4 +50,3 @@ async def delete_program(
 	path_params: dict = Depends(path_params)
 ):
 	return await ProgramActions.delete_program(path_params)
-

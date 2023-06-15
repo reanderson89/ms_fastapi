@@ -329,7 +329,7 @@ DROP TABLE IF EXISTS `program_award`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `program_award` (
-  `uuid` varchar(65) NOT NULL,
+  `uuid` varchar(74) NOT NULL,
   `client_uuid` varchar(56) DEFAULT NULL,
   `program_9char` varchar(9) DEFAULT NULL,
   `program_award_9char` varchar(9) DEFAULT NULL,

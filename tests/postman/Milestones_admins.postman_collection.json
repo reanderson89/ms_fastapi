@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "dcd7a3c0-c805-4742-87e6-7a3babbd57dc",
+		"_postman_id": "bf38daf1-36ad-4853-9547-d3a5760bc05d",
 		"name": "Milestones_admins",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -71,14 +71,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -250,11 +249,11 @@
 									"    pm.expect(jsonData.client_uuid).to.eql(client_uuid_from_req)",
 									"});",
 									"",
-									"",
 									"pm.collectionVariables.set(\"user_uuid_from_client_user\", jsonData.user_uuid);",
 									"pm.collectionVariables.set(\"client_user_uuid\", jsonData.uuid);",
 									"pm.collectionVariables.set(\"client_user_title\", jsonData.title);",
-									"pm.collectionVariables.set(\"client_user_department\", jsonData.department);"
+									"pm.collectionVariables.set(\"client_user_department\", jsonData.department);",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -284,7 +283,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"Admin\": 1\n} \n",
+							"raw": "\n{\n  \"email_address\": \"test.user123456@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"title\": \"Grunt\",\n  \"department\": \"Mail Room\",\n  \"admin\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -526,7 +525,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"program_9char\": \"<string>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"budget_9char\": \"1234\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Blueboard 2023 Anniversary Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2434,7 +2433,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user@testclient.com\"\n}",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user123456@testclient.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2442,7 +2441,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services/",
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -2450,8 +2449,7 @@
 								"v1",
 								"users",
 								"{{user_uuid_from_client_user}}",
-								"services",
-								""
+								"services"
 							]
 						}
 					},
@@ -2824,6 +2822,11 @@
 		{
 			"key": "message_uuid",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "budget_9char",
+			"value": "test_char",
 			"type": "string"
 		}
 	]

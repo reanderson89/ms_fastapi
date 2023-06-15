@@ -1,87 +1,53 @@
-from time import time
-from sqlalchemy import select
-from fastapi import APIRouter, Query, Depends
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.database.config import engine
-from app.models.clients import ClientAwardModel, ClientAwardUpdate
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
+from app.routers.v1.dependencies import get_query_params
+from app.actions.clients.awards.client_award_actions import ClientAwardActions
+from app.models.clients import ClientAwardModel, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"])
 
-def get_session():
-	with Session(engine) as session:
-		yield session
 
 @router.get("/awards", response_model=list[ClientAwardModel])
 async def get_awards(
 	client_uuid: str,
-	offset: int = 0,
-	limit: int = Query(default=100, lte=100),
-	session: Session = Depends(get_session)
-):
-	awards = session.scalars(
-		select(ClientAwardModel)
-		.where(ClientAwardModel.client_uuid == client_uuid)
-		.offset(offset)
-		.limit(limit)
-	).all()
-	await ExceptionHandling.check404(awards)
-	return awards
+	query_params: dict = Depends(get_query_params)
 
-@router.get("/awards/{client_award_9char}", response_model=ClientAwardModel)
+):
+	return await ClientAwardActions.get_client_awards(client_uuid, query_params)
+
+
+@router.get("/awards/{client_award_9char}", response_model=ClientAwardResponse)
 async def get_award(
 	client_uuid: str,
-	client_award_9char: str,
-	session: Session = Depends(get_session),
+	client_award_9char: str
 ):
-	award = session.scalars(
-		select(ClientAwardModel)
-		.where(ClientAwardModel.client_award_9char == client_award_9char,
-				ClientAwardModel.client_uuid == client_uuid)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	return award
+	return await ClientAwardActions.get_award(client_uuid, client_award_9char)
+	# award = await ClientAwardActions.get_award(client_uuid, client_award_9char)
+	# return await ClientAwardRead.init_class(award)
 
-@router.post("/awards", response_model=(list[ClientAwardModel] | ClientAwardModel))
-async def create_award(awards: (list[ClientAwardModel] | ClientAwardModel)):
-	return await CommonRoutes.create_one_or_many(awards)
+
+
+@router.post("/awards", response_model=list[ClientAwardModel] | ClientAwardModel)
+async def create_award(
+	client_uuid: str,
+	awards: list[ClientAwardCreate] | ClientAwardCreate
+):
+	return await ClientAwardActions.create_award(client_uuid, awards)
+
 
 @router.put("/awards/{client_award_9char}", response_model=ClientAwardModel)
 async def update_award(
 	client_uuid: str,
 	client_award_9char: str,
-	award_updates: ClientAwardUpdate,
-	session: Session = Depends(get_session)
+	award_updates: ClientAwardUpdate
 ):
-	award = session.scalars(
-		select(ClientAwardModel)
-		.where(
-			ClientAwardModel.client_award_9char == client_award_9char,
-			ClientAwardModel.client_uuid == client_uuid
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	update_award = award_updates.dict(exclude_unset=True)
-	for k,v in update_award.items():
-		setattr(award, k, v)
-	award.time_updated = int(time())
-	session.add(award)
-	session.commit()
-	session.refresh(award)
-	return award
+	return await ClientAwardActions.update_award(client_uuid, client_award_9char, award_updates)
 
 
 # this should only work if there is no programs or segments associated with the award
 @router.delete("/awards/{client_award_9char}")
-async def delete_award(client_award_9char: str, client_uuid: str,
-			session: Session = Depends(get_session)):
+async def delete_award(
+	client_uuid: str,
+	client_award_9char: str
+):
 	#TODO: add check for programs
-	award = session.scalars(
-		select(ClientAwardModel)
-		.where(ClientAwardModel.client_award_9char == client_award_9char,
-				ClientAwardModel.client_uuid == client_uuid)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	session.delete(award)
-	session.commit()
-	return {'ok': True, 'Deleted:': award}
+	return await ClientAwardActions.delete_award(client_uuid, client_award_9char)

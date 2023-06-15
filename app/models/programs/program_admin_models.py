@@ -26,7 +26,7 @@ class AdminModel(Base):
 	client_uuid: Mapped[Optional[str]] = mapped_column(default=None, index=True)
 	program_9char: Mapped[Optional[str]] = mapped_column(default=None, index=True)
 	user_uuid: Mapped[Optional[str]] = mapped_column(default=None, index=True)
-	permissions: Mapped[Optional[int]] = mapped_column(default=0, index=True) #TODO: Josh, fix the IntEnum call. I removed Mapped[Optional[int]]
+	permissions: Mapped[Optional[int]] = mapped_column(default=0, index=True)
 	time_created: Mapped[Optional[int]] = mapped_column(default=None)
 	time_updated: Mapped[Optional[int]] = mapped_column(default=None)
 

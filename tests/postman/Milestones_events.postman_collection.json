@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "de30f575-27e1-4e1b-8370-927097a22c56",
+		"_postman_id": "147675d9-bca7-4722-a042-d6a65b68454e",
 		"name": "Milestones_events",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -284,7 +284,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"Admin\": 1\n} \n",
+							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"admin\": 1\n} \n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -496,7 +496,21 @@
 									"})",
 									"",
 									"pm.collectionVariables.set(\"program_9char\", jsonData[0].program_9char)",
-									"pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid)"
+									"pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid)",
+									"",
+									"",
+									"",
+									"",
+									"// var jsonData = pm.response.json();",
+									"",
+									"// if (Array.isArray(jsonData)) {",
+									"//   pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid);",
+									"//   pm.collectionVariables.set(\"program_9char\", jsonData[0].program_9char);",
+									"// } else {",
+									"//   pm.collectionVariables.set(\"program_uuid\", jsonData.uuid);",
+									"//   pm.collectionVariables.set(\"program_9char\", jsonData.program_9char);",
+									"// }",
+									"// pm.collectionVariables.set(\"create_program\", pm.request);"
 								],
 								"type": "text/javascript"
 							}
@@ -526,7 +540,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"budget_9char\": \"1234\",\n    \"status\": 1,\n    \"program_type\": 1,\n    \"cadence\": 1,\n    \"cadence_value\": 1\n  }\n]\n\n",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Blueboard 2023 Anniversary Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -3922,6 +3936,11 @@
 		{
 			"key": "message_uuid",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "budget_9char",
+			"value": "test_char",
 			"type": "string"
 		}
 	]

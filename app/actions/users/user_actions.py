@@ -87,7 +87,6 @@ class UserActions(BaseActions):
 			raise Exception
 		return new_user
 
-
 	@classmethod
 	async def update_user(cls, user_uuid, updates):
 		return await cls.update(UserModel, [UserModel.uuid == user_uuid], updates)

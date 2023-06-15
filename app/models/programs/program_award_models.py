@@ -2,17 +2,18 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 from app.actions.utils import new_9char
-from app.actions.awards.awards_actions import AwardActions
+from app.actions.clients.awards.client_award_actions import ClientAwardActions
+from app.models.clients.client_award_models import ClientAwardModel, ClientAwardResponse
 from app.actions.base_actions import BaseActions
-from app.models.award.award_models import AwardModel
 
-class ClientAwardModel(Base):
-	__tablename__ = "client_award"
+class ProgramAwardModel(Base):
+	__tablename__ = "program_award"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	client_uuid: Mapped[str] = mapped_column(default=None, index=True)
+	program_9char: Mapped[str] = mapped_column(default=None, index=None)
+	program_award_9char: Mapped[str] = mapped_column(default=None, index=None)
 	client_award_9char: Mapped[str] = mapped_column(default=None, index=None)
-	award_uuid: Mapped[str] = mapped_column(default=0)
 	name: Mapped[str] = mapped_column(default=None)
 	description: Mapped[str] = mapped_column(default=None)
 	hero_image: Mapped[int] = mapped_column(default=None)
@@ -21,31 +22,30 @@ class ClientAwardModel(Base):
 
 	def __init__(self, **data):
 		super().__init__(**data)
-		if not self.client_award_9char:
-			self.client_award_9char = new_9char()
+		if not self.program_award_9char:
+			self.program_award_9char = new_9char()
 		if not self.uuid:
-			self.uuid = self.client_uuid + self.client_award_9char
+			self.uuid = (self.client_uuid + self.program_9char + self.client_award_9char)
 
 
-class ClientAwardCreate(BasePydantic):
-	award_uuid: Optional[str] = None
+class ProgramAwardCreate(BasePydantic):
+	name: str
+	description: Optional[str] = None
+	hero_image: Optional[int] = None
+
+
+class ProgramAwardUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
 	hero_image: Optional[int] = None
 
 
-class ClientAwardUpdate(BasePydantic):
-	award_uuid: Optional[str] = None
-	name: Optional[str] = None
-	description: Optional[str] = None
-	hero_image: Optional[int] = None
-
-
-class ClientAwardBase(BasePydantic):
-	uuid: str
+class ProgramAwardBase(BasePydantic):
+	uuid: Optional[str] = None
 	client_uuid: Optional[str] = None
+	program_9char: Optional[str] = None
+	program_award_9char: Optional[str] = None
 	client_award_9char: Optional[str] = None
-	award_uuid: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
 	hero_image: Optional[int] = None
@@ -53,18 +53,22 @@ class ClientAwardBase(BasePydantic):
 	time_updated: Optional[int] = None
 
 
-class ClientAwardResponse(ClientAwardBase):
+class ProgramAwardResponse(ProgramAwardBase):
+	client_award_description: Optional[str]
 	channel: Optional[int] = None
 	award_type: Optional[int] = None
 	value: Optional[int] = None
 
 	def __init__(self, **data):
 		super().__init__(**data)
-		award = BaseActions.get_one(
-			AwardModel,
-			[AwardModel.uuid == self.award_uuid]
+
+		client_award = BaseActions.get_one(
+			ClientAwardModel,
+			[ClientAwardModel.client_award_9char == self.client_award_9char]
 		)
-		if award:
-			self.channel = award.channel
-			self.award_type = award.award_type
-			self.value = award.value
+		client_award = ClientAwardResponse(**client_award.to_dict())
+
+		self.client_award_description = client_award.description
+		self.channel = client_award.channel
+		self.award_type = client_award.award_type
+		self.value = client_award.value

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e5850125-ec5d-4994-9aa5-8d0e501d2a45",
+		"_postman_id": "0dab7077-32f1-4126-b105-60ed9861e1d4",
 		"name": "Milestones_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -72,7 +72,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test\",\n    \"hero_image\": 1,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
+							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test award.\",\n    \"hero_image\": 1,\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -290,7 +290,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/awards",
+							"raw": "{{baseUrl}}/v1/awards?order_by=name&sort=ASC",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -301,13 +301,12 @@
 							"query": [
 								{
 									"key": "order_by",
-									"value": "property name",
-									"disabled": true
+									"value": "name"
 								},
 								{
 									"key": "sort",
-									"value": "ASC or DESC for ascending and descending",
-									"disabled": true
+									"value": "ASC",
+									"description": "ASC or DESC for ascending and descending"
 								}
 							]
 						}
@@ -425,7 +424,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}?expand_services=false",
+							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -433,12 +432,6 @@
 								"v1",
 								"awards",
 								"{{award_uuid}}"
-							],
-							"query": [
-								{
-									"key": "expand_services",
-									"value": "false"
-								}
 							]
 						}
 					},
@@ -627,7 +620,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"UPDATED\",\n    \"description\": \"UPDATED\",\n    \"hero_image\": 1,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
+							"raw": "{\n    \"name\": \"UPDATED\",\n    \"description\": \"UPDATED\",\n    \"hero_image\": 0,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

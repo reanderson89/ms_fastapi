@@ -1,14 +1,253 @@
 {
 	"info": {
-		"_postman_id": "752766cf-43c9-4bfb-88df-e63c666cb1b1",
+		"_postman_id": "394f0300-25a7-4c17-8d60-fcca9c5cb66c",
 		"name": "Milestones_client_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
 			"name": "client_awards",
 			"item": [
+				{
+					"name": "Create Award",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status test\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"award_uuid\", jsonData[0].uuid);",
+									"} else {",
+									"  pm.collectionVariables.set(\"award_uuid\", jsonData.uuid);",
+									"}",
+									"pm.collectionVariables.set(\"create_award\", pm.request);",
+									"",
+									"pm.test(\"uuid should exist\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.uuid).to.exist;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"variable_key\", \"variable_value\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test award.\",\n    \"hero_image\": 1,\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/awards",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"awards"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"uuid\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"latitude\": \"<integer>\",\n  \"longitude\": \"<integer>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\",\n  \"time_birthday\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										""
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										""
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
 				{
 					"name": "Create Client",
 					"event": [
@@ -31,9 +270,6 @@
 									"if(pm.response.to.have.status(200)){",
 									"pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
 									"}",
-									"",
-									"",
-									"",
 									"",
 									"pm.collectionVariables.set(\"create_client\", pm.request);",
 									"",
@@ -274,7 +510,14 @@
 									"    pm.expect(jsonData.uuid).to.exist;",
 									"});",
 									"",
-									"pm.collectionVariables.set(\"client_award_9char\", jsonData.client_award_9char)"
+									"if (Array.isArray(jsonData)) {",
+									"  pm.collectionVariables.set(\"client_award_9char\", jsonData[0].client_award_9char);",
+									"} else {",
+									"  pm.collectionVariables.set(\"client_award_9char\", jsonData.client_award_9char);",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"create_award\", pm.request);",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -285,7 +528,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"award_type\": 0,\n    \"name\": \"TEST\",\n    \"client_award_9char\": \"test_char\",\n    \"description\": \"string\",\n    \"hero_image\": 1\n}",
+							"raw": "\n{\n  \"award_uuid\": \"{{award_uuid}}\",\n  \"name\": \"Test Client Award\",\n  \"description\": \"Just a test client award\",\n  \"hero_image\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -331,7 +574,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/awards",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/awards?order_by=name&sort=ASC",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -340,6 +583,17 @@
 								"clients",
 								"{{client_uuid}}",
 								"awards"
+							],
+							"query": [
+								{
+									"key": "order_by",
+									"value": "name"
+								},
+								{
+									"key": "sort",
+									"value": "ASC",
+									"description": "ASC or DESC for ascending and descending"
+								}
 							]
 						}
 					},
@@ -410,7 +664,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"award_type\": 0,\n    \"name\": \"UPDATED\",\n    \"client_award_9char\": \"test_char\",\n    \"description\": \"string\",\n    \"hero_image\": 1\n}",
+							"raw": "{\n  \"name\": \"UPDATED\",\n  \"description\": \"UPDATED\",\n  \"hero_image\": 0\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -474,6 +728,181 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Award",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ok should be true\", function () {",
+									"    pm.expect(jsonData.ok).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/awards/{{award_uuid}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"awards",
+								"{{award_uuid}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										":user_uuid"
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										":user_uuid"
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/users/:user_uuid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										":user_uuid"
+									],
+									"variable": [
+										{
+											"key": "user_uuid"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
 				},
 				{
 					"name": "Delete Client",
