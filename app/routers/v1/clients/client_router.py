@@ -1,7 +1,7 @@
 from typing import Union
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import get_query_params
-from app.models.clients import ClientModel, ClientUpdate
+from app.models.clients import ClientModel, ClientUpdate, ClientCreate
 from app.actions.clients.client_actions import ClientActions
 
 router = APIRouter(tags=["Clients"])
@@ -21,7 +21,7 @@ async def get_client(client_uuid: str):
 
 @router.post("/clients", response_model=list[ClientModel]|ClientModel)
 async def create_client(
-	clients: Union[list[ClientModel], ClientModel]
+	clients: Union[list[ClientCreate], ClientCreate]
 ):
 	return await ClientActions.create_client_handler(clients)
 

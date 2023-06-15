@@ -45,7 +45,8 @@ class ClientActions(BaseActions):
 		new_client = ClientModel(
 			name=client_data.name,
 			description=client_data.description,
-			status=client_data.status
+			status=client_data.status,
+			url=client_data.url
 		)
 		return await cls.create(new_client)
 

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "147675d9-bca7-4722-a042-d6a65b68454e",
+		"_postman_id": "053b2f8e-250b-4cc8-ad22-db4fde568c01",
 		"name": "Milestones_events",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\"\n  }\n \n]",
+							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

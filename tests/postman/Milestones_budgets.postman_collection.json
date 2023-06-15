@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "bd5cea93-ffad-408c-ba8a-ea1475ee8827",
+		"_postman_id": "6045f9cb-b0c3-40de-afac-24d8b0ce8251",
 		"name": "Milestones_budgets",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "13402166"
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\"\n  }\n \n]",
+							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "2e783345-56d0-4c26-b1f0-60d6b486bd5b",
+		"_postman_id": "1e97881e-b4d3-4ebd-ac78-0fca6d4d3f74",
 		"name": "Milestones_programs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\"\n  }\n \n]",
+							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

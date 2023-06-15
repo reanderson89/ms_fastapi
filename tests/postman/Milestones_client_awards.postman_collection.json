@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "394f0300-25a7-4c17-8d60-fcca9c5cb66c",
+		"_postman_id": "e64fe3ec-80c7-4c79-a1c2-a6a3e393850d",
 		"name": "Milestones_client_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -303,7 +303,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\"\n  }\n \n]",
+							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

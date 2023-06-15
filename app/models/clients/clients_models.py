@@ -32,3 +32,9 @@ class ClientUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
 	status: Optional[int] = None
+
+class ClientCreate(BasePydantic):
+	name: str
+	description: str
+	status: Optional[int] = None
+	url: Optional[str] = None

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "bf38daf1-36ad-4853-9547-d3a5760bc05d",
+		"_postman_id": "302e3bd8-b0f1-4c8b-a4bc-9703ca84df33",
 		"name": "Milestones_admins",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\"\n  }\n \n]",
+							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -283,7 +283,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user123456@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"title\": \"Grunt\",\n  \"department\": \"Mail Room\",\n  \"admin\": 1\n}",
+							"raw": "\n{\n  \"email_address\": \"test.user123456@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"title\": \"Grunt\",\n  \"department\": \"Mail Room\",\n  \"manager_uuid\": \"testing\",\n  \"admin\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
