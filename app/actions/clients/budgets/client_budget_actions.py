@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from app.actions.helper_actions import HelperActions
@@ -13,7 +13,7 @@ class ClientBudgetActions():
 	@staticmethod
 	async def default_budget_name(client_uuid):
 		client_name = await ClientActions.get_client_name(client_uuid)
-		budgetCreationTime = datetime.now(timezone.utc).strftime('%m/%d/%Y %H:%M:%S %Z')
+		budgetCreationTime = datetime.now(datetime.UTC).strftime('%m/%d/%Y %H:%M:%S %Z')
 		return f"New {client_name} Budget (created: {budgetCreationTime})"
 	
 	@staticmethod

@@ -183,7 +183,7 @@ class BaseActions:
 				.where(*conditions)
 			).all()
 
-			if not item:
+			if not items:
 				raise Exception('items not found')
 			
 			results = {}

@@ -6,7 +6,7 @@ class StaticBudget:
 
 	async def create_budget(new_budget, parent):
 		if parent.value - new_budget.value < 0:
-			return await ExceptionHandling.custom405(f"Parent budget does not have funds for new budget. Please add funds to parent budget and try again.")
+			return await ExceptionHandling.custom405("Parent budget does not have funds for new budget. Please add funds to parent budget and try again.")
 		else:
 			parent.value -= new_budget.value
 		return new_budget, parent
@@ -51,7 +51,7 @@ class PassthruCap:
 
 	async def budget_expenditure(budget, parent, expenditure):
 		if budget.value + expenditure > 0 or parent.value - expenditure < 0:
-			return await ExceptionHandling.custom405(f"Parent budget does not have funds for new budget. Please add funds to parent budget and try again.")
+			return await ExceptionHandling.custom405("Parent budget does not have funds for new budget. Please add funds to parent budget and try again.")
 		else: 
 			budget.value += expenditure
 			parent.value -= expenditure

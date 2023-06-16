@@ -49,7 +49,7 @@ class HelperActions():
 		email_types = {'Primary Work Email', 'primary_work_email', 'email_address', 'email'}
 		email_type = list(email_types.intersection(data))
 		if bool(email_type):
-			return cls.ServiceType(type='email', value=data.get((email_type[0])))
+			return cls.ServiceType(type='email', value=data.get(email_type[0]))
 		else:
 			return None
 
@@ -58,7 +58,7 @@ class HelperActions():
 		cell_types = {'Primary Cell Number', 'primary_cell_number', 'cell_number', 'cell'}
 		cell_type = list(cell_types.intersection(data))
 		if bool(cell_type):
-			cell_value = data.get((cell_type[0]))
+			cell_value = data.get(cell_type[0])
 			cell_value = cell_value.replace('-', '').replace('(', '').replace(')', '').strip()
 			return cls.ServiceType(type='cell', value=cell_value)
 		else:

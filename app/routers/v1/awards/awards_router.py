@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import get_query_params
 from app.actions.awards import AwardActions
@@ -7,7 +6,7 @@ from app.models.award import AwardModel, AwardUpdate
 router = APIRouter(tags=["Awards"])
 
 
-@router.get("/awards", response_model=List[AwardModel])
+@router.get("/awards", response_model=list[AwardModel])
 async def get_all_awards(
 	query_params: dict = Depends(get_query_params),
 ):
@@ -21,9 +20,9 @@ async def get_award(
 	return await AwardActions.get_award(award_uuid)
 
 
-@router.post("/awards", response_model=(List[AwardModel] | AwardModel))
+@router.post("/awards", response_model=(list[AwardModel] | AwardModel))
 async def create_award(
-	awards: (List[AwardModel] | AwardModel)
+	awards: (list[AwardModel] | AwardModel)
 ):
 	return await AwardActions.create_award(awards)
 

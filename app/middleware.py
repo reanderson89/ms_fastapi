@@ -1,14 +1,16 @@
-import sys, traceback, logging
-from datetime import datetime, timezone
+import sys
+import traceback
+import logging
+from datetime import datetime
 from app.configs import run_config
 from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError, HTTPException
-from fastapi.exception_handlers import (
-	http_exception_handler as _http_exception_handler, 
-    request_validation_exception_handler as _request_validation_exception_handler
-)
+from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import HTTPException
+from fastapi.exception_handlers import http_exception_handler as _http_exception_handler
+from fastapi.exception_handlers import request_validation_exception_handler as _request_validation_exception_handler
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -75,7 +77,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 			'code_piece': str(error_string[2:]).split("    ")[1].replace("', '", ", ").replace("\\n", "")
 		}
 		detail["error"] = error
-		i_time = datetime.now(timezone.utc).strftime("%m/%d/%Y %H:%M:%S")
+		i_time = datetime.utcnow()
 		logger_error = {
 			"time": f"{i_time} UTC",
 			"method": detail['method'],
