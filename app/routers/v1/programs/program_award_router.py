@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import get_query_params
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
-from app.models.programs import ProgramAwardModel, ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
+from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
 
 router = APIRouter(
 	prefix="/clients/{client_uuid}/programs/{program_9char}",

@@ -6,9 +6,9 @@ from starlette import status
 from .v1 import v1router
 from .v1.users.auth.auth_routers import router as auth_router
 
-ENV: str = os.environ.get('ENV', 'local')
+ENV: str = os.environ.get("ENV", "local")
 
-if ENV == 'local':
+if ENV == "local":
     routers = APIRouter()
 else:
     routers = APIRouter(

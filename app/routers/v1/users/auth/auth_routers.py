@@ -17,6 +17,6 @@ async def put_auth(redeem_auth_model: RedeemAuthModel, response: Response):
     redeem_return = await AuthActions.redeem_auth_handler(redeem_auth_model)
     user_model = dict(UserBase.from_orm(redeem_return))
     bearer_token = await access_token_creation(user_model)
-    response.headers["Bearer"] = bearer_token['access_token']
+    response.headers["Bearer"] = bearer_token["access_token"]
 
     return redeem_return

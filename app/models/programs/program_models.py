@@ -1,6 +1,4 @@
 from typing import Optional
-from enum import Enum, IntEnum
-from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic, BaseEnum
 

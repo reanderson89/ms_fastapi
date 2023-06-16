@@ -4,8 +4,8 @@ from fastapi import Query
 
 
 class SortOrder(str, Enum):
-	ASC = 'ASC'
-	DESC = 'DESC'
+	ASC = "ASC"
+	DESC = "DESC"
 
 	def __str__(self):
 		return self.value

@@ -2,7 +2,6 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 from app.actions.utils import new_9char
-from app.actions.awards.awards_actions import AwardActions
 from app.actions.base_actions import BaseActions
 from app.models.award.award_models import AwardModel
 

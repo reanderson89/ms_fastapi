@@ -75,7 +75,7 @@ class CommonRoutes():
 			updated_mapped_columns = update_model.dict(exclude_unset=True)
 			for key, value in updated_mapped_columns.items():
 				setattr(db_item, key, value)
-			if hasattr(db_item, 'time_updated'):
+			if hasattr(db_item, "time_updated"):
 				db_item.time_updated = int(time())
 			session.add(db_item)
 			session.commit()
@@ -101,7 +101,7 @@ class CommonRoutes():
 			await ExceptionHandling.check404(item)
 			session.delete(item)
 			session.commit()
-			return {'ok': True, 'Deleted:': item}
+			return {"ok": True, "Deleted:": item}
 
 	async def exec_delete(statement):
 		with Session(engine) as session:
@@ -109,7 +109,7 @@ class CommonRoutes():
 			await ExceptionHandling.check404(item)
 			session.delete(item)
 			session.commit()
-			return {'ok': True, 'Deleted:': item}
+			return {"ok": True, "Deleted:": item}
 
 	async def delete_all(search_by, model):
 		with Session(engine) as session:
@@ -118,7 +118,7 @@ class CommonRoutes():
 			for item in items:
 				session.delete(item)
 			session.commit()
-			return {'ok': True, 'Deleted:': items}
+			return {"ok": True, "Deleted:": items}
 
 
 class ExceptionHandling():
