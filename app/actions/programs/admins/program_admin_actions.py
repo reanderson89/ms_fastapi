@@ -10,8 +10,8 @@ class ProgramAdminActions():
 		return await BaseActions.get_all_where(
 			AdminModel,
 			[
-				AdminModel.client_uuid == path_params['client_uuid'],
-				AdminModel.program_9char == path_params['program_9char']
+				AdminModel.client_uuid == path_params["client_uuid"],
+				AdminModel.program_9char == path_params["program_9char"]
 			],
 			query_params
 		)
@@ -21,9 +21,9 @@ class ProgramAdminActions():
 		return await BaseActions.get_one_where(
 			AdminModel,
 			[
-				AdminModel.user_uuid == path_params['user_uuid'],
-				AdminModel.client_uuid == path_params['client_uuid'],
-				AdminModel.program_9char == path_params['program_9char']
+				AdminModel.user_uuid == path_params["user_uuid"],
+				AdminModel.client_uuid == path_params["client_uuid"],
+				AdminModel.program_9char == path_params["program_9char"]
 			]
 		)
 
@@ -33,8 +33,8 @@ class ProgramAdminActions():
 		admin = AdminModel(
 			uuid = SHA224Hash(f"{admins.program_uuid}+{ids['user_uuid']}"),
 			program_uuid=admins.program_uuid,
-			client_uuid=ids['client_uuid'],
-			program_9char=ids['program_9char'] if ids['program_9char'] else None,
+			client_uuid=ids["client_uuid"],
+			program_9char=ids["program_9char"] if ids["program_9char"] else None,
 			user_uuid=admins.user_uuid,
 			permissions=admins.permissions if admins.permissions else 0,
 			time_created=current_time,
@@ -58,9 +58,9 @@ class ProgramAdminActions():
 		return await BaseActions.update(
 			AdminModel,
 			[
-				AdminModel.user_uuid == path_params['user_uuid'],
-				AdminModel.client_uuid == path_params['client_uuid'],
-				AdminModel.program_9char == path_params['program_9char']
+				AdminModel.user_uuid == path_params["user_uuid"],
+				AdminModel.client_uuid == path_params["client_uuid"],
+				AdminModel.program_9char == path_params["program_9char"]
 			],
 			updates
 		)
@@ -70,9 +70,9 @@ class ProgramAdminActions():
 		return await BaseActions.delete_one(
 			AdminModel,
 			[
-				AdminModel.user_uuid == path_params['user_uuid'],
-				AdminModel.client_uuid == path_params['client_uuid'],
-				AdminModel.program_9char == path_params['program_9char']
+				AdminModel.user_uuid == path_params["user_uuid"],
+				AdminModel.client_uuid == path_params["client_uuid"],
+				AdminModel.program_9char == path_params["program_9char"]
 			]
 		)
 

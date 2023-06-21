@@ -7,11 +7,11 @@ from http import HTTPStatus
 from pydantic import ValidationError
 
 def _encodeutf8(item):
-	return item.encode('utf-8')
+	return item.encode("utf-8")
 
 
 def _decodeutf8(item):
-	return item.decode('utf-8')
+	return item.decode("utf-8")
 
 
 def get_status_response(status_code, response_msg, raw=False):
@@ -23,9 +23,9 @@ def get_status_response(status_code, response_msg, raw=False):
 		status_code_description = "Unknown"
 
 	return (
-		f'{status_code} {status_code_description}',
-		[('Content-Type', 'text/plain')],
-		_encodeutf8(f'{response_msg}')
+		f"{status_code} {status_code_description}",
+		[("Content-Type", "text/plain")],
+		_encodeutf8(f"{response_msg}")
 	)
 
 
@@ -55,10 +55,10 @@ def _badRequestHandler(
 		return get_status_response(400, exception.json())
 	# chekc for Mysql OperationalError
 	elif exception and isinstance(exception, tuple):
-		response_msg = ('Exception Raised: {}').format(''.join(exception))
+		response_msg = ("Exception Raised: {}").format("".join(exception))
 		return get_status_response(500, exception.args[0])
 	elif exception and not args:
-		response_msg = ('Exception Raised: {}').format(''.join(exception.args[0]))
+		response_msg = ("Exception Raised: {}").format("".join(exception.args[0]))
 		return get_status_response(400, response_msg)
 	elif response_msg and status:
 		return get_status_response(status, response_msg)
@@ -80,7 +80,7 @@ def _badRequestHandler(
 		elif exception:
 			return _badRequestHandler(exception=exception)
 		else:
-			return get_status_response(400, 'Exception Raised')
+			return get_status_response(400, "Exception Raised")
 	elif args and req_args:
 		missing_params = []
 		for param in req_args:
@@ -93,7 +93,7 @@ def _badRequestHandler(
 		elif exception:
 			return _badRequestHandler(exception=exception)
 	else:
-		return get_status_response(400, 'Exception Raised')
+		return get_status_response(400, "Exception Raised")
 
 
 def interval(start, end):
@@ -136,15 +136,15 @@ def epochMidnight():
 	#this ONLY works for today at present
 	midnight = datetime.combine(datetime.today(), time.min)
 	epochMidnight = int((midnight - datetime(1970,1,1)).total_seconds())+28800
-	print('Utilities.today.epochMidnight:', epochMidnight)
+	print("Utilities.today.epochMidnight:", epochMidnight)
 	return epochMidnight
 
 
 CORSHeaders = [
-	('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS'),
+	("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"),
 # 	('Access-Control-Allow-Origin', 'jason.bendhelps.com'),
-	('Access-Control-Allow-Credentials','true'),
-	('Access-Control-Allow-Headers', 'access-control-allow-origin,Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since,X-Request')
+	("Access-Control-Allow-Credentials","true"),
+	("Access-Control-Allow-Headers", "access-control-allow-origin,Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since,X-Request")
 ]
 
 
@@ -164,7 +164,7 @@ class DecimalEncoder(JSONEncoder):
             # but that would mean a yield on the line with super(...),
             # which wouldn't work (see my comment below), so...
             return float(o)
-        return super(DecimalEncoder, self).default(o)
+        return super().default(o)
 
 
 def formatReturnData(data, raw=True, code=None):
@@ -172,7 +172,7 @@ def formatReturnData(data, raw=True, code=None):
 	if raw is True:
 		return data
 	return [
-		'200 OK' if code is None else code,
-		[('Content-Type', 'application/json')],
+		"200 OK" if code is None else code,
+		[("Content-Type", "application/json")],
 		_encodeutf8(dumps(data))
 	]

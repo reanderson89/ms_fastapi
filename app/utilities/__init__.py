@@ -19,13 +19,13 @@ getModifiedTime = os.path.getmtime
 getFileExists = os.path.exists
 
 MimeTypes = {
-	'jpe' : 'image/jpeg',
-	'jpeg' : 'image/jpeg',
-	'jpg' : 'image/jpeg',
-	'png' : 'image/png',
+	"jpe" : "image/jpeg",
+	"jpeg" : "image/jpeg",
+	"jpg" : "image/jpeg",
+	"png" : "image/png",
 }
 
-emailpattern = re.compile('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$', re.IGNORECASE)
+emailpattern = re.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", re.IGNORECASE)
 def verifyEmail(s):
 	return emailpattern.search(s) is not None
 
@@ -48,20 +48,20 @@ def isNumber(data):
 	)
 
 
-enc = getencoder('us-ascii')
+enc = getencoder("us-ascii")
 
 
-def deUnicodeText(_text, _encoding='utf-8'):
+def deUnicodeText(_text, _encoding="utf-8"):
 	try:
 		if not isUnicode(_text) and isString(_text):
 			_text = str(_text, _encoding)
-			return enc(_text, 'xmlcharrefreplace')[0]
+			return enc(_text, "xmlcharrefreplace")[0]
 		elif isUnicode(_text):
-			return enc(_text, 'xmlcharrefreplace')[0]
+			return enc(_text, "xmlcharrefreplace")[0]
 		return _text
 
 	except Exception as inst:
-		print('deUnicodeText', inst)
+		print("deUnicodeText", inst)
 
 
 def decodeToEntity(s):
@@ -72,7 +72,7 @@ def decodeToEntity(s):
 			t += "&" + name + ";"
 		else:
 			t += i
-	return t.replace('\'', '\\\'')
+	return t.replace("\'", "\\\'")
 
 
 encodeFromEntityPattern = re.compile("&(\w+?);")
@@ -89,7 +89,7 @@ def encodeFromEntity(string):
 
 
 def parseAndDelistArguments(args):
-	if type(args) in [bytes, str] and args[:1] in ['{', '[']:
+	if type(args) in [bytes, str] and args[:1] in ["{", "["]:
 		args = loads(args)
 		if type(args) in [list, list]:
 			return args
@@ -100,11 +100,11 @@ def parseAndDelistArguments(args):
 
 
 def delistArguments(args):
-	'''
+	"""
 		Takes a dictionary, 'args' and de-lists any single-item lists then
 		returns the resulting dictionary.
 		{'foo': ['bar']} would become {'foo': 'bar'}
-	'''
+	"""
 
 	def flatten(k,v):
 		if len(v) == 1 and type(v) is list:
@@ -119,15 +119,15 @@ def parseQuerystring(s):
 
 
 def processFormArgs(env, args):
-	verb = env['REQUEST_METHOD']
-	wsgi_input = env['wsgi.input']
+	verb = env["REQUEST_METHOD"]
+	wsgi_input = env["wsgi.input"]
 
-	if wsgi_input.content_length and verb in ['PUT', 'POST']:
+	if wsgi_input.content_length and verb in ["PUT", "POST"]:
 # 		print 'updating post_env'
 		post_env = env.copy()
-		post_env['QUERY_STRING'] = ''
+		post_env["QUERY_STRING"] = ""
 
-		if 'CONTENT_TYPE' not in env or env['CONTENT_TYPE'] != 'application/json':
+		if "CONTENT_TYPE" not in env or env["CONTENT_TYPE"] != "application/json":
 			form = cgi.mapped_columnStorage(
 				fp=wsgi_input,
 				environ=post_env,
@@ -138,10 +138,10 @@ def processFormArgs(env, args):
 			form_data = [(k, form[k].value) for k in list(form.keys())]
 		else:
 			readData = wsgi_input.read()
-			print('readData:', readData)
+			print("readData:", readData)
 			form_data = loads(readData)
 
-		print('form_data: ', form_data)
+		print("form_data: ", form_data)
 		args.update(form_data)
 		print(args)
 	return args
@@ -159,7 +159,7 @@ def getFile(filename, display_exceptions=True):
 			return open(filename).read()
 	except Exception as inst:
 		if display_exceptions:
-			print('bigFileGet.error:', filename, inst)
+			print("bigFileGet.error:", filename, inst)
 
 
 def fixed(data, precision=5):
@@ -180,11 +180,11 @@ def bigFileGet(filename, display_exceptions=True):
 		if os.path.exists(filename) is True:
 			fread = open(filename)
 			data = fread.read()
-			return data.strip().split('\n')
+			return data.strip().split("\n")
 
 	except Exception as inst:
 		if display_exceptions is True:
-			print('bigFileGet(%s)' % filename, inst)
+			print("bigFileGet(%s)" % filename, inst)
 
 
 def timestampMilliseconds(timestamp=None):
@@ -207,12 +207,12 @@ def timestamp(timestamp=None):
 	return timestampSeconds(timestamp)
 
 
-def putFile(filename, content, mode='w', make_if_missing=False):
+def putFile(filename, content, mode="w", make_if_missing=False):
 	try:
 		if make_if_missing:
-			a_dir = filename.split('/')
+			a_dir = filename.split("/")
 			a_dir.pop()
-			dir = '/'.join(a_dir)
+			dir = "/".join(a_dir)
 			if not os.path.exists(dir):
 				os.makedirs(dir)
 	except Exception:
@@ -224,26 +224,26 @@ def putFile(filename, content, mode='w', make_if_missing=False):
 		fout.close()
 
 	except Exception as inst:
-		print('putFile.ERROR:',  filename, inst)
+		print("putFile.ERROR:",  filename, inst)
 
 
 def putForRebuild(filename, content, make_if_missing=False):
 	try:
 		if make_if_missing:
-			a_dir = filename.split('/')
+			a_dir = filename.split("/")
 			a_dir.pop()
-			dir = '/'.join(a_dir)
+			dir = "/".join(a_dir)
 			if not os.path.exists(dir):
 				os.makedirs(dir)
 	except Exception:
 		pass
 
 	try:
-		fout = open(filename, 'a')
-		fout.write(content+'\n')
+		fout = open(filename, "a")
+		fout.write(content+"\n")
 		fout.close()
 	except Exception as inst:
-		print('putForRebuild.ERROR:',  filename, inst)
+		print("putForRebuild.ERROR:",  filename, inst)
 
 
 # def getREST(url):
@@ -257,7 +257,7 @@ def putForRebuild(filename, content, make_if_missing=False):
 
 def createHash(input_string):
 	input = _encodeutf8(
-		''.join([
+		"".join([
 			str(x) for x in [
 				os.getpid(),
 				random.Random().randint(0,100000000),
@@ -283,12 +283,12 @@ def escapeSingleQuotes(keys, data):
 
 def SHA224Hash(input_string=None):
 	input = _encodeutf8(
-		''.join([
+		"".join([
 			str(x) for x in [
 				os.getpid(),
 				random.Random().randint(0,100000000),
 				datetime.datetime.now(),
-				input_string if input_string else 'x'
+				input_string if input_string else "x"
 			]
 		])
 	)
@@ -299,7 +299,7 @@ def SHA224Hash(input_string=None):
 # temporarily added back in for compatibility with un-databased classes
 def SHA224Digest(input):
 	if isList(input) or isTuple(input):
-		input = ''.join(map(str, input))
+		input = "".join(map(str, input))
 
 	if not isString(input):
 		input = _encodeutf8(str(input))
@@ -311,7 +311,7 @@ def keyInDict(data, key):
 
 
 def keynat(string):
-	r'''A natural sort helper function for sort() and sorted()
+	r"""A natural sort helper function for sort() and sorted()
 	without using regular expression.
 
 	>>> items = ('Z', 'a', '10', '1', '9')
@@ -319,7 +319,7 @@ def keynat(string):
 	['1', '10', '9', 'Z', 'a']
 	>>> sorted(items, key=keynat)
 	['1', '9', '10', 'Z', 'a']
-	'''
+	"""
 	r = []
 	for c in string:
 		try:
@@ -364,7 +364,7 @@ def bisectSearchRC(haystack, item, index_pos=None, return_type=None):
 				return returnValue(item_index)
 
 	except Exception as inst:
-		print('bisectSearchRC.ERROR', inst)
+		print("bisectSearchRC.ERROR", inst)
 
 	return returnValue(-1)
 
@@ -374,7 +374,7 @@ def parseBooleanArg(arg):
 		return False
 	if type(arg) is bool:
 		return arg
-	if arg.lower() == 'true':
+	if arg.lower() == "true":
 		return True
 	return False
 
@@ -384,7 +384,7 @@ def print_timing(func):
 		t1 = time.time()
 		res = func(*arg)
 		t2 = time.time()
-		print('%s took %0.3fms' % (func.__name__, (t2-t1)*1000.0))
+		print("{} took {:0.3f}ms".format(func.__name__, (t2-t1)*1000.0))
 		return res
 	return wrapper
 
@@ -414,7 +414,7 @@ class UtilityClass:
 
 	@classmethod
 	def createLocationUUID(cls, *args):
-		return cls.createUUID(''.join([
+		return cls.createUUID("".join([
 			str(scale(fixed(item), 10000))
 			for item in (args)
 		]))
@@ -422,7 +422,7 @@ class UtilityClass:
 	@staticmethod
 	def createUUID(input):
 		if isList(input) or isTuple(input):
-			input = ''.join(map(str, input))
+			input = "".join(map(str, input))
 		if not isString(input):
 			input = _encodeutf8(str(input))
 		return hashlib.sha224(input).hexdigest()
@@ -463,13 +463,13 @@ class UtilityClass:
 	@staticmethod
 	def clean_model_args(self):
 		for key, value in self.__dict__.items():
-			if value is not None and value.strip() == '':
+			if value is not None and value.strip() == "":
 				setattr(self, key, None)
 
 	@staticmethod
 	def validate_args(self, args):
 		missing_mapped_columns = [mapped_column for mapped_column in args if not getattr(self, mapped_column)]
 		if missing_mapped_columns:
-			raise Exception(f'Missing required mapped_column(s): {missing_mapped_columns}')
+			raise Exception(f"Missing required mapped_column(s): {missing_mapped_columns}")
 		else:
 			return True

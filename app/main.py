@@ -5,7 +5,7 @@ from app.configs import run_config
 from app.models.users import UserModel, UserServiceModel
 from app.routers import routers
 from app.middleware import LoggingMiddleware
-from app.routers import routers, auth_routers
+from app.routers import auth_routers
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 from contextlib import asynccontextmanager
@@ -69,10 +69,10 @@ async def lifespan(app: FastAPI):
 			login_token="place_holder"
 		)
 
-	'''
+	"""
 	try/except was added because when the container would reload when a change was made,
 	it would error out on the fact that the users already existed.
-	'''
+	"""
 	try:
 		await BaseActions.create([user1, user2])
 		await BaseActions.create([user1_service, user2_service])

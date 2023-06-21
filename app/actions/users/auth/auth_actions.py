@@ -75,7 +75,7 @@ class AuthActions(BaseActions):
             if sent_email:
                 return service_obj
             else:
-                print('error')
+                print("error")
                 return service_obj
 
         else:
@@ -86,7 +86,7 @@ class AuthActions(BaseActions):
             if sent_message:
                 return service_obj
             else:
-                print('error')
+                print("error")
                 return service_obj
 
     @classmethod
@@ -102,7 +102,7 @@ class AuthActions(BaseActions):
     @classmethod
     async def send_email_handler(cls, service_obj):
         response = await send_auth_email(service_obj)
-        if response['total_accepted_recipients'] == 1:
+        if response["total_accepted_recipients"] == 1:
             return response
         else:
             # NEED TO MAKE THIS ERROR HANDLING BETTER

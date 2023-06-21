@@ -34,8 +34,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 	@staticmethod
 	async def logger_details(request, exc):
 		headers = dict(request.headers)
-		if 'authorization' in headers:
-			del headers['authorization']
+		if "authorization" in headers:
+			del headers["authorization"]
 		if isinstance(exc,RequestValidationError):
 			return {"errors": exc.errors(), "method": request.method, "port": request.url.port, "url": request.url.path, "headers":headers, "client": request.client, "query_params": request.query_params._dict, "cookies": request.cookies}
 		return {"method": request.method, "port": request.url.port, "url": request.url.path, "headers":headers, "client": request.client, "query_params": request.query_params._dict, "cookies": request.cookies}
@@ -48,7 +48,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 	@classmethod
 	async def validation_exception_handler(cls, request, exc):
 		detail = await cls.logger_details(request, exc)
-		detail['errors'][0]['ctx']['doc'] = exc.__dict__['body'].replace('\n', '').replace('\t','').replace("\"", "'")
+		detail["errors"][0]["ctx"]["doc"] = exc.__dict__["body"].replace("\n", "").replace("\t","").replace('"', "'")
 		cls.logger.error(detail)
 		return await _request_validation_exception_handler(request, exc)
 
@@ -62,27 +62,27 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 			if k != "orig":
 				exception_vals[k] = v
 			else:
-				exception_vals['orig'] = {
-					'OperationalError code': exc.orig.args[0],
-					'OperationalError message': exc.orig.args[1]
+				exception_vals["orig"] = {
+					"OperationalError code": exc.orig.args[0],
+					"OperationalError message": exc.orig.args[1]
 				}
-		detail['details'] = exception_vals
+		detail["details"] = exception_vals
 		tb = traceback.format_exception(exc)
-		error_string = tb[-2].split(',')
-		file_name = error_string[0].split('/app')[-1].replace("\"", "")
+		error_string = tb[-2].split(",")
+		file_name = error_string[0].split("/app")[-1].replace('"', "")
 		line = error_string[1].split(" ")[-1]
 		error = {
-			'error_type': f"{exception_name}: {exception_value}",
-			'file_and_line': f"{file_name}:{line}",
-			'code_piece': str(error_string[2:]).split("    ")[1].replace("', '", ", ").replace("\\n", "")
+			"error_type": f"{exception_name}: {exception_value}",
+			"file_and_line": f"{file_name}:{line}",
+			"code_piece": str(error_string[2:]).split("    ")[1].replace("', '", ", ").replace("\\n", "")
 		}
 		detail["error"] = error
 		i_time = datetime.utcnow()
 		logger_error = {
 			"time": f"{i_time} UTC",
-			"method": detail['method'],
-			"url": detail['url'],
-			"query_params": detail['query_params'],
+			"method": detail["method"],
+			"url": detail["url"],
+			"query_params": detail["query_params"],
 			"status_code": 500,
 			"status_message": "Internal Server Error",
 			"exception_name": exception_name,

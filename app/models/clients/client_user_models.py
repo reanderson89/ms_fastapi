@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class ClientUserModel(Base):
-	__tablename__ = 'client_user'
+	__tablename__ = "client_user"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	user_uuid: Mapped[str] = mapped_column(default=None, index=True)

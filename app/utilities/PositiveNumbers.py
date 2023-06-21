@@ -8,7 +8,7 @@ class PositiveNumbers:
     EncodedLength = None
 
     def __init__(self, size=9, code=None):
-        self.Code = [c for c in code or '123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz']
+        self.Code = [c for c in code or "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"]
         self.EncodedLength = size
         self.WkgSize = len(self.Code)
         self.MaxValue = int(self.WkgSize**self.EncodedLength)
@@ -17,26 +17,26 @@ class PositiveNumbers:
         if n < 0 or n > self.MaxValue:
             return
         if n < self.WkgSize:
-            return str(self.Code[int(n-self.WkgSize)]).rjust(self.EncodedLength, '0')
+            return str(self.Code[int(n-self.WkgSize)]).rjust(self.EncodedLength, "0")
         else:
             def getchar(n, i):
                 tmpn = n-self.WkgSize
                 if i != self.EncodedLength:
                     tmpn = (tmpn/self.WkgSize**i)
                 return self.Code[int(tmpn%self.WkgSize)]
-            return ''.join([getchar(n,i) for i in range(1, self.EncodedLength+1)])
+            return "".join([getchar(n,i) for i in range(1, self.EncodedLength+1)])
 
     def decode(self, c):
         if len(c) == 1:
             return self.bisectSearchRC(self.Code, c)
 
         item_alt = 0
-        if c[0] != '0':
+        if c[0] != "0":
             item_alt = self.WkgSize
 
         for i in range(1, self.EncodedLength+1):
             wkg_char = c[i-1:i]
-            if wkg_char == '0':
+            if wkg_char == "0":
                 continue
             char = self.bisectSearchRC(self.Code, wkg_char)
             if i != self.EncodedLength:
@@ -71,7 +71,7 @@ class PositiveNumbers:
                     return returnValue(item_index)
 
         except Exception as inst:
-            print('bisectSearchRC.ERROR', inst)
+            print("bisectSearchRC.ERROR", inst)
 
         return returnValue(-1)
 

@@ -13,7 +13,7 @@ class ClientBudgetActions():
 	@staticmethod
 	async def default_budget_name(client_uuid):
 		client_name = await ClientActions.get_client_name(client_uuid)
-		budgetCreationTime = datetime.now(datetime.UTC).strftime('%m/%d/%Y %H:%M:%S %Z')
+		budgetCreationTime = datetime.now(datetime.UTC).strftime("%m/%d/%Y %H:%M:%S %Z")
 		return f"New {client_name} Budget (created: {budgetCreationTime})"
 	
 	@staticmethod
@@ -142,7 +142,7 @@ class ClientBudgetActions():
 					return await ExceptionHandling.custom405("Unable to set new parent budget.")
 				else:
 					budget.budget_type = budget_updates.budget_type
-		if 'value' in budget_updates.dict(exclude_unset=True):
+		if "value" in budget_updates.dict(exclude_unset=True):
 			if budget.budget_type != 0 and await ClientSubBudgetActions.valid_child_budget(budget, parent):
 				budget_updates.value, parent, passthroughList = await ClientSubBudgetActions.sub_budget_expenditure(budget, parent, budget_updates.value)
 			else:
@@ -150,7 +150,7 @@ class ClientBudgetActions():
 		update_budget = budget_updates.dict(exclude_unset=True)
 		for k,v in update_budget.items():
 			setattr(budget, k, v)
-		if budget.budget_type != 0 and ('value' in budget_updates.dict(exclude_unset=True)):
+		if budget.budget_type != 0 and ("value" in budget_updates.dict(exclude_unset=True)):
 			budget = await BaseActions.update_without_lookup(budget)
 			parent = await BaseActions.update_without_lookup(parent)
 			if not passthroughList:

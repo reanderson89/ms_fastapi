@@ -9,7 +9,7 @@ class UserActions(BaseActions):
 
 	@staticmethod
 	def getTimeFromBday(bday):
-		date_obj = datetime.strptime(bday, '%m/%d/%Y')
+		date_obj = datetime.strptime(bday, "%m/%d/%Y")
 		epoch_time = int(date_obj.timestamp())
 		return epoch_time
 
@@ -43,11 +43,11 @@ class UserActions(BaseActions):
 
 	@staticmethod
 	async def get_service_id(new_user_obj):
-		'''
+		"""
 		Get the service ID from the specified user object
 		:param new_user_obj: The user object to get the service ID from
 		:return: A namedtuple containing the service type and service ID, or None if it couldn't be found
-		'''
+		"""
 		if (service_id := await HelperActions.get_email_from_header(new_user_obj)):
 			return service_id
 		elif (service_id := await HelperActions.get_cell_from_header(new_user_obj)):

@@ -3,8 +3,8 @@ import os
 
 from dataclasses import dataclass
 
-env = os.environ.get('ENV', 'local')
-log_level = os.environ.get('LOG_LEVEL', 'debug').upper()
+env = os.environ.get("ENV", "local")
+log_level = os.environ.get("LOG_LEVEL", "debug").upper()
 
 #https://www.uvicorn.org/deployment/
 #server settings options
@@ -48,10 +48,10 @@ class ProdConfig(BaseConfig):
 	log_level = logging.getLevelName(get_log_level())
 
 configs = {
-	'local' : LocalConfig(),
-	'dev' : DevConfig(),
-	'staging' : StagingConfig(),
-	'prod' : ProdConfig()
+	"local" : LocalConfig(),
+	"dev" : DevConfig(),
+	"staging" : StagingConfig(),
+	"prod" : ProdConfig()
 }
 
 run_config = configs[env]
