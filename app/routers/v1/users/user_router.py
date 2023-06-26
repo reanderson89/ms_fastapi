@@ -1,18 +1,19 @@
 import os
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
+from app.routers.v1.pagination import Page
+from app.routers.v1.dependencies import default_query_params
 from app.actions.users import UserActions
-from app.models.users import UserModel, UserUpdate
+from app.models.users import UserModel, UserUpdate, UserBase
 
 test_mode = os.getenv("TEST_MODE", False)
 
 router = APIRouter(tags=["Users"])
 
 
-@router.get("/users", response_model=list[UserModel])
+@router.get("/users")#, response_model=list[UserModel])
 async def get_users(
-	query_params: dict = Depends(get_query_params)
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[UserBase]:
 	return await UserActions.get_all_users(query_params)
 
 

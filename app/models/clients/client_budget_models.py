@@ -3,7 +3,7 @@ from app.models.base_class import Base, BasePydantic
 from typing import Optional
 
 
-class ClientBudgetModel(Base):
+class ClientBudgetModelDB(Base):
 	__tablename__ = "client_budget"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -17,7 +17,7 @@ class ClientBudgetModel(Base):
 	active: Mapped[bool] = mapped_column(default=True)
 	budget_type: Mapped[int] = mapped_column(default=0)
 
-class ClientBudgetBase(BasePydantic):
+class ClientBudgetModel(BasePydantic):
 	uuid: Optional[str]
 	client_uuid: Optional[str]
 	budget_9char: Optional[str]
@@ -45,10 +45,10 @@ class ClientBudgetUpdate(BasePydantic):
 	active: Optional[bool]
 	budget_type: Optional[int]
 
-class ClientBudgetExpanded(ClientBudgetBase):
+class ClientBudgetExpanded(ClientBudgetModel):
 	client: Optional[dict]
 	subbudgets_expanded: Optional[list[dict]]
 
-class ClientBudgetShortExpand(ClientBudgetBase):
+class ClientBudgetShortExpand(ClientBudgetModel):
 	client: Optional[str]
 	subbudgets: Optional[dict]

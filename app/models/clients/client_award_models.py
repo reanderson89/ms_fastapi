@@ -3,9 +3,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 from app.actions.utils import new_9char
 from app.actions.base_actions import BaseActions
-from app.models.award.award_models import AwardModel
+from app.models.award.award_models import AwardModelDB
 
-class ClientAwardModel(Base):
+class ClientAwardModelDB(Base):
 	__tablename__ = "client_award"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -40,7 +40,7 @@ class ClientAwardUpdate(BasePydantic):
 	hero_image: Optional[int] = None
 
 
-class ClientAwardBase(BasePydantic):
+class ClientAwardModel(BasePydantic):
 	uuid: str
 	client_uuid: Optional[str] = None
 	client_award_9char: Optional[str] = None
@@ -52,7 +52,7 @@ class ClientAwardBase(BasePydantic):
 	time_updated: Optional[int] = None
 
 
-class ClientAwardResponse(ClientAwardBase):
+class ClientAwardResponse(ClientAwardModel):
 	channel: Optional[int] = None
 	award_type: Optional[int] = None
 	value: Optional[int] = None
@@ -60,8 +60,8 @@ class ClientAwardResponse(ClientAwardBase):
 	def __init__(self, **data):
 		super().__init__(**data)
 		award = BaseActions.get_one(
-			AwardModel,
-			[AwardModel.uuid == self.award_uuid]
+			AwardModelDB,
+			[AwardModelDB.uuid == self.award_uuid]
 		)
 		if award:
 			self.channel = award.channel

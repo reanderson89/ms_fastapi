@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
 
-class ClientModel(Base):
+class ClientModelDB(Base):
 	__tablename__ = "client"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -15,7 +15,7 @@ class ClientModel(Base):
 	time_ping: Mapped[int] = mapped_column(default=None)
 	status: Mapped[int] = mapped_column(default=0)
 
-class ClientBase(BasePydantic):
+class ClientModel(BasePydantic):
 	uuid: Optional[str]
 	name: Optional[str]
 	url: Optional[str]
@@ -25,7 +25,7 @@ class ClientBase(BasePydantic):
 	time_ping: Optional[int]
 	status: Optional[int]
 
-class ClientExpanded(ClientBase):
+class ClientExpanded(ClientModel):
 	budgets: dict = None
 
 class ClientUpdate(BasePydantic):

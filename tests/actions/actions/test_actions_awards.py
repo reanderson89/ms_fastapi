@@ -1,5 +1,5 @@
 import pytest
-from app.models.award import AwardModel
+from app.models.award import AwardModelDB
 
 @pytest.mark.asyncio
 
@@ -8,13 +8,13 @@ async def get_all():
 
 async def get_all():
     response = await BaseActions.get_all(
-        AwardModel
+        AwardModelDB
     )
     print(response)
     print('')
 
     response = await BaseActions.get_all(
-        AwardModel,
+        AwardModelDB,
         'time_created',
         'DESC'
     )
@@ -22,14 +22,14 @@ async def get_all():
     print('')
 
     response = await BaseActions.get_all(
-        AwardModel,
+        AwardModelDB,
         'time_created',
     )
     print(response)
     print('')
 
     response = await BaseActions.get_all(
-        AwardModel,
+        AwardModelDB,
         'time_created',
         'ASC'
     )

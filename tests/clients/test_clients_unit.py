@@ -2,7 +2,7 @@ import pytest
 
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
-from app.models.clients.clients_models import ClientModel
+from app.models.clients.clients_models import ClientModelDB
 from app.routers.v1.clients.client_router import router as clients_router
 from app.routers.v1.v1CommonRouting import CommonRoutes
 
@@ -15,7 +15,7 @@ def client():
 def test_get_clients(monkeypatch, client):
     async def mock_get_all(model):
         return [
-            ClientModel(
+            ClientModelDB(
                 uuid="1234-5678-9012",
                 name="Client A",
                 description="Sample Client A",
@@ -23,7 +23,7 @@ def test_get_clients(monkeypatch, client):
                 time_updated=0,
                 time_ping=0,
             ),
-            ClientModel(
+            ClientModelDB(
                 uuid="5678-9012-3456",
                 name="Client B",
                 description="Sample Client B",
@@ -57,7 +57,7 @@ def test_get_clients(monkeypatch, client):
 
 def test_get_client(monkeypatch, client):
     async def mock_get_one(model, search_by):
-        return ClientModel(
+        return ClientModelDB(
             uuid="1234-5678-9012",
             name="Client A",
             description="Sample Client A",
@@ -89,7 +89,7 @@ def test_create_client(monkeypatch, client):
         "time_ping": 1,
     }
     response_data1 = request_data1
-    async def mock_create_one_or_many(items: (list[ClientModel] | ClientModel)):
+    async def mock_create_one_or_many(items: (list[ClientModelDB] | ClientModelDB)):
         if isinstance(items, list):
             return items
         else:
@@ -119,7 +119,7 @@ def test_create_clients(monkeypatch, client):
     }
     response_data1 = request_data1
     response_data2 = request_data2
-    async def mock_create_one_or_many(items: (list[ClientModel] | ClientModel)):
+    async def mock_create_one_or_many(items: (list[ClientModelDB] | ClientModelDB)):
         if isinstance(items, list):
             return items
         else:

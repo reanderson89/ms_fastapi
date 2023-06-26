@@ -1,5 +1,5 @@
 from app.actions.base_actions import BaseActions
-from app.models.programs.program_award_models import ProgramAwardModel, ProgramAwardUpdate
+from app.models.programs.program_award_models import ProgramAwardModelDB, ProgramAwardUpdate
 
 
 class ProgramAwardActions():
@@ -7,10 +7,10 @@ class ProgramAwardActions():
 	@staticmethod
 	async def get_program_awards(path_params: dict, query_params: dict):
 		return await BaseActions.get_all_where(
-			ProgramAwardModel,
+			ProgramAwardModelDB,
 			[
-				ProgramAwardModel.client_uuid == path_params["client_uuid"],
-				ProgramAwardModel.program_9char == path_params["program_9char"],
+				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
+				ProgramAwardModelDB.program_9char == path_params['program_9char'],
 			],
 			query_params
 		)
@@ -18,11 +18,11 @@ class ProgramAwardActions():
 	@staticmethod
 	async def get_award(path_params: dict):
 		return await BaseActions.get_one_where(
-			ProgramAwardModel,
+			ProgramAwardModelDB,
 			[
-				ProgramAwardModel.client_uuid == path_params["client_uuid"],
-				ProgramAwardModel.program_9char == path_params["program_9char"],
-				ProgramAwardModel.program_award_9char == path_params["program_award_9char"]
+				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
+				ProgramAwardModelDB.program_9char == path_params['program_9char'],
+				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
 			],
 		)
 
@@ -30,7 +30,7 @@ class ProgramAwardActions():
 	async def create_award(path_params: dict, award_obj):
 		if isinstance(award_obj, list):
 			award_models = [
-				ProgramAwardModel(
+				ProgramAwardModelDB(
 					**award.dict(),
 					client_uuid=path_params["client_uuid"],
 					program_9char=path_params["program_9char"],
@@ -38,7 +38,7 @@ class ProgramAwardActions():
 				) for award in award_obj
 			]
 		else:
-			award_models = ProgramAwardModel(
+			award_models = ProgramAwardModelDB(
 				**award_obj.dict(),
 				client_uuid=path_params["client_uuid"],
 				program_9char=path_params["program_9char"],
@@ -53,11 +53,11 @@ class ProgramAwardActions():
 		award_updates: ProgramAwardUpdate
 	):
 		return await BaseActions.update(
-			ProgramAwardModel,
+			ProgramAwardModelDB,
 			[
-				ProgramAwardModel.client_uuid == path_params["client_uuid"],
-				ProgramAwardModel.program_9char == path_params["program_9char"],
-				ProgramAwardModel.program_award_9char == path_params["program_award_9char"]
+				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
+				ProgramAwardModelDB.program_9char == path_params['program_9char'],
+				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
 			],
 			award_updates
 		)
@@ -65,10 +65,10 @@ class ProgramAwardActions():
 	@staticmethod
 	async def delete_award(path_params: dict):
 		return await BaseActions.delete_one(
-			ProgramAwardModel,
+			ProgramAwardModelDB,
 			[
-				ProgramAwardModel.client_uuid == path_params["client_uuid"],
-				ProgramAwardModel.program_9char == path_params["program_9char"],
-				ProgramAwardModel.program_award_9char == path_params["program_award_9char"]
+				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
+				ProgramAwardModelDB.program_9char == path_params['program_9char'],
+				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
 			],
 		)

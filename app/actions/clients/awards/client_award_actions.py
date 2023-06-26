@@ -1,5 +1,5 @@
 from app.actions.base_actions import BaseActions
-from app.models.clients.client_award_models import ClientAwardModel, ClientAwardUpdate
+from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardUpdate
 
 
 class ClientAwardActions():
@@ -7,18 +7,18 @@ class ClientAwardActions():
 	@staticmethod
 	async def get_client_awards(client_uuid: str, query_params: dict):
 		return await BaseActions.get_all_where(
-			ClientAwardModel,
-			[ClientAwardModel.client_uuid == client_uuid],
+			ClientAwardModelDB,
+			[ClientAwardModelDB.client_uuid == client_uuid],
 			query_params
 		)
 
 	@staticmethod
 	async def get_award(client_uuid: str, client_award_9char: str):
 		return await BaseActions.get_one_where(
-			ClientAwardModel,
+			ClientAwardModelDB,
 			[
-				ClientAwardModel.client_award_9char == client_award_9char,
-				ClientAwardModel.client_uuid == client_uuid
+				ClientAwardModelDB.client_award_9char == client_award_9char,
+				ClientAwardModelDB.client_uuid == client_uuid
 			]
 		)
 
@@ -26,13 +26,13 @@ class ClientAwardActions():
 	async def create_award(client_uuid: str, award_obj):
 		if isinstance(award_obj, list):
 			award_models = [
-				ClientAwardModel(
-					**award.dict(), client_uuid=client_uuid
+				ClientAwardModelDB(
+					**award.__dict__, client_uuid=client_uuid
 				) for award in award_obj
 			]
 		else:
-			award_models = ClientAwardModel(
-				**award_obj.dict(),
+			award_models = ClientAwardModelDB(
+				**award_obj.__dict__,
 				client_uuid = client_uuid
 			)
 		return await BaseActions.create(award_models)
@@ -45,10 +45,10 @@ class ClientAwardActions():
 		award_updates: ClientAwardUpdate
 	):
 		return await BaseActions.update(
-			ClientAwardModel,
+			ClientAwardModelDB,
 			[
-				ClientAwardModel.client_award_9char == client_award_9char,
-				ClientAwardModel.client_uuid == client_uuid
+				ClientAwardModelDB.client_award_9char == client_award_9char,
+				ClientAwardModelDB.client_uuid == client_uuid
 			],
 			award_updates
 		)
@@ -56,9 +56,9 @@ class ClientAwardActions():
 	@staticmethod
 	async def delete_award(client_uuid: str, client_award_9char: str):
 		return await BaseActions.delete_one(
-			ClientAwardModel,
+			ClientAwardModelDB,
 			[
-				ClientAwardModel.client_award_9char == client_award_9char,
-				ClientAwardModel.client_uuid == client_uuid
+				ClientAwardModelDB.client_award_9char == client_award_9char,
+				ClientAwardModelDB.client_uuid == client_uuid
 			]
 		)

@@ -14,7 +14,7 @@ v1router.include_router(v1_program_router)
 v1router.include_router(v1_messages_router)
 v1router.include_router(v1_segments_router)
 
-@v1router.get("/health")
+@v1router.get("/health", status_code=418)
 async def read_root():
-    return {"message": "milestones is up and making memories"}
+    return {"message": "milestones is up and brewing tea"}
 

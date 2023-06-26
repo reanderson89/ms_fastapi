@@ -1,24 +1,24 @@
 from app.actions.base_actions import BaseActions
-from app.models.clients import ClientModel, ClientUpdate
+from app.models.clients import ClientModelDB, ClientUpdate
 
-class ClientActions(BaseActions):
+class ClientActions():
 
-	@classmethod
-	async def get_all_clients(cls, query_params: dict):
-		return await cls.get_all(ClientModel, query_params)
+	@staticmethod
+	async def get_all_clients(query_params: dict):
+		return await BaseActions.get_all(ClientModelDB, query_params)
 
-	@classmethod
-	async def get_client(cls, client_uuid: str):
-		return await cls.get_one_where(
-			ClientModel,
-			[ClientModel.uuid == client_uuid]
+	@staticmethod
+	async def get_client(client_uuid: str):
+		return await BaseActions.get_one_where(
+			ClientModelDB,
+			[ClientModelDB.uuid == client_uuid]
 		)
 
-	@classmethod
-	async def get_client_name(cls, client_uuid: str):
-		return await cls.get_one_where(
-			ClientModel.name,
-			[ClientModel.uuid == client_uuid]
+	@staticmethod
+	async def get_client_name(client_uuid: str):
+		return await BaseActions.get_one_where(
+			ClientModelDB.name,
+			[ClientModelDB.uuid == client_uuid]
 		)
 
 	@classmethod
@@ -33,34 +33,34 @@ class ClientActions(BaseActions):
 			to_return.append(client)
 		return to_return
 
-	@classmethod
-	async def create_client(cls, client_data):
-		client = await cls.check_if_exists(
-			ClientModel,
-			[ClientModel.name == client_data.name]
+	@staticmethod
+	async def create_client(client_data):
+		client = await BaseActions.check_if_exists(
+			ClientModelDB,
+			[ClientModelDB.name == client_data.name]
 		)
 		if client:
 			return client
 
-		new_client = ClientModel(
+		new_client = ClientModelDB(
 			name=client_data.name,
 			description=client_data.description,
 			status=client_data.status,
 			url=client_data.url
 		)
-		return await cls.create(new_client)
+		return await BaseActions.create(new_client)
 
-	@classmethod
-	def update_client(cls, client_uuid: str, update_obj: ClientUpdate):
-		return cls.update(
-			ClientModel,
-			[ClientModel.uuid ==client_uuid],
+	@staticmethod
+	def update_client(client_uuid: str, update_obj: ClientUpdate):
+		return BaseActions.update(
+			ClientModelDB,
+			[ClientModelDB.uuid ==client_uuid],
 			update_obj
 		)
 
-	@classmethod
-	async def delete_client(cls, client_uuid: str):
-		return await cls.delete_one(
-			ClientModel,
-			[ClientModel.uuid == client_uuid]
+	@staticmethod
+	async def delete_client(client_uuid: str):
+		return await BaseActions.delete_one(
+			ClientModelDB,
+			[ClientModelDB.uuid == client_uuid]
 		)

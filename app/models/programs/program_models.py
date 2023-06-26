@@ -31,7 +31,7 @@ class ProgramStatus(BaseEnum):
 	disabled = 3
 
 
-class ProgramModel(Base):
+class ProgramModelDB(Base):
 	__tablename__ = "program"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -43,13 +43,13 @@ class ProgramModel(Base):
 	budget_9char: Mapped[str] = mapped_column(default=None, index=True)
 	status: Mapped[int] = mapped_column(default=None, index=True)
 	program_type: Mapped[int] = mapped_column(default=None, index=True)
-	cadence: Mapped[int] = mapped_column(default=None, index=True)
+	cadence: Mapped[int] = mapped_column(default=None, index=True) #TODO: add validation checking on create to verify the cadence is within bounds
 	cadence_value: Mapped[int] = mapped_column(default=None, index=True)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 
 
-class ProgramBase(BasePydantic):
+class ProgramModel(BasePydantic):
 	uuid: Optional[str]
 	user_uuid: Optional[str]
 	program_9char: Optional[str]
@@ -65,7 +65,7 @@ class ProgramBase(BasePydantic):
 	time_updated: Optional[int]
 
 
-class ProgramResponse(ProgramBase):
+class ProgramResponse(ProgramModel):
 	status: ProgramStatus
 	program_type: ProgramType
 	cadence: Cadence

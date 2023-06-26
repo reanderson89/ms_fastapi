@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
 
-class MessageModel(Base):
+class MessageModelDB(Base):
 	__tablename__ = "message"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -19,6 +19,17 @@ class MessageModel(Base):
 	body: Mapped[str] = mapped_column(default=None)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
+
+class MessageModel(BasePydantic):
+	name: Optional[str] = None
+	body: Optional[str] = None
+	channel: Optional[int] = None
+	message_uuid: Optional[str] = None
+	client_uuid: Optional[str] = None
+	program_9char: Optional[str] = None
+	segment_9char: Optional[str] = None
+	message_type: Optional[int] = None
+	status: Optional[int] = None
 
 class MessageCreate(BasePydantic):
 	name: str

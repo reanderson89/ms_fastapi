@@ -1,5 +1,5 @@
-from .program_models import ProgramModel, ProgramBase, ProgramCreate, ProgramUpdate, ProgramResponse
-from .program_admin_models import AdminModel, AdminUpdate, AdminCreate, AdminStatus, AdminExpand
-from .program_award_models import ProgramAwardModel, ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
-from .program_event_models import ProgramEventModel, ProgramEventUpdate, ProgramEventCreate
-from .program_rule_models import ProgramRuleModel, ProgramRuleUpdate, ProgramRuleCreate
+from .program_models import ProgramModelDB, ProgramModel, ProgramCreate, ProgramUpdate, ProgramResponse
+from .program_admin_models import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus, AdminExpand, AdminModel
+from .program_award_models import ProgramAwardModelDB, ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
+from .program_event_models import ProgramEventModelDB, ProgramEventUpdate, ProgramEventCreate, ProgramEventReturn
+from .program_rule_models import ProgramRuleModelDB, ProgramRuleCreate, ProgramRuleUpdate, ProgramRuleResponse  

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
-from app.models.programs import ProgramEventModel, ProgramEventUpdate, ProgramEventCreate
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
+from app.models.programs import ProgramEventModelDB, ProgramEventUpdate, ProgramEventCreate, ProgramEventReturn
 from app.actions.programs.events.program_event_actions import ProgramEventActions
 
 router = APIRouter(
@@ -17,22 +18,22 @@ def path_params(client_uuid: str, program_9char: str, event_9char: str=None):
 	}
 
 
-@router.get("/events", response_model=list[ProgramEventModel])
+@router.get("/events")
 async def get_events(
 	path_params: dict = Depends(path_params),
-	query_params: dict = Depends(get_query_params)
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[ProgramEventReturn]:
 	return await ProgramEventActions.get_all_events(path_params, query_params)
 
 
-@router.get("/events/{event_9char}", response_model=ProgramEventModel)
+@router.get("/events/{event_9char}", response_model=ProgramEventModelDB)
 async def get_event(
 	path_params: dict = Depends(path_params)
 ):
 	return await ProgramEventActions.get_event(path_params)
 
 
-@router.post("/events", response_model=(list[ProgramEventModel] | ProgramEventModel))
+@router.post("/events", response_model=(list[ProgramEventModelDB] | ProgramEventModelDB))
 async def create_event(
 	events: (list[ProgramEventCreate] | ProgramEventCreate),
 	path_params: dict = Depends(path_params),
@@ -41,7 +42,7 @@ async def create_event(
 	return await ProgramEventActions.create_event(events, path_params, program_uuid)
 
 
-@router.put("/events/{event_9char}", response_model=ProgramEventModel)
+@router.put("/events/{event_9char}", response_model=ProgramEventModelDB)
 async def update_event(
 	event_updates: ProgramEventUpdate,
 	path_params: dict = Depends(path_params)

@@ -1,17 +1,17 @@
 from time import time
 from app.actions.base_actions import BaseActions
 from app.utilities import SHA224Hash
-from app.models.programs import AdminModel, AdminUpdate, AdminCreate, AdminStatus
+from app.models.programs import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus
 
 class ProgramAdminActions():
 
 	@staticmethod
 	async def get_program_admins(path_params, query_params):
 		return await BaseActions.get_all_where(
-			AdminModel,
+			AdminModelDB,
 			[
-				AdminModel.client_uuid == path_params["client_uuid"],
-				AdminModel.program_9char == path_params["program_9char"]
+				AdminModelDB.client_uuid == path_params['client_uuid'],
+				AdminModelDB.program_9char == path_params['program_9char']
 			],
 			query_params
 		)
@@ -19,18 +19,18 @@ class ProgramAdminActions():
 	@staticmethod
 	async def get_program_admin(path_params):
 		return await BaseActions.get_one_where(
-			AdminModel,
+			AdminModelDB,
 			[
-				AdminModel.user_uuid == path_params["user_uuid"],
-				AdminModel.client_uuid == path_params["client_uuid"],
-				AdminModel.program_9char == path_params["program_9char"]
+				AdminModelDB.user_uuid == path_params['user_uuid'],
+				AdminModelDB.client_uuid == path_params['client_uuid'],
+				AdminModelDB.program_9char == path_params['program_9char']
 			]
 		)
 
 	@staticmethod
 	async def create_program_admin(ids: dict, admins):
 		current_time = int(time())
-		admin = AdminModel(
+		admin = AdminModelDB(
 			uuid = SHA224Hash(f"{admins.program_uuid}+{ids['user_uuid']}"),
 			program_uuid=admins.program_uuid,
 			client_uuid=ids["client_uuid"],
@@ -56,11 +56,11 @@ class ProgramAdminActions():
 	@staticmethod
 	async def update_program_admin(path_params: dict, updates: AdminUpdate):
 		return await BaseActions.update(
-			AdminModel,
+			AdminModelDB,
 			[
-				AdminModel.user_uuid == path_params["user_uuid"],
-				AdminModel.client_uuid == path_params["client_uuid"],
-				AdminModel.program_9char == path_params["program_9char"]
+				AdminModelDB.user_uuid == path_params['user_uuid'],
+				AdminModelDB.client_uuid == path_params['client_uuid'],
+				AdminModelDB.program_9char == path_params['program_9char']
 			],
 			updates
 		)
@@ -68,17 +68,17 @@ class ProgramAdminActions():
 	@staticmethod
 	async def delete_program_admin(path_params: dict):
 		return await BaseActions.delete_one(
-			AdminModel,
+			AdminModelDB,
 			[
-				AdminModel.user_uuid == path_params["user_uuid"],
-				AdminModel.client_uuid == path_params["client_uuid"],
-				AdminModel.program_9char == path_params["program_9char"]
+				AdminModelDB.user_uuid == path_params['user_uuid'],
+				AdminModelDB.client_uuid == path_params['client_uuid'],
+				AdminModelDB.program_9char == path_params['program_9char']
 			]
 		)
 
 	@classmethod
 	async def get_admin_by_user_id(cls, user_uuid):
-		return await BaseActions.check_if_exists(AdminModel, [AdminModel.user_uuid == user_uuid])
+		return await BaseActions.check_if_exists(AdminModelDB, [AdminModelDB.user_uuid == user_uuid])
 
 	@staticmethod
 	async def check_existing(users: AdminCreate):

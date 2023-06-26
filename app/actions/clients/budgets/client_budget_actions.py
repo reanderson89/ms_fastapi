@@ -3,7 +3,7 @@ from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.utilities import SHA224Hash
 from app.actions.helper_actions import HelperActions
 from app.actions.clients import ClientActions
-from app.models.clients import ClientBudgetModel, ClientBudgetExpanded, ClientModel, ClientBudgetShortExpand
+from app.models.clients import ClientBudgetModelDB, ClientBudgetExpanded, ClientModelDB, ClientBudgetShortExpand
 from .client_sub_budget_actions import ClientSubBudgetActions
 
 from app.actions.base_actions import BaseActions
@@ -18,9 +18,9 @@ class ClientBudgetActions():
 	
 	@staticmethod
 	async def check_for_existing_budget_by_name(budget, client_uuid):
-		existingBudget = await BaseActions.check_if_exists(ClientBudgetModel, [
-			ClientBudgetModel.name == budget.name, 
-			ClientBudgetModel.client_uuid == client_uuid
+		existingBudget = await BaseActions.check_if_exists(ClientBudgetModelDB, [
+			ClientBudgetModelDB.name == budget.name, 
+			ClientBudgetModelDB.client_uuid == client_uuid
 			])
 		if existingBudget:
 			message = f"A budget with name '{budget.name}' already exists."
@@ -29,23 +29,28 @@ class ClientBudgetActions():
 			return budget.name
 		
 	@staticmethod
-	async def get_all_budgets(client_uuid: str):
-		budgets = await BaseActions.get_all_where(ClientBudgetModel, [ClientBudgetModel.client_uuid == client_uuid])
-		return budgets
+	async def get_all_budgets(client_uuid: str, query_params: dict):
+		return await BaseActions.get_all_where(
+			ClientBudgetModelDB, 
+			[
+				ClientBudgetModelDB.client_uuid == client_uuid
+			], 
+			query_params
+		)
 	
 	@staticmethod #this goes from child --> parent
 	async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, check404=False):
-		return await BaseActions.get_one_where(ClientBudgetModel, [
-			ClientBudgetModel.budget_9char == budget_9char,
-			ClientBudgetModel.client_uuid == client_uuid
+		return await BaseActions.get_one_where(ClientBudgetModelDB, [
+			ClientBudgetModelDB.budget_9char == budget_9char,
+			ClientBudgetModelDB.client_uuid == client_uuid
 		], check404)
 
 	@staticmethod #this goes from parent --> children
 	async def get_budgets_by_parent_9char(budget):
-		return await BaseActions.get_all_where(ClientBudgetModel, [
-			ClientBudgetModel.parent_9char == budget.budget_9char,
-			ClientBudgetModel.client_uuid == budget.client_uuid
-		], check404=False)
+		return await BaseActions.get_all_where(ClientBudgetModelDB, [
+			ClientBudgetModelDB.parent_9char == budget.budget_9char,
+			ClientBudgetModelDB.client_uuid == budget.client_uuid
+		], params=None, check404=False, pagination=False)
 	
 	@staticmethod
 	async def get_all_subbudgets_value(subbudgets):
@@ -71,8 +76,7 @@ class ClientBudgetActions():
 	async def get_one_budget(cls, budget_9char: str, client_uuid: str, expanded):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, True)
 		subbudgets = await cls.get_all_subbudgets(budget)
-		client = await CommonRoutes.get_one(ClientModel, client_uuid)
-		print("\n\n\n", budget, "\n", client, "\n\n\n")
+		client = await BaseActions.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid], False)
 		if expanded:
 			budget = ClientBudgetExpanded.from_orm(budget)
 			budget.client = client
@@ -112,7 +116,7 @@ class ClientBudgetActions():
 			parent = await cls.check_for_valid_parent(new_budget.parent_9char, client_uuid)
 			return await ClientSubBudgetActions.create_sub_budget(new_budget, parent)
 		else:
-			budget = ClientBudgetModel(
+			budget = ClientBudgetModelDB(
 				**new_budget.dict(),
 				uuid= SHA224Hash(),
 				client_uuid=client_uuid

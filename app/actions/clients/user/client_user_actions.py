@@ -1,8 +1,8 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users import UserActions
-from app.models.clients import ClientUserModel
-from app.models.users import UserModel, UserServiceModel
+from app.models.clients import ClientUserModelDB
+from app.models.users import UserModel, UserServiceModelDB
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
@@ -12,9 +12,9 @@ class ClientUserActions():
 	@staticmethod
 	async def get_client_user_by_user_uuid(uuid: str):
 		return await BaseActions.check_if_exists(
-			ClientUserModel,
+			ClientUserModelDB,
 			[
-				ClientUserModel.user_uuid == uuid
+				ClientUserModelDB.user_uuid == uuid
 			]
 		)
 
@@ -28,8 +28,8 @@ class ClientUserActions():
 			user = await BaseActions.check_if_exists(
 				UserModel,
 				[
-					UserServiceModel.service_user_id == data["email_address"],
-					UserModel.uuid == UserServiceModel.user_uuid
+					UserServiceModelDB.service_user_id == data['email_address'],
+					UserModel.uuid == UserServiceModelDB.user_uuid
 				])
 
 		if "user_uuid" in data.keys() or user is not None:
@@ -43,7 +43,7 @@ class ClientUserActions():
 
 		if not user and "email_address" not in data.keys() and "user_uuid" not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
-		newClientUser = ClientUserModel(
+		newClientUser = ClientUserModelDB(
 			uuid=SHA224Hash(),
 			user_uuid= user.uuid,
 			client_uuid= path_params["client_uuid"],
@@ -63,31 +63,32 @@ class ClientUserActions():
 		pass
 
 	@staticmethod
-	async def get_all_users(path_params):
+	async def get_all_users(client_uuid: str, query_params: dict):
 		return await BaseActions.get_all_where(
-			ClientUserModel,
+			ClientUserModelDB,
 			[
-				ClientUserModel.client_uuid == path_params["client_uuid"]
-			]
+				ClientUserModelDB.client_uuid == client_uuid
+			],
+			query_params
 		)
 
 	@staticmethod
 	async def get_user(path_params):
 		return await BaseActions.get_one_where(
-			ClientUserModel,
+			ClientUserModelDB,
 			[
-				ClientUserModel.client_uuid == path_params["client_uuid"],
-				ClientUserModel.user_uuid == path_params["user_uuid"]
+				ClientUserModelDB.client_uuid == path_params['client_uuid'],
+				ClientUserModelDB.user_uuid == path_params['user_uuid']
 			]
 		)
 
 	@staticmethod
 	async def update_user(path_params, user_updates):
 		return await BaseActions.update(
-			ClientUserModel,
+			ClientUserModelDB,
 			[
-				ClientUserModel.client_uuid == path_params["client_uuid"],
-				ClientUserModel.uuid == path_params["user_uuid"]
+				ClientUserModelDB.client_uuid == path_params['client_uuid'],
+				ClientUserModelDB.uuid == path_params['user_uuid']
 			],
 			user_updates
 		)
@@ -95,9 +96,9 @@ class ClientUserActions():
 	@staticmethod
 	async def delete_user(path_params):
 		return await BaseActions.delete_one(
-			ClientUserModel,
+			ClientUserModelDB,
 			[
-				ClientUserModel.client_uuid == path_params["client_uuid"],
-				ClientUserModel.uuid == path_params["user_uuid"]
+				ClientUserModelDB.client_uuid == path_params['client_uuid'],
+				ClientUserModelDB.uuid == path_params['user_uuid']
 			]
 		)

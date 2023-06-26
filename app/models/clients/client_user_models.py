@@ -3,8 +3,8 @@ from app.models.base_class import Base, BasePydantic
 from typing import Optional
 
 
-class ClientUserModel(Base):
-	__tablename__ = "client_user"
+class ClientUserModelDB(Base):
+	__tablename__ = 'client_user'
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	user_uuid: Mapped[str] = mapped_column(default=None, index=True)
@@ -19,6 +19,21 @@ class ClientUserModel(Base):
 	time_hire: Mapped[int] = mapped_column(default=None)
 	time_start: Mapped[int] = mapped_column(default=None)
 	admin: Mapped[int] = mapped_column(default=None)
+
+class ClientUserModel(BasePydantic):
+	uuid: Optional[str]
+	user_uuid: Optional[str]
+	client_uuid: Optional[str]
+	manager_uuid: Optional[str]
+	employee_id: Optional[str]
+	title: Optional[str]
+	department: Optional[str]
+	active: Optional[bool]
+	time_created: Optional[int]
+	time_updated: Optional[int]
+	time_hire: Optional[int]
+	time_start: Optional[int]
+	admin: Optional[int]
 
 class ClientUserUpdate(BasePydantic):
 	manager_uuid: Optional[str] = None

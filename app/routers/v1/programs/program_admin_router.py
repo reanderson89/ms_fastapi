@@ -1,6 +1,8 @@
 from typing import Union
 from fastapi import APIRouter, Query, Depends
-from app.models.programs import AdminModel, AdminUpdate, AdminCreate, AdminStatus, AdminExpand
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
+from app.models.programs import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus, AdminExpand, AdminModel
 from app.actions.programs.admins import ProgramAdminActions
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Admins"])
@@ -12,14 +14,14 @@ def path_params(client_uuid: str, program_9char: str, user_uuid: str=None):
 def query_params(offset: int, limit: int = Query(default=100, lte=100)):
 	return {"offset": offset, "limit": limit}
 
-@router.get("/admins", response_model=list[AdminModel])
+@router.get("/admins")
 async def get_admins(
-	query_params: dict = Depends(query_params),
+	query_params: dict = Depends(default_query_params),
 	path_params: dict = Depends(path_params)
-):
+) -> Page[AdminModel]:
 	return await ProgramAdminActions.get_program_admins(path_params, query_params)
 
-@router.get("/admins/{user_uuid}", response_model=AdminModel)
+@router.get("/admins/{user_uuid}", response_model=AdminModelDB)
 async def get_admin(
 	expand: AdminExpand = None,
 	path_params: dict = Depends(path_params)
@@ -40,7 +42,7 @@ async def create_admin(
 		return admins
 	return await ProgramAdminActions.create_program_admin(path_params, admins)
 
-@router.put("/admins/{user_uuid}", response_model=AdminModel)
+@router.put("/admins/{user_uuid}", response_model=AdminModelDB)
 async def update_admin(
 	admin_updates: AdminUpdate,
 	path_params: dict = Depends(path_params)

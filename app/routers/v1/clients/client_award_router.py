@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
 from app.actions.clients.awards.client_award_actions import ClientAwardActions
-from app.models.clients import ClientAwardModel, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
+from app.models.clients import ClientAwardModelDB, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"])
 
 
-@router.get("/awards", response_model=list[ClientAwardModel])
+@router.get("/awards")
 async def get_awards(
 	client_uuid: str,
-	query_params: dict = Depends(get_query_params)
-
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[ClientAwardResponse]:
 	return await ClientAwardActions.get_client_awards(client_uuid, query_params)
 
 
@@ -25,8 +25,7 @@ async def get_award(
 	# return await ClientAwardRead.init_class(award)
 
 
-
-@router.post("/awards", response_model=list[ClientAwardModel] | ClientAwardModel)
+@router.post("/awards", response_model=list[ClientAwardResponse] | ClientAwardResponse)
 async def create_award(
 	client_uuid: str,
 	awards: list[ClientAwardCreate] | ClientAwardCreate
@@ -34,7 +33,7 @@ async def create_award(
 	return await ClientAwardActions.create_award(client_uuid, awards)
 
 
-@router.put("/awards/{client_award_9char}", response_model=ClientAwardModel)
+@router.put("/awards/{client_award_9char}", response_model=ClientAwardModelDB)
 async def update_award(
 	client_uuid: str,
 	client_award_9char: str,

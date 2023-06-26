@@ -1,32 +1,32 @@
 from typing import Union
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
-from app.models.clients import ClientModel, ClientUpdate, ClientCreate
+from app.routers.v1.pagination import Page
+from app.routers.v1.dependencies import default_query_params
+from app.models.clients import ClientModelDB, ClientUpdate, ClientCreate, ClientModel
 from app.actions.clients.client_actions import ClientActions
 
 router = APIRouter(tags=["Clients"])
 
 
-@router.get("/clients", response_model=list[ClientModel])
+@router.get("/clients")
 async def get_clients(
-	query_params: dict = Depends(get_query_params)
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[ClientModel]:
 	return await ClientActions.get_all_clients(query_params)
 
-
-@router.get("/clients/{client_uuid}", response_model=ClientModel)
+@router.get("/clients/{client_uuid}", response_model=ClientModelDB)
 async def get_client(client_uuid: str):
 	return await ClientActions.get_client(client_uuid)
 
 
-@router.post("/clients", response_model=list[ClientModel]|ClientModel)
+@router.post("/clients", response_model=list[ClientModelDB]|ClientModelDB)
 async def create_client(
 	clients: Union[list[ClientCreate], ClientCreate]
 ):
 	return await ClientActions.create_client_handler(clients)
 
 
-@router.put("/clients/{client_uuid}", response_model=ClientModel)
+@router.put("/clients/{client_uuid}", response_model=ClientModelDB)
 async def update_client(
 	client_uuid: str,
 	client_updates: ClientUpdate

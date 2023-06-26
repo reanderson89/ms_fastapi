@@ -1,32 +1,32 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
-from app.models.programs import ProgramModel
-from app.models.messages import MessageModel, MessageCreate, MessageUpdate
+from app.models.programs import ProgramModelDB
+from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate
 from app.exceptions import ExceptionHandling
 
 class MessageActions():
 
 	@staticmethod
 	async def get_all(query_params: dict):
-		return await BaseActions.get_all(MessageModel, query_params)
+		return await BaseActions.get_all(MessageModelDB, query_params)
 
 	@staticmethod
 	async def get_one(message_9char: str):
 		return await BaseActions.get_one_where(
-			MessageModel,
-			[MessageModel.message_9char == message_9char]
+			MessageModelDB,
+			[MessageModelDB.message_9char == message_9char]
 		)
 
 	@staticmethod
 	async def get_program_uuid(program_9char: str):
 		return await BaseActions.get_one_where(
-			ProgramModel.uuid,
-			[ProgramModel.program_9char == program_9char]
+			ProgramModelDB.uuid,
+			[ProgramModelDB.program_9char == program_9char]
 		)
 	
 	@staticmethod
 	async def check_for_existing_message_by_name(message, throw_error=True):
-		existing_message = await BaseActions.check_if_exists(MessageModel, [MessageModel.name == message.name])
+		existing_message = await BaseActions.check_if_exists(MessageModelDB, [MessageModelDB.name == message.name])
 		if existing_message and throw_error:
 			await ExceptionHandling.custom405(f"A message with name '{message.name}' already exists.")
 		elif existing_message and not throw_error:
@@ -58,7 +58,7 @@ class MessageActions():
 			
 	@staticmethod
 	async def to_message_model(message):
-		return MessageModel(
+		return MessageModelDB(
 			**message.dict(), 
 			message_9char=await HelperActions.generate_9char()
 			)
@@ -78,13 +78,13 @@ class MessageActions():
 		if message_updates.name:
 			await cls.check_for_existing_message_by_name(message_updates, True)
 		return await BaseActions.update(
-			MessageModel, 
-			[MessageModel.message_9char == message_9char],
+			MessageModelDB, 
+			[MessageModelDB.message_9char == message_9char],
 			message_updates
 		)
 
 	@staticmethod
 	async def delete_message(message_9char: str):
 		return await BaseActions.delete_one(
-			MessageModel, [MessageModel.message_9char == message_9char]
+			MessageModelDB, [MessageModelDB.message_9char == message_9char]
 		)

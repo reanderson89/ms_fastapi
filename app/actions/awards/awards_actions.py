@@ -1,12 +1,12 @@
 from app.actions.base_actions import BaseActions
-from app.models.award import AwardModel, AwardUpdate
+from app.models.award import AwardModelDB, AwardUpdate
 
 
 class AwardActions(BaseActions):
 
-	@classmethod
-	async def get_all_awards(cls, query_params: dict):
-		"""
+	@staticmethod
+	async def get_all_awards(query_params: dict):
+		'''
 		Get all awards from the database
 		:params query_params(dict): A dictionary of query parameters
 			- order_by(str): The field to sort by
@@ -14,9 +14,9 @@ class AwardActions(BaseActions):
 			- offset(int): The number of results to skip
 			- limit(int): The maximum number of results to return
 		:return: A list of model objects, for example [model(DataModel),...]
-		"""
-		return await cls.get_all(
-			AwardModel,
+		'''
+		return await BaseActions.get_all(
+			AwardModelDB,
 			query_params
 		)
 
@@ -33,7 +33,7 @@ class AwardActions(BaseActions):
 		:return: A list of model objects, for example [model(DataModel),...]
 		"""
 		return await cls.get_all_where(
-			AwardModel,
+			AwardModelDB,
 			conditions,
 			query_params
 		)
@@ -46,8 +46,8 @@ class AwardActions(BaseActions):
 		:return: The award model(DataModel instance)
 		"""
 		return await cls.get_one_where(
-			AwardModel,
-			[AwardModel.uuid == award_uuid]
+			AwardModelDB,
+			[AwardModelDB.uuid == award_uuid]
 		)
 
 	@classmethod
@@ -68,8 +68,8 @@ class AwardActions(BaseActions):
 		:return: The updated award model
 		"""
 		return await cls.update(
-			AwardModel,
-			[AwardModel.uuid == award_uuid],
+			AwardModelDB,
+			[AwardModelDB.uuid == award_uuid],
 			update_obj
 		)
 
@@ -81,8 +81,8 @@ class AwardActions(BaseActions):
 		:return: Status of deletion and the deleted model object
 		"""
 		return await cls.delete_one(
-			AwardModel,
-			[AwardModel.uuid == award_uuid]
+			AwardModelDB,
+			[AwardModelDB.uuid == award_uuid]
 		)
 
 	@classmethod
@@ -93,7 +93,7 @@ class AwardActions(BaseActions):
 		:return: Status of deletion and the deleted model object(s)
 		"""
 		return await cls.delete_all(
-			AwardModel,
+			AwardModelDB,
 			conditions
 		)
 

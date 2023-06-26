@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
-from app.models.users import UserServiceUpdate, UserServiceModel, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
+from app.models.users import UserServiceUpdate, UserServiceModelDB, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk, UserServiceModel
 from app.actions.users.services import UserServiceActions
 
 router = APIRouter(tags=["Users Service"], prefix="/users/{user_uuid}")
@@ -9,12 +10,12 @@ router = APIRouter(tags=["Users Service"], prefix="/users/{user_uuid}")
 @router.get("/services", response_model=dict)
 async def get_services(
 	user_uuid: str,
-	query_params: dict = Depends(get_query_params)
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[UserServiceModel]:
 	return await UserServiceActions.get_all_services(user_uuid, query_params)
 
 
-@router.get("/services/{service_uuid}", response_model=UserServiceModel)
+@router.get("/services/{service_uuid}", response_model=UserServiceModelDB)
 async def get_service(user_uuid: str, service_uuid: str):
 	return await UserServiceActions.get_service(user_uuid, service_uuid)
 
@@ -27,7 +28,7 @@ async def create_service(
 	return await UserServiceActions.create_user_service(user_uuid, user_service)
 
 
-@router.put("/services/{service_uuid}", response_model=UserServiceModel)
+@router.put("/services/{service_uuid}", response_model=UserServiceModelDB)
 async def update_service(
 	user_uuid: str,
 	service_uuid: str,
@@ -36,7 +37,7 @@ async def update_service(
 	return await UserServiceActions.update_service(user_uuid, service_uuid, service_updates)
 
 
-@router.put("/services", response_model=list[UserServiceModel])
+@router.put("/services", response_model=list[UserServiceModelDB])
 async def bulk_update_services(user_uuid: str, updates: list[ServiceBulk]):
 	return await UserServiceActions.bulk_update_services(user_uuid, updates)
 

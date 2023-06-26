@@ -7,6 +7,7 @@
 
 # set -e
 
+# Knock yourself out:  https://patorjk.com/software/taag/#p=display&f=Doh&t=Test%20Failure
 function show_error {
    cat <<'EOF'
 
@@ -45,8 +46,15 @@ for test in "${tests[@]}"; do
    status=$?
    if [ $status -ne 0 ]; then
       echo "There was a test failure in ${test}"
-      # Knock yourself out:  https://patorjk.com/software/taag/#p=display&f=Doh&t=Test%20Failure
-      show_error
-      exit ${status}
+      failure_list+=(${test})
    fi
 done
+
+if [ ${#failure_list[@]} -gt 0 ]; then
+   echo "There were test failures in the following tests:"
+   for failure in "${failure_list[@]}"; do
+      echo "${failure}"
+   done
+   show_error
+   exit 1
+fi

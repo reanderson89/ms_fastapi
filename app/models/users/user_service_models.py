@@ -13,7 +13,7 @@ class UserServiceStatus(str, Enum):
 	created = "service created"
 	updated = "service updated"
 
-class UserServiceModel(Base):
+class UserServiceModelDB(Base):
 	__tablename__ = "user_service"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
@@ -30,7 +30,7 @@ class UserServiceModel(Base):
 	login_secret: Mapped[Optional[str]] = mapped_column(default=None)
 	login_token: Mapped[Optional[str]] = mapped_column(default=None)
 
-class ServiceBase(BasePydantic):
+class UserServiceModel(BasePydantic):
 	uuid: Optional[str]
 	user_uuid: Optional[str]
 	service_uuid: Optional[str]
@@ -49,7 +49,7 @@ class UserServiceCreate(BasePydantic):
 	service_uuid: ServiceID
 	service_user_id: str
 
-class ServiceStatus(ServiceBase):
+class ServiceStatus(UserServiceModel):
 	status: Optional[UserServiceStatus] = Field(
 		default=None,
 		description="This mapped_column can have the values 'exists' or 'admin created'."

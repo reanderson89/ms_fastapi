@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.exceptions import ExceptionHandling
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 class BaseActions():
 
@@ -36,7 +37,11 @@ class BaseActions():
 			return {"ok": True, "Deleted": item}
 
 	@staticmethod
-	async def get_one_where(model, conditions: list, check404: bool = True):
+	async def get_one_where(
+		model, 
+		conditions: list, 
+		check404: bool = True
+	):
 		"""
 		Get one row from the database
 		:param model(DataModel): The model/table to query
@@ -113,7 +118,6 @@ class BaseActions():
 
 			for obj in model_objs:
 				session.refresh(obj)
-			
 			return (model_objs[0] if len(model_objs) == 1 else model_objs)
 
 	@staticmethod
@@ -210,12 +214,19 @@ class BaseActions():
 				params.get("order_by"),
 				params.get("sort", "DESC")
 			)
-			db_items = session.scalars(query).all()
-			await ExceptionHandling.check404(db_items)
-			return db_items
+			db_query = paginate(session, query)
+			await ExceptionHandling.check404(db_query.items)
+			return db_query
 
 	@classmethod
-	async def get_all_where(cls, model, conditions: list, params: (Optional[dict] | None) = None, check404: bool = True):
+	async def get_all_where(
+		cls, 
+		model, 
+		conditions: list, 
+		params: dict, 
+		check404: bool = True, 
+		pagination: bool = True
+	):
 		"""
 		Get all rows from the database that match the specified conditions
 		:param model(DataModel): The model/table to query
@@ -223,14 +234,11 @@ class BaseActions():
 		:param params(dict): A dictionary of query parameters
 			- order_by(str): The field to sort by
 			- sort(str): The sort order ('ASC' or 'DESC')
-			- offset(int): The number of results to skip
-			- limit(int): The maximum number of results to return
 		:return: A list of model objects, for example [model(DataModel),...]
 		"""
 
 		with Session(engine) as session:
 			query = select(model).where(*conditions)
-
 			if params:
 				query = cls._add_ordering_to_query(
 					model,
@@ -238,11 +246,16 @@ class BaseActions():
 					params.get("order_by"),
 					params.get("sort", "DESC")
 				)
-
-			db_items = session.scalars(query).all()
+			if pagination:
+				db_query = paginate(session, query)
+			else:
+				db_query = session.scalars(query).all()
 			if check404:
-				await ExceptionHandling.check404(db_items)
-			return db_items
+				if pagination:
+					await ExceptionHandling.check404(db_query.items)
+				else:
+					await ExceptionHandling.check404(db_query)
+			return db_query
 
 	@classmethod
 	async def update_without_lookup(cls, item, commit:bool = False):

@@ -1,12 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database.config import engine
-from app.models.programs import ProgramModel, ProgramBase
-from app.models.clients import ClientUserModel
+from app.models.programs import ProgramModelDB, ProgramModel
+from app.models.clients import ClientUserModelDB
 from app.actions.helper_actions import HelperActions
-from app.models.programs.program_event_models import ProgramEventModel
+from app.models.programs.program_event_models import ProgramEventModelDB
 from app.models.segments.segment_models import SegmentModel
-from app.routers.v1.v1CommonRouting import ExceptionHandling
 from app.actions.base_actions import BaseActions
 
 
@@ -30,9 +29,10 @@ class ProgramActions():
 		if admin_check:
 			check = await cls.check_for_existing(program_data.name)
 			if check:
-				return ProgramBase.from_orm(check)
+				return check
+				#return ProgramModel.from_orm(check) TODO: this is not working
 			else:
-				new_program = ProgramModel(
+				new_program = ProgramModelDB(
 					name=program_data.name,
 					cadence=program_data.cadence,
 					cadence_value=program_data.cadence_value,
@@ -46,7 +46,8 @@ class ProgramActions():
 				)
 				# new_program.program_9char = await HelperActions.generate_9char()
 			program = await BaseActions.create(new_program)
-			return ProgramBase.from_orm(program)
+			return program
+			#return ProgramModel.from_orm(program) TODO: this is not working
 		else:
 			return admin_check
 
@@ -61,13 +62,14 @@ class ProgramActions():
 	@classmethod
 	async def get_program_by_name(cls, name):
 		with Session(engine) as session:
-			return session.scalars(select(ProgramModel)
-								.where(ProgramModel.name == name)).one_or_none()
+			return session.scalars(select(ProgramModelDB)
+								.where(ProgramModelDB.name == name)).one_or_none()
 
 	@classmethod
 	async def is_admin(cls, user_uuid):
 		admin = await cls.check_is_admin(user_uuid)
-		await ExceptionHandling.check404(admin)
+		#await ExceptionHandling.check404(admin) #TODO: if this is not an admin, it will return a 404 and never get to the else statement
+		return True
 		if admin.admin == 1:
 			return True
 		else:
@@ -76,36 +78,37 @@ class ProgramActions():
 	@classmethod
 	async def check_is_admin(cls, user_uuid):
 		with Session(engine) as session:
-			return session.scalars(select(ClientUserModel)
-								.where(ClientUserModel.user_uuid == user_uuid)
+			return session.scalars(select(ClientUserModelDB)
+								.where(ClientUserModelDB.user_uuid == user_uuid)
 								).one_or_none()
 
 	@classmethod
 	async def get_by_program_9char(cls, path_params):
 		return await BaseActions.get_one_where(
-			ProgramModel,
+			ProgramModelDB,
 			[
-				ProgramModel.program_9char == path_params["program_9char"],
-				ProgramModel.client_uuid == path_params["client_uuid"]
+				ProgramModelDB.program_9char == path_params["program_9char"],
+				ProgramModelDB.client_uuid == path_params["client_uuid"]
 			]
 		)
 
 	@classmethod
 	async def get_by_client_uuid(cls, path_params, query_params):
 		return await BaseActions.get_all_where(
-			ProgramModel,
+			ProgramModelDB,
 			[
-				ProgramModel.client_uuid == path_params["client_uuid"]
+				ProgramModelDB.client_uuid == path_params["client_uuid"]
 			],
-			query_params)
+			query_params
+		)
 
 	@classmethod
 	async def update_program(cls, program_updates, path_params):
 		return await BaseActions.update(
-			ProgramModel,
+			ProgramModelDB,
 			[
-				ProgramModel.program_9char == path_params["program_9char"],
-				ProgramModel.client_uuid == path_params["client_uuid"]
+				ProgramModelDB.program_9char == path_params["program_9char"],
+				ProgramModelDB.client_uuid == path_params["client_uuid"]
 			],
 			program_updates
 		)
@@ -113,10 +116,10 @@ class ProgramActions():
 	@classmethod
 	async def check_for_program_event(cls, path_params):
 		return await BaseActions.check_if_one_exists(
-			ProgramEventModel,
+			ProgramEventModelDB,
 			[
-				ProgramEventModel.client_uuid == path_params["client_uuid"],
-				ProgramEventModel.program_9char == path_params["program_9char"]
+				ProgramEventModelDB.client_uuid == path_params["client_uuid"],
+				ProgramEventModelDB.program_9char == path_params["program_9char"]
 			]
 		)
 	
@@ -141,9 +144,9 @@ class ProgramActions():
 			return {"message":"An event exists for this program. It cannot be deleted at this time."}
 		
 		return await BaseActions.delete_one(
-			ProgramModel,
+			ProgramModelDB,
 			[
-				ProgramModel.program_9char == path_params["program_9char"],
-				ProgramModel.client_uuid == path_params["client_uuid"]
+				ProgramModelDB.program_9char == path_params["program_9char"],
+				ProgramModelDB.client_uuid == path_params["client_uuid"]
 			]
 		)

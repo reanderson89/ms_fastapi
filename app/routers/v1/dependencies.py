@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Optional
 from fastapi import Query
 
-
 class SortOrder(str, Enum):
 	ASC = "ASC"
 	DESC = "DESC"
@@ -10,16 +9,11 @@ class SortOrder(str, Enum):
 	def __str__(self):
 		return self.value
 
-
-def get_query_params(
-		offset: int = Query(default=0, ge=0),
-		limit: int = Query(default=25, lte=100),
-		order_by: Optional[str] = None,
+def default_query_params(
+		order_by: Optional[str] = "time_created",
 		sort: SortOrder = Query(default = SortOrder.DESC)
 	):
 	return {
-		"offset": offset,
-		"limit": limit,
 		"order_by": order_by,
 		"sort": str(sort)
 	}

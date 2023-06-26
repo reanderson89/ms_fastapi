@@ -1,6 +1,6 @@
 import os
 
-from app.models.users import UserServiceModel
+from app.models.users import UserServiceModelDB
 from sparkpost import SparkPost
 _scriptname = "ThirdParty.SparkPost"
 
@@ -10,7 +10,7 @@ sp = SparkPost(SPARKPOST_KEY)
 
 
 
-async def send_auth_email(user_service: UserServiceModel):
+async def send_auth_email(user_service: UserServiceModelDB):
 
     response = sp.transmissions.send(
         use_sandbox=False,

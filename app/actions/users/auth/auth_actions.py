@@ -5,7 +5,7 @@ from app.actions.users import UserActions
 from app.actions.users.services import UserServiceActions
 from app.libraries.sms import send_sms_worker
 from app.libraries.sparkpost import send_auth_email
-from app.models.users import UserServiceModel, UserServiceUpdate
+from app.models.users import UserServiceModelDB, UserServiceUpdate
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 
 class AuthActions(BaseActions):
@@ -25,10 +25,10 @@ class AuthActions(BaseActions):
     @classmethod
     async def post_auth_creation(cls, auth_model):
         service = await cls.get_one_where(
-            UserServiceModel,
+            UserServiceModelDB,
             [
-            UserServiceModel.service_uuid == auth_model.service_uuid,
-            UserServiceModel.service_user_id == auth_model.service_user_id
+            UserServiceModelDB.service_uuid == auth_model.service_uuid,
+            UserServiceModelDB.service_user_id == auth_model.service_user_id
             ]
         )
 
@@ -58,10 +58,10 @@ class AuthActions(BaseActions):
     @classmethod
     async def check_for_match_put(cls, redeem_auth_model: RedeemAuthModel):
         return await cls.check_if_exists(
-            UserServiceModel,
+            UserServiceModelDB,
             [
-            UserServiceModel.login_token == redeem_auth_model.login_token,
-            UserServiceModel.login_secret == redeem_auth_model.login_secret
+            UserServiceModelDB.login_token == redeem_auth_model.login_token,
+            UserServiceModelDB.login_secret == redeem_auth_model.login_secret
             ]
         )
 

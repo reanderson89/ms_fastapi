@@ -1,22 +1,23 @@
 from fastapi import APIRouter, Depends
 from typing import Union
-from app.models.messages import MessageModel, MessageCreate, MessageUpdate
+from app.routers.v1.pagination import Page
+from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageModel
 from app.actions.messages.message_actions import MessageActions
-from app.routers.v1.dependencies import get_query_params
+from app.routers.v1.dependencies import default_query_params
 
 router = APIRouter(tags=["Messages"])
 
-@router.get("/messages", response_model=list[MessageModel])
-async def get_messages(query_params: dict = Depends(get_query_params)):
+@router.get("/messages")
+async def get_messages(query_params: dict = Depends(default_query_params)) -> Page[MessageModel]:
 	return await MessageActions.get_all(query_params)
 
 
-@router.get("/messages/{message_9char}", response_model=MessageModel)
+@router.get("/messages/{message_9char}", response_model=MessageModelDB)
 async def get_message(message_9char: str):
 	return await MessageActions.get_one(message_9char)
 
 
-@router.post("/messages", response_model=list[MessageModel]|MessageModel)
+@router.post("/messages", response_model=list[MessageModelDB]|MessageModelDB)
 async def create_message(new_message_obj: Union[list[MessageCreate], MessageCreate]):
 	return await MessageActions.create_message(new_message_obj)
 
@@ -39,7 +40,7 @@ async def send_message(message_9char: str):
 	return await MessageActions.send_message(message_9char)
 
 
-@router.put("/messages/{message_9char}", response_model=MessageModel)
+@router.put("/messages/{message_9char}", response_model=MessageModelDB)
 async def update_message(message_9char: str, message_updates: MessageUpdate):
 	return await MessageActions.update_message(message_9char, message_updates)
 

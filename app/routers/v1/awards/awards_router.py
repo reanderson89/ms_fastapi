@@ -1,28 +1,29 @@
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
+from app.routers.v1.pagination import Page
+from app.routers.v1.dependencies import default_query_params
 from app.actions.awards import AwardActions
-from app.models.award import AwardModel, AwardUpdate
+from app.models.award import AwardModelDB, AwardUpdate, AwardModel
 
 router = APIRouter(tags=["Awards"])
 
 
-@router.get("/awards", response_model=list[AwardModel])
+@router.get("/awards")
 async def get_all_awards(
-	query_params: dict = Depends(get_query_params),
-):
+	query_params: dict = Depends(default_query_params),
+) -> Page[AwardModel]:
 	return await AwardActions.get_all_awards(query_params)
 
 
-@router.get("/awards/{award_uuid}", response_model=AwardModel)
+@router.get("/awards/{award_uuid}")
 async def get_award(
 	award_uuid: str
-):
+) -> Page[AwardModel]:
 	return await AwardActions.get_award(award_uuid)
 
 
 @router.post("/awards", response_model=(list[AwardModel] | AwardModel))
 async def create_award(
-	awards: (list[AwardModel] | AwardModel)
+	awards: (list[AwardModelDB] | AwardModelDB)
 ):
 	return await AwardActions.create_award(awards)
 

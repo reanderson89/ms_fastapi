@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import get_query_params
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
-from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
+from app.models.programs import ProgramAwardModelDB, ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
 
 router = APIRouter(
 	prefix="/clients/{client_uuid}/programs/{program_9char}",
@@ -23,11 +24,11 @@ def path_params(
 	}
 
 
-@router.get("/awards", response_model=list[ProgramAwardResponse])
+@router.get("/awards")
 async def get_awards(
 	path_params: dict = Depends(path_params),
-	query_params: dict = Depends(get_query_params)
-):
+	query_params: dict = Depends(default_query_params)
+) -> Page[ProgramAwardResponse]:
 	return await ProgramAwardActions.get_program_awards(path_params, query_params)
 
 

@@ -1,6 +1,6 @@
 import os
 
-from app.models.users import UserServiceModel
+from app.models.users import UserServiceModelDB
 from twilio.rest import Client
 
 
@@ -10,7 +10,7 @@ TWILIO_FROM = os.environ["TWILIO_FROM"]
 TwilioClient = Client(ACCOUNT_SID, ACCOUNT_TOKEN)
 
 
-async def send_sms_worker(user_service: UserServiceModel):
+async def send_sms_worker(user_service: UserServiceModelDB):
 
 	message = TwilioClient.messages.create(
 		to="+1" + user_service.service_user_id,

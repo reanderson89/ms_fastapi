@@ -2,13 +2,14 @@ import uvicorn
 import os
 from app.actions.base_actions import BaseActions
 from app.configs import run_config
-from app.models.users import UserModel, UserServiceModel
+from app.models.users import UserModel, UserServiceModelDB
 from app.routers import routers
 from app.middleware import LoggingMiddleware
 from app.routers import auth_routers
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 from contextlib import asynccontextmanager
+from fastapi_pagination import add_pagination
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,37 +38,37 @@ async def lifespan(app: FastAPI):
 			time_ping=1686591427
 		)
 
-		user1_service = UserServiceModel(
-			uuid= "a59a0209ab829e672d748026608bdcc19695d01b3e56ffc0d6adb29e",
-			user_uuid= "55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
-			service_uuid= "cell",
-			service_user_id= "15005550006",
-			service_user_screenname= "TestUser CellService",
-			service_user_name= "testusercellservice",
-			service_access_token= "access token",
-			service_access_secret= "secret token",
-			service_refresh_token= "refresh token",
-			time_created= 1686591427,
-			time_updated= 1686591427,
-			login_secret="place_holder",
-			login_token="place_holder"
-		)
+	user1_service = UserServiceModelDB(
+		uuid= "a59a0209ab829e672d748026608bdcc19695d01b3e56ffc0d6adb29e",
+		user_uuid= "55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
+		service_uuid= "cell",
+		service_user_id= "15005550006",
+		service_user_screenname= "TestUser CellService",
+		service_user_name= "testusercellservice",
+		service_access_token= "access token",
+		service_access_secret= "secret token",
+		service_refresh_token= "refresh token",
+		time_created= 1686591427,
+		time_updated= 1686591427,
+		login_secret="place_holder",
+		login_token="place_holder"
+	)
 
-		user2_service = UserServiceModel(
-			uuid="774339d7415fe0f393cb401ed6efdb3537af7b0b9a1235bf542767b1",
-			user_uuid="0e58cd793a1d465c638276e450a92d82082f640b494fbc7735478aa9",
-			service_uuid="email",
-			service_user_id="test.user@testclient.com",
-			service_user_screenname="TestUser EmailService",
-			service_user_name="testuseremailservice",
-			service_access_token="access token",
-			service_access_secret="secret token",
-			service_refresh_token="refresh token",
-			time_created=1686591427,
-			time_updated=1686591427,
-			login_secret="place_holder",
-			login_token="place_holder"
-		)
+	user2_service = UserServiceModelDB(
+		uuid="774339d7415fe0f393cb401ed6efdb3537af7b0b9a1235bf542767b1",
+		user_uuid="0e58cd793a1d465c638276e450a92d82082f640b494fbc7735478aa9",
+		service_uuid="email",
+		service_user_id="test.user@testclient.com",
+		service_user_screenname="TestUser EmailService",
+		service_user_name="testuseremailservice",
+		service_access_token="access token",
+		service_access_secret="secret token",
+		service_refresh_token="refresh token",
+		time_created=1686591427,
+		time_updated=1686591427,
+		login_secret="place_holder",
+		login_token="place_holder"
+	)
 
 	"""
 	try/except was added because when the container would reload when a change was made,
@@ -87,6 +88,7 @@ app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_e
 app.include_router(routers, prefix="/v1")
 app.include_router(auth_routers, prefix="/v1")
 
+add_pagination(app)
 
 if __name__ == "__main__":
 	uvicorn.run(

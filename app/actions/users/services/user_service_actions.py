@@ -1,6 +1,6 @@
 from typing import Optional
 from collections import namedtuple
-from app.models.users import UserModel, UserServiceModel, UserServiceUpdate, UserServiceCreate, ServiceStatus
+from app.models.users import UserModel, UserServiceModelDB, UserServiceUpdate, UserServiceCreate, ServiceStatus
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
 
@@ -11,10 +11,10 @@ class UserServiceActions(BaseActions):
 		id = item.service_user_id
 
 		service = await cls.check_if_exists(
-			UserServiceModel,
+			UserServiceModelDB,
 			[
-			UserServiceModel.service_user_id == id,
-			UserServiceModel.user_uuid == UserModel.uuid
+			UserServiceModelDB.service_user_id == id,
+			UserServiceModelDB.user_uuid == UserModel.uuid
 			]
 		)
 
@@ -27,7 +27,7 @@ class UserServiceActions(BaseActions):
 	@classmethod
 	async def create_service_for_new_user(cls, user_obj, service_id: namedtuple):
 
-		new_user_service = UserServiceModel(
+		new_user_service = UserServiceModelDB(
 			user_uuid = user_obj.uuid,
 			service_uuid = service_id.type,
 			service_user_id = service_id.value,
@@ -44,18 +44,18 @@ class UserServiceActions(BaseActions):
 	@classmethod
 	async def get_service(cls, user_uuid: str, service_uuid: str):
 		return await cls.get_one_where(
-			UserServiceModel,
+			UserServiceModelDB,
 			[
-				UserServiceModel.user_uuid == user_uuid,
-				UserServiceModel.uuid == service_uuid
+				UserServiceModelDB.user_uuid == user_uuid,
+				UserServiceModelDB.uuid == service_uuid
 			]
 		)
 
 	@classmethod
 	async def get_all_services(cls, user_uuid: str, query_params: Optional[dict] = None):
 		services = await cls.get_all_where(
-			UserServiceModel,
-			[UserServiceModel.user_uuid == user_uuid],
+			UserServiceModelDB,
+			[UserServiceModelDB.user_uuid == user_uuid],
 			query_params
 		)
 
@@ -72,7 +72,7 @@ class UserServiceActions(BaseActions):
 		if isinstance(service_obj, ServiceStatus):
 			return service_obj
 
-		service_obj = UserServiceModel(
+		service_obj = UserServiceModelDB(
 			user_uuid = user_uuid,
 			service_uuid = service_obj.service_uuid,
 			service_user_id = service_obj.service_user_id
@@ -90,10 +90,10 @@ class UserServiceActions(BaseActions):
 		updates: UserServiceUpdate
 	):
 		return await cls.update(
-			UserServiceModel,
+			UserServiceModelDB,
 			[
-			UserServiceModel.user_uuid == user_uuid,
-			UserServiceModel.uuid == service_uuid
+			UserServiceModelDB.user_uuid == user_uuid,
+			UserServiceModelDB.uuid == service_uuid
 			],
 			updates
 		)
@@ -111,8 +111,8 @@ class UserServiceActions(BaseActions):
 	@classmethod
 	async def delete_service(cls, service_uuid: str):
 		return await cls.delete_one(
-			UserServiceModel,
-			[UserServiceModel.uuid == service_uuid]
+			UserServiceModelDB,
+			[UserServiceModelDB.uuid == service_uuid]
 		)
 
 	@classmethod
@@ -121,8 +121,8 @@ class UserServiceActions(BaseActions):
 		for service in service_delete:
 			deleted_services.append(
 				await cls.delete_one(
-					UserServiceModel,
-					[UserServiceModel.uuid == service.service_uuid]
+					UserServiceModelDB,
+					[UserServiceModelDB.uuid == service.service_uuid]
 				)
 			)
 		return deleted_services

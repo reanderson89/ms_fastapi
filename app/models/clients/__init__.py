@@ -1,5 +1,5 @@
-from .clients_models import ClientModel, ClientUpdate, ClientBase, ClientExpanded, ClientCreate
-from .client_award_models import ClientAwardModel, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
-from .client_budget_models import ClientBudgetModel, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetExpanded, ClientBudgetShortExpand
-from .client_user_models import ClientUserModel, ClientUserUpdate
+from .clients_models import ClientModelDB, ClientUpdate, ClientModel, ClientExpanded, ClientCreate
+from .client_award_models import ClientAwardModelDB, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
+from .client_budget_models import ClientBudgetModelDB, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetExpanded, ClientBudgetShortExpand, ClientBudgetModel
+from .client_user_models import ClientUserModelDB, ClientUserUpdate, ClientUserModel
 from .client_sub_budget_models import budget_types

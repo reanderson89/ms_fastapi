@@ -2,10 +2,11 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 from app.actions.utils import new_9char
-from app.models.clients.client_award_models import ClientAwardModel, ClientAwardResponse
+from app.actions.clients.awards.client_award_actions import ClientAwardActions
+from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardResponse
 from app.actions.base_actions import BaseActions
 
-class ProgramAwardModel(Base):
+class ProgramAwardModelDB(Base):
 	__tablename__ = "program_award"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -62,8 +63,8 @@ class ProgramAwardResponse(ProgramAwardBase):
 		super().__init__(**data)
 
 		client_award = BaseActions.get_one(
-			ClientAwardModel,
-			[ClientAwardModel.client_award_9char == self.client_award_9char]
+			ClientAwardModelDB,
+			[ClientAwardModelDB.client_award_9char == self.client_award_9char]
 		)
 		client_award = ClientAwardResponse(**client_award.to_dict())
 

@@ -18,7 +18,7 @@ class AdminExpand(str, Enum):
 	program = "program"
 	user = "user"
 
-class AdminModel(Base):
+class AdminModelDB(Base):
 	__tablename__ = "program_admin"
 
 	uuid: Mapped[Optional[str]] = mapped_column(default=None, primary_key=True, index=True)
@@ -30,7 +30,7 @@ class AdminModel(Base):
 	time_created: Mapped[Optional[int]] = mapped_column(default=None)
 	time_updated: Mapped[Optional[int]] = mapped_column(default=None)
 
-class AdminBase(BasePydantic):
+class AdminModel(BasePydantic):
 	uuid: Optional[str]
 	program_uuid: Optional[str]
 	client_uuid: Optional[str]
@@ -45,7 +45,7 @@ class AdminCreate(BasePydantic):
 	user_uuid: str
 	permissions: Optional[int]
 
-class AdminStatus(AdminBase):
+class AdminStatus(AdminModel):
 	status: Optional[ProgramAdminStatus] = Field(description="This mapped_column can have the values 'exists' or 'admin created'.")
 
 class AdminUpdate(BasePydantic):

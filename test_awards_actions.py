@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database.config import engine
 from app.utilities import isList, SHA224Hash, timestampSeconds
-from app.models.award import AwardModel
+from app.models.award import AwardModelDB
 
 
 if __name__ == '__main__':
@@ -40,14 +40,14 @@ if __name__ == '__main__':
 		# async def get_all_where(model, conditions: tuple, order_by=None, sort='DESC'):
 		response = await AwardActions.get_all_where(
 			[
-				(AwardModel.uuid == 'uuid1')
+				(AwardModelDB.uuid == 'uuid1')
 			]
 		)
 		print(response)
 		print('')
 		response = await AwardActions.get_all_where(
 			[
-				(AwardModel.time_created > 2)
+				(AwardModelDB.time_created > 2)
 			]
 		)
 		print(response)

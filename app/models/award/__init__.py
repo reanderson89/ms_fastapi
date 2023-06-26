@@ -1,1 +1,1 @@
-from .award_models import AwardModel, AwardUpdate
+from .award_models import AwardModelDB, AwardUpdate, AwardModel

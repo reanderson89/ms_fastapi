@@ -3,7 +3,7 @@ from datetime import datetime
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
-from app.models.users import UserModel, UserServiceModel, UserExpanded
+from app.models.users import UserModel, UserServiceModelDB, UserExpanded
 
 class UserActions(BaseActions):
 
@@ -22,8 +22,8 @@ class UserActions(BaseActions):
 		return await cls.check_if_exists(
 			UserModel,
 			[
-			UserServiceModel.service_user_id == service_id,
-			UserServiceModel.user_uuid == UserModel.uuid
+			UserServiceModelDB.service_user_id == service_id,
+			UserServiceModelDB.user_uuid == UserModel.uuid
 			]
 		)
 
@@ -76,8 +76,6 @@ class UserActions(BaseActions):
 		new_user = UserModel(
 			first_name = await HelperActions.get_fname_from_header(new_user),
 			last_name= await HelperActions.get_lname_from_header(new_user),
-			latitude = 407127281,
-			longitude = -740060152,
 			time_ping = int(time())
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)
@@ -100,4 +98,4 @@ class UserActions(BaseActions):
 		services = await UserServiceActions.get_all_services(user_uuid)
 		for key, value in services.items():
 			for item in value:
-				await cls.delete_one(UserServiceModel, [UserServiceModel.uuid == item.uuid])
+				await cls.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid])
