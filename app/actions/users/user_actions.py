@@ -79,8 +79,7 @@ class UserActions(BaseActions):
 			latitude = 407127281,
 			longitude = -740060152,
 			time_ping = int(time()),
-			admin = await HelperActions.get_admin(new_user),
-			time_ping = int(time())
+			admin = await HelperActions.get_admin(new_user)
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)
 		new_user = await cls.create(new_user)
