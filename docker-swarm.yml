@@ -45,7 +45,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
       MYSQL_PORT: 3306
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.1.sql"
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
     ports:
       - 8080:80
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh

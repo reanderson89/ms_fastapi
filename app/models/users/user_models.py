@@ -15,6 +15,8 @@ class UserModel(Base):
 	time_updated: Mapped[int] = mapped_column(default=None)
 	time_ping: Mapped[int] = mapped_column(default=None)
 	time_birthday: Mapped[int] = mapped_column(default=None)
+	time_birthday: Mapped[int] = mapped_column(default=None)
+	admin: Mapped[int] = mapped_column(default=0)
 
 class UserBase(BasePydantic):
 	uuid: Optional[str]
@@ -26,6 +28,7 @@ class UserBase(BasePydantic):
 	time_updated: Optional[int]
 	time_ping: Optional[int]
 	time_birthday: Optional[int]
+	admin: Optional[int]
 
 class UserUpdate(BasePydantic):
 	first_name: Optional[str]
@@ -33,6 +36,7 @@ class UserUpdate(BasePydantic):
 	latitude: Optional[int]
 	longitude: Optional[int]
 	time_birthday: Optional[int]
+	admin: Optional[int]
 
 class UserExpanded(UserBase):
 	services: Optional[dict] = None

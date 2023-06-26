@@ -76,6 +76,10 @@ class UserActions(BaseActions):
 		new_user = UserModel(
 			first_name = await HelperActions.get_fname_from_header(new_user),
 			last_name= await HelperActions.get_lname_from_header(new_user),
+			latitude = 407127281,
+			longitude = -740060152,
+			time_ping = int(time()),
+			admin = await HelperActions.get_admin(new_user)
 			time_ping = int(time())
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)

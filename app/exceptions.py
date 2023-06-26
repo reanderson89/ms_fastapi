@@ -4,6 +4,12 @@ from fastapi import HTTPException
 class ExceptionHandling():
 
 	@staticmethod
+	async def custom400(message, cron_job: bool = False):
+		if cron_job:
+			raise Exception(message)
+		raise HTTPException(status_code=400, detail=message)
+
+	@staticmethod
 	async def check404(item, cron_job: bool = False):
 		if cron_job:
 			raise Exception("Not Found")
