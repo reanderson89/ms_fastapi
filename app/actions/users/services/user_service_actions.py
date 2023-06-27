@@ -56,7 +56,8 @@ class UserServiceActions(BaseActions):
 		services = await cls.get_all_where(
 			UserServiceModelDB,
 			[UserServiceModelDB.user_uuid == user_uuid],
-			query_params
+			query_params,
+			pagination=False
 		)
 
 		result = {}

@@ -6,12 +6,11 @@ from app.actions.users.services import UserServiceActions
 
 router = APIRouter(tags=["Users Service"], prefix="/users/{user_uuid}")
 
-
 @router.get("/services", response_model=dict)
 async def get_services(
 	user_uuid: str,
 	query_params: dict = Depends(default_query_params)
-) -> Page[UserServiceModel]:
+):
 	return await UserServiceActions.get_all_services(user_uuid, query_params)
 
 
