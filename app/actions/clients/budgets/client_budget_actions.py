@@ -4,8 +4,8 @@ from app.utilities import SHA224Hash
 from app.actions.helper_actions import HelperActions
 from app.actions.clients import ClientActions
 from app.models.clients import ClientBudgetModelDB, ClientBudgetExpanded, ClientModelDB, ClientBudgetShortExpand
+from app.models.programs import ProgramModelDB
 from .client_sub_budget_actions import ClientSubBudgetActions
-
 from app.actions.base_actions import BaseActions
 
 class ClientBudgetActions():
@@ -130,14 +130,14 @@ class ClientBudgetActions():
 	async def update_budget(cls, budget_updates, budget_9char: str, client_uuid: str):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid)
 		"""
-		add check for:
 		if a budget has a program attached, a child, or an expenditure it cannot be modified except for name and value
-		"""
+		"""			
 		parent_9char = budget_updates.parent_9char if budget_updates.parent_9char else budget.parent_9char
-		parent = await cls.check_for_valid_parent(parent_9char, client_uuid)
+		parent = await cls.check_for_valid_parent(parent_9char, client_uuid) if parent_9char else None
 		if budget_updates.name:
 			await cls.check_for_existing_budget_by_name(budget_updates, budget.client_uuid)
 		if budget_updates.parent_9char or budget_updates.budget_type:
+
 			if budget_updates.parent_9char == budget_9char:
 				return await ExceptionHandling.custom405("Cannot set same value for parent_9char and budget_9char.")
 			else:
@@ -168,12 +168,29 @@ class ClientBudgetActions():
 	@classmethod
 	async def delete_budget(cls, budget_9char: str, client_uuid: str):
 		budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid)
-		sub_budget = await ClientSubBudgetActions.get_all_sub_budgets(budget_9char, client_uuid)
-		if sub_budget: #TODO: add check for `or program or program_event`
-			return await ExceptionHandling.custom405(f"Unable to delete budget named: {budget.name}.")
-		if budget.budget_type == 0 and budget.parent_9char is not None:
+		sub_budgets = await ClientSubBudgetActions.get_all_sub_budgets(budget_9char, client_uuid)
+		budget_in_use, message = await cls.budget_in_use(budget_9char, client_uuid)
+		if sub_budgets or budget_in_use:
+			message = f"Unable to delete budget named: {budget.name}. {message}" if message else f"Unable to delete budget named: {budget.name}."
+			return await ExceptionHandling.custom405(message)
+		elif budget.budget_type == 0 and budget.parent_9char is not None:
 			parent = await cls.get_budget_by_9char_and_client_uuid(budget.parent_9char, client_uuid)
 			parent.value += budget.value
 			return [await BaseActions.delete_without_lookup(budget), await BaseActions.update_without_lookup(parent)]
 		else:
 			return await BaseActions.delete_without_lookup(budget)
+		
+	@classmethod
+	async def budget_in_use(cls, budget_9char: str, client_uuid: str) -> bool:
+		program = await cls.get_program_by_budget(budget_9char, client_uuid)
+		if program:
+			return (True, f"Budget is in use by program: {program.name}.")
+		else:
+			return False, None
+	
+	@staticmethod
+	async def get_program_by_budget(budget_9char: str, client_uuid: str):
+		return await BaseActions.get_one_where(ProgramModelDB, [
+			ProgramModelDB.budget_9char == budget_9char,
+			ProgramModelDB.client_uuid == client_uuid
+		], check404=False)

@@ -39,21 +39,21 @@ class ProgramEventActions():
 	@staticmethod
 	async def create_event(event_obj, path_params, program_uuid):
 		if isinstance(event_obj, list):
-			event_obj = [ProgramEventModelDB(
+			event_objs = [ProgramEventModelDB(
 				**event.dict(),
 				program_uuid = program_uuid,
 				client_uuid = path_params["client_uuid"],
 				program_9char = path_params["program_9char"],
 				event_9char = await HelperActions.generate_9char()
 			) for event in event_obj]
-		else:
-			event_obj = ProgramEventModelDB(
-				**event_obj.dict(),
-				program_uuid = program_uuid,
-				client_uuid = path_params["client_uuid"],
-				program_9char = path_params["program_9char"],
-				event_9char = await HelperActions.generate_9char()
-			)
+			return await BaseActions.create_all(event_objs)
+		event_obj = ProgramEventModelDB(
+			**event_obj.dict(),
+			program_uuid = program_uuid,
+			client_uuid = path_params["client_uuid"],
+			program_9char = path_params["program_9char"],
+			event_9char = await HelperActions.generate_9char()
+		)
 		return await BaseActions.create(event_obj)
 
 	@staticmethod
