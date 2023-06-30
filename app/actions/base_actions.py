@@ -136,8 +136,8 @@ class BaseActions():
 				).one_or_none()
 			await ExceptionHandling.check404(db_item)
 
-			updated_fields = updates_obj.dict(exclude_unset=True)
-			for key, value in updated_fields.items():
+			updated_fields = updates_obj.dict(exclude_unset=True, exclude_none=True).items()
+			for key, value in updated_fields:
 				setattr(db_item, key, value)
 			db_item.time_updated = int(time())
 
@@ -145,6 +145,42 @@ class BaseActions():
 			session.commit()
 			session.refresh(db_item)
 			return db_item
+	
+	@staticmethod
+	async def bulk_update(model, conditions: list, updates_objs, key_list: list):
+		"""
+		Update multiple rows in the database for the specified model
+		:param model(DataModel): The model/table to update
+		:param conditions(list): The conditions to match for the row to update
+		:param updates_obj(UpdateModel): The model instance containing the updated fields
+		:return: The updated model instance
+		"""
+		with Session(engine) as session:
+			updates = [] #create an empty list for the later to be updated items
+			db_items = session.query(model).where(*conditions).filter(model.uuid.in_(key_list)).all() #get each item from the database filtering by the uuids in the key_list
+			await ExceptionHandling.check404(db_items, message = "No items found to update")
+
+			items = {} #creating a dictionary of the items from the database
+			not_updated = [] #creating an empty list for the items that were not updated
+			for db_item in db_items:
+				items[db_item.uuid] = db_item #adding each item to the dictionary with the uuid as the key
+			for obj in updates_objs:
+				if obj.uuid not in items:
+					not_updated.append(obj)
+					continue
+				item_from_db = items[obj.uuid]
+				update_fields = obj.dict(exclude_unset=True, exclude_none=True).items()
+				for key, value in update_fields:
+					setattr(item_from_db, key, value)
+					item_from_db.time_updated = int(time())
+				updates.append(item_from_db)
+
+			session.add_all(updates)
+			session.commit()
+			for i in updates:
+				session.refresh(i)
+			return {"updated":updates, "not_updated": not_updated}
+
 
 	@staticmethod
 	async def delete_one(model, conditions: list):

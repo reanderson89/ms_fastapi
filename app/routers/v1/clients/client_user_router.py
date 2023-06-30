@@ -37,11 +37,11 @@ async def create_user(users: (list[dict] | dict), path_params: dict = Depends(pa
 		users = await ClientUserActions.create_client_user(users, path_params)
 	return users
 
-
-@router.put("/users/{user_uuid}", response_model=ClientUserModelDB)
-async def update_user(user_updates: ClientUserUpdate, path_params: dict = Depends(path_params)):
+@router.put("/users/{user_uuid}", response_model=(dict | ClientUserModel))
+async def update_users(user_updates: (list[ClientUserUpdate] | ClientUserUpdate), path_params: dict = Depends(path_params)):
+	if path_params.get('user_uuid') == "bulk":
+		return await ClientUserActions.update_users(path_params, user_updates)
 	return await ClientUserActions.update_user(path_params, user_updates)
-
 
 @router.delete("/users/{user_uuid}")
 async def delete_user(path_params: dict = Depends(path_params)):

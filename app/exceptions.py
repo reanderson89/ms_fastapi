@@ -10,11 +10,11 @@ class ExceptionHandling():
 		raise HTTPException(status_code=400, detail=message)
 
 	@staticmethod
-	async def check404(item, cron_job: bool = False):
+	async def check404(item, cron_job: bool = False, message: str = "Not Found"):
 		if cron_job:
 			raise Exception("Not Found")
 		if not item:
-			raise HTTPException(status_code=404, detail="Not Found")
+			raise HTTPException(status_code=404, detail=message)
 
 	@staticmethod
 	async def custom500(message, cron_job: bool = False):

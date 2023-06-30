@@ -96,6 +96,23 @@ class ClientUserActions():
 		)
 
 	@staticmethod
+	async def update_users(path_params, user_updates):
+		uuid_list = []
+		for user in user_updates:
+			if user.uuid:
+				uuid_list.append(user.uuid)
+			else:
+				return await ExceptionHandling.custom400(f"Missing uuid in user update list for: {user}")
+		return await BaseActions.bulk_update(
+			ClientUserModelDB,
+			[
+				ClientUserModelDB.client_uuid == path_params.get('client_uuid'),
+			],
+			user_updates,
+			uuid_list
+		)
+
+	@staticmethod
 	async def delete_user(path_params):
 		return await BaseActions.delete_one(
 			ClientUserModelDB,

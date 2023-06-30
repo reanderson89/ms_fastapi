@@ -36,9 +36,10 @@ class ClientUserModel(BasePydantic):
 	admin: Optional[int]
 
 class ClientUserUpdate(BasePydantic):
+	uuid: Optional[str] = None
 	manager_uuid: Optional[str] = None
-	employee_id: str = None
-	title: str = None
+	employee_id: Optional[str] = None
+	title: Optional[str] = None
 	department: Optional[str] = None
 	active: Optional[bool] = None
 	time_updated: Optional[int] = None
