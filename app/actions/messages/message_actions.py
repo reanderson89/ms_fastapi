@@ -42,9 +42,9 @@ class MessageActions():
 			for i in messages:
 				message = await cls.to_message_model(i)
 				message = await cls.check_for_existing_message_by_name(message, False)
-				if message.uuid is None:
+				if message.uuid is None: #no message with same name exists
 					to_create.append(message)
-				else:
+				else: #message with same name exists, appends message to list and skips a create
 					message_list.append(message)
 			if len(to_create) > 0:
 				message_list.extend(await BaseActions.create(to_create))
@@ -85,6 +85,9 @@ class MessageActions():
 
 	@staticmethod
 	async def delete_message(message_9char: str):
+		message = await BaseActions.get_one_where(MessageModelDB, [MessageModelDB.message_9char == message_9char])
+		if message.client_uuid and message.status == 2: #status of 2 indicates "published"
+			return await ExceptionHandling.custom405(f"Cannot delete client message {message.name}, status code is published.")
 		return await BaseActions.delete_one(
 			MessageModelDB, [MessageModelDB.message_9char == message_9char]
 		)
