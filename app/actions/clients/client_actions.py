@@ -1,5 +1,6 @@
 from app.actions.base_actions import BaseActions
 from app.models.clients import ClientModelDB, ClientUpdate
+from app.exceptions import ExceptionHandling
 
 class ClientActions():
 
@@ -20,39 +21,54 @@ class ClientActions():
 			ClientModelDB.name,
 			[ClientModelDB.uuid == client_uuid]
 		)
-
-	@classmethod
-	async def create_client_handler(cls, clients):
-		to_return = []
-		if isinstance(clients, list):
-			for i in clients:
-				client = await cls.create_client(i)
-				to_return.append(client)
-		else:
-			client = await cls.create_client(clients)
-			to_return.append(client)
-		return to_return
-
+	
 	@staticmethod
-	async def create_client(client_data):
+	async def check_if_client_exists_by_name(client_name: str, error=True):
 		client = await BaseActions.check_if_exists(
 			ClientModelDB,
-			[ClientModelDB.name == client_data.name]
+			[ClientModelDB.name == client_name]
 		)
-		if client:
+		if client and error:
+			return await ExceptionHandling.custom405(f"Client with name '{client.name}' already exists.")
+		elif client and not error:
 			return client
-
-		new_client = ClientModelDB(
+		else:
+			return None
+		
+	@staticmethod
+	async def to_client_db_model(client_data):
+		return ClientModelDB(
 			name=client_data.name,
 			description=client_data.description,
 			status=client_data.status,
 			url=client_data.url
 		)
+
+	@classmethod
+	async def create_client(cls, client_data):
+		if isinstance(client_data, list):
+			to_create = []
+			return_list = []
+			for client in client_data:
+				existing_client = await cls.check_if_client_exists_by_name(client.name, False)
+				if existing_client:
+					return_list.append(existing_client)
+				else:
+					to_create.append(await cls.to_client_db_model(client))
+			if len(to_create) > 0:
+				return_list.extend(await BaseActions.create(to_create))
+			return return_list
+		client = await cls.check_if_client_exists_by_name(client_data.name, False)
+		if client:
+			return client
+		new_client = await cls.to_client_db_model(client_data)
 		return await BaseActions.create(new_client)
 
-	@staticmethod
-	def update_client(client_uuid: str, update_obj: ClientUpdate):
-		return BaseActions.update(
+	@classmethod
+	async def update_client(cls, client_uuid: str, update_obj: ClientUpdate):
+		if update_obj.name:
+			await cls.check_if_client_exists_by_name(update_obj.name)
+		return await BaseActions.update(
 			ClientModelDB,
 			[ClientModelDB.uuid ==client_uuid],
 			update_obj
@@ -60,6 +76,9 @@ class ClientActions():
 
 	@staticmethod
 	async def delete_client(client_uuid: str):
+		client = await BaseActions.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid])
+		if client.status == 1:
+			return await ExceptionHandling.custom400(f"Client '{client.name}' is currently active. Please deactivate before deleting.")
 		return await BaseActions.delete_one(
 			ClientModelDB,
 			[ClientModelDB.uuid == client_uuid]

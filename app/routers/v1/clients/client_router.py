@@ -14,19 +14,19 @@ async def get_clients(
 ) -> Page[ClientModel]:
 	return await ClientActions.get_all_clients(query_params)
 
-@router.get("/clients/{client_uuid}", response_model=ClientModelDB)
+@router.get("/clients/{client_uuid}", response_model=ClientModel)
 async def get_client(client_uuid: str):
 	return await ClientActions.get_client(client_uuid)
 
 
 @router.post("/clients", response_model=list[ClientModelDB]|ClientModelDB)
 async def create_client(
-	clients: Union[list[ClientCreate], ClientCreate]
+	clients: list[ClientCreate] | ClientCreate
 ):
-	return await ClientActions.create_client_handler(clients)
+	return await ClientActions.create_client(clients)
 
 
-@router.put("/clients/{client_uuid}", response_model=ClientModelDB)
+@router.put("/clients/{client_uuid}", response_model=ClientModel)
 async def update_client(
 	client_uuid: str,
 	client_updates: ClientUpdate
