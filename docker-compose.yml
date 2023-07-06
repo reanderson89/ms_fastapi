@@ -36,12 +36,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
       AWS_ROLE_ARN: ${AWS_ROLE_ARN}
-      # Datadog is fully disabled
-      DATADOG_TRACE_ENABLED: 0
-      # DD_ENV: "local"
-      # DD_SERVICE: "milestones-api-local"
-      # DD_TRACE_AGENT_URL: http://datadog:8126
-      # DD_VERSION: "0.1.0"
+      DD_TRACE_ENABLED: false # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
