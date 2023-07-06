@@ -1,5 +1,7 @@
 from app.actions.base_actions import BaseActions
+from app.exceptions import ExceptionHandling
 from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardUpdate
+from app.models.programs import ProgramAwardModelDB
 
 
 class ClientAwardActions():
@@ -55,6 +57,18 @@ class ClientAwardActions():
 
 	@staticmethod
 	async def delete_award(client_uuid: str, client_award_9char: str):
+		program = await BaseActions.get_one_where(
+			ProgramAwardModelDB,
+			[
+				ProgramAwardModelDB.client_award_9char == client_award_9char,
+				ProgramAwardModelDB.client_uuid == client_uuid
+			],
+			False
+		)
+		if program:
+			return await ExceptionHandling.custom409(
+				f"Cannot delete client award {client_award_9char} is currently in use by program: {program.name}."
+			)
 		return await BaseActions.delete_one(
 			ClientAwardModelDB,
 			[
