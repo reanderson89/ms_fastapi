@@ -38,15 +38,18 @@ services:
       ALGORITHM: ${ALGORITHM}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID} # from .env
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # from .env
-      DD_AGENT_HOST: datadog_agent
-      DD_PROFILING_ENABLED: true
+      AWS_ROLE_ARN: ${AWS_ROLE_ARN} # from .env
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME} # from .env      
+      DATADOG_TRACE_ENABLED: 0 # Datadog is fully disabled
+      # DD_AGENT_HOST: datadog_agent
+      # DD_PROFILING_ENABLED: true
       ENV: local
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
-      MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
+      MYSQL_HOSTNAME: milestones_db
       MYSQL_PORT: 3306
       SECRET_KEY: ${SECRET_KEY} # from .env
       SPARKPOST_KEY: ${SPARKPOST_KEY} # from .env
