@@ -2,6 +2,7 @@ from time import time
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.database.config import engine
 from app.utilities import SHA224Hash
 from app.exceptions import ExceptionHandling
@@ -122,6 +123,28 @@ class BaseActions():
 			return model_objs if is_list else model_objs[0]
 
 	@staticmethod
+	async def seed_database(model_objs):
+		"""
+		Create one or more rows in the database for the specified model
+		:param model_objs(DataModel instance or list): The model instance(s) to create
+		:return: The created model(DataModel instance(s))
+		"""
+		model_objs = model_objs if (is_list := isinstance(model_objs, list)) else [model_objs]
+
+		for obj in model_objs:
+			try:
+				with Session(engine, expire_on_commit=False) as session:
+					obj.uuid = SHA224Hash() if not obj.uuid else obj.uuid
+					obj.time_created = obj.time_updated = int(time())
+
+					session.add(obj)
+					session.commit()
+			except IntegrityError:
+				pass
+
+		return model_objs if is_list else model_objs[0]
+
+	@staticmethod
 	async def update(model, conditions: list, updates_obj):
 		"""
 		Update a row in the database for the specified model
@@ -146,7 +169,7 @@ class BaseActions():
 			session.commit()
 			session.refresh(db_item)
 			return db_item
-	
+
 	@staticmethod
 	async def bulk_update(model, conditions: list, updates_objs, key_list: list):
 		"""

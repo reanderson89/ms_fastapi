@@ -10,76 +10,24 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 from contextlib import asynccontextmanager
 from fastapi_pagination import add_pagination
+from app.seed_data.seed_data import generate_seed_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 	bootstrap_envs = ["LOCAL", "DEV"]
 	env = os.getenv("ENV", "LOCAL").upper()
 	if env in bootstrap_envs:
-		user1 = UserModel(
-			uuid="55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
-			first_name="TestUser",
-			last_name="CellService",
-			latitude=407127281,
-			longitude=-740060152,
-			time_created=1686591427,
-			time_updated=1686591427,
-			time_ping=1686591427
-		)
+		"""
+		try/except was added because when the container would reload when a change was made,
+		it would error out on the fact that the users already existed.
+		"""
+		try:
+			await BaseActions.seed_database(generate_seed_data())
+			yield
+		except:
+			yield
 
-		user2 = UserModel(
-			uuid="0e58cd793a1d465c638276e450a92d82082f640b494fbc7735478aa9",
-			first_name="TestUser",
-			last_name="EmailService",
-			latitude=407127281,
-			longitude=-740060152,
-			time_created=1686591427,
-			time_updated=1686591427,
-			time_ping=1686591427
-		)
 
-	user1_service = UserServiceModelDB(
-		uuid= "a59a0209ab829e672d748026608bdcc19695d01b3e56ffc0d6adb29e",
-		user_uuid= "55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
-		service_uuid= "cell",
-		service_user_id= "15005550006",
-		service_user_screenname= "TestUser CellService",
-		service_user_name= "testusercellservice",
-		service_access_token= "access token",
-		service_access_secret= "secret token",
-		service_refresh_token= "refresh token",
-		time_created= 1686591427,
-		time_updated= 1686591427,
-		login_secret="place_holder",
-		login_token="place_holder"
-	)
-
-	user2_service = UserServiceModelDB(
-		uuid="774339d7415fe0f393cb401ed6efdb3537af7b0b9a1235bf542767b1",
-		user_uuid="0e58cd793a1d465c638276e450a92d82082f640b494fbc7735478aa9",
-		service_uuid="email",
-		service_user_id="test.user@testclient.com",
-		service_user_screenname="TestUser EmailService",
-		service_user_name="testuseremailservice",
-		service_access_token="access token",
-		service_access_secret="secret token",
-		service_refresh_token="refresh token",
-		time_created=1686591427,
-		time_updated=1686591427,
-		login_secret="place_holder",
-		login_token="place_holder"
-	)
-
-	"""
-	try/except was added because when the container would reload when a change was made,
-	it would error out on the fact that the users already existed.
-	"""
-	try:
-		await BaseActions.create([user1, user2])
-		await BaseActions.create([user1_service, user2_service])
-		yield
-	except:
-		yield
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)

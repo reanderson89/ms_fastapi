@@ -1,6 +1,6 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
-from app.models.programs.program_models import ProgramModel
+from app.models.programs.program_models import ProgramModelDB
 from app.models.programs.program_rule_models import ProgramRuleResponse, ProgramRuleModelDB
 
 
@@ -9,8 +9,8 @@ class ProgramRuleActions():
     @staticmethod
     async def get_program_uuid(program_9char: str):
         return await BaseActions.get_one_where(
-			ProgramModel.uuid,
-			[ProgramModel.program_9char == program_9char]
+			ProgramModelDB.uuid,
+			[ProgramModelDB.program_9char == program_9char]
 		)
     
     @staticmethod
