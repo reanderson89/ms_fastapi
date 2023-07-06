@@ -1,0 +1,49 @@
+#
+# https://github.com/colinmollenhour/mariadb-galera-swarm/blob/master/examples/swarm/docker-compose.yml
+#
+# apt-get update && apt-get install -y iputils-ping
+#
+
+version: "3.9"
+services:
+  seed:
+    image: colinmollenhour/mariadb-galera-swarm
+    environment:
+      # TODO figure out what to do with XTRABACKUP_PASSWORD/XTRABACKUP_PASSWORD_FILE
+      XTRABACKUP_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_USER: milestones
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      NODE_ADDRESS: ^10.0.*.*
+    networks:
+      - blueboard-network
+    command: seed
+    volumes:
+      - mysql-data:/var/lib/mysql
+    deploy:
+      replicas: 0
+
+  node:
+    image: colinmollenhour/mariadb-galera-swarm
+    environment:
+      # TODO figure out what to do with XTRABACKUP_PASSWORD/XTRABACKUP_PASSWORD_FILE
+      XTRABACKUP_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      NODE_ADDRESS: ^10.0.*.*
+      HEALTHY_WHILE_BOOTING: 1
+    networks:
+      - blueboard-network
+    command: node tasks.seed,tasks.node
+    volumes:
+      - mysql-data:/var/lib/mysql
+    deploy:
+      replicas: 0
+
+volumes:
+  mysql-data:
+    name: '{{.Service.Name}}-{{.Task.Slot}}-data'
+    driver: local
+
+networks:
+  blueboard-network:
+    external: true
