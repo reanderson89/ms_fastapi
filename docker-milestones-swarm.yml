@@ -33,7 +33,8 @@ services:
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
       AWS_ROLE_ARN: "${AWS_ROLE_ARN}"
-      DATADOG_TRACE_ENABLED: 0 # Datadog is fully disabled
+      #DATADOG_TRACE_ENABLED: 0 # Datadog is fully disabled
+      #DD_TRACE_ENABLED: 0 # Datadog is fully disabled
       ENV: dev
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "NO"

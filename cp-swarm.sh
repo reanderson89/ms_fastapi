@@ -22,7 +22,7 @@ for HOST in "${HOSTS[@]}"
 do
     # copy the run script
     scp run-milestones-swarm.sh "${USERNAME}@${HOST}:${DEST_PATH}/run.sh"
-    scp run-galera-swarm.sh "${USERNAME}@${HOST}:${DEST_PATH}/galera.sh"
+    # scp run-galera-swarm.sh "${USERNAME}@${HOST}:${DEST_PATH}/galera.sh"
     ssh -t ${USERNAME}@${HOST} "chmod 755 ${DEST_PATH}/*.sh"
 
     # OLD!  copy the swarm stack definition
