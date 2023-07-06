@@ -26,10 +26,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 			return await call_next(request)
 		except Exception as ex:
 			if ex is HTTPException:
-				return await cls.http_exception_handler(request, ex) 
+				return await cls.http_exception_handler(request, ex)
 			elif ex is RequestValidationError:
 				return await cls.validation_exception_handler(request, ex)
-			return await cls.unhandled_exception_handler(request, ex)			
+			return await cls.unhandled_exception_handler(request, ex)
 
 	@staticmethod
 	async def logger_details(request, exc):
@@ -48,7 +48,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 	@classmethod
 	async def validation_exception_handler(cls, request, exc):
 		detail = await cls.logger_details(request, exc)
-		detail["errors"][0]["ctx"]["doc"] = exc.__dict__["body"].replace("\n", "").replace("\t","").replace('"', "'")
+		if hasattr(exc, "body") and exc.body is not None:
+			detail["errors"][0]["ctx"]["doc"] = exc.__dict__["body"].replace("\n", "").replace("\t","").replace('"', "'")
 		cls.logger.error(detail)
 		return await _request_validation_exception_handler(request, exc)
 

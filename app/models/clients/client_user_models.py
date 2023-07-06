@@ -35,6 +35,17 @@ class ClientUserModel(BasePydantic):
 	time_start: Optional[int]
 	admin: Optional[int]
 
+class ClientUserCreate(ClientUserModel):
+	# user level fields
+	first_name: Optional[str]
+	last_name: Optional[str]
+	location: Optional[str]
+	time_birthday: Optional[int]
+	# service level fields
+	service_uuid: Optional[str] # email or cell
+	service_user_id: Optional[str] # email or cell
+
+
 class ClientUserUpdate(BasePydantic):
 	uuid: Optional[str] = None
 	manager_uuid: Optional[str] = None

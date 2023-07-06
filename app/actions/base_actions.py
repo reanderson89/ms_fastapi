@@ -38,8 +38,8 @@ class BaseActions():
 
 	@staticmethod
 	async def get_one_where(
-		model, 
-		conditions: list, 
+		model,
+		conditions: list,
 		check404: bool = True
 	):
 		"""
@@ -70,7 +70,7 @@ class BaseActions():
 				select(model)
 				.where(*conditions)
 				).one_or_none()
-		
+
 	@staticmethod
 	async def check_if_one_exists(model, conditions: list):
 		"""
@@ -107,7 +107,7 @@ class BaseActions():
 		:return: The created model(DataModel instance(s))
 		"""
 		with Session(engine) as session:
-			model_objs = model_objs if isinstance(model_objs, list) else [model_objs]
+			model_objs = model_objs if (is_list := isinstance(model_objs, list)) else [model_objs]
 
 			for obj in model_objs:
 				obj.uuid = SHA224Hash() if not obj.uuid else obj.uuid
@@ -118,7 +118,8 @@ class BaseActions():
 
 			for obj in model_objs:
 				session.refresh(obj)
-			return (model_objs[0] if len(model_objs) == 1 else model_objs)
+
+			return model_objs if is_list else model_objs[0]
 
 	@staticmethod
 	async def update(model, conditions: list, updates_obj):
@@ -256,11 +257,11 @@ class BaseActions():
 
 	@classmethod
 	async def get_all_where(
-		cls, 
-		model, 
-		conditions: list, 
-		params: dict, 
-		check404: bool = True, 
+		cls,
+		model,
+		conditions: list,
+		params: dict,
+		check404: bool = True,
 		pagination: bool = True
 	):
 		"""

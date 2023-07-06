@@ -11,6 +11,8 @@ from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash, PositiveNumbers
 
 class HelperActions():
+	default_email_types = {"Primary Work Email", "primary_work_email", "work_email", "personal_email", "email_address", "email"}
+	default_cell_types = {"Primary Cell Number", "primary_cell_number", "cell_number", "cell", "cell_phone"}
 
 	@staticmethod
 	async def get_session():
@@ -45,8 +47,12 @@ class HelperActions():
 		return output
 
 	@classmethod
-	async def get_email_from_header(cls, data):
-		email_types = {"Primary Work Email", "primary_work_email", "email_address", "email"}
+	async def get_email_from_header(cls, data, type=None):
+		email_types: set = cls.default_email_types
+		if type and type not in email_types:
+			return None
+		elif type and type in email_types:
+			email_types = {type}
 		email_type = list(email_types.intersection(data))
 		if bool(email_type):
 			return cls.ServiceType(type="email", value=data.get(email_type[0]))
@@ -54,8 +60,12 @@ class HelperActions():
 			return None
 
 	@classmethod
-	async def get_cell_from_header(cls, data):
-		cell_types = {"Primary Cell Number", "primary_cell_number", "cell_number", "cell"}
+	async def get_cell_from_header(cls, data, type=None):
+		cell_types: set = cls.default_cell_types
+		if type and type not in cell_types:
+			return None
+		elif type and type in cell_types:
+			cell_types = {type}
 		cell_type = list(cell_types.intersection(data))
 		if bool(cell_type):
 			cell_value = data.get(cell_type[0])
@@ -81,7 +91,7 @@ class HelperActions():
 			return data.get(name_type[0])
 		else:
 			raise Exception
-		
+
 	@staticmethod
 	async def get_manager_uuid(data):
 		name_types = ["manager_uuid", "Manager ID", "Manager UUID", "manager_id"]
@@ -91,7 +101,7 @@ class HelperActions():
 		else:
 			return
 			# raise Exception
-		
+
 	@staticmethod
 	async def get_employee_id(data):
 		name_types = ["employee id", "employee_id", "Employee ID"]

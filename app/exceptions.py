@@ -27,3 +27,9 @@ class ExceptionHandling():
 		if cron_job:
 			raise Exception(message)
 		raise HTTPException(status_code=405, detail=message)
+
+	@staticmethod
+	async def custom415(message, cron_job: bool = False):
+		if cron_job:
+			raise Exception(message)
+		raise HTTPException(status_code=415, detail=message)

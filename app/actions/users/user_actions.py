@@ -1,11 +1,12 @@
 from time import time
 from datetime import datetime
+from app.actions.utils import get_location_data, convert_coordinates
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.users import UserModel, UserServiceModelDB, UserExpanded
 
-class UserActions(BaseActions):
+class UserActions():
 
 	@staticmethod
 	def getTimeFromBday(bday):
@@ -15,21 +16,33 @@ class UserActions(BaseActions):
 
 	@classmethod
 	async def get_user_by_uuid(cls, uuid):
-		return await cls.get_one_where(UserModel, [UserModel.uuid == uuid])
+		return await BaseActions.get_one_where(UserModel, [UserModel.uuid == uuid])
 
 	@classmethod
-	async def get_user_by_service_id(cls, service_id):
-		return await cls.check_if_exists(
+	async def get_user_by_service_id(cls, user_data, service_id):
+		return await BaseActions.check_if_exists(
 			UserModel,
 			[
 			UserServiceModelDB.service_user_id == service_id,
-			UserServiceModelDB.user_uuid == UserModel.uuid
+			UserServiceModelDB.user_uuid == UserModel.uuid,
+			UserModel.first_name == user_data["first_name"],
+			UserModel.last_name == user_data["last_name"],
+			]
+		)
+
+	@classmethod
+	async def get_user_by_name(cls, first_name, last_name):
+		return await BaseActions.check_if_exists(
+			UserModel,
+			[
+			UserModel.first_name == first_name,
+			UserModel.last_name == last_name,
 			]
 		)
 
 	@classmethod
 	async def get_all_users(cls, query_params: dict):
-		return await cls.get_all(UserModel, query_params)
+		return await BaseActions.get_all(UserModel, query_params)
 
 	@classmethod
 	async def get_user(cls, user_uuid, expand_services=False):
@@ -42,15 +55,15 @@ class UserActions(BaseActions):
 		return user
 
 	@staticmethod
-	async def get_service_id(new_user_obj):
+	async def get_service_id(new_user_obj, service_id=None):
 		"""
 		Get the service ID from the specified user object
 		:param new_user_obj: The user object to get the service ID from
 		:return: A namedtuple containing the service type and service ID, or None if it couldn't be found
 		"""
-		if (service_id := await HelperActions.get_email_from_header(new_user_obj)):
+		if (service_id := await HelperActions.get_email_from_header(new_user_obj, service_id)):
 			return service_id
-		elif (service_id := await HelperActions.get_cell_from_header(new_user_obj)):
+		elif (service_id := await HelperActions.get_cell_from_header(new_user_obj, service_id)):
 			return service_id
 		else:
 			return None
@@ -65,40 +78,54 @@ class UserActions(BaseActions):
 		return user
 
 	@classmethod
-	async def create_user_and_service(cls, new_user):
-		service_id = await cls.get_service_id(new_user)
+	async def create_user_and_service(cls, new_user_data, service=None):
+		service_id = await cls.get_service_id(new_user_data, service)
+
 		if not service_id:
 			raise Exception
-		user = await cls.get_user_by_service_id(service_id.value)
+
+		user = await cls.get_user_by_name(new_user_data["first_name"], new_user_data["last_name"])
+
 		if user:
 			# TODO: change to "status = exists" class format
-			return user
-		new_user = UserModel(
-			first_name = await HelperActions.get_fname_from_header(new_user),
-			last_name= await HelperActions.get_lname_from_header(new_user),
-			latitude = 407127281,
-			longitude = -740060152,
+			service_user = await cls.get_user_by_service_id(new_user_data, service_id.value)
+			if service_user:
+				return service_user
+			else:
+				new_service = await UserServiceActions.create_service_for_new_user(user, service_id)
+				if not new_service:
+					raise Exception
+				return user
+
+		# Implemented but not in use due to slow response times
+		# location = get_location_data(new_user_data.get("location"))
+
+		new_user_obj = UserModel(
+			first_name = await HelperActions.get_fname_from_header(new_user_data),
+			last_name= await HelperActions.get_lname_from_header(new_user_data),
+			latitude = 407127281, # convert_coordinates(location.latitude),
+			longitude = -740060152, # convert_coordinates(location.longitude),
 			time_ping = int(time()),
-			admin = await HelperActions.get_admin(new_user)
+			admin = await HelperActions.get_admin(new_user_data)
 			#time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
 		)
-		new_user = await cls.create(new_user)
-		new_service = await UserServiceActions.create_service_for_new_user(new_user, service_id)
+		user_db = await BaseActions.create(new_user_obj)
+		new_service = await UserServiceActions.create_service_for_new_user(user_db, service_id)
 		if not new_service:
 			raise Exception
-		return new_user
+		return user_db
 
 	@classmethod
 	async def update_user(cls, user_uuid, updates):
-		return await cls.update(UserModel, [UserModel.uuid == user_uuid], updates)
+		return await BaseActions.update(UserModel, [UserModel.uuid == user_uuid], updates)
 
 	@classmethod
 	async def delete_user(cls, user_uuid):
-		return await cls.delete_one(UserModel, [UserModel.uuid == user_uuid])
+		return await BaseActions.delete_one(UserModel, [UserModel.uuid == user_uuid])
 
 	@classmethod
 	async def delete_test_user(cls, user_uuid):
 		services = await UserServiceActions.get_all_services(user_uuid)
 		for key, value in services.items():
 			for item in value:
-				await cls.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid])
+				await BaseActions.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid])

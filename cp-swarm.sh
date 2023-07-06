@@ -3,7 +3,7 @@
 # This is just a quick and dirty way to copy necerssary config files onto the development Docker Swarm cluster
 #
 
-declare -a HOSTS=(192.168.128.75)
+declare -a HOSTS=(172.27.0.3)
 USERNAME="blueboard"
 DEST_PATH="/home/${USERNAME}"
 

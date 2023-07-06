@@ -14,10 +14,10 @@
 version: "3.9"
 services:
   api:
-    image:  blueboardinc/milestones-api:v0.0.1-8765976
+    image:  blueboardinc/milestones-api:v0.0.7-54477d3
     deploy:
       mode: replicated
-      replicas: 5
+      replicas: 1
       restart_policy:
         condition: on-failure
       update_config:
@@ -32,20 +32,26 @@ services:
       #     cpus: '0.1'
       #     memory: 100M
     environment:
+      ACCOUNT_SID: "1234"
+      ACCOUNT_TOKEN: "1234"
       ALEMBIC_INI_FILE: "alembic.ini"
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      DD_AGENT_HOST: datadog_agent
-      DD_PROFILING_ENABLED: "true"
-      BEARER_TOKEN: ${BEARER_TOKEN}
+      ALGORITHM: "HS256"
+      AWS_ACCESS_KEY_ID: "1234"
+      AWS_SECRET_ACCESS_KEY: "1234"
+      # Datadog is fully disabled
+      DATADOG_TRACE_ENABLED: 0
+      ENV: dev
       LOG_LEVEL: debug
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
       # connection settings for the app, these should match server"s config (above)
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
+      MYSQL_PASSWORD: milestones # see comment above
       MYSQL_PORT: 3306
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
+      MYSQL_USER: milestones
+      SECRET_KEY: "6973dddb2cc93b7ab931fb707292ae7dc9a763db1ef73707047bb747b2b8851c"
+      SPARKPOST_KEY: "1234"
+      TWILIO_FROM: "1234"
     ports:
       - 8080:80
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
@@ -74,8 +80,8 @@ services:
       MYSQL_PASSWORD: milestones
     ports:
       - 3306:3306
-  beanstalkd:
-    image: schickling/beanstalkd
-    replicas: 1
-    ports:
-      - 11300:11300
+  # beanstalkd:
+  #   image: schickling/beanstalkd
+  #   replicas: 1
+  #   ports:
+  #     - 11300:11300
