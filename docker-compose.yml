@@ -11,7 +11,7 @@ services:
       # server settings
       MYSQL_ROOT_PASSWORD: password
       MYSQL_ROOT_HOST: '%'
-      MYSQL_LOG_CONSOLE: true
+      MYSQL_LOG_CONSOLE: "true"
       # bootstrap a db and db user
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_USER: milestones
@@ -34,13 +34,16 @@ services:
       ALGORITHM: ${ALGORITHM}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      # Datadog is fully disabled
+      DATADOG_TRACE_ENABLED: 0
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
       AWS_ROLE_ARN: ${AWS_ROLE_ARN}
-      # these DD_ ones are temporary
-      DD_ENV: "local"
-      DD_SERVICE: "milestones-api-local"
-      DD_TRACE_AGENT_URL: http://datadog:8126
-      DD_VERSION: "0.1.0"
+      # Datadog is fully disabled
+      DATADOG_TRACE_ENABLED: 0
+      # DD_ENV: "local"
+      # DD_SERVICE: "milestones-api-local"
+      # DD_TRACE_AGENT_URL: http://datadog:8126
+      # DD_VERSION: "0.1.0"
       ENV: local
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"

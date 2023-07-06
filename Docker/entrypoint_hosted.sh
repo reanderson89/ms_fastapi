@@ -10,7 +10,7 @@ sleep 10;
 
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
-alias bb-mysql="mysql -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
+alias bb-mysql="mysql -v -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
 alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.2.sql"
 EOF
 
