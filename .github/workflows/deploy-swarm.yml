@@ -12,7 +12,7 @@ on:
         type: choice
         default: 'development'
         options:
-          - development (BendTech)
+          - development
           - production
 
 jobs:
@@ -73,7 +73,7 @@ jobs:
           port: 22
           username: blueboard
           key: ${{ secrets.SSH_KEY }}                                   # environment
-          source: "docker-milestones-swarm.yml,docker-galera-swarm.yml"
+          source: "docker-milestones-swarm.yml"
           target: /home/blueboard
           
       - name: Pull image and update Docker Swarm on leader node
