@@ -40,7 +40,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # from .env
       AWS_ROLE_ARN: ${AWS_ROLE_ARN} # from .env
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME} # from .env      
-      DD_TRACE_ENABLED: false # Datadog is fully disabled
+      DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
@@ -70,24 +70,24 @@ services:
     ports:
       - 80:80 # host:container
     restart: always
-  datadog_agent:
-    container_name: datadog_agent
-    build:
-      context: .
-      dockerfile: Dockerfile.datadog
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-    environment:
-      DD_APM_ENABLED: true
-      DD_APM_NON_LOCAL_TRAFFIC: true
-      DD_LOGS_ENABLED: true
-      DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: true
-      DD_SERVICE: "milestones-api"
-      DD_ENV: "dev"
-      DD_API_KEY: ${DD_API_KEY}
-      DD_CONTAINER_INCLUDE: "name:milestones_api"
-      DD_CONTAINER_EXCLUDE: "name:milestones_db name:datadog name:nginx"
-    restart: always
+  # datadog_agent:
+  #   container_name: datadog_agent
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.datadog
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /proc/:/host/proc/:ro
+  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #   environment:
+  #     DD_APM_ENABLED: true
+  #     DD_APM_NON_LOCAL_TRAFFIC: true
+  #     DD_LOGS_ENABLED: true
+  #     DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL: true
+  #     DD_SERVICE: "milestones-api"
+  #     DD_ENV: "dev"
+  #     DD_API_KEY: ${DD_API_KEY}
+  #     DD_CONTAINER_INCLUDE: "name:milestones_api"
+  #     DD_CONTAINER_EXCLUDE: "name:milestones_db name:datadog name:nginx"
+  #   restart: always
