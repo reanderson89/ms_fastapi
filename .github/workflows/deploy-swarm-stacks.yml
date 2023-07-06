@@ -53,7 +53,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}           # environment
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # environment
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}               # environment
-          AWS_ROLE_ARN: : ${{ secrets.AWS_ROLE_ARN }}                   # environment
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}                     # environment
           MYSQL_HOSTNAME: ${{ secrets.MYSQL_HOSTNAME }}                 # environment
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}                 # environment
           SECRET_KEY: ${{ secrets.SECRET_KEY }}                         # environment
