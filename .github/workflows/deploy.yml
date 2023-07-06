@@ -12,9 +12,7 @@ on:
         type: choice
         default: 'development'
         options:
-          - development
-          - staging
-          - production
+          - development (AWS)
       ref:
         description: 'Branch with correct secrets.txt file?'
         default: 'staging'
