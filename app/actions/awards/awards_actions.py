@@ -1,8 +1,19 @@
 from app.actions.base_actions import BaseActions
+from app.exceptions import ExceptionHandling
 from app.models.award import AwardModelDB, AwardUpdate
 
 
-class AwardActions(BaseActions):
+class AwardActions():
+
+	@staticmethod
+	async def check_for_existing_by_name(name, error = True):
+		award = await BaseActions.check_if_exists(AwardModelDB, [AwardModelDB.name == name])
+		if award and error:
+			return await ExceptionHandling.custom409(f"Award with name '{name}' already exists.")
+		elif award and not error:
+			return award
+		else:	
+			return None
 
 	@staticmethod
 	async def get_all_awards(query_params: dict):
@@ -32,7 +43,7 @@ class AwardActions(BaseActions):
 			- limit(int): The maximum number of results to return
 		:return: A list of model objects, for example [model(DataModel),...]
 		"""
-		return await cls.get_all_where(
+		return await BaseActions.get_all_where(
 			AwardModelDB,
 			conditions,
 			query_params
@@ -45,7 +56,7 @@ class AwardActions(BaseActions):
 		:param award_uuid(str): The uuid of the award to query
 		:return: The award model(DataModel instance)
 		"""
-		return await cls.get_one_where(
+		return await BaseActions.get_one_where(
 			AwardModelDB,
 			[AwardModelDB.uuid == award_uuid]
 		)
@@ -57,7 +68,10 @@ class AwardActions(BaseActions):
 		:param award_objs(AwardModel | list[AwardModel]): A list of Award models to create
 		:return: The list of created award models
 		"""
-		return await cls.create(award_objs)
+		award = await cls.check_for_existing_by_name(award_objs.name, False)
+		if award:
+			return award
+		return await BaseActions.create(award_objs)
 
 	@classmethod
 	async def update_award(cls, award_uuid: str, update_obj: AwardUpdate):
@@ -67,7 +81,9 @@ class AwardActions(BaseActions):
 		:param update_obj(AwardUpdate):The model object containing the updated fields
 		:return: The updated award model
 		"""
-		return await cls.update(
+		if update_obj.name:
+			await cls.check_for_existing_by_name(update_obj.name)
+		return await BaseActions.update(
 			AwardModelDB,
 			[AwardModelDB.uuid == award_uuid],
 			update_obj
@@ -96,66 +112,3 @@ class AwardActions(BaseActions):
 			AwardModelDB,
 			conditions
 		)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # @classmethod
-    # async def create_award_handler(cls, awards):
-
-    #     if not isinstance(awards, list):
-    #         awards = list(awards)
-
-    #     return [
-    #         cls.create_award(awards)
-    #         for award in awards
-    #     ]
-
-
-    # @classmethod
-    # async def create_award(cls, award_data):
-    #     check = await cls.check_for_existing(award_data.name)
-    #     if check:
-    #         return check
-
-    #     new_award = AwardModel(
-    #         name=award_data.name,
-    #         award_type=award_data.award_type,
-    #         value=award_data.value
-    #     )
-    #     return await CommonRoutes.create_one_or_many(new_award)
-
-
-    # @classmethod
-    # async def check_for_existing(cls, name):
-    #     client = await cls.get_award_by_name(name)
-    #     if client:
-    #         return client
-
-
-    # @classmethod
-    # async def get_award_by_name(cls, search_by):
-    #     with Session(engine) as session:
-    #         return session.exec(
-    #             select(AwardModel).where(AwardModel.name == search_by)
-    #         ).one_or_none()
-
-
-    # @staticmethod
-    # async def get_name_by_uuid(search_by):
-    #     with Session(engine) as session:
-    #         return session.exec(
-    #             select(AwardModel.name).where(AwardModel.uuid == search_by)
-    #         ).one_or_none()
