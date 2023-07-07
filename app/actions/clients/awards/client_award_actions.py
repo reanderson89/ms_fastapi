@@ -7,6 +7,10 @@ from app.models.programs import ProgramAwardModelDB
 class ClientAwardActions():
 
 	@staticmethod
+	async def to_award_db_model(client_uuid: str, award_data):
+		return ClientAwardModelDB(client_uuid=client_uuid, **award_data.__dict__)
+
+	@staticmethod
 	async def get_client_awards(client_uuid: str, query_params: dict):
 		return await BaseActions.get_all_where(
 			ClientAwardModelDB,
@@ -23,29 +27,52 @@ class ClientAwardActions():
 				ClientAwardModelDB.client_uuid == client_uuid
 			]
 		)
-
+	
 	@staticmethod
-	async def create_award(client_uuid: str, award_obj):
-		if isinstance(award_obj, list):
-			award_models = [
-				ClientAwardModelDB(
-					**award.__dict__, client_uuid=client_uuid
-				) for award in award_obj
+	async def check_if_award_exists_by_name(client_uuid: str, name: str, error=True):
+		award = await BaseActions.check_if_exists(
+			ClientAwardModelDB,
+			[
+				ClientAwardModelDB.name == name,
+				ClientAwardModelDB.client_uuid == client_uuid
 			]
+		)
+		if award and error:
+			return await ExceptionHandling.custom409(f"Client award with name '{name}' already exists.")
+		elif award and not error:
+			return award
 		else:
-			award_models = ClientAwardModelDB(
-				**award_obj.__dict__,
-				client_uuid = client_uuid
-			)
-		return await BaseActions.create(award_models)
+			return None
+
+	@classmethod
+	async def create_award(cls, client_uuid: str, award_obj):
+		if isinstance(award_obj, list):
+			to_create = []
+			return_list = []
+			for award in award_obj:
+				existing_award = await ClientAwardActions.check_if_award_exists_by_name(client_uuid, award.name, False)
+				if existing_award:
+					return_list.append(existing_award)
+				else:
+					to_create.append(await ClientAwardActions.to_award_db_model(client_uuid, award))
+			if len(to_create) > 0:
+				return_list.extend(await BaseActions.create(to_create))
+			return return_list
+		award = await ClientAwardActions.check_if_award_exists_by_name(client_uuid, award_obj.name, False)
+		if award:
+			return award
+		return await BaseActions.create(await cls.to_award_db_model(client_uuid, award_obj))
 
 
-	@staticmethod
+	@classmethod
 	async def update_award(
+		cls,
 		client_uuid: str,
 		client_award_9char: str,
 		award_updates: ClientAwardUpdate
 	):
+		if award_updates.name:
+			await cls.check_if_award_exists_by_name(client_uuid, award_updates.name)
 		return await BaseActions.update(
 			ClientAwardModelDB,
 			[

@@ -61,8 +61,7 @@ class ClientActions():
 		client = await cls.check_if_client_exists_by_name(client_data.name, False)
 		if client:
 			return client
-		new_client = await cls.to_client_db_model(client_data)
-		return await BaseActions.create(new_client)
+		return await BaseActions.create(await cls.to_client_db_model(client_data))
 
 	@classmethod
 	async def update_client(cls, client_uuid: str, update_obj: ClientUpdate):
