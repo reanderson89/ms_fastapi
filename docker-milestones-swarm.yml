@@ -51,16 +51,6 @@ services:
       - 8080:80
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
 
-  nginx:
-    image:  blueboardinc/nginx-docker-swarm:latest
-    deploy:
-      mode: replicated
-      replicas: 1
-    networks:
-      - blueboard-network
-    ports:
-      - 80:80
-
 networks:
   blueboard-network:
     external: true
