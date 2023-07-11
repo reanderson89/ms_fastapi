@@ -16,11 +16,26 @@ class SegmentModel(Base):
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 
+class SegmentReturn(BasePydantic):
+	uuid: str 
+	client_uuid: str 
+	program_9char: str 
+	segment_9char: str 
+	budget_9char: Optional[str] = None
+	name: Optional[str] = None
+	description: Optional[str] = None
+	status: Optional[int] = None
+	time_created: Optional[int] = None
+	time_updated: Optional[int] = None
+
 class SegmentUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
-	client_uuid: Optional[str] = None
-	program_9char: Optional[str] = None
 	budget_9char: Optional[str] = None
 	status: Optional[int] = None
-	time_updated: Optional[int] = None
+
+class SegmentCreate(BasePydantic):
+	budget_9char: Optional[str]
+	name: Optional[str]
+	description: Optional[str]
+	status: Optional[int]

@@ -46,7 +46,7 @@ class ProgramEventActions():
 				program_9char = path_params["program_9char"],
 				event_9char = await HelperActions.generate_9char()
 			) for event in event_obj]
-			return await BaseActions.create_all(event_objs)
+			return await BaseActions.create(event_objs)
 		event_obj = ProgramEventModelDB(
 			**event_obj.dict(),
 			program_uuid = program_uuid,
