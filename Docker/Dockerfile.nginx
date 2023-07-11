@@ -1,3 +1,6 @@
+#
+# This config is deprecated -- currently used only in the single AWS instance
+#
 FROM nginx:latest
 # args we're passing into Docker from the command line
 ARG DOCS_USERNAME

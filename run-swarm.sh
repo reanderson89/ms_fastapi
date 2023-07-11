@@ -15,6 +15,7 @@ fi
 
 DH_USERNAME=${1:-}
 DH_PASSWORD=${2:-} # password or personal access token
+SWARM_APP=${3:-milestones}
 
 if [[ -z ${DH_USERNAME} || -z ${DH_PASSWORD} ]]; then
     printf "Missing required arguments, must pass Docker Hub username and personal access token\n"
@@ -42,7 +43,23 @@ else
     echo "The Docker network ${NETWORK} already exists with an ID of ${NETWORK_ID}"
 fi
 
-docker stack deploy \
+
+case ${SWARM_APP} in
+  milestones)
+    docker stack deploy \
     --with-registry-auth \
     --compose-file docker-milestones-swarm.yml \
     milestones
+    ;;
+
+  api)
+    docker stack deploy \
+    --with-registry-auth \
+    --compose-file docker-api-swarm.yml \
+    api
+    ;;
+
+  *)
+    echo "Unknown Docker Swarm app name \"${SWARM_APP}\""
+    ;;
+esac

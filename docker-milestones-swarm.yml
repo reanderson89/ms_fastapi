@@ -52,7 +52,7 @@ services:
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
 
   nginx:
-    image:  blueboardinc/milestones-nginx:latest
+    image:  blueboardinc/nginx-docker-swarm:latest
     deploy:
       mode: replicated
       replicas: 1
