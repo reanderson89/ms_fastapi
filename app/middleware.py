@@ -49,7 +49,17 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 	async def validation_exception_handler(cls, request, exc):
 		detail = await cls.logger_details(request, exc)
 		if hasattr(exc, "body") and exc.body is not None:
-			detail["errors"][0]["ctx"]["doc"] = exc.__dict__["body"].replace("\n", "").replace("\t","").replace('"', "'")
+			body = exc.__dict__["body"]
+			if isinstance(body, str):
+				body = body.replace("\n", "").replace("\t","").replace('"', "'")
+			elif isinstance(body, list):
+				body = [str(item) for item in body]
+				body = "".join(body)
+				body = body.replace("\n", "").replace("\t","").replace('"', "'")
+			if "ctx" in detail["errors"][0]:
+				detail["errors"][0]["ctx"]["doc"] = body
+			else:
+				detail["errors"][0]["ctx"] = {"doc": body}
 		cls.logger.error(detail)
 		return await _request_validation_exception_handler(request, exc)
 

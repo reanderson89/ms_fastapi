@@ -9,8 +9,8 @@ class AdminPermissions(IntEnum):
 	supervisor = 1
 	manager = 2
 
-class ProgramAdminStatus(str, Enum):
-	exists = "exists"
+class ProgramAdminStatus(Enum):
+	exists = "existing admin"
 	created = "admin created"
 
 class AdminExpand(str, Enum):

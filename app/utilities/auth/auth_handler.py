@@ -9,15 +9,60 @@ from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 import os
 from pydantic import BaseModel
 
-
 get_bearer_token = HTTPBearer(auto_error=False)
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
+ENV: str = os.environ.get("ENV", "local")
+
 
 class UnAuthedMessage(BaseModel):
     detail: str = "Bearer token missing or unknown"
+
+
+class RejectedAuthMessage(BaseModel):
+    detail: str = "Forbidden"
+
+
+class Permissions():
+
+    def __init__(self, level: str):
+        self.level = level
+
+    def __call__(self,
+                 auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
+
+        if ENV == "local":
+            return True
+        else:
+            try:
+                verify = jwt.decode(auth.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+                if verify and int(self.level) <= verify['admin']:
+                    return verify['client_uuid']
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=RejectedAuthMessage().detail
+                    )
+            except PyJWTError:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=UnAuthedMessage().detail
+                )
+
+
+async def check_jwt_client_with_client(jwt_client, client_uuid):
+    if ENV == "local":
+        return True
+    else:
+        if jwt_client == client_uuid:
+            return True
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=UnAuthedMessage().detail
+            )
 
 
 def check_token(credentials):
@@ -62,4 +107,3 @@ async def access_token_creation(redeem):
         data=redeem, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
-

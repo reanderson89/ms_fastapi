@@ -69,7 +69,10 @@ class HelperActions():
 		cell_type = list(cell_types.intersection(data))
 		if bool(cell_type):
 			cell_value = data.get(cell_type[0])
-			cell_value = cell_value.replace("-", "").replace("(", "").replace(")", "").strip()
+			if isinstance(cell_value, int):
+				cell_value = str(cell_value)
+			else:
+				cell_value = cell_value.replace("-", "").replace("(", "").replace(")", "").strip()
 			return cls.ServiceType(type="cell", value=cell_value)
 		else:
 			return None

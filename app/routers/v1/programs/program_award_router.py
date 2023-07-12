@@ -1,8 +1,11 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params
 from app.routers.v1.pagination import Page
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
 from app.models.programs import ProgramAwardModelDB, ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
+from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 
 router = APIRouter(
 	prefix="/clients/{client_uuid}/programs/{program_9char}",
@@ -26,39 +29,49 @@ def path_params(
 
 @router.get("/awards")
 async def get_awards(
+	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params),
 	query_params: dict = Depends(default_query_params)
 ) -> Page[ProgramAwardResponse]:
+	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
 	return await ProgramAwardActions.get_program_awards(path_params, query_params)
 
 
 @router.get("/awards/{program_award_9char}", response_model=ProgramAwardResponse)
 async def get_award(
+	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
+	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
 	return await ProgramAwardActions.get_award(path_params)
 
 
 @router.post("/awards/{client_award_9char}", response_model=list[ProgramAwardResponse] | ProgramAwardResponse)
 async def create_award(
+	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	awards: list[ProgramAwardCreate] | ProgramAwardCreate,
 	path_params: dict = Depends(path_params),
 ):
+	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
 	return await ProgramAwardActions.create_award(path_params, awards)
 
 
 @router.put("/awards/{program_award_9char}", response_model=ProgramAwardResponse)
 async def update_award(
+	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	award_updates: ProgramAwardUpdate,
 	path_params: dict = Depends(path_params)
 ):
+	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
 	return await ProgramAwardActions.update_award(path_params, award_updates)
 
 
 # TODO: this should only work if there is no segment awards associated with the award
 @router.delete("/awards/{program_award_9char}")
 async def delete_award(
+	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
+	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
 	#TODO: add check for segment awards
 	return await ProgramAwardActions.delete_award(path_params)

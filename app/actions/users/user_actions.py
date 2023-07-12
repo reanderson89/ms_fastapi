@@ -4,6 +4,7 @@ from app.actions.utils import get_location_data, convert_coordinates
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
+from app.models.clients import ClientUserModel
 from app.models.users import UserModel, UserServiceModelDB, UserExpanded
 
 class UserActions():
@@ -46,7 +47,7 @@ class UserActions():
 		return await BaseActions.get_all(UserModel, query_params)
 
 	@classmethod
-	async def get_user(cls, user_uuid, expand_services=False):
+	async def get_user(cls, user_uuid, client_uuid, expand_services=False):
 		user = await cls.get_user_by_uuid(user_uuid)
 		if expand_services:
 			user_expanded = UserExpanded.from_orm(user)

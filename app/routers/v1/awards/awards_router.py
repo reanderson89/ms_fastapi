@@ -1,14 +1,18 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.actions.awards import AwardActions
 from app.models.award import AwardModelDB, AwardUpdate, AwardModel
+from app.utilities.auth.auth_handler import Permissions
 
 router = APIRouter(tags=["Awards"])
 
 
 @router.get("/awards")
 async def get_all_awards(
+	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 	query_params: dict = Depends(default_query_params),
 ) -> Page[AwardModel]:
 	return await AwardActions.get_all_awards(query_params)
@@ -16,13 +20,15 @@ async def get_all_awards(
 
 @router.get("/awards/{award_uuid}")
 async def get_award(
-	award_uuid: str
+		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+		award_uuid: str
 ) -> Page[AwardModel]:
 	return await AwardActions.get_award(award_uuid)
 
 
 @router.post("/awards", response_model=(list[AwardModel] | AwardModel))
 async def create_award(
+	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 	awards: (list[AwardModelDB] | AwardModelDB)
 ):
 	return await AwardActions.create_award(awards)
@@ -30,6 +36,7 @@ async def create_award(
 
 @router.put("/awards/{award_uuid}", response_model=AwardModel)
 async def update_award(
+	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 	award_uuid: str,
 	award_updates: AwardUpdate
 ):
@@ -42,6 +49,7 @@ async def update_award(
 # TODO: this should only work if there is no client_awards or program_awards associated with the award
 @router.delete("/awards/{award_uuid}")
 async def delete_award(
+	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 	award_uuid: str
 ):
 	#TODO: add check for programs

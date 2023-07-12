@@ -1,5 +1,6 @@
 from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.clients import ClientBudgetModelDB, budget_types
+from app.models.clients import ClientBudgetModelDB
+from app.models.clients.client_sub_budget_models import budget_types
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
 

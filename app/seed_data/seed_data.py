@@ -7,7 +7,7 @@ from app.models.award import AwardModelDB
 fake = Faker()
 
 def generate_seed_data():
-    
+
     # the first 2 uuid's are being used for the 2 client_users
     client_uuid_list = [
     "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
@@ -25,6 +25,11 @@ def generate_seed_data():
     client_user_uuid_list = [
     "2f5bcb5e7e08415bbdd25b111d045b13817b437e4a4345e7be573a",
     "9e31b2c87f0e4e9d826a99e3b6d9ff497430e377b90f4aeeb493a6"
+    ]
+
+    user_uuid_list = [
+    "55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
+    "0e58cd793a1d465c638276e450a92d82082f640b494fbc7735478aa9"
     ]
 
     client_budget_uuid_list = [
@@ -68,7 +73,7 @@ def generate_seed_data():
             time_updated=1686591427,
             time_ping=1686591427
         )
-    
+
     user1_service = UserServiceModelDB(
         uuid= "a59a0209ab829e672d748026608bdcc19695d01b3e56ffc0d6adb29e",
         user_uuid= "55063ccb52750171d9138f6293d93330e5be577fba84e92d72856426",
@@ -102,9 +107,9 @@ def generate_seed_data():
     )
 
     user_seed_data = [user1, user2]
-    
+
     user_service_seed_data = [user1_service, user2_service]
-    
+
     all_seed_data = [user_seed_data, user_service_seed_data]
 
     client_seed_data = [
@@ -118,14 +123,14 @@ def generate_seed_data():
             time_ping=int(time()),
             status=1
         ) for uuid in client_uuid_list]
-    
-    
+
+
 
     client_user_seed_data = []
     for i, uuid in enumerate(client_user_uuid_list):
         client_user = ClientUserModelDB(
             uuid=uuid,
-            user_uuid=client_user_uuid_list[i],
+            user_uuid=user_uuid_list[i],
             client_uuid=client_uuid_list[i],
             manager_uuid=None,
             employee_id=None,
@@ -186,8 +191,3 @@ def generate_seed_data():
     final_seed_data = {
         list[0].__tablename__:list for list in all_seed_data
     }
-
-
-
-
-

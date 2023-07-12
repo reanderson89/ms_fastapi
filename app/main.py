@@ -12,6 +12,7 @@ from contextlib import asynccontextmanager
 from fastapi_pagination import add_pagination
 from app.seed_data.seed_data import generate_seed_data
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 	bootstrap_envs = ["LOCAL", "DEV"]

@@ -5,7 +5,8 @@ from app.actions.users import UserActions
 from app.actions.users.services import UserServiceActions
 from app.libraries.sms import send_sms_worker
 from app.libraries.sparkpost import send_auth_email
-from app.models.users import UserServiceModelDB, UserServiceUpdate
+from app.models.clients import ClientUserModelDB
+from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModel
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 
 class AuthActions(BaseActions):
@@ -108,4 +109,14 @@ class AuthActions(BaseActions):
             # NEED TO MAKE THIS ERROR HANDLING BETTER
             print("error sending text")
             return None
+
+    @classmethod
+    async def grab_admin_level(cls, user_object: dict):
+        client_user = await cls.get_one_where(
+            ClientUserModelDB,
+            [
+                ClientUserModelDB.user_uuid == user_object['uuid']
+            ]
+        )
+        return client_user.uuid
 

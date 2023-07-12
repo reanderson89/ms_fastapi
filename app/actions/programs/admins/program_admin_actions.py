@@ -1,7 +1,9 @@
 from time import time
+from typing import Union
 from app.actions.base_actions import BaseActions
 from app.utilities import SHA224Hash
 from app.models.programs import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus
+from app.routers.v1.dependencies import verify_client_user
 
 class ProgramAdminActions():
 
@@ -28,15 +30,18 @@ class ProgramAdminActions():
 		)
 
 	@staticmethod
-	async def create_program_admin(ids: dict, admins):
+	async def create_program_admin(path_params: dict, admin_obj: AdminCreate):
+		# verify provided user_uuid is related to the client
+		await verify_client_user(admin_obj.user_uuid, path_params['client_uuid'])
 		current_time = int(time())
+
 		admin = AdminModelDB(
-			uuid = SHA224Hash(f"{admins.program_uuid}+{ids['user_uuid']}"),
-			program_uuid=admins.program_uuid,
-			client_uuid=ids["client_uuid"],
-			program_9char=ids["program_9char"] if ids["program_9char"] else None,
-			user_uuid=admins.user_uuid,
-			permissions=admins.permissions if admins.permissions else 0,
+			uuid = SHA224Hash(f"{admin_obj.program_uuid}+{admin_obj.user_uuid}"),
+			program_uuid=admin_obj.program_uuid,
+			client_uuid=path_params["client_uuid"],
+			program_9char=path_params["program_9char"],
+			user_uuid=admin_obj.user_uuid,
+			permissions=admin_obj.permissions if admin_obj.permissions else 1,
 			time_created=current_time,
 			time_updated=current_time
 		)
@@ -46,12 +51,15 @@ class ProgramAdminActions():
 		return new_admin
 
 	@classmethod
-	async def create_program_admins(cls, ids: dict, admins: list):
-		for admin in admins:
-			if isinstance(admin, AdminCreate):
-				new_admin = await cls.create_program_admin(ids, admin)
-				admin = AdminStatus.from_orm(new_admin)
-				admin.status = "admin created"
+	async def create_program_admins(cls, path_params: dict, admin_obj: Union[AdminCreate, list]):
+		if isinstance(admin_obj, list):
+			for i, admin in enumerate(admin_obj):
+				if isinstance(admin, AdminCreate):
+					admin_obj[i] = await cls.create_program_admin(path_params, admin)
+			return admin_obj
+		elif isinstance(admin_obj, AdminStatus):
+			return admin_obj
+		return await cls.create_program_admin(path_params, admin_obj)
 
 	@staticmethod
 	async def update_program_admin(path_params: dict, updates: AdminUpdate):
@@ -77,21 +85,36 @@ class ProgramAdminActions():
 		)
 
 	@classmethod
-	async def get_admin_by_user_id(cls, user_uuid):
-		return await BaseActions.check_if_exists(AdminModelDB, [AdminModelDB.user_uuid == user_uuid])
+	async def get_program_admin_by_user_id(cls, user_uuid, program_9char):
+		return await BaseActions.check_if_exists(
+			AdminModelDB,
+			[
+				AdminModelDB.user_uuid == user_uuid,
+				AdminModelDB.program_9char == program_9char
+			]
+		)
+
+	@classmethod
+	async def get_program_id(cls, program_9char):
+		return await BaseActions.check_if_exists(
+			AdminModelDB,
+			[
+				AdminModelDB.program_9char == program_9char
+			])
 
 	@staticmethod
-	async def check_existing(users: AdminCreate):
+	async def check_existing(users: Union[AdminCreate, list[AdminCreate]], program_9char: str):
 		if isinstance(users, list):
-			for user in users:
-				admin = await ProgramAdminActions.get_admin_by_user_id(user.user_uuid)
+			for i, user in enumerate(users):
+				admin = await ProgramAdminActions.get_program_admin_by_user_id(user.user_uuid, program_9char)
 				if admin:
 					user = AdminStatus.from_orm(admin)
-					user.status = "exists"
+					user.status = "existing admin"
+					users[i] = user
 			return users
-		admin = await ProgramAdminActions.get_admin_by_user_id(users.user_uuid)
+		admin = await ProgramAdminActions.get_program_admin_by_user_id(users.user_uuid, program_9char)
 		if admin:
 			admin = AdminStatus.from_orm(admin)
-			admin.status = "exists"
+			admin.status = "existing admin"
 			return admin
 		return users

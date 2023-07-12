@@ -25,31 +25,34 @@ class ProgramActions():
 
 	@classmethod
 	async def create_program(cls, program_data, client_uuid):
-		admin_check = await cls.is_admin(program_data.user_uuid)
-		if admin_check:
-			check = await cls.check_for_existing(program_data.name)
-			if check:
-				return check
-				#return ProgramModel.from_orm(check) TODO: this is not working
-			else:
-				new_program = ProgramModelDB(
-					name=program_data.name,
-					cadence=program_data.cadence,
-					cadence_value=program_data.cadence_value,
-					program_type=program_data.program_type,
-					status=program_data.status,
-					description=program_data.description,
-					user_uuid=program_data.user_uuid,
-					budget_9char=program_data.budget_9char,
-					client_uuid=client_uuid,
-					program_9char = await HelperActions.generate_9char()
-				)
-				# new_program.program_9char = await HelperActions.generate_9char()
-			program = await BaseActions.create(new_program)
-			return program
-			#return ProgramModel.from_orm(program) TODO: this is not working
+		# is_admin() looks to have been replaced by the router level Permissions() check
+		# admin_check = await cls.is_admin(program_data.user_uuid)
+		# if admin_check:
+
+		check = await cls.check_for_existing(program_data.name)
+		if check:
+			return check
+			#return ProgramModel.from_orm(check) TODO: this is not working
 		else:
-			return admin_check
+			new_program = ProgramModelDB(
+				name=program_data.name,
+				cadence=program_data.cadence,
+				cadence_value=program_data.cadence_value,
+				program_type=program_data.program_type,
+				status=program_data.status,
+				description=program_data.description,
+				user_uuid=program_data.user_uuid,
+				budget_9char=program_data.budget_9char,
+				client_uuid=client_uuid,
+				program_9char = await HelperActions.generate_9char()
+			)
+		program = await BaseActions.create(new_program)
+		return program
+		#return ProgramModel.from_orm(program) TODO: this is not working
+
+		# connected to is_admin() check
+		# else:
+		# 	return admin_check
 
 	@classmethod
 	async def check_for_existing(cls, name):
@@ -112,7 +115,7 @@ class ProgramActions():
 			],
 			program_updates
 		)
-	
+
 	@classmethod
 	async def check_for_program_event(cls, path_params):
 		return await BaseActions.check_if_one_exists(
@@ -122,7 +125,7 @@ class ProgramActions():
 				ProgramEventModelDB.program_9char == path_params["program_9char"]
 			]
 		)
-	
+
 	@classmethod
 	async def check_for_program_segment(cls, path_params):
 		return await BaseActions.check_if_one_exists(
@@ -142,7 +145,7 @@ class ProgramActions():
 		event_check = await cls.check_for_program_event(path_params)
 		if event_check:
 			return {"message":"An event exists for this program. It cannot be deleted at this time."}
-		
+
 		return await BaseActions.delete_one(
 			ProgramModelDB,
 			[
