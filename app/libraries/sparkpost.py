@@ -1,6 +1,7 @@
 import os
 
 from app.models.users import UserServiceModelDB
+from app.models.messages import MessageModel
 from sparkpost import SparkPost
 _scriptname = "ThirdParty.SparkPost"
 
@@ -18,6 +19,18 @@ async def send_auth_email(user_service: UserServiceModelDB):
         html="<a href=" + BASE_URL + user_service.login_token + ">VERIFY EMAIL</a>",
         from_email="no-reply@mail.blueboard.app",
         subject="Blueboard Login Token"
+    )
+
+    return response
+
+async def send_message_email(message: MessageModel, recipients: list):
+
+    response = sp.transmissions.send(
+        use_sandbox=False,
+        recipients=recipients,
+        html=message.body,
+        from_email="no-reply@mail.blueboard.app",
+        subject="Blueboard Message",
     )
 
     return response

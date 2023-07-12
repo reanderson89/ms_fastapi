@@ -1,23 +1,29 @@
 from fastapi import APIRouter, Depends
 from typing import Union
 from app.routers.v1.pagination import Page
-from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageModel
+from app.models.messages import MessageCreate, MessageUpdate, MessageModel, MessageSend
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
 
 router = APIRouter(tags=["Messages"])
 
 @router.get("/messages")
-async def get_messages(query_params: dict = Depends(default_query_params)) -> Page[MessageModel]:
+async def get_messages(
+	query_params: dict = Depends(default_query_params)
+) -> Page[MessageModel]:
 	return await MessageActions.get_all(query_params)
 
+@router.get("/messages/client/{client_uuid}")
+async def get_client_messages(client_uuid: str, query_params: dict = Depends(default_query_params)) -> Page[MessageModel]:
+	return await MessageActions.get_all_client_messages(client_uuid, query_params)
 
-@router.get("/messages/{message_9char}", response_model=MessageModelDB)
+
+@router.get("/messages/{message_9char}", response_model=MessageModel)
 async def get_message(message_9char: str):
 	return await MessageActions.get_one(message_9char)
 
 
-@router.post("/messages", response_model=list[MessageModelDB]|MessageModelDB)
+@router.post("/messages", response_model=list[dict]|dict)
 async def create_message(new_message_obj: Union[list[MessageCreate], MessageCreate]):
 	return await MessageActions.create_message(new_message_obj)
 
@@ -28,19 +34,12 @@ async def create_message(new_message_obj: Union[list[MessageCreate], MessageCrea
 async def create_message_from_template(message_9char: str):
 	return {"message": f"Created message from template for {message_9char}"}
 
-
-@router.post("/messages/{message_9char}/test")
-async def test_message(message_9char: str):
-	return await MessageActions.send_test_message(message_9char)
-
-
-# send message to program audience
 @router.post("/messages/{message_9char}/send")
-async def send_message(message_9char: str):
-	return await MessageActions.send_message(message_9char)
+async def send_message(message_9char: str, send_model: MessageSend):
+	#send model recipients is a list of client_user_uuids
+	return await MessageActions.send_message(message_9char, send_model)
 
-
-@router.put("/messages/{message_9char}", response_model=MessageModelDB)
+@router.put("/messages/{message_9char}", response_model=MessageModel)
 async def update_message(message_9char: str, message_updates: MessageUpdate):
 	return await MessageActions.update_message(message_9char, message_updates)
 

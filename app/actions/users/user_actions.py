@@ -31,12 +31,13 @@ class UserActions():
 		)
 
 	@classmethod
-	async def get_user_by_name(cls, first_name, last_name):
+	async def get_user_by_name_and_service_id(cls, first_name, last_name, service_id):
 		return await BaseActions.check_if_exists(
 			UserModel,
 			[
-			UserModel.first_name == first_name,
-			UserModel.last_name == last_name,
+				UserModel.first_name == first_name,
+				UserModel.last_name == last_name,
+				UserServiceModelDB.service_user_id == service_id,
 			]
 		)
 
@@ -84,7 +85,7 @@ class UserActions():
 		if not service_id:
 			raise Exception
 
-		user = await cls.get_user_by_name(new_user_data["first_name"], new_user_data["last_name"])
+		user = await cls.get_user_by_name_and_service_id(new_user_data["first_name"], new_user_data["last_name"], service_id.value)
 
 		if user:
 			# TODO: change to "status = exists" class format

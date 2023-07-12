@@ -21,7 +21,9 @@ class MessageModelDB(Base):
 	time_updated: Mapped[int] = mapped_column(default=None)
 
 class MessageModel(BasePydantic):
+	uuid: Optional[str] = None
 	name: Optional[str] = None
+	message_9char: Optional[str]
 	body: Optional[str] = None
 	channel: Optional[int] = None
 	message_uuid: Optional[str] = None
@@ -30,6 +32,8 @@ class MessageModel(BasePydantic):
 	segment_9char: Optional[str] = None
 	message_type: Optional[int] = None
 	status: Optional[int] = None
+	time_created: Optional[int]
+	time_updated: Optional[int]
 
 class MessageCreate(BasePydantic):
 	name: str
@@ -48,3 +52,8 @@ class MessageUpdate(BasePydantic):
 	channel: Optional[int] = None
 	status: Optional[int] = None
 	body: Optional[str] = None
+
+class MessageSend(BasePydantic):
+	template_uuid: str
+	client_uuid: str
+	recipients: list[str] #client_user_uuids

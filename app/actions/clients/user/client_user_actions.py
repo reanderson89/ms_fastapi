@@ -71,11 +71,11 @@ class ClientUserActions():
 		if not user and service_id in data.keys():
 			admin = data.setdefault("admin", 0)
 			if admin not in [0,1]:
-				await ExceptionHandling.custom400("Invalid value for admin field, must be 0 or 1.")
+				await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
 			user = await UserActions.create_user_and_service(data, service_id)
 
 		if not user and service_id not in data.keys() and "user_uuid" not in data.keys():
-			return await ExceptionHandling.custom500("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
+			return await ExceptionHandling.custom409("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
 
 		return user
 

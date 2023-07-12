@@ -20,3 +20,15 @@ async def send_sms_worker(user_service: UserServiceModelDB):
 
 	return message.sid
 
+
+async def send_message_text(message: str, recipients: list):
+	message_sid = []
+	for recipient in recipients:
+		message = TwilioClient.messages.create(
+			to="+1" + recipient,
+			from_=TWILIO_FROM,
+			body=message.body
+		)
+		message_sid.append({recipient: message.sid})
+
+	return message_sid

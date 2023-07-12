@@ -1,5 +1,4 @@
 from time import time
-from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError

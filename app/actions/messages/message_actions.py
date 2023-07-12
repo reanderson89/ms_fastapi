@@ -1,14 +1,29 @@
+import json
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
+from app.models.clients.client_user_models import ClientUserModelDB
 from app.models.programs import ProgramModelDB
-from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate
+from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend
 from app.exceptions import ExceptionHandling
+from app.actions.messages.send_message import MessageSendingHandler
+from app.models.users.user_service_models import UserServiceModelDB
+
 
 class MessageActions():
 
 	@staticmethod
 	async def get_all(query_params: dict):
 		return await BaseActions.get_all(MessageModelDB, query_params)
+	
+	@staticmethod
+	async def get_all_client_messages(client_uuid: str, query_params: dict):
+		return await BaseActions.get_all_where(
+			MessageModelDB,
+			[
+				MessageModelDB.client_uuid == client_uuid
+			],
+			query_params
+		)
 
 	@staticmethod
 	async def get_one(message_9char: str):
@@ -61,22 +76,13 @@ class MessageActions():
 		return MessageModelDB(
 			**message.dict(), 
 			message_9char=await HelperActions.generate_9char()
-			)
-
-	@staticmethod
-	async def send_test_message(message_9char: str):
-		# TODO: Logic for sending test message
-		return {"message": f"Created test message for {message_9char}"}
-
-	@staticmethod
-	async def send_message(message_9char: str):
-		# TODO: Logic for sending message to program audience
-		return {"message": f"Sent message for {message_9char}"}
+		)
 
 	@classmethod
 	async def update_message(cls, message_9char: str, message_updates: MessageUpdate):
 		if message_updates.name:
 			await cls.check_for_existing_message_by_name(message_updates, True)
+
 		return await BaseActions.update(
 			MessageModelDB, 
 			[MessageModelDB.message_9char == message_9char],
@@ -91,3 +97,37 @@ class MessageActions():
 		return await BaseActions.delete_one(
 			MessageModelDB, [MessageModelDB.message_9char == message_9char]
 		)
+	
+
+	@classmethod
+	async def send_message(cls, message_9char: str, send_model: MessageSend):
+		message = await cls.get_one(message_9char)
+		recipients_models = await BaseActions.get_all_where(
+			ClientUserModelDB,
+			[ClientUserModelDB.uuid.in_(send_model.recipients)],
+			None,
+			False,
+			False
+		)
+		user_uuids = [i.user_uuid for i in recipients_models]
+		service_id_type = {
+			1: "email", #email
+			2: "cell", #sms - text
+			4: "slack", #p2p - slack
+			8: "msteams", #p2p - ms teams
+			16: "web" #web
+		}[message.channel]
+		recipient_contact = await cls.get_contact_info(user_uuids, service_id_type)
+		return await MessageSendingHandler.send_message(message, recipient_contact)
+	
+	
+	@classmethod
+	async def get_contact_info(cls, user_uuids: list, service_id_type: str):
+		user_services = await BaseActions.get_all_where(
+			UserServiceModelDB,
+			[UserServiceModelDB.user_uuid.in_(user_uuids), UserServiceModelDB.service_uuid == service_id_type],
+			None,
+			False,
+			False
+		)
+		return [i.service_user_id for i in user_services]

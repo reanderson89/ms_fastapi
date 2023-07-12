@@ -42,8 +42,9 @@ class ClientUserCreate(ClientUserModel):
 	location: Optional[str]
 	time_birthday: Optional[int]
 	# service level fields
-	service_uuid: Optional[str] # email or cell
-	service_user_id: Optional[str] # email or cell
+	service_uuid: Optional[str] # "email" or "cell"
+	service_user_id: Optional[str] # email address or cell phone number
+	#include title, manager_uuid, department, active, admin
 
 
 class ClientUserUpdate(BasePydantic):
