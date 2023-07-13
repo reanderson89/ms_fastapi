@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params
 from app.routers.v1.pagination import Page
 from app.models.segments import SegmentModel, SegmentUpdate, SegmentCreate, SegmentReturn
-from app.actions.segments.segment_actions import SegmentActions
+from app.actions.segments import SegmentActions
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Segments"])
 

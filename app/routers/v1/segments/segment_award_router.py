@@ -1,110 +1,55 @@
-from time import time
+from fastapi import APIRouter, Depends
+from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.pagination import Page
+from app.models.segments.segment_award_models import SegmentAwardUpdate, SegmentAwardReturn, SegmentAwardCreate, SegmentAwardResponse
+from app.actions.segments.awards import SegmentAwardActions
 
-from fastapi import APIRouter, Query, Depends
-from sqlalchemy import select
-from app.database.config import engine
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.segments import SegmentAward, SegmentAwardUpdate
-from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Awards"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{program_segment_9char}", tags=["Client Program Segment Awards"])
 
-def get_session():
-	with Session(engine) as session:
-		yield session
 
-@router.get("/awards", response_model=list[SegmentAward])
-async def get_awards(
-	client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
-	offset: int = 0,
-	limit: int = Query(default=100, lte=100),
-	session: Session = Depends(get_session)
+def path_params(client_uuid: str, program_9char: str, program_segment_9char: str, program_segment_award_9char: str=None):
+	return {
+		"client_uuid": client_uuid,
+		"program_9char": program_9char,
+		"program_segment_9char": program_segment_9char,
+		"program_segment_award_9char": program_segment_award_9char
+	}
+
+@router.get("/awards")
+async def get_segment_awards(
+	path_params: dict = Depends(path_params),
+	query_params: dict = Depends(default_query_params)
+) -> Page[SegmentAwardReturn]:
+	return await SegmentAwardActions.get_all_segment_awards(path_params, query_params)
+
+
+@router.get("/awards/{program_segment_award_9char}", response_model=SegmentAwardResponse)
+async def get_segment_award(
+	path_params: dict = Depends(path_params)
 ):
-	awards = session.scalars(
-		select(SegmentAward)
-		.where(
-			SegmentAward.client_uuid == client_uuid,
-			SegmentAward.program_9char == program_9char,
-			SegmentAward.segment_9char == segment_9char
-		)
-		.offset(offset)
-		.limit(limit)
-	).all()
-	await ExceptionHandling.check404(awards)
-	return awards
+	return await SegmentAwardActions.get_segment_award(path_params)
 
-@router.get("/awards/{award_9char}", response_model=SegmentAward)
-async def get_award(
-	client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
-	award_9char: str,
-	session: Session = Depends(get_session)
+
+@router.post("/awards/{program_award_9char}", response_model=(list[SegmentAwardResponse] | SegmentAwardResponse))
+async def create_segment_award(
+	segment_awards: list[SegmentAwardCreate] | SegmentAwardCreate,
+	program_award_9char: str,
+	path_params: dict = Depends(path_params)
 ):
-	award = session.scalars(
-		select(SegmentAward)
-		.where(
-			SegmentAward.award_9char == award_9char,
-			SegmentAward.client_uuid == client_uuid,
-			SegmentAward.program_9char == program_9char,
-			SegmentAward.segment_9char == segment_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	return award
+	return await SegmentAwardActions.create_segment_award(segment_awards, path_params, program_award_9char)
 
-@router.post("/awards", response_model=(list[SegmentAward] | SegmentAward))
-async def create_award(award: (list[SegmentAward] | SegmentAward)):
-	return await CommonRoutes.create_one_or_many(award)
 
-@router.put("/awards/{award_9char}", response_model=SegmentAward)
-async def update_award(
-	client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
-	award_9char: str,
-	award_update: SegmentAwardUpdate,
-	session: Session = Depends(get_session)
+@router.put("/awards/{program_segment_award_9char}", response_model=SegmentAwardResponse)
+async def update_segment_award(
+	segment_award_updates: SegmentAwardUpdate,
+	path_params: dict = Depends(path_params)
 ):
-	award = session.scalars(
-		select(SegmentAward)
-		.where(
-			SegmentAward.award_9char == award_9char,
-			SegmentAward.client_uuid == client_uuid,
-			SegmentAward.program_9char == program_9char,
-			SegmentAward.segment_9char == segment_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	update_award = award_update.dict(exclude_unset=True)
-	for k, v in update_award.items():
-		setattr(award, k, v)
-	award.time_updated = int(time())
-	session.add(award)
-	session.commit()
-	session.refresh(award)
-	return award
+	return await SegmentAwardActions.update_segment_award(path_params, segment_award_updates)
 
-@router.delete("/awards/{award_9char}")
-async def delete_award(
-	client_uuid: str,
-	program_9char: str,
-	segment_9char: str,
-	award_9char: str,
-	session: Session = Depends(get_session)
+
+@router.delete("/awards/{program_segment_award_9char}")
+async def delete_segment_award(
+	path_params: dict = Depends(path_params)
 ):
-	award = session.scalars(
-		select(SegmentAward)
-		.where(
-			SegmentAward.award_9char == award_9char,
-			SegmentAward.client_uuid == client_uuid,
-			SegmentAward.program_9char == program_9char,
-			SegmentAward.segment_9char == segment_9char
-		)
-	).one_or_none()
-	await ExceptionHandling.check404(award)
-	session.delete(award)
-	session.commit()
-	return {"ok": "true", "Deleted": award}
+	return await SegmentAwardActions.delete_segment_award(path_params)
