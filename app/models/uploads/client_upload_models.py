@@ -13,6 +13,10 @@ class UploadType(Enum):
 	def __eq__(self, other):
 		return self.value == other
 
+	def __hash__(self):
+		return hash(self.value)
+
+
 
 class UploadFile(BasePydantic):
 	file_name: str

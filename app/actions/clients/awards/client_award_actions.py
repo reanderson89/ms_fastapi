@@ -1,5 +1,6 @@
-from app.actions.base_actions import BaseActions
 from app.exceptions import ExceptionHandling
+from app.actions.base_actions import BaseActions
+from app.actions.upload import UploadActions
 from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardUpdate
 from app.models.programs import ProgramAwardModelDB
 
@@ -27,7 +28,14 @@ class ClientAwardActions():
 				ClientAwardModelDB.client_uuid == client_uuid
 			]
 		)
-	
+
+	@classmethod
+	async def get_upload_url(cls, client_uuid, client_award_9char, file_name, upload_type):
+		if upload_type == "image":
+			return await UploadActions.generate_upload_url(upload_type, file_name, client_uuid, client_award_9char)
+
+		raise ExceptionHandling.custom400(f"Upload type {upload_type} is not supported")
+
 	@staticmethod
 	async def check_if_award_exists_by_name(client_uuid: str, name: str, error=True):
 		award = await BaseActions.check_if_exists(
@@ -73,6 +81,9 @@ class ClientAwardActions():
 	):
 		if award_updates.name:
 			await cls.check_if_award_exists_by_name(client_uuid, award_updates.name)
+		if award_updates.hero_image:
+			award_updates.hero_image, _ = await UploadActions.verify_upload_file("image", award_updates.hero_image)
+			# TODO: add s3 query to check if file exists and is valid
 		return await BaseActions.update(
 			ClientAwardModelDB,
 			[

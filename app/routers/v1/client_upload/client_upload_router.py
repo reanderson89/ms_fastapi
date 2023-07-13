@@ -19,7 +19,7 @@ async def get_upload_url(
 		file_name: str,
 		upload_type: UploadType):
 	await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
-	return await ClientUploadActions.get_upload_url(upload_type, file_name, client_uuid)
+	return await ClientUploadActions.get_upload_url(upload_type.value, file_name, client_uuid)
 
 
 @router.post("/upload", response_model_by_alias=True)

@@ -14,7 +14,7 @@ class ClientAwardModelDB(Base):
 	award_uuid: Mapped[str] = mapped_column(default=0)
 	name: Mapped[str] = mapped_column(default=None)
 	description: Mapped[str] = mapped_column(default=None)
-	hero_image: Mapped[int] = mapped_column(default=None)
+	hero_image: Mapped[str] = mapped_column(default=None)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 
@@ -30,14 +30,14 @@ class ClientAwardCreate(BasePydantic):
 	award_uuid: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 
 
 class ClientAwardUpdate(BasePydantic):
 	award_uuid: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 
 
 class ClientAwardModel(BasePydantic):
@@ -47,7 +47,7 @@ class ClientAwardModel(BasePydantic):
 	award_uuid: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 	time_created: Optional[int] = None
 	time_updated: Optional[int] = None
 

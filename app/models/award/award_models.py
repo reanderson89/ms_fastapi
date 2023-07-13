@@ -8,7 +8,7 @@ class AwardModelDB(Base):
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	name: Mapped[str] = mapped_column(default=None, index=True)
 	description: Mapped[str] = mapped_column(default=None, index=False)
-	hero_image: Mapped[int] = mapped_column(default=None, index=True)
+	hero_image: Mapped[str] = mapped_column(default=None, index=True)
 	channel: Mapped[int] = mapped_column(default=None, index=True)
 	award_type: Mapped[int] = mapped_column(default=None, index=True)
 	value: Mapped[int] = mapped_column(default=None, index=True)
@@ -19,7 +19,7 @@ class AwardModel(BasePydantic):
 	uuid: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 	channel: Optional[int] = None
 	award_type: Optional[int] = None
 	value: Optional[int] = None
@@ -29,7 +29,7 @@ class AwardModel(BasePydantic):
 class AwardUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 	channel: Optional[int] = None
 	award_type: Optional[int] = None
 	value: Optional[int] = None

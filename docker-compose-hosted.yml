@@ -39,11 +39,11 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID} # from .env
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # from .env
       AWS_ROLE_ARN: ${AWS_ROLE_ARN} # from .env
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME} # from .env      
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME} # from .env
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.3.sql"
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD} # see comment above

@@ -170,7 +170,7 @@ def generate_seed_data():
             uuid=uuid,
             name=award_names[i],
             description=award_descriptions[i],
-            hero_image=1,
+            hero_image=None,
             channel=1,
             award_type=1,
             value=award_values[i]

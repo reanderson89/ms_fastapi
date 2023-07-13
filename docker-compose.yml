@@ -41,7 +41,7 @@ services:
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.2.sql"
+      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.3.sql"
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
       MYSQL_PASSWORD: milestones

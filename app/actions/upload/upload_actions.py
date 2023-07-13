@@ -1,13 +1,10 @@
-import io
-import csv
-import logging
+import io, csv, logging
 from os import getenv
-from time import time
 import boto3
 from datadog.api.exceptions import ClientError
+from app.exceptions import ExceptionHandling
 from app.actions.base_actions import BaseActions
 from app.actions.clients.user import ClientUserActions
-from app.exceptions import ExceptionHandling
 
 
 aws_access_key_id = getenv("AWS_ACCESS_KEY_ID")
@@ -15,11 +12,22 @@ aws_secret_access_key = getenv("AWS_SECRET_ACCESS_KEY")
 aws_bucket_name = getenv("AWS_BUCKET_NAME")
 role_arn = getenv("AWS_ROLE_ARN")
 
+UPLOAD_TYPE_CONFIG = {
+	"roster": {
+		"valid_types": ["csv"],
+		"path": "/rosters/uploads/"
+	},
+	"image": {
+		"valid_types": ["png", "tiff", "jpeg", "jpg"],
+		"path": "/hero_image/"
+	}
+}
+
 
 class UploadActions(BaseActions):
 
-	@classmethod
-	async def get_s3_client(cls):
+	@staticmethod
+	async def get_s3_client():
 		session = boto3.Session(
 			aws_access_key_id=aws_access_key_id,
 			aws_secret_access_key=aws_secret_access_key
@@ -37,22 +45,45 @@ class UploadActions(BaseActions):
 
 		return s3_client
 
+	@staticmethod
+	async def verify_upload_file(upload_type, file_name):
+		file_type = file_name.split(".")[-1]
+
+		config = UPLOAD_TYPE_CONFIG[upload_type]
+
+		if file_type not in config["valid_types"]:
+			await ExceptionHandling.custom415(f"File type must be {', '.join(config['valid_types'])}")
+
+		return file_type, config
+
 	@classmethod
-	async def generate_upload_url(cls, upload_type, file_name, client_uuid=None):
-		fname = file_name
-		if upload_type == "roster" and client_uuid:
-			file_type = fname.split(".")[-1]
-			if file_type != "csv":
-				await ExceptionHandling.custom415("File type must be csv")
+	async def generate_upload_url(
+		cls,
+		upload_type,
+		file_name,
+		client_uuid,
+		award_id=None,
+		program_9char=None,
+		segment_9char=None
+	):
+		file_type, config = await cls.verify_upload_file(upload_type, file_name)
 
-			fname = f"{client_uuid}/uploads/{fname}"
+		if upload_type == "roster":
+			s3_key = f"/{client_uuid}{config['path']}{file_name}"
+		elif upload_type == "image":
+			file_parts = [client_uuid]
+			if award_id:
+				if program_9char:
+					file_parts.append(program_9char)
+					if segment_9char:
+						file_parts.append(segment_9char)
+				file_parts.append(f"{award_id}.{file_type}")
+			else:
+				await ExceptionHandling.custom400("Award ID is required for image uploads")
 
-		if upload_type == "image" and client_uuid:
-			fname = f"{client_uuid}/images/{fname}"
+			s3_key = f"/{'/'.join(file_parts)}"
 
-		s3_response = await cls.create_presigned_post(aws_bucket_name, fname)
-
-		return s3_response
+		return await cls.create_presigned_post(aws_bucket_name, s3_key)
 
 	@classmethod
 	async def create_presigned_post(cls, bucket_name, object_name, fields=None, conditions=None, expiration=100):
@@ -85,7 +116,6 @@ class UploadActions(BaseActions):
 
 		return response
 
-
 	@classmethod
 	async def process_csv_file(cls, s3_file_name, client_uuid):
 		s3_client = await cls.get_s3_client()
@@ -106,3 +136,49 @@ class UploadActions(BaseActions):
 		processed_users = [await ClientUserActions.create_client_user(user, {"client_uuid": client_uuid}) for user in csv_list]
 
 		return processed_users
+
+	@classmethod
+	async def update_hero_image(cls, s3_file_name):
+		file_type, _ = cls.verify_upload_file("image", s3_file_name)
+		return file_type
+
+	@classmethod
+	async def get_hero_image(
+		cls,
+		hero_image,
+		client_uuid,
+		award_id,
+		program_9char=None,
+		segment_9char=None
+	):
+		file_type, _ = cls.verify_upload_file("image", hero_image)
+		s3_key = await cls.get_image_path(
+			file_type,
+			client_uuid,
+			award_id,
+			program_9char,
+			segment_9char
+		)
+		# TODO: get the file from s3
+
+
+	@staticmethod
+	async def get_image_path(
+		file_type,
+		client_uuid,
+		award_id=None,
+		program_9char=None,
+		segment_9char=None
+	):
+		file_parts = [client_uuid]
+		if award_id:
+			if program_9char:
+				file_parts.append(program_9char)
+				if segment_9char:
+					file_parts.append(segment_9char)
+			file_parts.append(f"{award_id}.{file_type}")
+		else:
+			await ExceptionHandling.custom400("Award ID is required")
+
+		s3_key = f"/{'/'.join(file_parts)}"
+		return s3_key

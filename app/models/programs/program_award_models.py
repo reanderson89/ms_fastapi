@@ -15,7 +15,7 @@ class ProgramAwardModelDB(Base):
 	client_award_9char: Mapped[str] = mapped_column(default=None, index=None)
 	name: Mapped[str] = mapped_column(default=None)
 	description: Mapped[str] = mapped_column(default=None)
-	hero_image: Mapped[int] = mapped_column(default=None)
+	hero_image: Mapped[str] = mapped_column(default=None)
 	time_created: Mapped[int] = mapped_column(default=None)
 	time_updated: Mapped[int] = mapped_column(default=None)
 
@@ -30,13 +30,13 @@ class ProgramAwardModelDB(Base):
 class ProgramAwardCreate(BasePydantic):
 	name: str
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 
 
 class ProgramAwardUpdate(BasePydantic):
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 
 
 class ProgramAwardBase(BasePydantic):
@@ -47,7 +47,7 @@ class ProgramAwardBase(BasePydantic):
 	client_award_9char: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None
-	hero_image: Optional[int] = None
+	hero_image: Optional[str] = None
 	time_created: Optional[int] = None
 	time_updated: Optional[int] = None
 

@@ -80,20 +80,28 @@ class ClientUserActions():
 		return user
 
 	@classmethod
-	async def add_new_client_user(cls, data, path_params, user = None):
+	async def add_new_client_user(cls, data, path_params, user):
+		# Check if client user already exists
+		# client_user = await cls.get_client_user_by_user_uuid(user.uuid)
+		# if client_user:
+		# 	return client_user
+
+		# Create new client user object
 		client_user_obj = ClientUserModelDB(
 			uuid=SHA224Hash(),
-			user_uuid= user.uuid,
-			client_uuid= path_params["client_uuid"],
-			manager_uuid= await HelperActions.get_manager_uuid(data),
-			employee_id= await HelperActions.get_employee_id(data),
-			title= await HelperActions.get_title(data),
-			department= await HelperActions.get_department(data),
+			user_uuid=user.uuid,
+			client_uuid=path_params["client_uuid"],
+			manager_uuid=await HelperActions.get_manager_uuid(data),
+			employee_id=await HelperActions.get_employee_id(data),
+			title=await HelperActions.get_title(data),
+			department=await HelperActions.get_department(data),
 			active=await HelperActions.get_active(data),
 			time_hire=int(time()),
 			time_start=int(time()),
-			admin= await HelperActions.get_admin(data),
+			admin=await HelperActions.get_admin(data),
 		)
+
+		# Save client user object to database
 		return await BaseActions.create(client_user_obj)
 
 	@classmethod

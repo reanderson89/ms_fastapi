@@ -37,8 +37,8 @@ class UserActions():
 			UserModel,
 			[
 				UserModel.first_name == first_name,
-				UserModel.last_name == last_name,
-				UserServiceModelDB.service_user_id == service_id,
+				UserModel.last_name == last_name#,
+				# UserServiceModelDB.service_user_id == service_id,
 			]
 		)
 
