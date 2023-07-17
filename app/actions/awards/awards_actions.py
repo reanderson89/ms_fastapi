@@ -1,6 +1,7 @@
 from app.actions.base_actions import BaseActions
 from app.exceptions import ExceptionHandling
 from app.models.award import AwardModelDB, AwardUpdate
+from app.actions.upload import UploadActions
 
 
 class AwardActions():
@@ -12,7 +13,7 @@ class AwardActions():
 			return await ExceptionHandling.custom409(f"Award with name '{name}' already exists.")
 		elif award and not error:
 			return award
-		else:	
+		else:
 			return None
 
 	@staticmethod
@@ -62,6 +63,13 @@ class AwardActions():
 		)
 
 	@classmethod
+	async def get_upload_url(cls, award_uuid, file_name, upload_type):
+		if upload_type == "image":
+			return await UploadActions.generate_blueboard_upload_url(award_uuid, file_name)
+
+		raise ExceptionHandling.custom400(f"Upload type {upload_type} is not supported")
+
+	@classmethod
 	async def create_award(cls, award_objs):
 		"""
 		Create one or more awards in the database
@@ -83,6 +91,8 @@ class AwardActions():
 		"""
 		if update_obj.name:
 			await cls.check_for_existing_by_name(update_obj.name)
+		if update_obj.hero_image:
+			update_obj.hero_image, _ = await UploadActions.verify_upload_file("image", update_obj.hero_image)
 		return await BaseActions.update(
 			AwardModelDB,
 			[AwardModelDB.uuid == award_uuid],
@@ -96,7 +106,7 @@ class AwardActions():
 		:param award_uuid(str): The uuid of the award to delete
 		:return: Status of deletion and the deleted model object
 		"""
-		return await cls.delete_one(
+		return await BaseActions.delete_one(
 			AwardModelDB,
 			[AwardModelDB.uuid == award_uuid]
 		)
@@ -108,7 +118,7 @@ class AwardActions():
 		:param conditions(list): A list of conditions to filter by
 		:return: Status of deletion and the deleted model object(s)
 		"""
-		return await cls.delete_all(
+		return await BaseActions.delete_all(
 			AwardModelDB,
 			conditions
 		)

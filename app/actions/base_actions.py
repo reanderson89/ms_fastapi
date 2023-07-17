@@ -223,9 +223,9 @@ class BaseActions():
 			try:
 				session.delete(db_item)
 				session.commit()
-				return {"ok": True, "Deleted:": db_item}
+				return {"ok": True, "Deleted": db_item}
 			except:
-				return {"ok": False, "Not Deleted:": db_item}
+				return {"ok": False, "Not Deleted": db_item}
 
 	@staticmethod
 	async def delete_all(model, conditions: list):
@@ -246,9 +246,9 @@ class BaseActions():
 			for item in db_items:
 				try:
 					session.delete(item)
-					results.append({"ok": True, "Deleted:": db_items})
+					results.append({"ok": True, "Deleted": db_items})
 				except:
-					results.append({"ok": False, "Not Deleted:": db_items})
+					results.append({"ok": False, "Not Deleted": db_items})
 			session.commit()
 			return results
 

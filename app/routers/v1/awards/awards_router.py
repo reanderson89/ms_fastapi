@@ -6,6 +6,7 @@ from app.routers.v1.dependencies import default_query_params
 from app.actions.awards import AwardActions
 from app.models.award import AwardModelDB, AwardUpdate, AwardModel
 from app.utilities.auth.auth_handler import Permissions
+from app.models.uploads import UploadType
 
 router = APIRouter(tags=["Awards"])
 
@@ -22,8 +23,18 @@ async def get_all_awards(
 async def get_award(
 		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 		award_uuid: str
-) -> Page[AwardModel]:
+):
 	return await AwardActions.get_award(award_uuid)
+
+
+@router.get("/awards/{award_uuid}/upload")
+async def get_award_upload_url(
+		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+		award_uuid: str,
+		file_name: str,
+		upload_type: UploadType
+):
+	return await AwardActions.get_upload_url(award_uuid, file_name, upload_type.value)
 
 
 @router.post("/awards", response_model=(list[AwardModel] | AwardModel))

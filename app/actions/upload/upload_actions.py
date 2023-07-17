@@ -20,6 +20,10 @@ UPLOAD_TYPE_CONFIG = {
 	"image": {
 		"valid_types": ["png", "tiff", "jpeg", "jpg"],
 		"path": "/hero_image/"
+	},
+	"blueboard image": {
+		"valid_types": ["png", "tiff", "jpeg", "jpg"],
+		"path": "/blueboard/"
 	}
 }
 
@@ -33,7 +37,10 @@ class UploadActions(BaseActions):
 			aws_secret_access_key=aws_secret_access_key
 		)
 		client = session.client('sts')
-		response = client.assume_role(RoleArn=role_arn, RoleSessionName="UploadPresignedUrl")
+		response = client.assume_role(
+			RoleArn=role_arn,
+			RoleSessionName="UploadPresignedUrl"
+		)
 
 		session = boto3.Session(
 			aws_access_key_id=response['Credentials']['AccessKeyId'],
@@ -52,7 +59,9 @@ class UploadActions(BaseActions):
 		config = UPLOAD_TYPE_CONFIG[upload_type]
 
 		if file_type not in config["valid_types"]:
-			await ExceptionHandling.custom415(f"File type must be {', '.join(config['valid_types'])}")
+			await ExceptionHandling.custom415(
+				f"File type must be {', '.join(config['valid_types'])}"
+			)
 
 		return file_type, config
 
@@ -86,7 +95,20 @@ class UploadActions(BaseActions):
 		return await cls.create_presigned_post(aws_bucket_name, s3_key)
 
 	@classmethod
-	async def create_presigned_post(cls, bucket_name, object_name, fields=None, conditions=None, expiration=100):
+	async def generate_blueboard_upload_url(cls, award_id, file_name):
+		file_type, config = await cls.verify_upload_file("blueboard image", file_name)
+		s3_key = f"{config['path']}{award_id}.{file_type}"
+		return await cls.create_presigned_post(aws_bucket_name, s3_key)
+
+	@classmethod
+	async def create_presigned_post(
+		cls,
+		bucket_name,
+		object_name,
+		fields=None,
+		conditions=None,
+		expiration=100
+	):
 		"""Generate a presigned URL S3 POST request to upload a file
 
 		:param bucket_name: string
@@ -133,7 +155,9 @@ class UploadActions(BaseActions):
 			csv_reader = csv.DictReader(stream, delimiter=',')
 			csv_list = [row for row in csv_reader]
 
-		processed_users = [await ClientUserActions.create_client_user(user, {"client_uuid": client_uuid}) for user in csv_list]
+		processed_users = [
+			await ClientUserActions.create_client_user(user, {"client_uuid": client_uuid}) for user in csv_list
+		]
 
 		return processed_users
 

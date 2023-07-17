@@ -54,5 +54,4 @@ class ClientUserUpdate(BasePydantic):
 	title: Optional[str] = None
 	department: Optional[str] = None
 	active: Optional[bool] = None
-	time_updated: Optional[int] = None
 	admin: Optional[int] = None

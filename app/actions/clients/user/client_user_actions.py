@@ -20,7 +20,7 @@ class ClientUserActions():
 
 	@classmethod
 	async def create_client_user(cls, data: dict, path_params: dict):
-		service_id = ["work_email", "personal_email", "cell_phone"]
+		service_id = ["work_email", "personal_email", "cell_phone", "email_address"]
 		user_objs = []
 		client_user_objs = []
 		for service in service_id:
@@ -95,7 +95,7 @@ class ClientUserActions():
 			employee_id=await HelperActions.get_employee_id(data),
 			title=await HelperActions.get_title(data),
 			department=await HelperActions.get_department(data),
-			active=await HelperActions.get_active(data),
+			active=await HelperActions.get_active(data) if "active" in data.keys() else 1,
 			time_hire=int(time()),
 			time_start=int(time()),
 			admin=await HelperActions.get_admin(data),
