@@ -19,7 +19,6 @@ async def put_auth(redeem_auth_model: RedeemAuthModel, response: Response):
     client_uuid = await AuthActions.grab_admin_level(user_model)
     user_model['client_uuid'] = client_uuid
     bearer_token = await access_token_creation(user_model)
-
     response.headers["Bearer"] = bearer_token["access_token"]
 
     return redeem_return

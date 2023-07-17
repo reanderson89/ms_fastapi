@@ -119,4 +119,3 @@ class AuthActions(BaseActions):
             ]
         )
         return client_user.uuid
-

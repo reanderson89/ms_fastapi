@@ -59,6 +59,88 @@ client_user_uuid_list = [
     "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
 ]
 
+
+owen = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "owen.plambeck@blueboard.com",
+        "first_name": "Owen",
+        "last_name": "Plambeck",
+        "title": "Sr Bug Creator",
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "department": f"{faker.job()} Department",
+        "admin": 2,
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp())}
+
+clark = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "clark.ritchie@blueboard.com",
+        "first_name": "Clark",
+        "last_name": "Ritchie",
+        "title": "Domestique",
+        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "admin": 2,
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+    }
+
+ryan = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "ryan.green@blueboard.com",
+        "first_name": "Ryan",
+        "last_name": "Green",
+        "title": "Sr Software Engineer",
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "admin": 2,
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+    }
+
+jason = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "jason@blueboard.com",
+        "first_name": "Jason",
+        "last_name": "Wiener",
+        "title": "Quality Assurance Intern",
+        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "admin": 2,
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+        }
+
+josh = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "joshua.crowley@blueboard.com",
+        "first_name": "Josh",
+        "last_name": "Crowley",
+        "title": "Software Engineer",
+        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "admin": 2,
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+    }
+
+new = [owen, jason, josh, ryan, clark]
+
 async def generate_client_users(clients: list):
     for client in clients:
         if client.name != "Blueboard":
@@ -85,3 +167,7 @@ async def generate_client_users(clients: list):
                     },
                     {"client_uuid": client.uuid, "user_uuid": None}
                 )
+    for i in new:
+        await ClientUserActions.create_client_user(i, {
+           "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        })

@@ -30,7 +30,6 @@ class ClientUserActions():
 					user_objs.append(user_or_client_user_objs)
 				elif isinstance(user_or_client_user_objs, ClientUserModelDB):
 					client_user_objs.append(user_or_client_user_objs)
-
 		if not user_objs and not client_user_objs:
 			raise ValueError("No user or client user objects returned")
 
@@ -50,10 +49,8 @@ class ClientUserActions():
 	@classmethod
 	async def handle_user_and_service(cls, data, path_params, service_id = None):
 		user = None
-
 		if service_id not in data.keys() and "user_uuid" not in data.keys():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please include either email address or the user_uuid.")
-
 		if service_id in data.keys():
 			user = await BaseActions.check_if_exists(
 				UserModel,
@@ -70,7 +67,7 @@ class ClientUserActions():
 
 		if not user and service_id in data.keys():
 			admin = data.setdefault("admin", 0)
-			if admin not in [0,1]:
+			if admin not in [0,1,2]:
 				await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
 			user = await UserActions.create_user_and_service(data, service_id)
 
@@ -82,9 +79,9 @@ class ClientUserActions():
 	@classmethod
 	async def add_new_client_user(cls, data, path_params, user):
 		# Check if client user already exists
-		# client_user = await cls.get_client_user_by_user_uuid(user.uuid)
-		# if client_user:
-		# 	return client_user
+		client_user = await cls.get_client_user_by_user_uuid(user.uuid)
+		if client_user:
+			return client_user
 
 		# Create new client user object
 		client_user_obj = ClientUserModelDB(
