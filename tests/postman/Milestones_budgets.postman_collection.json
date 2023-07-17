@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "6045f9cb-b0c3-40de-afac-24d8b0ce8251",
+		"_postman_id": "02f42a0d-d375-44cb-b16e-02718ffb779d",
 		"name": "Milestones_budgets",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -20,9 +20,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
+									"pm.test(\"clients name should be 'RobCo-Client Budget Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"    pm.expect(jsonData[0].name).to.eql('RobCo-Client Budget Test');",
 									"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 									"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 									"});",
@@ -30,9 +30,7 @@
 									"if(pm.response.to.have.status(200)){",
 									"var jsonData = pm.response.json();",
 									"pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-									"}",
-									"",
-									""
+									"};"
 								],
 								"type": "text/javascript"
 							}
@@ -62,7 +60,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+							"raw": "[\n  {\n    \"name\": \"RobCo-Client Budget Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 0\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -71,14 +69,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -255,7 +252,6 @@
 									"})",
 									"",
 									"",
-									"",
 									"// sets the parent_9char so that it can be used to create sub budgets",
 									"pm.collectionVariables.set(\"static_parent_9char\", jsonData.budget_9char);",
 									"pm.collectionVariables.set(\"parent_budget_9char\", jsonData.budget_9char);",
@@ -289,7 +285,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"budget_9char\": \"<string>\",\n  \"name\": \"Test\",\n  \"value\": 1000,\n  \"active\": \"True\",\n  \"budget_type\": 0\n}",
+							"raw": "{\n  \"name\": \"Budget Test\",\n  \"value\": 1000,\n  \"active\": \"True\",\n  \"budget_type\": 0\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -532,7 +528,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"budget_9char\": \"sub_budg\",\n  \"parent_9char\": \"{{static_parent_9char}}\",\n  \"name\": \"Sub Test\",\n  \"value\": 10,\n  \"active\": \"True\",\n  \"budget_type\":1\n}",
+							"raw": "{\n  \"budget_9char\": \"sub_budg\",\n  \"parent_9char\": \"{{static_parent_9char}}\",\n  \"name\": \"Sub Budget Test\",\n  \"value\": 10,\n  \"active\": \"True\",\n  \"budget_type\":1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -774,7 +770,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"budget_9char\": \"sub_budg\",\n  \"parent_9char\": \"{{parent_9char}}\",\n  \"name\": \"Sub Sub Test\",\n  \"value\": 10,\n  \"active\": \"True\",\n  \"budget_type\":1\n}",
+							"raw": "{\n  \"budget_9char\": \"sub_budg\",\n  \"parent_9char\": \"{{parent_9char}}\",\n  \"name\": \"Sub Sub Budget Test\",\n  \"value\": 10,\n  \"active\": \"True\",\n  \"budget_type\":1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -965,6 +961,24 @@
 				},
 				{
 					"name": "Get Budgets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"awards length should be greater than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.items.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1783,7 +1797,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"UPDATED PARENT \",\n  \"value\": 1,\n  \"parent_9char\": \"{{static_parent_9char}}\",\n  \"budget_type\": 1,\n  \"active\": \"True\"\n}",
+							"raw": "{\n  \"name\": \"UPDATED PARENT - Budget Test\",\n  \"value\": 1,\n  \"parent_9char\": \"{{static_parent_9char}}\",\n  \"budget_type\": 1,\n  \"active\": \"True\"\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2037,7 +2051,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"UPDATED Sub budg\",\n  \"value\": 1,\n  \"parent_9char\": \"{{parent_9char}}\",\n  \"budget_type\": 1,\n  \"active\": \"True\"\n}",
+							"raw": "{\n  \"name\": \"UPDATED Sub budg - Budget Test\",\n  \"value\": 1,\n  \"parent_9char\": \"{{parent_9char}}\",\n  \"budget_type\": 1,\n  \"active\": \"True\"\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

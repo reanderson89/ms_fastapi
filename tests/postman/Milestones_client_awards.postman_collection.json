@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e64fe3ec-80c7-4c79-a1c2-a6a3e393850d",
+		"_postman_id": "78c0780f-04d0-4a56-987e-1b30d24ab153",
 		"name": "Milestones_client_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -42,7 +42,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.globals.set(\"variable_key\", \"variable_value\");"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -72,7 +72,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test award.\",\n    \"hero_image\": 1,\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
+							"raw": "{\n    \"name\": \"Award - Client Award Test\",\n    \"description\": \"this is a test Award for Client Award test.\",\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -261,8 +261,8 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"pm.test(\"clients name should be 'RobCo-Client Award Test'\", function () {",
+									"    pm.expect(jsonData[0].name).to.eql('RobCo-Client Award Test');",
 									"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 									"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 									"});",
@@ -303,7 +303,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+							"raw": "[\n  {\n    \"name\": \"RobCo-Client Award Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 0\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -312,14 +312,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -480,18 +479,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// pm.sendRequest(pm.collectionVariables.get(\"create_client\"), function (err, response) {",
-									"//     if (err) {",
-									"//         console.log(err);",
-									"//     } else {",
-									"//         var jsonData = response.json();",
-									"//         if (jsonData[0] && jsonData[0].uuid) {",
-									"//             pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-									"//         } else {",
-									"//             console.log(\"UUID not found in the response\");",
-									"//         }",
-									"//     }",
-									"// });"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -515,8 +503,6 @@
 									"} else {",
 									"  pm.collectionVariables.set(\"client_award_9char\", jsonData.client_award_9char);",
 									"}",
-									"",
-									"pm.collectionVariables.set(\"create_award\", pm.request);",
 									""
 								],
 								"type": "text/javascript"
@@ -563,7 +549,7 @@
 									"",
 									"pm.test(\"awards list should be greater then 0\", function(){",
 									"    var jsonData = pm.response.json()",
-									"    pm.expect(jsonData.length).to.be.greaterThan(0)",
+									"    pm.expect(jsonData.items.length).to.be.greaterThan(0)",
 									"})"
 								],
 								"type": "text/javascript"
@@ -650,9 +636,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"Name should equal UPDATED\", function () {",
+									"pm.test(\"Name should equal 'UPDATED Client Award Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.eql(\"UPDATED\");",
+									"    pm.expect(jsonData.name).to.eql(\"UPDATED Client Award Test\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -664,7 +650,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"UPDATED\",\n  \"description\": \"UPDATED\",\n  \"hero_image\": 0\n}",
+							"raw": "{\n  \"name\": \"UPDATED Client Award Test\",\n  \"description\": \"UPDATED for Client Award Test\",\n  \"hero_image\": \"new_Client_Award_hero_image.jpeg\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

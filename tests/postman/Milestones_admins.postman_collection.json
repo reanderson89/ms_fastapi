@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "302e3bd8-b0f1-4c8b-a4bc-9703ca84df33",
+		"_postman_id": "4c32ab20-145c-401b-9379-6534a3e235e0",
 		"name": "Milestones_admins",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -20,9 +20,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
+									"pm.test(\"clients name should be 'RobCo-Client Admin Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"    pm.expect(jsonData[0].name).to.eql('RobCo-Client Admin Test');",
 									"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 									"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 									"});",
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+							"raw": "[\n  {\n    \"name\": \"RobCo-Client Admin Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 0\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -283,7 +283,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user123456@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"title\": \"Grunt\",\n  \"department\": \"Mail Room\",\n  \"manager_uuid\": \"testing\",\n  \"admin\": 1\n}",
+							"raw": "\n{\n  \"email_address\": \"client.admin.test@testclient.com\",\n  \"first_name\": \"TestUser\",\n  \"last_name\": \"ClientAdmin\",\n  \"title\": \"Grunt\",\n  \"department\": \"Mail Room\",\n  \"admin\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -525,7 +525,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Blueboard 2023 Anniversary Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]\n\n",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Client Admin Test Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -1007,7 +1007,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/admins?offset=0&limit=100",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/admins",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1018,16 +1018,6 @@
 								"programs",
 								"{{program_9char}}",
 								"admins"
-							],
-							"query": [
-								{
-									"key": "offset",
-									"value": "0"
-								},
-								{
-									"key": "limit",
-									"value": "100"
-								}
 							]
 						}
 					},
@@ -2422,7 +2412,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -2433,7 +2423,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user123456@testclient.com\"\n}",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"client.admin.test@testclient.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2475,7 +2465,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}

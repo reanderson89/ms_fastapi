@@ -43,6 +43,9 @@ tests=(
    "$SOURCE_DIR"/Milestones_users.postman_collection.json
 )
 
+pass_count=0
+fail_count=0
+
 for test in "${tests[@]}"; do
    [ -f "$test" ] || break
    newman run $test
@@ -50,14 +53,22 @@ for test in "${tests[@]}"; do
    if [ $status -ne 0 ]; then
       echo "There was a test failure in ${test}"
       failure_list+=(${test})
+      fail_count=$((fail_count+1))
+   else
+      pass_count=$((pass_count+1))
    fi
 done
 
-if [ ${#failure_list[@]} -gt 0 ]; then
-   echo "There were test failures in the following tests:"
+if [ $fail_count -gt 0 ]; then
+   echo
+   echo "${fail_count} out of ${#tests[@]} collections failed."
+   echo "There were test failures in the following collections:"
    for failure in "${failure_list[@]}"; do
       echo "${failure}"
    done
    show_error
    exit 1
+else
+   echo
+   echo "All ${#tests[@]} collections passed."
 fi

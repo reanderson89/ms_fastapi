@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "053b2f8e-250b-4cc8-ad22-db4fde568c01",
+		"_postman_id": "121d32a2-21cb-4f1c-9af0-16a7e1df1043",
 		"name": "Milestones_events",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -20,9 +20,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
+									"pm.test(\"clients name should be 'RobCo-Program Event Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"    pm.expect(jsonData[0].name).to.eql('RobCo-Program Event Test');",
 									"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 									"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 									"});",
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+							"raw": "[\n  {\n    \"name\": \"RobCo-Program Event Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 0\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -71,14 +71,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -284,7 +283,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"admin\": 1\n} \n",
+							"raw": "\n{\n  \"work_email\": \"program.event.test@testclient.com\",\n  \"first_name\": \"TestUser\",\n  \"last_name\": \"ProgramEvent\",\n  \"admin\": 1\n} \n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -540,7 +539,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Blueboard 2023 Anniversary Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]",
+							"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Program Event Test Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"budget_9char\": \"{{budget_9char}}\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -549,7 +548,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -557,8 +556,7 @@
 								"v1",
 								"clients",
 								"{{client_uuid}}",
-								"programs",
-								""
+								"programs"
 							]
 						}
 					},
@@ -784,7 +782,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"TEST\",\n    \"status\": 1\n  }\n]\n",
+							"raw": "[\n  {\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": null,\n    \"event_data\": \"Program Event Test Event\",\n    \"status\": 1\n  }\n]\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -1033,7 +1031,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"<string>\",\n    \"status\": 1\n  }\n\n",
+							"raw": "\n  {\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": null,\n    \"event_data\": \"Program Event Test Sub Event\",\n    \"status\": 1\n  }\n\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2091,7 +2089,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": null,\n    \"segment_9char\": null,\n    \"event_data\": \"UPDATED - Program Event Test\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2349,7 +2347,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{sub_event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": \"<string>\",\n    \"event_data\": \"UPDATED SUB EVENT\",\n    \"status\": 1\n  }\n",
+							"raw": "\n  {\n    \"program_uuid\": \"{{program_uuid}}\",\n    \"client_uuid\": \"{{client_uuid}}\",\n    \"program_9char\": \"{{program_9char}}\",\n    \"event_9char\": \"{{sub_event_9char}}\",\n    \"event_type\": 1,\n    \"parent_9char\": \"{{event_9char}}\",\n    \"segment_9char\": null,\n    \"event_data\": \"UPDATED SUB EVENT - Program Event Test\",\n    \"status\": 1\n  }\n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2577,6 +2575,11 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ok should be true\", function(){",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.ok).to.eql(true)",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2764,6 +2767,11 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ok should be true\", function(){",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.ok).to.eql(true)",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2958,7 +2966,7 @@
 									"pm.test(\"ok should be true\", function(){",
 									"    var jsonData = pm.response.json()",
 									"    pm.expect(jsonData.ok).to.eql(true)",
-									"})"
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3148,7 +3156,7 @@
 									"pm.test(\"ok should be true\", function(){",
 									"    var jsonData = pm.response.json()",
 									"    pm.expect(jsonData.ok).to.eql(true)",
-									"})"
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3338,7 +3346,7 @@
 									"pm.test(\"ok should be true\", function(){",
 									"    var jsonData = pm.response.json()",
 									"    pm.expect(jsonData.ok).to.eql(true)",
-									"})"
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3525,7 +3533,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -3536,7 +3544,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user@testclient.com\"\n}",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"program.event.test@testclient.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3544,7 +3552,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services/",
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -3552,8 +3560,7 @@
 								"v1",
 								"users",
 								"{{user_uuid_from_client_user}}",
-								"services",
-								""
+								"services"
 							]
 						}
 					},
@@ -3570,7 +3577,10 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									""
+									"pm.test(\"ok should be true\", function(){",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.ok).to.eql(true)",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -3579,7 +3589,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -3618,7 +3628,7 @@
 									"pm.test(\"ok should be true\", function(){",
 									"    var jsonData = pm.response.json()",
 									"    pm.expect(jsonData.ok).to.eql(true)",
-									"})"
+									"});"
 								],
 								"type": "text/javascript"
 							}

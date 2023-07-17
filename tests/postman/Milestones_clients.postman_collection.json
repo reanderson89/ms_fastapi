@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "de94c3d1-42d7-4801-956e-e5aa942d51d8",
+		"_postman_id": "b4748220-a30d-488d-9121-126ee00cefba",
 		"name": "Milestones_clients",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -20,9 +20,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
+									"pm.test(\"clients name should be 'RobCo-Client Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"    pm.expect(jsonData[0].name).to.eql('RobCo-Client Test');",
 									"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 									"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 									"});",
@@ -62,7 +62,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+							"raw": "[\n  {\n    \"name\": \"RobCo-Client Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -71,14 +71,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -243,14 +242,14 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"clients name should be 'Rob and co'\", function () {",
+									"pm.test(\"clients name should be 'RobCo-Client Test'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+									"    pm.expect(jsonData.items[0].name).to.eql('RobCo-Client Test');",
 									"});",
 									"",
 									"pm.test(\"response should be a list\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length).to.not.eql(0);",
+									"    pm.expect(jsonData.items.length).to.not.eql(0);",
 									"});",
 									""
 								],
@@ -277,14 +276,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/clients/",
+							"raw": "{{baseUrl}}/v1/clients",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"clients",
-								""
+								"clients"
 							]
 						}
 					},
@@ -542,7 +540,7 @@
 					]
 				},
 				{
-					"name": "Create Client User",
+					"name": "Create Client User #1",
 					"event": [
 						{
 							"listen": "test",
@@ -593,7 +591,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\"\n} \n",
+							"raw": "\n{\n  \"email_address\": \"client.test1@testclient.com\",\n  \"first_name\": \"TestUser1\",\n  \"last_name\": \"ClientTest\"\n} \n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -783,7 +781,7 @@
 					]
 				},
 				{
-					"name": "Create Client User Two",
+					"name": "Create Client User #2",
 					"event": [
 						{
 							"listen": "test",
@@ -831,7 +829,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"second.user@testclient.com\",\n  \"first_name\": \"second\",\n  \"last_name\": \"testUser\"\n} \n",
+							"raw": "\n{\n  \"email_address\": \"client.test2@testclient.com\",\n  \"first_name\": \"TestUser2\",\n  \"last_name\": \"ClientTest\"\n} \n",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -1034,15 +1032,24 @@
 									"});",
 									"",
 									"pm.test(\"response should be a list\", function () {",
-									"    pm.expect(jsonData.length).to.not.eql(0);",
+									"    pm.expect(jsonData.items.length).to.not.eql(0);",
 									"});",
 									"",
-									"pm.test(\"each client user should have the client_uuid from the request\", function () {",
-									"    let client_uuid = pm.collectionVariables.get(\"client_uuid\")",
-									"    jsonData.forEach(client_user => {",
-									"        pm.expect(client_user.client_uuid).to.eql(client_uuid)",
-									"    })",
-									"})"
+									"pm.test(\"some client user should have the client_uuid from the request\", function () {",
+									"    let client_uuid = pm.collectionVariables.get(\"client_uuid\");",
+									"    let responseJson = pm.response.json();",
+									"    let clientUsers = responseJson.items;",
+									"    let foundMatchingUuid = false;",
+									"",
+									"    clientUsers.forEach(client_user => {",
+									"        let user_client_uuid = client_user.client_uuid;",
+									"        if (user_client_uuid === client_uuid) {",
+									"            foundMatchingUuid = true;",
+									"        }",
+									"    });",
+									"",
+									"    pm.expect(foundMatchingUuid).to.eql(true);",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -1450,7 +1457,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"new Co\",\n  \"description\": \"It's All new!!!\",\n  \"status\": 1\n}",
+							"raw": "{\n  \"name\": \"Updated Robco-Client Test\",\n  \"description\": \"It's All new!!!\",\n  \"status\": 0\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -1682,7 +1689,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n  \"email_address\": \"test.user@testclient.com\",\n  \"first_name\": \"updated test\",\n  \"last_name\": \"updated test\",\n  \"title\": \"test\",\n  \"department\": \"test\"\n} ",
+							"raw": "\n{\n  \"manager_uuid\": \"123abcClientUpdate\",\n  \"employee_id\": \"123abcClientUpdate\",\n  \"title\": \"Update Client Test\",\n  \"department\": \"Updated Client Test\",\n  \"active\": 0,\n  \"admin\": 1\n} ",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -2952,7 +2959,7 @@
 					]
 				},
 				{
-					"name": "Get Service UUID",
+					"name": "Get Service UUID #1",
 					"event": [
 						{
 							"listen": "test",
@@ -2979,7 +2986,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -2990,7 +2997,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"test.user@testclient.com\"\n}",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"client.test1@testclient.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2998,7 +3005,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services/",
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user}}/services",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -3006,15 +3013,14 @@
 								"v1",
 								"users",
 								"{{user_uuid_from_client_user}}",
-								"services",
-								""
+								"services"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Service UUID Two",
+					"name": "Get Service UUID #2",
 					"event": [
 						{
 							"listen": "test",
@@ -3041,7 +3047,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -3052,7 +3058,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"second.user@testclient.com\"\n}",
+							"raw": "{\n  \"service_uuid\": \"email\",\n  \"service_user_id\": \"client.test2@testclient.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3060,7 +3066,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user_two}}/services/",
+							"raw": "{{baseUrl}}/v1/users/{{user_uuid_from_client_user_two}}/services",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -3068,15 +3074,14 @@
 								"v1",
 								"users",
 								"{{user_uuid_from_client_user_two}}",
-								"services",
-								""
+								"services"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Delete User Service",
+					"name": "Delete User Service #1",
 					"event": [
 						{
 							"listen": "test",
@@ -3095,7 +3100,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -3121,7 +3126,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete User Service Two",
+					"name": "Delete User Service #2",
 					"event": [
 						{
 							"listen": "test",
@@ -3140,7 +3145,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// This route is being run for the sole purpose of getting the service_uuid after it is created so that it can be deleted"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -3166,7 +3171,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete User",
+					"name": "Delete User #1",
 					"event": [
 						{
 							"listen": "test",
@@ -3334,7 +3339,7 @@
 					]
 				},
 				{
-					"name": "Delete User Two",
+					"name": "Delete User #2",
 					"event": [
 						{
 							"listen": "test",

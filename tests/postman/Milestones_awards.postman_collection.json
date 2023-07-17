@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0dab7077-32f1-4126-b105-60ed9861e1d4",
+		"_postman_id": "833dd1cb-f1fd-4ab6-8580-3b2e4df26907",
 		"name": "Milestones_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25650478"
@@ -16,24 +16,22 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
 									"pm.test(\"Status test\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"",
-									"var jsonData = pm.response.json();",
 									"",
 									"if (Array.isArray(jsonData)) {",
 									"  pm.collectionVariables.set(\"award_uuid\", jsonData[0].uuid);",
 									"} else {",
 									"  pm.collectionVariables.set(\"award_uuid\", jsonData.uuid);",
 									"}",
-									"pm.collectionVariables.set(\"create_award\", pm.request);",
 									"",
 									"pm.test(\"uuid should exist\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.uuid).to.exist;",
-									"});",
-									""
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -42,7 +40,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.globals.set(\"variable_key\", \"variable_value\");"
+									"// pm.globals.set(\"variable_key\", \"variable_value\");"
 								],
 								"type": "text/javascript"
 							}
@@ -72,7 +70,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test award\",\n    \"description\": \"this is a test award.\",\n    \"hero_image\": 1,\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
+							"raw": "{\n    \"name\": \"Award - Award Test\",\n    \"description\": \"this is an award for Award Test.\",\n    \"hero_image\": 1,\n    \"channel\": 5,\n    \"award_type\": 2,\n    \"value\": 5000\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",
@@ -261,7 +259,7 @@
 									"",
 									"pm.test(\"awards length should be greater than 0\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"    pm.expect(jsonData.items.length).to.be.greaterThan(0);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -290,24 +288,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/v1/awards?order_by=name&sort=ASC",
+							"raw": "{{baseUrl}}/v1/awards",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
 								"awards"
-							],
-							"query": [
-								{
-									"key": "order_by",
-									"value": "name"
-								},
-								{
-									"key": "sort",
-									"value": "ASC",
-									"description": "ASC or DESC for ascending and descending"
-								}
 							]
 						}
 					},
@@ -587,9 +574,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"name should be UPDATED\", function () {",
+									"pm.test(\"name should be 'UPDATED Award'\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.eql(\"UPDATED\");",
+									"    pm.expect(jsonData.name).to.eql(\"UPDATED Award\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -620,7 +607,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"UPDATED\",\n    \"description\": \"UPDATED\",\n    \"hero_image\": 0,\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
+							"raw": "{\n    \"name\": \"UPDATED Award\",\n    \"description\": \"UPDATED Award\",\n    \"hero_image\": \"updated_Award_hero_image.png\",\n    \"channel\": 1,\n    \"award_type\": 1,\n    \"value\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a5a3da8f-da2a-4489-8bcc-921c910f51e9",
+		"_postman_id": "80ff46c1-2a32-492d-a362-f85457d0f33d",
 		"name": "Milestones_program_segment_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -17,9 +17,9 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.test(\"clients name should be 'Rob and co'\", function () {",
+							"pm.test(\"clients name should be 'RobCo-Segment Award Test'\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData[0].name).to.eql('Rob and co');",
+							"    pm.expect(jsonData[0].name).to.eql('RobCo-Segment Award Test');",
 							"    pm.collectionVariables.set(\"client_name\", jsonData[0].name)",
 							"    pm.collectionVariables.set(\"client_description\", jsonData[0].description)",
 							"});",
@@ -27,9 +27,7 @@
 							"if(pm.response.to.have.status(200)){",
 							"var jsonData = pm.response.json();",
 							"pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-							"}",
-							"",
-							""
+							"};"
 						],
 						"type": "text/javascript"
 					}
@@ -59,7 +57,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n    \"name\": \"Rob and co\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 1\n  }\n]",
+					"raw": "[\n  {\n    \"name\": \"RobCo-Segment Award Test\",\n    \"description\": \"Blah\",\n    \"url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0\",\n    \"status\": 0\n  }\n]",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -68,14 +66,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/",
+					"raw": "{{baseUrl}}/v1/clients",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"v1",
-						"clients",
-						""
+						"clients"
 					]
 				}
 			},
@@ -237,18 +234,18 @@
 					"script": {
 						"exec": [
 							"var jsonData = pm.response.json();",
-							"console.log(jsonData)",
+							"// console.log(jsonData)",
 							"",
 							"pm.test(\"Status test\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
+							"",
 							"pm.test(\"response should have same client_uuid as request\", function () {",
 							"    let client_uuid_from_req = pm.collectionVariables.get(\"client_uuid\")",
 							"    pm.expect(jsonData.client_uuid).to.eql(client_uuid_from_req)",
 							"});",
 							"",
-							"",
-							"pm.collectionVariables.set(\"user_uuid_from_client_user\", jsonData.user_uuid);",
+							"pm.collectionVariables.set(\"user_uuid\", jsonData.user_uuid);",
 							"pm.collectionVariables.set(\"client_user_uuid\", jsonData.uuid);",
 							"pm.collectionVariables.set(\"client_user_title\", jsonData.title);",
 							"pm.collectionVariables.set(\"client_user_department\", jsonData.department);"
@@ -281,7 +278,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n  \"work_email\": \"test.user1@testclient.com\",\n  \"first_name\": \"Test\",\n  \"last_name\": \"User\",\n  \"manager_uuid\": \"uuid\",\n  \"admin\": 1\n} \n",
+					"raw": "{\n  \"work_email\": \"segment.award.test@testclient.com\",\n  \"first_name\": \"TestUser\",\n  \"last_name\": \"SegmentAward\",\n  \"admin\": 1\n} ",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -471,6 +468,48 @@
 			]
 		},
 		{
+			"name": "Get User Services",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"user_uuid from create client user should match response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var firstKey = Object.keys(jsonData)[0];",
+							"    pm.collectionVariables.set(\"service_uuid\", jsonData[firstKey][0].uuid);",
+							"    var user_uuid = pm.collectionVariables.get(\"user_uuid\")",
+							"    pm.expect(jsonData[firstKey][0].user_uuid).to.eql(user_uuid);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{user_uuid}}/services",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{user_uuid}}",
+						"services"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create Program",
 			"event": [
 				{
@@ -493,21 +532,7 @@
 							"})",
 							"",
 							"pm.collectionVariables.set(\"program_9char\", jsonData[0].program_9char)",
-							"pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid)",
-							"",
-							"",
-							"",
-							"",
-							"// var jsonData = pm.response.json();",
-							"",
-							"// if (Array.isArray(jsonData)) {",
-							"//   pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid);",
-							"//   pm.collectionVariables.set(\"program_9char\", jsonData[0].program_9char);",
-							"// } else {",
-							"//   pm.collectionVariables.set(\"program_uuid\", jsonData.uuid);",
-							"//   pm.collectionVariables.set(\"program_9char\", jsonData.program_9char);",
-							"// }",
-							"// pm.collectionVariables.set(\"create_program\", pm.request);"
+							"pm.collectionVariables.set(\"program_uuid\", jsonData[0].uuid)"
 						],
 						"type": "text/javascript"
 					}
@@ -537,7 +562,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Blueboard 2023 Anniversary Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]",
+					"raw": "[\n  {\n    \"user_uuid\": \"{{user_uuid_from_client_user}}\",\n    \"name\": \"Segment Award Test Program\",\n    \"description\": \"This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.\",\n    \"status\": 1,\n    \"program_type\": 4,\n    \"cadence\": 1,\n    \"cadence_value\": 2\n  }\n]",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -546,7 +571,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -554,8 +579,7 @@
 						"v1",
 						"clients",
 						"{{client_uuid}}",
-						"programs",
-						""
+						"programs"
 					]
 				}
 			},
@@ -737,13 +761,13 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"// check for array",
-							"",
-							"var jsonData = pm.response.json()",
 							"",
 							"function runTests(data){",
 							"    pm.test(\"client_uuid should match path variable\", function () {",
@@ -766,11 +790,7 @@
 							"} else {",
 							"    runTests(jsonData)",
 							"  pm.collectionVariables.set(\"segment_9char\", jsonData.segment_9char);",
-							"}",
-							"",
-							"",
-							"",
-							""
+							"}"
 						],
 						"type": "text/javascript"
 					}
@@ -800,7 +820,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n\t\"budget_9char\": null,\n\t\"name\": \"segment\",\n\t\"description\": \"this is a segment\",\n\t\"status\": 1\n  }\n]\n",
+					"raw": "[\n  {\n    \"budget_9char\": null,\n    \"name\": \"segment\",\n    \"description\": \"this is a segment\",\n    \"status\": 1\n  }\n]\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1013,18 +1033,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"// pm.sendRequest(pm.collectionVariables.get(\"create_client\"), function (err, response) {",
-							"//     if (err) {",
-							"//         console.log(err);",
-							"//     } else {",
-							"//         var jsonData = response.json();",
-							"//         if (jsonData[0] && jsonData[0].uuid) {",
-							"//             pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-							"//         } else {",
-							"//             console.log(\"UUID not found in the response\");",
-							"//         }",
-							"//     }",
-							"// });"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1038,8 +1047,8 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"Has uuid\", function () {",
 							"",
+							"pm.test(\"Has uuid\", function () {",
 							"    pm.expect(jsonData.uuid).to.exist;",
 							"});",
 							"",
@@ -1047,10 +1056,7 @@
 							"  pm.collectionVariables.set(\"client_award_9char\", jsonData[0].client_award_9char);",
 							"} else {",
 							"  pm.collectionVariables.set(\"client_award_9char\", jsonData.client_award_9char);",
-							"}",
-							"",
-							"",
-							""
+							"}"
 						],
 						"type": "text/javascript"
 					}
@@ -1061,7 +1067,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n  \"award_uuid\": \"{{award_uuid}}\",\n  \"name\": \"Test Client Award\",\n  \"description\": \"Just a test client award\",\n  \"hero_image\": 1\n}",
+					"raw": "{\n  \"award_uuid\": \"{{award_uuid}}\",\n  \"name\": \"Client Award-Segment Award Test\",\n  \"description\": \"Just a test client award for Segment Award Test\",\n  \"hero_image\": null\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1090,18 +1096,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"// pm.sendRequest(pm.collectionVariables.get(\"create_client\"), function (err, response) {",
-							"//     if (err) {",
-							"//         console.log(err);",
-							"//     } else {",
-							"//         var jsonData = response.json();",
-							"//         if (jsonData[0] && jsonData[0].uuid) {",
-							"//             pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-							"//         } else {",
-							"//             console.log(\"UUID not found in the response\");",
-							"//         }",
-							"//     }",
-							"// });"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1124,10 +1119,7 @@
 							"  pm.collectionVariables.set(\"program_award_9char\", jsonData[0].program_award_9char);",
 							"} else {",
 							"  pm.collectionVariables.set(\"program_award_9char\", jsonData.program_award_9char);",
-							"}",
-							"",
-							"// pm.collectionVariables.set(\"create_program_award\", pm.request);",
-							""
+							"}"
 						],
 						"type": "text/javascript"
 					}
@@ -1138,7 +1130,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n  \"name\": \"Test award \",\n  \"description\": \"this is a test\",\n  \"hero_image\": 1\n}",
+					"raw": "\n{\n  \"name\": \"Program Award-Segment Award Test\",\n  \"description\": \"this is a program award for Segment Award Test\",\n  \"hero_image\": null\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1170,16 +1162,13 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"// check for array",
-							"",
-							"var jsonData = pm.response.json()",
-							"",
-							"",
-							"",
 							"",
 							"if (Array.isArray(jsonData)) {",
 							"  pm.collectionVariables.set(\"segment_award_9char\", jsonData[0].segment_award_9char);",
@@ -1218,7 +1207,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n    \"client_award_9char\": \"{{client_award_9char}}\",\n\t\"name\": \"segment award\",\n\t\"description\": \"this is a segment award\",\n\t\"hero_image\": \".png\"\n  }\n]\n",
+					"raw": "[\n  {\n    \"client_award_9char\": \"{{client_award_9char}}\",\n    \"name\": \"segment award-Segment Award Test\",\n    \"description\": \"this is a segment award for Segment Award Test\",\n    \"hero_image\": null\n  }\n]\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1436,19 +1425,7 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"// check for array",
-							"",
-							"var jsonData = pm.response.json()",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							""
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -1699,8 +1676,6 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"",
-							"",
 							"",
 							"pm.test(\"segment_award_9char should equal path variable\", function () {",
 							"    var jsonData = pm.response.json();",
@@ -1961,6 +1936,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"",
+							"var jsonData = pm.response.json()",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -1969,15 +1946,8 @@
 							"",
 							"pm.test(\"name should be updated\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.eql(\"segment award UPDATED\");",
-							"});",
-							"",
-							"",
-							"",
-							"",
-							"",
-							"",
-							""
+							"    pm.expect(jsonData.name).to.eql(\"UPDATED-Segment Award Test\");",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -2007,7 +1977,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n\"name\": \"segment award UPDATED\",\n\"description\": \"this is a segment award UPDATE\",\n\"hero_image\": 1\n}\n",
+					"raw": "\n{\n\"name\": \"UPDATED-Segment Award Test\",\n\"description\": \"UPDATED-Segment Award Test\",\n\"hero_image\": \"png\"\n}\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -2223,14 +2193,13 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"// check for array",
-							"",
-							"var jsonData = pm.response.json()",
-							"",
 							"",
 							"pm.test(\"ok should be true\", function () {",
 							"    pm.expect(jsonData.ok).to.eql(true);",
@@ -2238,7 +2207,7 @@
 							"",
 							"pm.test(\"segment_award_9char should match deleted segment_award_9char\", function(){",
 							"    var segment_award_9char = pm.collectionVariables.get(\"segment_award_9char\");",
-							"        pm.expect(jsonData[\"Deleted:\"].segment_award_9char).to.eql(segment_award_9char);",
+							"        pm.expect(jsonData.Deleted.segment_award_9char).to.eql(segment_award_9char);",
 							"});",
 							"",
 							"",
@@ -2490,13 +2459,11 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"",
-							"",
-							"var jsonData = pm.response.json();",
-							"",
 							"",
 							"pm.test(\"ok should be true\", function () {",
 							"    pm.expect(jsonData.ok).to.eql(true);",
@@ -2504,7 +2471,7 @@
 							"",
 							"pm.test(\"segment_9char should match deleted segment_9char\", function(){",
 							"    var segment_9char = pm.collectionVariables.get(\"segment_9char\");",
-							"        pm.expect(jsonData[\"Deleted:\"].segment_9char).to.eql(segment_9char);",
+							"        pm.expect(jsonData.Deleted.segment_9char).to.eql(segment_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2690,8 +2657,6 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"",
-							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -2699,7 +2664,7 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
-							"})"
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -2889,7 +2854,7 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
-							"})"
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -3066,238 +3031,6 @@
 			]
 		},
 		{
-			"name": "Update Client status to remove",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"",
-							"pm.test(\"Status test\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"client uuid from request matches client uuid from response\", function () {",
-							"    var client_uuid = pm.collectionVariables.get(\"client_uuid\")",
-							"    pm.expect(jsonData.uuid).to.eql(client_uuid)",
-							"})",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{bearerToken}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"status\": 0\n}",
-					"options": {
-						"raw": {
-							"headerFamily": "json",
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"v1",
-						"clients",
-						"{{client_uuid}}"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Successful Response",
-					"originalRequest": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"description": "Added as a part of security scheme: bearer",
-								"key": "Authorization",
-								"value": "Bearer <token>"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"clients",
-								":client_uuid"
-							],
-							"variable": [
-								{
-									"key": "client_uuid"
-								}
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"uuid\": \"<string>\",\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}"
-				},
-				{
-					"name": "Unauthorized",
-					"originalRequest": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"description": "Added as a part of security scheme: bearer",
-								"key": "Authorization",
-								"value": "Bearer <token>"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"clients",
-								":client_uuid"
-							],
-							"variable": [
-								{
-									"key": "client_uuid"
-								}
-							]
-						}
-					},
-					"status": "Unauthorized",
-					"code": 401,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
-				},
-				{
-					"name": "Validation Error",
-					"originalRequest": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"description": "Added as a part of security scheme: bearer",
-								"key": "Authorization",
-								"value": "Bearer <token>"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"time_updated\": \"<integer>\",\n  \"time_ping\": \"<integer>\"\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"clients",
-								":client_uuid"
-							],
-							"variable": [
-								{
-									"key": "client_uuid"
-								}
-							]
-						}
-					},
-					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
-					"code": 422,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
-				}
-			]
-		},
-		{
 			"name": "Delete Client",
 			"event": [
 				{
@@ -3311,7 +3044,7 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
-							"})"
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -3344,6 +3077,354 @@
 						"v1",
 						"clients",
 						"{{client_uuid}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{}"
+				},
+				{
+					"name": "Unauthorized",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete User Service",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"ok should be true\", function(){",
+							"    var jsonData = pm.response.json()",
+							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{user_uuid}}/services/{{service_uuid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{user_uuid}}",
+						"services",
+						"{{service_uuid}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{}"
+				},
+				{
+					"name": "Unauthorized",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [
+							{
+								"description": "Added as a part of security scheme: bearer",
+								"key": "Authorization",
+								"value": "Bearer <token>"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/:client_uuid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								":client_uuid"
+							],
+							"variable": [
+								{
+									"key": "client_uuid"
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"ok should be true\", function(){",
+							"    var jsonData = pm.response.json()",
+							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{bearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/v1/users/{{user_uuid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"users",
+						"{{user_uuid}}"
 					]
 				}
 			},
@@ -3510,8 +3591,13 @@
 			"value": ""
 		},
 		{
-			"key": "user_uuid_from_client_user",
+			"key": "user_uuid",
 			"value": ""
+		},
+		{
+			"key": "service_uuid",
+			"value": "",
+			"type": "string"
 		},
 		{
 			"key": "client_user_uuid",
