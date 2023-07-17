@@ -11,8 +11,8 @@ class SegmentAward(Base):
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
 	program_9char: Mapped[str] = mapped_column(default=None)
 	program_award_9char: Mapped[str] = mapped_column(default=None)
-	program_segment_9char: Mapped[str] = mapped_column(default=None)
-	program_segment_award_9char: Mapped[str] = mapped_column(default=None)
+	segment_9char: Mapped[str] = mapped_column(default=None)
+	segment_award_9char: Mapped[str] = mapped_column(default=None)
 	client_award_9char: Mapped[str] = mapped_column(default=None)
 	client_uuid: Mapped[str] = mapped_column(default=None)
 	name: Mapped[str] = mapped_column(default=None)
@@ -23,18 +23,18 @@ class SegmentAward(Base):
 
 	def __init__(self, **data):
 		super().__init__(**data)
-		if not self.program_segment_award_9char:
-			self.program_segment_award_9char = new_9char()
+		if not self.segment_award_9char:
+			self.segment_award_9char = new_9char()
 		if not self.uuid:
-			self.uuid = (self.client_uuid + self.program_9char + self.program_segment_9char + self.client_award_9char)
+			self.uuid = (self.client_uuid + self.program_9char + self.segment_9char + self.client_award_9char)
 
 class SegmentAwardReturn(BasePydantic):
 	uuid: str 
 	client_uuid: str 
 	program_9char: str 
 	program_award_9char: str 
-	program_segment_9char: str 
-	program_segment_award_9char: str 
+	segment_9char: str 
+	segment_award_9char: str 
 	client_award_9char: str
 	name: Optional[str] = None
 	description: Optional[str] = None
@@ -58,8 +58,8 @@ class SegmentAwardBase(BasePydantic):
 	client_uuid: Optional[str] = None 
 	program_9char: Optional[str] = None 
 	program_award_9char: Optional[str] = None 
-	program_segment_9char: Optional[str] = None 
-	program_segment_award_9char: Optional[str] = None
+	segment_9char: Optional[str] = None 
+	segment_award_9char: Optional[str] = None
 	client_award_9char: Optional[str] = None
 	name: Optional[str] = None
 	description: Optional[str] = None

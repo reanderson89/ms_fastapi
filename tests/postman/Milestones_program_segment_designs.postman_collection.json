@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a5a3da8f-da2a-4489-8bcc-921c910f51e9",
-		"name": "Milestones_program_segment_awards",
+		"_postman_id": "39122ed7-5660-4a6b-8426-e31ae47876cf",
+		"name": "Milestones_program_segment_designs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "13402166"
 	},
@@ -1007,164 +1007,7 @@
 			]
 		},
 		{
-			"name": "Create Client Award",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// pm.sendRequest(pm.collectionVariables.get(\"create_client\"), function (err, response) {",
-							"//     if (err) {",
-							"//         console.log(err);",
-							"//     } else {",
-							"//         var jsonData = response.json();",
-							"//         if (jsonData[0] && jsonData[0].uuid) {",
-							"//             pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-							"//         } else {",
-							"//             console.log(\"UUID not found in the response\");",
-							"//         }",
-							"//     }",
-							"// });"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.test(\"Has uuid\", function () {",
-							"",
-							"    pm.expect(jsonData.uuid).to.exist;",
-							"});",
-							"",
-							"if (Array.isArray(jsonData)) {",
-							"  pm.collectionVariables.set(\"client_award_9char\", jsonData[0].client_award_9char);",
-							"} else {",
-							"  pm.collectionVariables.set(\"client_award_9char\", jsonData.client_award_9char);",
-							"}",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "\n{\n  \"award_uuid\": \"{{award_uuid}}\",\n  \"name\": \"Test Client Award\",\n  \"description\": \"Just a test client award\",\n  \"hero_image\": 1\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/awards",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"v1",
-						"clients",
-						"{{client_uuid}}",
-						"awards"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Program Award",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// pm.sendRequest(pm.collectionVariables.get(\"create_client\"), function (err, response) {",
-							"//     if (err) {",
-							"//         console.log(err);",
-							"//     } else {",
-							"//         var jsonData = response.json();",
-							"//         if (jsonData[0] && jsonData[0].uuid) {",
-							"//             pm.collectionVariables.set(\"client_uuid\", jsonData[0].uuid);",
-							"//         } else {",
-							"//             console.log(\"UUID not found in the response\");",
-							"//         }",
-							"//     }",
-							"// });"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Has uuid\", function () {",
-							"    pm.expect(jsonData.uuid).to.exist;",
-							"});",
-							"",
-							"if (Array.isArray(jsonData)) {",
-							"  pm.collectionVariables.set(\"program_award_9char\", jsonData[0].program_award_9char);",
-							"} else {",
-							"  pm.collectionVariables.set(\"program_award_9char\", jsonData.program_award_9char);",
-							"}",
-							"",
-							"// pm.collectionVariables.set(\"create_program_award\", pm.request);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "\n{\n  \"name\": \"Test award \",\n  \"description\": \"this is a test\",\n  \"hero_image\": 1\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/awards/{{client_award_9char}}",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"v1",
-						"clients",
-						"{{client_uuid}}",
-						"programs",
-						"{{program_9char}}",
-						"awards",
-						"{{client_award_9char}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Segment Award",
+			"name": "Create Segment Design",
 			"event": [
 				{
 					"listen": "test",
@@ -1182,9 +1025,9 @@
 							"",
 							"",
 							"if (Array.isArray(jsonData)) {",
-							"  pm.collectionVariables.set(\"segment_award_9char\", jsonData[0].segment_award_9char);",
+							"  pm.collectionVariables.set(\"design_9char\", jsonData[0].design_9char);",
 							"} else {",
-							"  pm.collectionVariables.set(\"segment_award_9char\", jsonData.segment_award_9char);",
+							"  pm.collectionVariables.set(\"design_9char\", jsonData.design_9char);",
 							"}",
 							"",
 							"",
@@ -1218,7 +1061,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n    \"client_award_9char\": \"{{client_award_9char}}\",\n\t\"name\": \"segment award\",\n\t\"description\": \"this is a segment award\",\n\t\"hero_image\": \".png\"\n  }\n]\n",
+					"raw": "[\n  {\n    \"channel\": 1,\n\t\"status\": 1,\n\t\"program_uuid\": \"program_uuid\",\n\t\"message_uuid\": \"message_uuid\"\n  }\n]\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1227,7 +1070,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/awards/{{program_award_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1239,8 +1082,7 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"awards",
-						"{{program_award_9char}}"
+						"designs"
 					]
 				}
 			},
@@ -1428,7 +1270,7 @@
 			]
 		},
 		{
-			"name": "Get Segment Awards",
+			"name": "Get Segment Design",
 			"event": [
 				{
 					"listen": "test",
@@ -1490,7 +1332,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/awards",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1502,7 +1344,7 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"awards"
+						"designs"
 					]
 				}
 			},
@@ -1690,7 +1532,7 @@
 			]
 		},
 		{
-			"name": "Get Segment Award",
+			"name": "Get Segment Design",
 			"event": [
 				{
 					"listen": "test",
@@ -1702,10 +1544,10 @@
 							"",
 							"",
 							"",
-							"pm.test(\"segment_award_9char should equal path variable\", function () {",
+							"pm.test(\"design_9char should equal path variable\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    let segment_award_9char = pm.collectionVariables.get(\"segment_award_9char\")",
-							"    pm.expect(jsonData.segment_award_9char).to.eql(segment_award_9char);",
+							"    let design_9char = pm.collectionVariables.get(\"design_9char\")",
+							"    pm.expect(jsonData.design_9char).to.eql(design_9char);",
 							"});",
 							"",
 							"",
@@ -1754,7 +1596,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/awards/{{segment_award_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1766,8 +1608,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"awards",
-						"{{segment_award_9char}}"
+						"designs",
+						"{{design_9char}}"
 					]
 				}
 			},
@@ -1955,7 +1797,7 @@
 			]
 		},
 		{
-			"name": "Update Segment Award",
+			"name": "Update Segment Design",
 			"event": [
 				{
 					"listen": "test",
@@ -1967,9 +1809,9 @@
 							"",
 							"",
 							"",
-							"pm.test(\"name should be updated\", function () {",
+							"pm.test(\"status should be 0\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.eql(\"segment award UPDATED\");",
+							"    pm.expect(jsonData.status).to.eql(0);",
 							"});",
 							"",
 							"",
@@ -2007,7 +1849,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n\"name\": \"segment award UPDATED\",\n\"description\": \"this is a segment award UPDATE\",\n\"hero_image\": 1\n}\n",
+					"raw": "  {\n    \"channel\": 1,\n\t\"status\": 0\n  }\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -2016,7 +1858,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/awards/{{segment_award_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -2028,8 +1870,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"awards",
-						"{{segment_award_9char}}"
+						"designs",
+						"{{design_9char}}"
 					]
 				}
 			},
@@ -2217,7 +2059,7 @@
 			]
 		},
 		{
-			"name": "Delete Segment Award",
+			"name": "Delete Segment Design",
 			"event": [
 				{
 					"listen": "test",
@@ -2236,9 +2078,9 @@
 							"    pm.expect(jsonData.ok).to.eql(true);",
 							"});",
 							"",
-							"pm.test(\"segment_award_9char should match deleted segment_award_9char\", function(){",
-							"    var segment_award_9char = pm.collectionVariables.get(\"segment_award_9char\");",
-							"        pm.expect(jsonData[\"Deleted:\"].segment_award_9char).to.eql(segment_award_9char);",
+							"pm.test(\"design_9char should match deleted design_9char\", function(){",
+							"    var design_9char = pm.collectionVariables.get(\"design_9char\");",
+							"        pm.expect(jsonData[\"Deleted:\"].design_9char).to.eql(design_9char);",
 							"});",
 							"",
 							"",
@@ -2283,7 +2125,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/awards/{{segment_award_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -2295,8 +2137,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"awards",
-						"{{segment_award_9char}}"
+						"designs",
+						"{{design_9char}}"
 					]
 				}
 			},
@@ -3565,6 +3407,10 @@
 		},
 		{
 			"key": "segment_award_9char",
+			"value": ""
+		},
+		{
+			"key": "design_9char",
 			"value": ""
 		}
 	]

@@ -11,7 +11,7 @@ class SegmentAwardActions():
 			[
 			SegmentAward.client_uuid == path_params["client_uuid"],
 			SegmentAward.program_9char == path_params["program_9char"],
-			SegmentAward.program_segment_9char == path_params["program_segment_9char"]
+			SegmentAward.segment_9char == path_params["segment_9char"]
 			],
 			query_params
 		)
@@ -21,10 +21,10 @@ class SegmentAwardActions():
 		return await BaseActions.get_one_where(
 			SegmentAward,
 			[
-			SegmentAward.program_segment_9char == path_params["program_segment_9char"],
+			SegmentAward.segment_9char == path_params["segment_9char"],
 			SegmentAward.client_uuid == path_params["client_uuid"],
 			SegmentAward.program_9char == path_params["program_9char"],
-			SegmentAward.program_segment_award_9char == path_params["program_segment_award_9char"]
+			SegmentAward.segment_award_9char == path_params["segment_award_9char"]
 			]
 		)
 	
@@ -35,7 +35,7 @@ class SegmentAwardActions():
 				**segment_award.dict(),
 				client_uuid = path_params["client_uuid"],
 				program_9char = path_params["program_9char"],
-				program_segment_9char = path_params["program_segment_9char"],
+				segment_9char = path_params["segment_9char"],
 				program_award_9char = program_award_9char,
 			) for segment_award in segment_awards]
 			return await BaseActions.create(segment_awards)
@@ -43,7 +43,7 @@ class SegmentAwardActions():
 			**segment_awards.dict(),
 				client_uuid = path_params["client_uuid"],
 				program_9char = path_params["program_9char"],
-				program_segment_9char = path_params["program_segment_9char"],
+				segment_9char = path_params["segment_9char"],
 				program_award_9char = program_award_9char,
 		)
 		return await BaseActions.create(segment_awards)
@@ -53,10 +53,10 @@ class SegmentAwardActions():
 		return await BaseActions.update(
 			SegmentAward,
 			[
-			SegmentAward.program_segment_9char == path_params["program_segment_9char"],
+			SegmentAward.segment_9char == path_params["segment_9char"],
 			SegmentAward.client_uuid == path_params["client_uuid"],
 			SegmentAward.program_9char == path_params["program_9char"],
-			SegmentAward.program_segment_award_9char == path_params["program_segment_award_9char"]
+			SegmentAward.segment_award_9char == path_params["segment_award_9char"]
 			],
 			segment_award_updates
 		)
@@ -66,10 +66,10 @@ class SegmentAwardActions():
 		return await BaseActions.delete_one(
 			SegmentAward,
 			[
-			SegmentAward.program_segment_9char == path_params["program_segment_9char"],
+			SegmentAward.segment_9char == path_params["segment_9char"],
 			SegmentAward.client_uuid == path_params["client_uuid"],
 			SegmentAward.program_9char == path_params["program_9char"],
-			SegmentAward.program_segment_award_9char == path_params["program_segment_award_9char"]
+			SegmentAward.segment_award_9char == path_params["segment_award_9char"]
 			]
 		)
 	

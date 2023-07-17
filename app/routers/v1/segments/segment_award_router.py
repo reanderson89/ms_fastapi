@@ -5,15 +5,15 @@ from app.models.segments.segment_award_models import SegmentAwardUpdate, Segment
 from app.actions.segments.awards import SegmentAwardActions
 
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{program_segment_9char}", tags=["Client Program Segment Awards"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Awards"])
 
 
-def path_params(client_uuid: str, program_9char: str, program_segment_9char: str, program_segment_award_9char: str=None):
+def path_params(client_uuid: str, program_9char: str, segment_9char: str, segment_award_9char: str=None):
 	return {
 		"client_uuid": client_uuid,
 		"program_9char": program_9char,
-		"program_segment_9char": program_segment_9char,
-		"program_segment_award_9char": program_segment_award_9char
+		"segment_9char": segment_9char,
+		"segment_award_9char": segment_award_9char
 	}
 
 @router.get("/awards")
@@ -24,7 +24,7 @@ async def get_segment_awards(
 	return await SegmentAwardActions.get_all_segment_awards(path_params, query_params)
 
 
-@router.get("/awards/{program_segment_award_9char}", response_model=SegmentAwardResponse)
+@router.get("/awards/{segment_award_9char}", response_model=SegmentAwardResponse)
 async def get_segment_award(
 	path_params: dict = Depends(path_params)
 ):
@@ -40,7 +40,7 @@ async def create_segment_award(
 	return await SegmentAwardActions.create_segment_award(segment_awards, path_params, program_award_9char)
 
 
-@router.put("/awards/{program_segment_award_9char}", response_model=SegmentAwardResponse)
+@router.put("/awards/{segment_award_9char}", response_model=SegmentAwardResponse)
 async def update_segment_award(
 	segment_award_updates: SegmentAwardUpdate,
 	path_params: dict = Depends(path_params)
@@ -48,7 +48,7 @@ async def update_segment_award(
 	return await SegmentAwardActions.update_segment_award(path_params, segment_award_updates)
 
 
-@router.delete("/awards/{program_segment_award_9char}")
+@router.delete("/awards/{segment_award_9char}")
 async def delete_segment_award(
 	path_params: dict = Depends(path_params)
 ):
