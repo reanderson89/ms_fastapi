@@ -14,7 +14,7 @@ router = APIRouter(tags=["Awards"])
 @router.get("/awards")
 async def get_all_awards(
 	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-	query_params: dict = Depends(default_query_params),
+	query_params: dict = {"order_by": "value", "sort": "ASC"},
 ) -> Page[AwardModel]:
 	return await AwardActions.get_all_awards(query_params)
 

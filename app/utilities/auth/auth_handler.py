@@ -31,7 +31,7 @@ class Permissions():
         self.level = level
 
     def __call__(self,
-                 auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
+        auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
 
         if ENV == "local":
             return True

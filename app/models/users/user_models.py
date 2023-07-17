@@ -15,7 +15,6 @@ class UserModel(Base):
 	time_updated: Mapped[int] = mapped_column(default=None)
 	time_ping: Mapped[int] = mapped_column(default=None)
 	time_birthday: Mapped[int] = mapped_column(default=None)
-	time_birthday: Mapped[int] = mapped_column(default=None)
 	admin: Mapped[int] = mapped_column(default=0)
 
 class UserBase(BasePydantic):

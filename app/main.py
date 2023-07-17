@@ -1,8 +1,6 @@
 import uvicorn
 import os
-from app.actions.base_actions import BaseActions
 from app.configs import run_config
-from app.models.users import UserModel, UserServiceModelDB
 from app.routers import routers
 from app.middleware import LoggingMiddleware
 from app.routers import auth_routers
@@ -10,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 from contextlib import asynccontextmanager
 from fastapi_pagination import add_pagination
-from app.seed_data.seed_data import generate_seed_data
+from app.seed_data import seed_database
 
 
 @asynccontextmanager
@@ -23,12 +21,10 @@ async def lifespan(app: FastAPI):
 		it would error out on the fact that the users already existed.
 		"""
 		try:
-			await BaseActions.seed_database(generate_seed_data())
+			await seed_database()
 			yield
 		except:
 			yield
-
-
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
