@@ -2,6 +2,7 @@ from app.actions.base_actions import BaseActions
 from app.exceptions import ExceptionHandling
 from app.models.award import AwardModelDB, AwardUpdate
 from app.actions.upload import UploadActions
+from app.models.clients import ClientAwardModelDB
 
 
 class AwardActions():
@@ -106,6 +107,14 @@ class AwardActions():
 		:param award_uuid(str): The uuid of the award to delete
 		:return: Status of deletion and the deleted model object
 		"""
+		client_award = await BaseActions.check_if_one_exists(
+			ClientAwardModelDB,
+			[ClientAwardModelDB.award_uuid == award_uuid]
+		)
+		if client_award:
+			return await ExceptionHandling.custom409(
+				f"Cannot delete, award {award_uuid} is currently in use"
+			)
 		return await BaseActions.delete_one(
 			AwardModelDB,
 			[AwardModelDB.uuid == award_uuid]
