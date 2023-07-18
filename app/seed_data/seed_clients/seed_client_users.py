@@ -67,8 +67,8 @@ owen = {
         "last_name": "Plambeck",
         "title": "Sr Bug Creator",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "department": f"{faker.job()} Department",
-        "admin": 2,
+        "department": "Sr Bug Creator",
+        "admin": 1,
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "active": 1,
@@ -81,7 +81,7 @@ clark = {
         "first_name": "Clark",
         "last_name": "Ritchie",
         "title": "Domestique",
-        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "department": "Domestique", #faker doesnt have a job department field
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
@@ -98,7 +98,7 @@ ryan = {
         "last_name": "Green",
         "title": "Sr Software Engineer",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "department": "Racecar Recreation Enthusiast",
         "admin": 2,
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
@@ -113,7 +113,7 @@ jason = {
         "first_name": "Jason",
         "last_name": "Wiener",
         "title": "Quality Assurance Intern",
-        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "department": "Quality Assurance Intern", #faker doesnt have a job department field
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
@@ -129,7 +129,7 @@ josh = {
         "first_name": "Josh",
         "last_name": "Crowley",
         "title": "Software Engineer",
-        "department": f"{faker.job()} Department", #faker doesnt have a job department field
+        "department": "Tooth Hurts",
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
@@ -146,7 +146,7 @@ dan = {
         "last_name": "O'Niell",
         "title": "Frontend",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "department": f"{faker.job()} Department",
+        "department": "Frontend",
         "admin": 2,
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
@@ -161,7 +161,7 @@ mike = {
         "last_name": "Lindenau",
         "title": "Frontend",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "department": f"{faker.job()} Department",
+        "department": "Frontend",
         "admin": 2,
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
