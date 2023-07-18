@@ -40,6 +40,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # from .env
       AWS_ROLE_ARN: ${AWS_ROLE_ARN} # from .env
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME} # from .env
+      BASE_URL: "https://milestones-dev.blueboard.app"
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug
