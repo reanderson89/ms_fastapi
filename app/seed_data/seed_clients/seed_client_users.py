@@ -143,7 +143,7 @@ dan = {
         "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
         "work_email": "daniel@nscale.io",
         "first_name": "Daniel",
-        "last_name": "O'Niell",
+        "last_name": "O'Neill",
         "title": "Frontend",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "department": "Frontend",
