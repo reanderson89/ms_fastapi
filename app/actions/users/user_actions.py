@@ -5,7 +5,7 @@ from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.clients import ClientUserModel
-from app.models.users import UserModel, UserServiceModelDB, UserExpanded
+from app.models.users import UserModelDB, UserServiceModelDB, UserExpanded
 
 class UserActions():
 
@@ -17,37 +17,37 @@ class UserActions():
 
 	@classmethod
 	async def get_user_by_uuid(cls, uuid):
-		return await BaseActions.get_one_where(UserModel, [UserModel.uuid == uuid])
+		return await BaseActions.get_one_where(UserModelDB, [UserModelDB.uuid == uuid])
 
 	@classmethod
 	async def get_user_by_service_id(cls, user_data, service_id):
 		return await BaseActions.check_if_exists(
-			UserModel,
+			UserModelDB,
 			[
 			UserServiceModelDB.service_user_id == service_id,
-			UserServiceModelDB.user_uuid == UserModel.uuid,
-			UserModel.first_name == user_data["first_name"],
-			UserModel.last_name == user_data["last_name"],
+			UserServiceModelDB.user_uuid == UserModelDB.uuid,
+			UserModelDB.first_name == user_data["first_name"],
+			UserModelDB.last_name == user_data["last_name"],
 			]
 		)
 
 	@classmethod
 	async def get_user_by_name_and_service_id(cls, first_name, last_name, service_id):
 		return await BaseActions.check_if_exists(
-			UserModel,
+			UserModelDB,
 			[
-				UserModel.first_name == first_name,
-				UserModel.last_name == last_name#,
+				UserModelDB.first_name == first_name,
+				UserModelDB.last_name == last_name#,
 				# UserServiceModelDB.service_user_id == service_id,
 			]
 		)
 
 	@classmethod
 	async def get_all_users(cls, query_params: dict):
-		return await BaseActions.get_all(UserModel, query_params)
+		return await BaseActions.get_all(UserModelDB, query_params)
 
 	@classmethod
-	async def get_user(cls, user_uuid, client_uuid, expand_services=False):
+	async def get_user(cls, user_uuid, expand_services=False):
 		user = await cls.get_user_by_uuid(user_uuid)
 		if expand_services:
 			user_expanded = UserExpanded.from_orm(user)
@@ -102,7 +102,7 @@ class UserActions():
 		# Implemented but not in use due to slow response times
 		# location = get_location_data(new_user_data.get("location"))
 
-		new_user_obj = UserModel(
+		new_user_obj = UserModelDB(
 			first_name = await HelperActions.get_fname_from_header(new_user_data),
 			last_name= await HelperActions.get_lname_from_header(new_user_data),
 			latitude = 407127281, # convert_coordinates(location.latitude),
@@ -119,11 +119,11 @@ class UserActions():
 
 	@classmethod
 	async def update_user(cls, user_uuid, updates):
-		return await BaseActions.update(UserModel, [UserModel.uuid == user_uuid], updates)
+		return await BaseActions.update(UserModelDB, [UserModelDB.uuid == user_uuid], updates)
 
 	@classmethod
 	async def delete_user(cls, user_uuid):
-		return await BaseActions.delete_one(UserModel, [UserModel.uuid == user_uuid])
+		return await BaseActions.delete_one(UserModelDB, [UserModelDB.uuid == user_uuid])
 
 	@classmethod
 	async def delete_test_user(cls, user_uuid):

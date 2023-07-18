@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.actions.users import UserActions
-from app.models.users import UserModel, UserUpdate, UserBase
+from app.models.users import UserModelDB, UserUpdate, UserBase
 from app.utilities.auth.auth_handler import Permissions
 
 test_mode = os.getenv("TEST_MODE", False)
@@ -30,7 +30,7 @@ async def get_user(
 	return await UserActions.get_user(user_uuid, expand_services)
 
 
-@router.post("/users", response_model=UserModel)
+@router.post("/users", response_model=UserModelDB)
 async def create_user(
 		client_uuid: Annotated[str, Depends(Permissions(level="1"))],
 		users: dict
@@ -38,7 +38,7 @@ async def create_user(
 	return await UserActions.create_user(users)
 
 
-@router.put("/users/{user_uuid}", response_model=UserModel)
+@router.put("/users/{user_uuid}", response_model=UserModelDB)
 async def update_user(
 		client_uuid: Annotated[str, Depends(Permissions(level="1"))],
 		user_uuid: str, users_updates: UserUpdate

@@ -6,7 +6,7 @@ from app.actions.users.services import UserServiceActions
 from app.libraries.sms import send_sms_worker
 from app.libraries.sparkpost import send_auth_email
 from app.models.clients import ClientUserModelDB
-from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModel
+from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModelDB
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 
 class AuthActions(BaseActions):

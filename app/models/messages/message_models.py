@@ -14,7 +14,7 @@ class MessageModelDB(Base):
 	program_9char: Mapped[str] = mapped_column(default=None, index=True)
 	segment_9char: Mapped[str] = mapped_column(default=None, index=True)
 	message_type: Mapped[int] = mapped_column(default=1)
-	channel: Mapped[int] = mapped_column(default=None)
+	channel: Mapped[int] = mapped_column(default=None) #1 = email, 2 = text, 4 = slack, 8 = ms teams, 16 = web
 	status: Mapped[int] = mapped_column(default=1)
 	body: Mapped[str] = mapped_column(default=None)
 	time_created: Mapped[int] = mapped_column(default=None)
@@ -25,7 +25,7 @@ class MessageModel(BasePydantic):
 	name: Optional[str] = None
 	message_9char: Optional[str]
 	body: Optional[str] = None
-	channel: Optional[int] = None
+	channel: Optional[int] = None #1 = email, 2 = text, 4 = slack, 8 = ms teams, 16 = web
 	message_uuid: Optional[str] = None
 	client_uuid: Optional[str] = None
 	program_9char: Optional[str] = None

@@ -23,12 +23,12 @@ async def send_auth_email(user_service: UserServiceModelDB):
 
     return response
 
-async def send_message_email(message: MessageModel, recipients: list):
+async def send_message_email(message: str, recipient: str):
 
     response = sp.transmissions.send(
         use_sandbox=False,
-        recipients=recipients,
-        html=message.body,
+        recipients=[recipient],
+        html=message,
         from_email="no-reply@mail.blueboard.app",
         subject="Blueboard Message",
     )

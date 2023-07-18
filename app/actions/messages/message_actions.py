@@ -1,4 +1,3 @@
-import json
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.clients.client_user_models import ClientUserModelDB
@@ -6,7 +5,7 @@ from app.models.programs import ProgramModelDB
 from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend
 from app.exceptions import ExceptionHandling
 from app.actions.messages.send_message import MessageSendingHandler
-from app.models.users.user_service_models import UserServiceModelDB
+from app.actions.users.user_actions import UserActions
 
 
 class MessageActions():
@@ -117,17 +116,13 @@ class MessageActions():
 			8: "msteams", #p2p - ms teams
 			16: "web" #web
 		}[message.channel]
-		recipient_contact = await cls.get_contact_info(user_uuids, service_id_type)
-		return await MessageSendingHandler.send_message(message, recipient_contact)
+		recipients = await cls.get_user_and_service(user_uuids, service_id_type)
+		return await MessageSendingHandler.send_message(message, recipients)
 	
 	
 	@classmethod
-	async def get_contact_info(cls, user_uuids: list, service_id_type: str):
-		user_services = await BaseActions.get_all_where(
-			UserServiceModelDB,
-			[UserServiceModelDB.user_uuid.in_(user_uuids), UserServiceModelDB.service_uuid == service_id_type],
-			None,
-			False,
-			False
-		)
-		return [i.service_user_id for i in user_services]
+	async def get_user_and_service(cls, user_uuids: list, service_id_type: str):
+		users = []
+		for uuid in user_uuids:
+			users.append(await UserActions.get_user(uuid, True))
+		return users

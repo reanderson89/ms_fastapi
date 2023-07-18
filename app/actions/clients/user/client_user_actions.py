@@ -2,7 +2,7 @@ from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users import UserActions
 from app.models.clients import ClientUserModelDB
-from app.models.users import UserModel, UserServiceModelDB
+from app.models.users import UserModelDB, UserServiceModelDB
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
@@ -26,7 +26,7 @@ class ClientUserActions():
 		for service in service_id:
 			if service in data: #.keys()
 				user_or_client_user_objs = await cls.handle_user_and_service(data, path_params, service)
-				if isinstance(user_or_client_user_objs, UserModel):
+				if isinstance(user_or_client_user_objs, UserModelDB):
 					user_objs.append(user_or_client_user_objs)
 				elif isinstance(user_or_client_user_objs, ClientUserModelDB):
 					client_user_objs.append(user_or_client_user_objs)
@@ -53,10 +53,10 @@ class ClientUserActions():
 			return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please include either email address or the user_uuid.")
 		if service_id in data.keys():
 			user = await BaseActions.check_if_exists(
-				UserModel,
+				UserModelDB,
 				[
 					UserServiceModelDB.service_user_id == service_id,
-					UserModel.uuid == UserServiceModelDB.user_uuid
+					UserModelDB.uuid == UserServiceModelDB.user_uuid
 				])
 
 		if "user_uuid" in data.keys() or user is not None:

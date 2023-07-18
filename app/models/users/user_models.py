@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
 
-class UserModel(Base):
+class UserModelDB(Base):
 	__tablename__ = "user"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
