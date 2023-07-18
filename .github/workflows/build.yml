@@ -33,5 +33,7 @@ jobs:
           context: .
           file: Docker/Dockerfile.milestones_api_hosted
           push: true
+          cache-from: type=registry,ref=blueboardinc/milestones-api:latest
+          cache-to: type=inline
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
