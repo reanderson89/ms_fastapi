@@ -139,7 +139,37 @@ josh = {
         "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
     }
 
-new = [owen, jason, josh, ryan, clark]
+dan = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "daniel@nscale.io",
+        "first_name": "Daniel",
+        "last_name": "O'Niell",
+        "title": "Frontend",
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "department": f"{faker.job()} Department",
+        "admin": 2,
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp())}
+
+mike = {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "work_email": "michael@nscale.io",
+        "first_name": "Michael",
+        "last_name": "Lindenau",
+        "title": "Frontend",
+        "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+        "department": f"{faker.job()} Department",
+        "admin": 2,
+        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "active": 1,
+        "employee_id": faker.pystr(),
+        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp())}
+
+new = [owen, jason, josh, ryan, clark, mike, dan]
 
 async def generate_client_users(clients: list):
     for client in clients:
