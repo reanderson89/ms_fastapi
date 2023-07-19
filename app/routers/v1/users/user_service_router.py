@@ -2,8 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params
-from app.routers.v1.pagination import Page
-from app.models.users import UserServiceUpdate, UserServiceModelDB, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk, UserServiceModel
+from app.models.users import UserServiceUpdate, UserServiceModelDB, UserServiceCreate, ServiceDelete, ServiceStatus, ServiceBulk
 from app.actions.users.services import UserServiceActions
 from app.utilities.auth.auth_handler import Permissions
 

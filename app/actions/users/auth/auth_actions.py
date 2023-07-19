@@ -12,7 +12,7 @@ from app.actions.users.services import UserServiceActions
 from app.libraries.sms import send_sms_worker
 from app.libraries.sparkpost import send_auth_email
 from app.models.clients import ClientUserModelDB
-from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModelDB
+from app.models.users import UserServiceModelDB, UserServiceUpdate
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 from cryptography.fernet import Fernet, InvalidToken
 
@@ -146,7 +146,7 @@ class AuthActions(BaseActions):
         client_user = await cls.get_one_where(
             ClientUserModelDB,
             [
-                ClientUserModelDB.user_uuid == user_object['uuid']
+                ClientUserModelDB.user_uuid == user_object["uuid"]
             ]
         )
         return client_user.uuid

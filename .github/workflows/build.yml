@@ -20,7 +20,6 @@ jobs:
         SECRET_KEY: "foobar"
         SPARKPOST_KEY: "foobar"
         TWILIO_FROM: "+16193299600"
-
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -42,12 +41,12 @@ jobs:
         run: |
           docker-compose down
 
-      - name: Test
+      - name: Echo job status
         if: always()
         run: |
-          echo "job status is ${{ job.status }}"
+          echo "Job status is ${{ job.status }}"
 
-      - name: Update Github status
+      - name: Update Github with job status
         if: always()
         uses: ouzi-dev/commit-status-updater@v2
         with:

@@ -23,7 +23,7 @@ async def get_programs(
 	path_params: dict = Depends(path_params),
 	query_params: dict = Depends(default_query_params)
 ) -> Page[ProgramResponse]:
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramActions.get_by_client_uuid(path_params, query_params)
 
 
@@ -32,7 +32,7 @@ async def get_program(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params),
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramActions.get_by_program_9char(path_params)
 
 
@@ -42,7 +42,7 @@ async def create_program(
 	programs: (list[ProgramCreate] | ProgramCreate),
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramActions.create_program_handler(programs, path_params)
 
 
@@ -52,7 +52,7 @@ async def update_program(
 	program_updates: ProgramUpdate,
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramActions.update_program(program_updates, path_params)
 
 
@@ -62,5 +62,5 @@ async def delete_program(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramActions.delete_program(path_params)

@@ -5,15 +5,15 @@ from app.utilities import SHA224Hash
 from app.models.programs import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus
 from app.routers.v1.dependencies import verify_client_user
 
-class ProgramAdminActions():
+class ProgramAdminActions:
 
 	@staticmethod
 	async def get_program_admins(path_params, query_params):
 		return await BaseActions.get_all_where(
 			AdminModelDB,
 			[
-				AdminModelDB.client_uuid == path_params['client_uuid'],
-				AdminModelDB.program_9char == path_params['program_9char']
+				AdminModelDB.client_uuid == path_params["client_uuid"],
+				AdminModelDB.program_9char == path_params["program_9char"]
 			],
 			query_params
 		)
@@ -23,16 +23,16 @@ class ProgramAdminActions():
 		return await BaseActions.get_one_where(
 			AdminModelDB,
 			[
-				AdminModelDB.user_uuid == path_params['user_uuid'],
-				AdminModelDB.client_uuid == path_params['client_uuid'],
-				AdminModelDB.program_9char == path_params['program_9char']
+				AdminModelDB.user_uuid == path_params["user_uuid"],
+				AdminModelDB.client_uuid == path_params["client_uuid"],
+				AdminModelDB.program_9char == path_params["program_9char"]
 			]
 		)
 
 	@staticmethod
 	async def create_program_admin(path_params: dict, admin_obj: AdminCreate):
 		# verify provided user_uuid is related to the client
-		await verify_client_user(admin_obj.user_uuid, path_params['client_uuid'])
+		await verify_client_user(admin_obj.user_uuid, path_params["client_uuid"])
 		current_time = int(time())
 
 		admin = AdminModelDB(
@@ -66,9 +66,9 @@ class ProgramAdminActions():
 		return await BaseActions.update(
 			AdminModelDB,
 			[
-				AdminModelDB.user_uuid == path_params['user_uuid'],
-				AdminModelDB.client_uuid == path_params['client_uuid'],
-				AdminModelDB.program_9char == path_params['program_9char']
+				AdminModelDB.user_uuid == path_params["user_uuid"],
+				AdminModelDB.client_uuid == path_params["client_uuid"],
+				AdminModelDB.program_9char == path_params["program_9char"]
 			],
 			updates
 		)
@@ -78,9 +78,9 @@ class ProgramAdminActions():
 		return await BaseActions.delete_one(
 			AdminModelDB,
 			[
-				AdminModelDB.user_uuid == path_params['user_uuid'],
-				AdminModelDB.client_uuid == path_params['client_uuid'],
-				AdminModelDB.program_9char == path_params['program_9char']
+				AdminModelDB.user_uuid == path_params["user_uuid"],
+				AdminModelDB.client_uuid == path_params["client_uuid"],
+				AdminModelDB.program_9char == path_params["program_9char"]
 			]
 		)
 

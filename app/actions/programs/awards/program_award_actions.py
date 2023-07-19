@@ -2,15 +2,15 @@ from app.actions.base_actions import BaseActions
 from app.models.programs.program_award_models import ProgramAwardModelDB, ProgramAwardUpdate
 
 
-class ProgramAwardActions():
+class ProgramAwardActions:
 
 	@staticmethod
 	async def get_program_awards(path_params: dict, query_params: dict):
 		return await BaseActions.get_all_where(
 			ProgramAwardModelDB,
 			[
-				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
-				ProgramAwardModelDB.program_9char == path_params['program_9char'],
+				ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
+				ProgramAwardModelDB.program_9char == path_params["program_9char"],
 			],
 			query_params
 		)
@@ -20,9 +20,9 @@ class ProgramAwardActions():
 		return await BaseActions.get_one_where(
 			ProgramAwardModelDB,
 			[
-				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
-				ProgramAwardModelDB.program_9char == path_params['program_9char'],
-				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
+				ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
+				ProgramAwardModelDB.program_9char == path_params["program_9char"],
+				ProgramAwardModelDB.program_award_9char == path_params["program_award_9char"]
 			],
 		)
 
@@ -55,9 +55,9 @@ class ProgramAwardActions():
 		return await BaseActions.update(
 			ProgramAwardModelDB,
 			[
-				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
-				ProgramAwardModelDB.program_9char == path_params['program_9char'],
-				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
+				ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
+				ProgramAwardModelDB.program_9char == path_params["program_9char"],
+				ProgramAwardModelDB.program_award_9char == path_params["program_award_9char"]
 			],
 			award_updates
 		)
@@ -67,8 +67,8 @@ class ProgramAwardActions():
 		return await BaseActions.delete_one(
 			ProgramAwardModelDB,
 			[
-				ProgramAwardModelDB.client_uuid == path_params['client_uuid'],
-				ProgramAwardModelDB.program_9char == path_params['program_9char'],
-				ProgramAwardModelDB.program_award_9char == path_params['program_award_9char']
+				ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
+				ProgramAwardModelDB.program_9char == path_params["program_9char"],
+				ProgramAwardModelDB.program_award_9char == path_params["program_award_9char"]
 			],
 		)

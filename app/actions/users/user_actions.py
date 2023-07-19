@@ -1,13 +1,11 @@
 from time import time
 from datetime import datetime
-from app.actions.utils import get_location_data, convert_coordinates
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
-from app.models.clients import ClientUserModel
 from app.models.users import UserModelDB, UserServiceModelDB, UserExpanded
 
-class UserActions():
+class UserActions:
 
 	@staticmethod
 	def getTimeFromBday(bday):

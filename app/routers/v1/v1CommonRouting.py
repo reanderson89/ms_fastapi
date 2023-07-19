@@ -5,7 +5,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from time import time
 
-class CommonRoutes():
+class CommonRoutes:
 
 	async def get_all(model):
 		with Session(engine) as session:
@@ -121,7 +121,7 @@ class CommonRoutes():
 			return {"ok": True, "Deleted:": items}
 
 
-class ExceptionHandling():
+class ExceptionHandling:
 
 	@staticmethod
 	async def check404(item, cron_job: bool = False):

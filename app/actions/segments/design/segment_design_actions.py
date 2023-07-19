@@ -2,16 +2,16 @@ from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.segments.segment_design_models import SegmentDesignModel
 
-class SegmentDesignActions():
+class SegmentDesignActions:
 
     @staticmethod
     async def get_all_segment_designs(path_params, query_params):
         return await BaseActions.get_all_where(
             SegmentDesignModel,
             [
-                SegmentDesignModel.client_uuid == path_params['client_uuid'],
-                SegmentDesignModel.program_9char == path_params['program_9char'],
-                SegmentDesignModel.segment_9char == path_params['segment_9char']
+                SegmentDesignModel.client_uuid == path_params["client_uuid"],
+                SegmentDesignModel.program_9char == path_params["program_9char"],
+                SegmentDesignModel.segment_9char == path_params["segment_9char"]
             ],
             query_params
         )
@@ -21,10 +21,10 @@ class SegmentDesignActions():
         return await BaseActions.get_one_where(
             SegmentDesignModel,
             [
-                SegmentDesignModel.design_9char == path_params['design_9char'],
-                SegmentDesignModel.client_uuid == path_params['client_uuid'],
-                SegmentDesignModel.program_9char == path_params['program_9char'],
-                SegmentDesignModel.segment_9char == path_params['segment_9char']
+                SegmentDesignModel.design_9char == path_params["design_9char"],
+                SegmentDesignModel.client_uuid == path_params["client_uuid"],
+                SegmentDesignModel.program_9char == path_params["program_9char"],
+                SegmentDesignModel.segment_9char == path_params["segment_9char"]
             ]
         )
     
@@ -53,10 +53,10 @@ class SegmentDesignActions():
         return await BaseActions.update(
             SegmentDesignModel,
             [
-                SegmentDesignModel.design_9char == path_params['design_9char'],
-                SegmentDesignModel.client_uuid == path_params['client_uuid'],
-                SegmentDesignModel.program_9char == path_params['program_9char'],
-                SegmentDesignModel.segment_9char == path_params['segment_9char']
+                SegmentDesignModel.design_9char == path_params["design_9char"],
+                SegmentDesignModel.client_uuid == path_params["client_uuid"],
+                SegmentDesignModel.program_9char == path_params["program_9char"],
+                SegmentDesignModel.segment_9char == path_params["segment_9char"]
             ],
             design_updates
         )
@@ -66,9 +66,9 @@ class SegmentDesignActions():
         return await BaseActions.delete_one(
             SegmentDesignModel,
             [
-                SegmentDesignModel.design_9char == path_params['design_9char'],
-                SegmentDesignModel.client_uuid == path_params['client_uuid'],
-                SegmentDesignModel.program_9char == path_params['program_9char'],
-                SegmentDesignModel.segment_9char == path_params['segment_9char']
+                SegmentDesignModel.design_9char == path_params["design_9char"],
+                SegmentDesignModel.client_uuid == path_params["client_uuid"],
+                SegmentDesignModel.program_9char == path_params["program_9char"],
+                SegmentDesignModel.segment_9char == path_params["segment_9char"]
             ]
         )

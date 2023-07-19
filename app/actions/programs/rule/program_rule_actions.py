@@ -1,10 +1,10 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_models import ProgramModelDB
-from app.models.programs.program_rule_models import ProgramRuleResponse, ProgramRuleModelDB
+from app.models.programs.program_rule_models import ProgramRuleModelDB
 
 
-class ProgramRuleActions():
+class ProgramRuleActions:
 
     @staticmethod
     async def get_program_uuid(program_9char: str):
@@ -18,9 +18,9 @@ class ProgramRuleActions():
         return await BaseActions.get_one_where(
             ProgramRuleModelDB,
             [
-                ProgramRuleModelDB.rule_9char == path_params['rule_9char'],
-                ProgramRuleModelDB.program_9char == path_params['program_9char'],
-                ProgramRuleModelDB.client_uuid == path_params['client_uuid']
+                ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
+                ProgramRuleModelDB.program_9char == path_params["program_9char"],
+                ProgramRuleModelDB.client_uuid == path_params["client_uuid"]
             ]
         )
     
@@ -29,8 +29,8 @@ class ProgramRuleActions():
         return await BaseActions.get_all_where(
             ProgramRuleModelDB,
             [
-                ProgramRuleModelDB.program_9char == path_params['program_9char'],
-                ProgramRuleModelDB.client_uuid == path_params['client_uuid']
+                ProgramRuleModelDB.program_9char == path_params["program_9char"],
+                ProgramRuleModelDB.client_uuid == path_params["client_uuid"]
             ],
             query_params
             )
@@ -41,16 +41,16 @@ class ProgramRuleActions():
             rules = [ProgramRuleModelDB(
                 **rule.dict(),
                 program_uuid = program_uuid,
-                client_uuid = path_params['client_uuid'],
-                program_9char = path_params['program_9char'],
+                client_uuid = path_params["client_uuid"],
+                program_9char = path_params["program_9char"],
                 rule_9char = await HelperActions.generate_9char()
             ) for rule in rules]
         else:
             rules = ProgramRuleModelDB(
                 **rules.dict(),
                 program_uuid = program_uuid,
-                client_uuid = path_params['client_uuid'],
-                program_9char = path_params['program_9char'],
+                client_uuid = path_params["client_uuid"],
+                program_9char = path_params["program_9char"],
                 rule_9char = await HelperActions.generate_9char() 
             )
         return await BaseActions.create(rules)
@@ -60,9 +60,9 @@ class ProgramRuleActions():
         return await BaseActions.update(
             ProgramRuleModelDB,
             [
-                ProgramRuleModelDB.rule_9char == path_params['rule_9char'],
-                ProgramRuleModelDB.program_9char == path_params['program_9char'],
-                ProgramRuleModelDB.client_uuid == path_params['client_uuid']
+                ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
+                ProgramRuleModelDB.program_9char == path_params["program_9char"],
+                ProgramRuleModelDB.client_uuid == path_params["client_uuid"]
             ],
             rule_updates
         )
@@ -72,9 +72,9 @@ class ProgramRuleActions():
         return await BaseActions.delete_one(
             ProgramRuleModelDB,
             [
-                ProgramRuleModelDB.rule_9char == path_params['rule_9char'],
-                ProgramRuleModelDB.program_9char == path_params['program_9char'],
-                ProgramRuleModelDB.client_uuid == path_params['client_uuid'] 
+                ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
+                ProgramRuleModelDB.program_9char == path_params["program_9char"],
+                ProgramRuleModelDB.client_uuid == path_params["client_uuid"] 
             ]
         )
 

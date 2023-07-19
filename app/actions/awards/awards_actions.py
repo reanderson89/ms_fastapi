@@ -5,7 +5,7 @@ from app.actions.upload import UploadActions
 from app.models.clients import ClientAwardModelDB
 
 
-class AwardActions():
+class AwardActions:
 
 	@staticmethod
 	async def check_for_existing_by_name(name, error = True):
@@ -19,7 +19,7 @@ class AwardActions():
 
 	@staticmethod
 	async def get_all_awards(query_params: dict):
-		'''
+		"""
 		Get all awards from the database
 		:params query_params(dict): A dictionary of query parameters
 			- order_by(str): The field to sort by
@@ -27,7 +27,7 @@ class AwardActions():
 			- offset(int): The number of results to skip
 			- limit(int): The maximum number of results to return
 		:return: A list of model objects, for example [model(DataModel),...]
-		'''
+		"""
 		return await BaseActions.get_all(
 			AwardModelDB,
 			query_params

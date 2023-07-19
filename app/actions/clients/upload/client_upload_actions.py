@@ -1,8 +1,7 @@
-from os import getenv
 from app.actions.upload import UploadActions
 
 
-class ClientUploadActions():
+class ClientUploadActions:
 
 	@classmethod
 	async def get_upload_url(cls, upload_type, file_name, client_uuid):

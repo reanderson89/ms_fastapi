@@ -1,4 +1,3 @@
-from typing import Optional
 from enum import Enum
 from app.models.base_class import BasePydantic
 

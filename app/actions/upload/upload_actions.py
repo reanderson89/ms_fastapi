@@ -1,4 +1,6 @@
-import io, csv, logging
+import io
+import csv
+import logging
 from os import getenv
 import boto3
 from datadog.api.exceptions import ClientError
@@ -36,19 +38,19 @@ class UploadActions(BaseActions):
 			aws_access_key_id=aws_access_key_id,
 			aws_secret_access_key=aws_secret_access_key
 		)
-		client = session.client('sts')
+		client = session.client("sts")
 		response = client.assume_role(
 			RoleArn=role_arn,
 			RoleSessionName="UploadPresignedUrl"
 		)
 
 		session = boto3.Session(
-			aws_access_key_id=response['Credentials']['AccessKeyId'],
-			aws_secret_access_key=response['Credentials']['SecretAccessKey'],
-			aws_session_token=response['Credentials']['SessionToken']
+			aws_access_key_id=response["Credentials"]["AccessKeyId"],
+			aws_secret_access_key=response["Credentials"]["SecretAccessKey"],
+			aws_session_token=response["Credentials"]["SessionToken"]
 		)
-		client = session.client('sts')
-		s3_client = session.client('s3')
+		client = session.client("sts")
+		s3_client = session.client("s3")
 
 		return s3_client
 
@@ -151,8 +153,8 @@ class UploadActions(BaseActions):
 			logging.error(e)
 			return None
 
-		with io.StringIO(response['Body'].read().decode('utf-8')) as stream:
-			csv_reader = csv.DictReader(stream, delimiter=',')
+		with io.StringIO(response["Body"].read().decode("utf-8")) as stream:
+			csv_reader = csv.DictReader(stream, delimiter=",")
 			csv_list = [row for row in csv_reader]
 
 		processed_users = [
@@ -176,7 +178,7 @@ class UploadActions(BaseActions):
 		segment_9char=None
 	):
 		file_type, _ = cls.verify_upload_file("image", hero_image)
-		s3_key = await cls.get_image_path(
+		await cls.get_image_path(
 			file_type,
 			client_uuid,
 			award_id,

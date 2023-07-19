@@ -2,7 +2,7 @@ import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from app.models.uploads import UploadFile, Uploadread, UploadType
+from app.models.uploads import UploadFile, UploadType
 
 from app.actions.clients.upload import ClientUploadActions
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client

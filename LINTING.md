@@ -14,3 +14,7 @@ Ruff is a linter.  Linting is the process of running a program that will analyse
 - `ruff check app/models --select UP007` - Run linter on all of `app/models` only for rule UP007
 - `ruff check app/models --ignore UP007` - Run linter on all of `app/models` and ignore rule UP007
 - `ruff check app/models --fix` - Auto-fix the easy ones
+
+## Notes
+
+- We probably want to ignore UP007 (`Use X | Y for type annotations`)

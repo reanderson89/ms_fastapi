@@ -1,8 +1,7 @@
 from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
 from app.models.segments.segment_award_models import SegmentAward
 
-class SegmentAwardActions():
+class SegmentAwardActions:
 
 	@staticmethod
 	async def get_all_segment_awards(path_params, query_params):

@@ -5,7 +5,7 @@ from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwa
 from app.models.programs import ProgramAwardModelDB
 
 
-class ClientAwardActions():
+class ClientAwardActions:
 
 	@staticmethod
 	async def to_award_db_model(client_uuid: str, award_data):

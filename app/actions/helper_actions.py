@@ -10,7 +10,7 @@ from app.database.config import engine
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash, PositiveNumbers
 
-class HelperActions():
+class HelperActions:
 	default_email_types = {"Primary Work Email", "primary_work_email", "work_email", "personal_email", "email_address", "email"}
 	default_cell_types = {"Primary Cell Number", "primary_cell_number", "cell_number", "cell", "cell_phone"}
 

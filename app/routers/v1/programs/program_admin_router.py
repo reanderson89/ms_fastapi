@@ -22,7 +22,7 @@ async def get_admins(
 	query_params: dict = Depends(default_query_params),
 	path_params: dict = Depends(path_params)
 ) -> Page[AdminModel]:
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAdminActions.get_program_admins(path_params, query_params)
 
 
@@ -32,7 +32,7 @@ async def get_admin(
 	expand: AdminExpand = None,
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAdminActions.get_program_admin(path_params)
 
 
@@ -42,7 +42,7 @@ async def create_admin(
 	path_params: dict = Depends(path_params),
 	admins: Union[AdminCreate, list[AdminCreate]] = Depends(ProgramAdminActions.check_existing)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAdminActions.create_program_admins(path_params, admins)
 
 
@@ -52,7 +52,7 @@ async def update_admin(
 	admin_updates: AdminUpdate,
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAdminActions.update_program_admin(path_params, admin_updates)
 
 
@@ -61,5 +61,5 @@ async def delete_admin(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAdminActions.delete_program_admin(path_params)

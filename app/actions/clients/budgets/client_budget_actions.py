@@ -8,7 +8,7 @@ from app.models.programs import ProgramModelDB
 from .client_sub_budget_actions import ClientSubBudgetActions
 from app.actions.base_actions import BaseActions
 
-class ClientBudgetActions():
+class ClientBudgetActions:
 
 	@staticmethod
 	async def default_budget_name(client_uuid):

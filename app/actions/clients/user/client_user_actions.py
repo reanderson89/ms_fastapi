@@ -7,7 +7,7 @@ from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 from time import time
 
-class ClientUserActions():
+class ClientUserActions:
 
 	@staticmethod
 	async def get_client_user_by_user_uuid(uuid: str):
@@ -127,8 +127,8 @@ class ClientUserActions():
 		return await BaseActions.get_one_where(
 			ClientUserModelDB,
 			[
-				ClientUserModelDB.client_uuid == path_params['client_uuid'],
-				ClientUserModelDB.user_uuid == path_params['user_uuid']
+				ClientUserModelDB.client_uuid == path_params["client_uuid"],
+				ClientUserModelDB.user_uuid == path_params["user_uuid"]
 			]
 		)
 
@@ -137,8 +137,8 @@ class ClientUserActions():
 		return await BaseActions.update(
 			ClientUserModelDB,
 			[
-				ClientUserModelDB.client_uuid == path_params['client_uuid'],
-				ClientUserModelDB.uuid == path_params['user_uuid']
+				ClientUserModelDB.client_uuid == path_params["client_uuid"],
+				ClientUserModelDB.uuid == path_params["user_uuid"]
 			],
 			user_updates
 		)
@@ -154,7 +154,7 @@ class ClientUserActions():
 		return await BaseActions.bulk_update(
 			ClientUserModelDB,
 			[
-				ClientUserModelDB.client_uuid == path_params.get('client_uuid'),
+				ClientUserModelDB.client_uuid == path_params.get("client_uuid"),
 			],
 			user_updates,
 			uuid_list
@@ -181,7 +181,7 @@ class ClientUserActions():
 		return await BaseActions.delete_one(
 			ClientUserModelDB,
 			[
-				ClientUserModelDB.client_uuid == path_params['client_uuid'],
-				ClientUserModelDB.uuid == path_params['user_uuid']
+				ClientUserModelDB.client_uuid == path_params["client_uuid"],
+				ClientUserModelDB.uuid == path_params["user_uuid"]
 			]
 		)

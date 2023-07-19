@@ -7,7 +7,7 @@ from app.utilities import SHA224Hash
 from app.exceptions import ExceptionHandling
 from fastapi_pagination.ext.sqlalchemy import paginate
 
-class BaseActions():
+class BaseActions:
 
 	@staticmethod
 	def _add_ordering_to_query(model, query, order_by=None, sort="DESC"):

@@ -59,7 +59,7 @@ async def update_users(
 		path_params: dict = Depends(path_params)
 ):
 	await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
-	if path_params.get('user_uuid') == "bulk":
+	if path_params.get("user_uuid") == "bulk":
 		return await ClientUserActions.update_users(path_params, user_updates)
 	return await ClientUserActions.update_user(path_params, user_updates)
 

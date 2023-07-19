@@ -8,7 +8,7 @@ from app.actions.messages.send_message import MessageSendingHandler
 from app.actions.users.user_actions import UserActions
 
 
-class MessageActions():
+class MessageActions:
 
 	@staticmethod
 	async def get_all(query_params: dict):

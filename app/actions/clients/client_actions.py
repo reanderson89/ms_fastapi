@@ -2,7 +2,7 @@ from app.actions.base_actions import BaseActions
 from app.models.clients import ClientModelDB, ClientUpdate
 from app.exceptions import ExceptionHandling
 
-class ClientActions():
+class ClientActions:
 
 	@staticmethod
 	async def get_all_clients(query_params: dict):

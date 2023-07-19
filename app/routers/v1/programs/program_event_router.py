@@ -27,7 +27,7 @@ async def get_events(
 	path_params: dict = Depends(path_params),
 	query_params: dict = Depends(default_query_params)
 ) -> Page[ProgramEventReturn]:
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramEventActions.get_all_events(path_params, query_params)
 
 
@@ -36,7 +36,7 @@ async def get_event(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramEventActions.get_event(path_params)
 
 
@@ -47,7 +47,7 @@ async def create_event(
 	path_params: dict = Depends(path_params),
 	program_uuid: str = Depends(ProgramEventActions.get_program_uuid)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramEventActions.create_event(events, path_params, program_uuid)
 
 
@@ -57,7 +57,7 @@ async def update_event(
 	event_updates: ProgramEventUpdate,
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramEventActions.update_event(event_updates, path_params)
 
 
@@ -67,5 +67,5 @@ async def delete_event(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params['client_uuid'])
+	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramEventActions.delete_event(path_params)

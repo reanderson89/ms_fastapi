@@ -1,7 +1,7 @@
 from app.actions.base_actions import BaseActions
 from app.models.messages import MessageTemplateModel, MessageCreate, MessageTemplateUpdate
 
-class MessageTemplateActions():
+class MessageTemplateActions:
 
 	@staticmethod
 	async def get_all_templates(query_params: dict):

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.database.config import engine
-from app.models.programs import ProgramModelDB, ProgramModel
+from app.models.programs import ProgramModelDB
 from app.models.clients import ClientUserModelDB
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_event_models import ProgramEventModelDB
@@ -9,7 +9,7 @@ from app.models.segments.segment_models import SegmentModel
 from app.actions.base_actions import BaseActions
 
 
-class ProgramActions():
+class ProgramActions:
 
 	@classmethod
 	async def create_program_handler(cls, programs, path_params):

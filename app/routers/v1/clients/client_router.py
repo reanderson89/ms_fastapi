@@ -1,4 +1,4 @@
-from typing import Union, Annotated
+from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params

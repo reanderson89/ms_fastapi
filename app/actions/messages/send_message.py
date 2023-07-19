@@ -6,7 +6,7 @@ from pybars import Compiler
 
 compiler = Compiler()
 
-class MessageSendingHandler():
+class MessageSendingHandler:
 
 	@classmethod
 	async def send_message(cls, message: MessageModel, recipients: list) -> list:
@@ -30,8 +30,8 @@ class MessageSendingHandler():
 	async def format_message_text(message: str, recipient: str) -> str:
 		template = compiler.compile(message)
 		message = template({
-			'first_name': recipient.first_name,
-			'last_name': recipient.last_name,
+			"first_name": recipient.first_name,
+			"last_name": recipient.last_name,
 		})
 		return message
 

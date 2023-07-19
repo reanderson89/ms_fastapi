@@ -2,7 +2,7 @@ from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.segments.segment_models import SegmentModel
 
-class SegmentActions():
+class SegmentActions:
 
 	@staticmethod
 	async def get_all_segments(path_params, query_params):

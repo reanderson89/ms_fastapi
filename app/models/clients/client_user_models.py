@@ -5,7 +5,7 @@ from app.models.users import UserBase
 
 
 class ClientUserModelDB(Base):
-	__tablename__ = 'client_user'
+	__tablename__ = "client_user"
 
 	uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
 	user_uuid: Mapped[str] = mapped_column(default=None, index=True)
