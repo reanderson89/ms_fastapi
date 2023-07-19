@@ -23,6 +23,10 @@ RUN pip install -r requirements.txt
 COPY ./app/ /app/app
 COPY ./migrations /app/migrations
 COPY alembic.ini /app
+# linter script
+COPY linter.sh /app
+RUN chmod +x /app/linter.sh
+# tests
 COPY ./tests/ /app/tests
 COPY Docker/entrypoint_localhost.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
