@@ -52,6 +52,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: "+16193299600"
+      FERNET_KEY: ${FERNET_KEY}
     volumes:
       - ./app:/app/app
       - ./tests:/app/tests

@@ -22,7 +22,7 @@ jobs:
     name: Deploy ${{ github.event.inputs.tag }} to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,11 +44,11 @@ jobs:
 
       - name: Connect VPN
         run: sudo openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon
-  
+
       - name: Wait for a VPN connection
         timeout-minutes: 1
         run: until ping -c1 ${{ secrets.DEV_LEADER }}; do sleep 2; done
-  
+
       - name: Prepare the Docker Swarm YAML file
         env:
           ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}                       # global
@@ -58,11 +58,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # environment
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}               # environment
           AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}                     # environment
+          FERNET_KEY: ${{ secrets.FERNET_KEY }}                         # environment
+          IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
           MYSQL_HOSTNAME: ${{ secrets.MYSQL_HOSTNAME }}                 # environment
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}                 # environment
           SECRET_KEY: ${{ secrets.SECRET_KEY }}                         # environment
-          SPARKPOST_KEY: ${{ secrets.SPARKPOST_KEY }}                   # global
-          IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
+          SPARKPOST_KEY: ${{ secrets.SPARKPOST_KEY }}
         run: |
           # append the tag to form a fully qualified Docker tag
           export IMAGE_TAG=blueboardinc/milestones-api:${IMAGE_TAG}
@@ -80,7 +81,7 @@ jobs:
           key: ${{ secrets.DEV_SSH_KEY }}                               # organization
           source: "docker-*-swarm.yml" # TODO this action doesn't seem to use an env var here?  e.g. ${SWARM_YAML}
           target: /home/blueboard
-          
+
       - name: Pull image and update Docker Swarm on leader node
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -98,4 +99,3 @@ jobs:
           sudo chmod 444 vpn.log
           cat vpn.log
           sudo killall openvpn
-      

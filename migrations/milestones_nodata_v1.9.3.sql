@@ -644,7 +644,7 @@ CREATE TABLE `user_service` (
   `service_refresh_token` varchar(255) DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
-  `login_secret` varchar(56) DEFAULT NULL,
+  `login_secret` varchar(255) DEFAULT NULL,
   `login_token` varchar(56) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `USUSER` (`user_uuid`),

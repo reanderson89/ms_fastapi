@@ -1,5 +1,11 @@
+import os
 import random
 from uuid import uuid4
+
+from fastapi import HTTPException
+from pydantic import BaseModel
+from starlette import status
+
 from app.actions.base_actions import BaseActions
 from app.actions.users import UserActions
 from app.actions.users.services import UserServiceActions
@@ -8,6 +14,15 @@ from app.libraries.sparkpost import send_auth_email
 from app.models.clients import ClientUserModelDB
 from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModelDB
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
+from cryptography.fernet import Fernet, InvalidToken
+
+secretish_key = os.environ["FERNET_KEY"]
+key = bytes(secretish_key,'UTF-8')
+da_vinci = Fernet(key)
+
+
+class ExpiredMessage(BaseModel):
+    detail: str = "Expired Login Token"
 
 
 class AuthActions(BaseActions):
@@ -41,6 +56,7 @@ class AuthActions(BaseActions):
             login_secret=auth_object.login_secret
         )
 
+
         response = await UserServiceActions.update_service(
             auth_object.user_uuid,
             auth_object.uuid,
@@ -67,6 +83,14 @@ class AuthActions(BaseActions):
             ]
         )
 
+        try:
+            da_vinci.decrypt(redeem_auth_model.login_secret, ttl=900)
+        except InvalidToken:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=ExpiredMessage().detail
+            )
+
         if is_match:
             await cls.delete_token_secret(redeem_auth_model)
             return is_match
@@ -77,7 +101,7 @@ class AuthActions(BaseActions):
     async def generate_auth(cls, service_obj):
         if service_obj.service_uuid == "email":
             service_obj.login_token = uuid4().hex
-            service_obj.login_secret = uuid4().hex
+            service_obj.login_secret = da_vinci.encrypt(uuid4().bytes)
 
             sent_email = await cls.send_email_handler(service_obj)
             if sent_email:
@@ -88,7 +112,7 @@ class AuthActions(BaseActions):
 
         else:
             service_obj.login_token = str(random.randint(1000, 9999))
-            service_obj.login_secret = uuid4().hex
+            service_obj.login_secret = da_vinci.encrypt(uuid4().bytes)
 
             sent_message = await cls.send_sms_handler(service_obj)
             if sent_message:
@@ -133,7 +157,6 @@ class AuthActions(BaseActions):
             login_token=uuid4().hex,
             login_secret=uuid4().hex
         )
-
 
         response = await cls.update(
             UserServiceModelDB,

@@ -36,6 +36,7 @@ services:
       BASE_URL: "https://milestones-dev-4.blueboard.app"
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: dev
+      FERNET_KEY: "${FERNET_KEY}"
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "NO"
       MYSQL_DATABASE: blueboard_milestones

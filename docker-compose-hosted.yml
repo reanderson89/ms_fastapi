@@ -43,6 +43,7 @@ services:
       BASE_URL: "https://milestones-dev.blueboard.app"
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
+      FERNET_KEY: "${FERNET_KEY}"
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.3.sql"
       MYSQL_DATABASE: blueboard_milestones

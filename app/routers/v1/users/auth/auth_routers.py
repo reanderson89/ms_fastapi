@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Response
 from app.models.users import UserModelDB, UserBase
 from app.models.users.auth.auth_models import CreateAuthModel, RedeemAuthModel, AuthResponseModel
@@ -6,10 +8,21 @@ from app.utilities.auth.auth_handler import access_token_creation
 
 router = APIRouter()
 
+ENV: str = os.environ.get("ENV", "local")
+
 
 @router.post("/auth", response_model=AuthResponseModel)
 async def post_auth(create_auth_model: CreateAuthModel):
-    return await AuthActions.post_auth_handler(create_auth_model)
+    return_model = await AuthActions.post_auth_handler(create_auth_model)
+    if ENV == "local":
+        return return_model
+    else:
+        prod_return = AuthResponseModel(
+            login_secret=return_model.login_secret,
+            service_uuid=return_model.service_uuid,
+            service_user_id=return_model.service_user_id
+        )
+        return prod_return
 
 
 @router.put("/auth/{auth}", response_model=UserModelDB)
