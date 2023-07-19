@@ -9,6 +9,7 @@ services:
     build:
       context: .
       dockerfile: Docker/Dockerfile.milestones_db
+
     volumes:
       - './mariadb-data/:/var/lib/mysql'
     environment:
