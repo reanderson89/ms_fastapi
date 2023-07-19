@@ -1,53 +1,47 @@
-import pytest
-import httpx
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from app.routers.v1.programs.program_router import router as programs_router
-
-app = FastAPI()
-app.include_router(programs_router)
-client = TestClient(app)
 
 
-@pytest.mark.asyncio
-async def test_integration_create_program():
-	client_uuid = "test_client_uuid"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"/clients/{client_uuid}/programs")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Created program"}
 
-@pytest.mark.asyncio
-async def test_integration_get_programs():
-	client_uuid = "test_client_uuid"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"/clients/{client_uuid}/programs")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Got all programs"}
 
-@pytest.mark.asyncio
-async def test_integration_get_program():
-	client_uuid = "test_client_uuid"
-	program_id = "test_program_id"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"/clients/{client_uuid}/programs/{program_id}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Got programs for {program_id}"}
+def test_integration_create_program(program):
+	assert "client_uuid" in program
+	assert "uuid" in program
+	assert "user_uuid" in program
+	assert program['name'] == "Blueboard 2023 Anniversary Program"
+	
 
-@pytest.mark.asyncio
-async def test_integration_update_program():
-	client_uuid = "test_client_uuid"
-	program_id = "test_program_id"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"/clients/{client_uuid}/programs/{program_id}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated program for {program_id}"}
+def test_integration_get_programs(test_app, program):
+	response = test_app.get(f"/v1/clients/{program['client_uuid']}/programs/")
+	assert response.status_code == 200
+	program_obj = response.json()["items"][0]
+	assert program_obj['uuid'] == program['uuid'] 
+	assert program_obj['user_uuid'] == program['user_uuid'] 
+	assert program_obj['client_uuid'] == program['client_uuid'] 
 
-@pytest.mark.asyncio
-async def test_integration_delete_program():
-	client_uuid = "test_client_uuid"
-	program_id = "test_program_id"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.delete(f"/clients/{client_uuid}/programs/{program_id}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Deleted program for {program_id}"}
+def test_integration_get_program(test_app, program):
+	response = test_app.get(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}")
+	assert response.status_code == 200
+	program_obj = response.json()
+	assert program_obj['program_9char'] == program['program_9char'] 
+	assert program_obj['user_uuid'] == program['user_uuid'] 
+	assert program_obj['client_uuid'] == program['client_uuid'] 
+
+def test_integration_update_program(test_app, program):
+	info_to_update = {
+		"name": "updated",
+		"description": "updated",
+	}
+	response = test_app.put(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}",  json=info_to_update)
+	assert response.status_code == 200
+	program_obj = response.json()
+	assert program_obj['program_9char'] == program['program_9char'] 
+	assert program_obj['user_uuid'] == program['user_uuid'] 
+	assert program_obj['client_uuid'] == program['client_uuid'] 
+	assert program_obj['name'] == "updated"
+	assert program_obj['description'] == "updated"
+
+def test_integration_delete_program(test_app, program):
+	response = test_app.delete(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}")
+	assert response.status_code == 200
+	program_obj = response.json()
+	assert program_obj['ok'] == True
+	assert program_obj['Deleted']['program_9char'] == program['program_9char'] 

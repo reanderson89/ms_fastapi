@@ -2,11 +2,12 @@ import os
 import pytest
 import traceback
 from fastapi.testclient import TestClient
-from tests.testutil import new_user, single_client, list_of_clients, new_client_user
+from tests.testutil import new_user, single_client, list_of_clients, new_client_user, new_program
 
 os.environ["TEST_MODE"] = "True"
 
 from app.main import app
+
 
 def delete_user(test_app, user):
 	response = test_app.delete(f"/v1/delete_test_user/{user['uuid']}/")
@@ -40,8 +41,8 @@ def service(test_app, user):
 @pytest.fixture(scope="module")
 def client(test_app):
 	try:
-		client = test_app.post("/v1/clients/", json=single_client)
-		client = client.json()[0]
+		client = test_app.post(f"/v1/clients", json=single_client)
+		client = client.json()
 		yield client
 	except:
 		raise Exception("Client Creation Failed")
@@ -52,7 +53,7 @@ def client(test_app):
 @pytest.fixture(scope="module")
 def clients(test_app):
 	try:
-		clients = test_app.post("/v1/clients/", json=list_of_clients)
+		clients = test_app.post(f"/v1/clients", json=list_of_clients)
 		clients = clients.json()
 		yield clients
 	except:
@@ -62,7 +63,7 @@ def clients(test_app):
 			if client is not None:
 				test_app.delete(f"/v1/clients/{client['uuid']}")
 
-# this is a work in progress
+
 @pytest.fixture(scope="module")
 def client_user(test_app, client):
 	client_user = None
@@ -77,6 +78,23 @@ def client_user(test_app, client):
 	finally:
 		if client_user is not None:
 			test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
+
+@pytest.fixture(scope="module")
+def program(test_app, client_user):
+	try:
+		new_program["user_uuid"] = client_user["user_uuid"]
+		program = test_app.post(f"/v1/clients/{client_user['client_uuid']}/programs/", json=new_program)
+		program = program.json()[0]
+		yield program
+	except Exception as e:
+		print(f"Exception encountered: {e}")
+		traceback.print_exc()
+		raise e
+	finally:
+		if program is not None:
+			test_app.delete(f"/v1/clients/{client_user['client_uuid']}/programs/{program['program_9char']}")
+
+
 
 # @pytest.fixture(scope="module")
 # def test_app_with_db():

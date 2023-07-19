@@ -9,7 +9,7 @@ def test_integration_get_client(test_app, client):
 
 def test_integration_get_clients(test_app, clients):
 	response = test_app.get(f"/v1/clients")
-	clients_from_get = response.json()
+	clients_from_get = response.json()["items"]
 	assert response.status_code == 200
 	for client in clients_from_get:
 		assert client["uuid"] == clients[0]["uuid"] or clients[1]["uuid"]
@@ -51,4 +51,4 @@ def test_integration_delete_client_by_uuid(test_app, client):
 	response = test_app.delete(f"/v1/clients/{client['uuid']}")
 	assert response.status_code == 200
 	assert response.json()["ok"] == True
-	assert response.json()['Deleted:']['uuid'] == client['uuid']
+	assert response.json()['Deleted']['uuid'] == client['uuid']

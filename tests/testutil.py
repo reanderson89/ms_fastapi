@@ -1,7 +1,17 @@
+from app.utilities import SHA224Hash
+
+user_uuid = SHA224Hash()
+first_client_uuid = SHA224Hash()
+second_client_uuid = SHA224Hash()
+client_user_uuid = SHA224Hash()
+
+
 new_user = {
-	"legal_first_name": "Test",
-	"legal_last_name": "User",
-	"primary_work_email": "test.user1@testclient.com",
+    "uuid": user_uuid,
+    "client_uuid": first_client_uuid,
+	"first_name": "Test",
+	"last_name": "User",
+	"primary_work_email": "test.user123@testclient.com",
 	"hire_date": "1/1/2015",
 	"continuous_service_date": "1/1/2015",
 	"employee_id": 1139,
@@ -30,31 +40,54 @@ update_service = {
 }
 
 single_client = {
+    "uuid":first_client_uuid,
 	"name": "test",
 	"description": "test",
+    "status": 0
 }
+
 list_of_clients = [
 	{
+    "uuid": first_client_uuid,
 	"name": "client one",
 	"description": "first client",
+    "status": 0
 	},
 	{
+    "uuid": second_client_uuid,
 	"name": "client two",
 	"description": "second client",
+    "status": 0
 	}
 ]
 new_client_user = {
-	"client_uuid": "string",
-	"manager_uuid": "string",
-	"employee_id": "string",
-	"title": "string",
-	"department": "string",
-	"active": True,
-	"time_hire": 0,
-	"time_start": 0,
-	"admin": 0
+  "uuid": client_user_uuid,
+  "client_uuid": first_client_uuid,
+  "email_address": "test.user123@testclient.com",
+  "first_name": "Test",
+  "last_name": "User",
+  "admin": 1
 }
+
+update_client_user = {
+  "title": "test",
+  "department": "test"
+} 
+
 new_message = {
 	"channel": 0,
 	"body": "string",
 }
+
+new_program = {
+    "user_uuid": None,
+    "name": "Blueboard 2023 Anniversary Program",
+    "description": "This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.",
+    "budget_9char": "budg_9cha",
+    "status": 1,
+    "program_type": 4,
+    "cadence": 1,
+    "cadence_value": 2
+  }
+
+

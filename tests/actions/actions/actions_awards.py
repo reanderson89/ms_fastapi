@@ -3,8 +3,6 @@ from app.models.award import AwardModelDB
 
 @pytest.mark.asyncio
 
-async def get_all():
-
 
 async def get_all():
     response = await BaseActions.get_all(
