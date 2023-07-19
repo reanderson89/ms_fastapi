@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 from typing import Optional
+from app.models.users import UserBase
 
 
 class ClientUserModelDB(Base):
@@ -55,3 +56,8 @@ class ClientUserUpdate(BasePydantic):
 	department: Optional[str] = None
 	active: Optional[bool] = None
 	admin: Optional[int] = None
+	
+	
+class ClientUserExpand(ClientUserModel):
+	user: Optional[UserBase]
+	user_service: Optional[dict]

@@ -80,7 +80,7 @@ class UserActions():
 		return user
 
 	@classmethod
-	async def create_user_and_service(cls, new_user_data, service=None):
+	async def create_user_and_service(cls, new_user_data: dict, service=None):
 		service_id = await cls.get_service_id(new_user_data, service)
 
 		if not service_id:
@@ -99,7 +99,7 @@ class UserActions():
 					raise Exception
 				return user
 
-		# Implemented but not in use due to slow response times
+		# TODO: Location implemented but not in use due to slow response times
 		# location = get_location_data(new_user_data.get("location"))
 
 		new_user_obj = UserModelDB(

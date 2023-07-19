@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from .admin import v1_admin_router
 from .awards import v1_awards_router
 from .clients import v1_clients_router
 from .programs import v1_program_router
@@ -8,6 +9,7 @@ from .users import v1_users_router
 from .client_upload import v1_upload_router
 
 v1router = APIRouter()
+v1router.include_router(v1_admin_router)
 v1router.include_router(v1_awards_router)
 v1router.include_router(v1_users_router)
 v1router.include_router(v1_clients_router)

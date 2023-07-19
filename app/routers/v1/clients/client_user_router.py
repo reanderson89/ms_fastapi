@@ -40,10 +40,10 @@ async def get_user(
 @router.post("/users", response_model=(list[ClientUserModelDB] | ClientUserModelDB))
 async def create_user(
 		client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-		client_uuid: str,
-		users: (list[dict] | dict), path_params: dict = Depends(path_params)
+		users: (list[dict] | dict),
+		path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
+	await check_jwt_client_with_client(client_uuid_jwt, path_params.get("client_uuid"))
 	if isinstance(users, list):
 		for user in users:
 			user = await ClientUserActions.create_client_user(user, path_params)

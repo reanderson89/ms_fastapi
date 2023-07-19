@@ -9,6 +9,7 @@ from app.models.clients import ClientUserModelDB
 from app.models.users import UserServiceModelDB, UserServiceUpdate, UserModelDB
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 
+
 class AuthActions(BaseActions):
 
     @classmethod

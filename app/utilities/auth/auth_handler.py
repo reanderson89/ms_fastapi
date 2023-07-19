@@ -106,4 +106,31 @@ async def access_token_creation(redeem):
     access_token = create_access_token(
         data=redeem, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "Bearer"}
+
+
+class AdminSwap:
+    def __call__(
+            self,
+            auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)
+        ):
+        try:
+            verify = jwt.decode(auth.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+            if verify and 2 == verify['admin']:
+                return verify
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=RejectedAuthMessage().detail
+                )
+        except PyJWTError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=UnAuthedMessage().detail
+            )
+
+
+async def swap_client_uuid_in_jwt(decoded_jwt, new_client_uuid):
+    decoded_jwt['client_uuid'] = new_client_uuid
+    encoded_jwt = jwt.encode(decoded_jwt, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
