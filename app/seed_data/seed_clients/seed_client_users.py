@@ -68,7 +68,7 @@ owen = {
         "title": "Sr Bug Creator",
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "department": "Sr Bug Creator",
-        "admin": 1,
+        "admin": 2,
         "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
         "active": 1,
