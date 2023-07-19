@@ -58,13 +58,19 @@ class AuthActions(BaseActions):
 
     @classmethod
     async def check_for_match_put(cls, redeem_auth_model: RedeemAuthModel):
-        return await cls.check_if_exists(
+        is_match = await cls.check_if_exists(
             UserServiceModelDB,
             [
-            UserServiceModelDB.login_token == redeem_auth_model.login_token,
-            UserServiceModelDB.login_secret == redeem_auth_model.login_secret
+                UserServiceModelDB.login_token == redeem_auth_model.login_token,
+                UserServiceModelDB.login_secret == redeem_auth_model.login_secret
             ]
         )
+
+        if is_match:
+            await cls.delete_token_secret(redeem_auth_model)
+            return is_match
+        else:
+            return is_match
 
     @classmethod
     async def generate_auth(cls, service_obj):
@@ -119,3 +125,22 @@ class AuthActions(BaseActions):
             ]
         )
         return client_user.uuid
+
+    @classmethod
+    async def delete_token_secret(cls, redeem_auth_model):
+        updates = UserServiceUpdate(
+            login_token=uuid4().hex,
+            login_secret=uuid4().hex
+        )
+
+
+        response = await cls.update(
+            UserServiceModelDB,
+            [
+                UserServiceModelDB.login_token == redeem_auth_model.login_token,
+                UserServiceModelDB.login_secret == redeem_auth_model.login_secret
+            ],
+            updates
+        )
+        return response
+
