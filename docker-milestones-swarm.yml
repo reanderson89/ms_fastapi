@@ -36,7 +36,6 @@ services:
       BASE_URL: "https://milestones-dev-4.blueboard.app"
       # No CRON env var
       DD_TRACE_ENABLED: "false"
-      CRON: "true" # this is an experiment
       ENV: dev
       FERNET_KEY: "${FERNET_KEY}"
       LOG_LEVEL: debug
