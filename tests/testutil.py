@@ -4,6 +4,7 @@ user_uuid = SHA224Hash()
 first_client_uuid = SHA224Hash()
 second_client_uuid = SHA224Hash()
 client_user_uuid = SHA224Hash()
+program_uuid = SHA224Hash()
 
 
 new_user = {
@@ -80,6 +81,7 @@ new_message = {
 }
 
 new_program = {
+    "uuid": program_uuid,
     "user_uuid": None,
     "name": "Blueboard 2023 Anniversary Program",
     "description": "This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.",
@@ -89,5 +91,16 @@ new_program = {
     "cadence": 1,
     "cadence_value": 2
   }
+
+new_program_admin = {
+    "program_uuid": program_uuid,
+    "user_uuid": None,
+    "permissions": 2
+}
+
+update_program_admin = {
+    "permissions": 1
+}
+
 
 

@@ -2,7 +2,7 @@ import os
 import pytest
 import traceback
 from fastapi.testclient import TestClient
-from tests.testutil import new_user, single_client, list_of_clients, new_client_user, new_program
+from tests.testutil import new_user, single_client, list_of_clients, new_client_user, new_program, new_program_admin
 
 os.environ["TEST_MODE"] = "True"
 
@@ -70,6 +70,9 @@ def client_user(test_app, client):
 	try:
 		client_user = test_app.post(f"/v1/clients/{client['uuid']}/users", json=new_client_user)
 		client_user = client_user.json()
+		user = test_app.get(f"/v1/users/{client_user['user_uuid']}?expand_services=true")
+		user = user.json()
+		service_uuid = user["services"]["email"][0]["uuid"]
 		yield client_user
 	except Exception as e:
 		print(f"Exception encountered: {e}")
@@ -78,6 +81,8 @@ def client_user(test_app, client):
 	finally:
 		if client_user is not None:
 			test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
+			test_app.delete(f"/v1/users/{user['uuid']}/services/{service_uuid}")
+			test_app.delete(f"/v1/users/{user['uuid']}")
 
 @pytest.fixture(scope="module")
 def program(test_app, client_user):
@@ -93,6 +98,21 @@ def program(test_app, client_user):
 	finally:
 		if program is not None:
 			test_app.delete(f"/v1/clients/{client_user['client_uuid']}/programs/{program['program_9char']}")
+
+@pytest.fixture(scope="module")
+def program_admin(test_app, program):
+	try:
+		new_program_admin['user_uuid'] = program['user_uuid']
+		program_admin = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/admins", json=new_program_admin)
+		program_admin = program_admin.json()
+		yield program_admin
+	except: 
+		raise Exception("Program Admin Creation Failed")
+	finally:
+		if program_admin is not None:
+			test_app.delete(f"/v1/clients/{program_admin['client_uuid']}/programs/{program_admin['program_9char']}/admins/{program_admin['user_uuid']}")
+			
+
 
 
 
