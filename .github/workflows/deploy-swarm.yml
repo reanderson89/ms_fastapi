@@ -13,6 +13,9 @@ on:
         default: 'development'
         options:
           - development
+      ref:
+        description: 'Branch with Docker Swarm YAML template?'
+        default: 'staging'
 
 env:
   SWARM_YAML: "docker-milestones-swarm.yml"
@@ -26,6 +29,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 1
 
       - name: Install OpenVPN
         run: |
@@ -63,7 +69,8 @@ jobs:
           MYSQL_HOSTNAME: ${{ secrets.MYSQL_HOSTNAME }}                 # environment
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}                 # environment
           SECRET_KEY: ${{ secrets.SECRET_KEY }}                         # environment
-          SPARKPOST_KEY: ${{ secrets.SPARKPOST_KEY }}
+          SPARKPOST_KEY: ${{ secrets.SPARKPOST_KEY }}                   # global
+          TEMPORARY_TOKEN: ${{ secrets.TEMPORARY_TOKEN }}               # environment
         run: |
           # append the tag to form a fully qualified Docker tag
           export IMAGE_TAG=blueboardinc/milestones-api:${IMAGE_TAG}
