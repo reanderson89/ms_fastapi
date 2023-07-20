@@ -10,8 +10,9 @@ from .v1.cron.cron_router import router as cron_router
 
 
 ENV: str = os.environ.get("ENV", "local")
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()
 
-if ENV == "local":
+if JWT_ENFORCED == "false":
     routers = APIRouter()
 else:
     routers = APIRouter(
@@ -23,10 +24,13 @@ else:
 auth_routers = APIRouter()
 cron_routers = APIRouter()
 
-admin_routers = APIRouter(
-    dependencies=[Depends(get_token)],
-    responses={status.HTTP_401_UNAUTHORIZED: dict(model=UnAuthedMessage)}
-)
+if JWT_ENFORCED == "false":
+    admin_routers = APIRouter()
+else:
+    admin_routers = APIRouter(
+        dependencies=[Depends(get_token)],
+        responses={status.HTTP_401_UNAUTHORIZED: dict(model=UnAuthedMessage)}
+    )
 
 
 routers.include_router(v1router)

@@ -38,6 +38,7 @@ services:
       DD_TRACE_ENABLED: "false"
       ENV: dev
       FERNET_KEY: "${FERNET_KEY}"
+      JWT_ENFORCED: "False" # TODO this is temporary
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "NO"
       MYSQL_DATABASE: blueboard_milestones

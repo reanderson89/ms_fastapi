@@ -15,7 +15,7 @@ ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 ENV: str = os.environ.get("ENV", "local")
-
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()
 
 class UnAuthedMessage(BaseModel):
     detail: str = "Bearer token missing or unknown"
@@ -32,8 +32,7 @@ class Permissions():
 
     def __call__(self,
         auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
-
-        if ENV == "local":
+        if JWT_ENFORCED == "false":
             return True
         else:
             try:
@@ -53,7 +52,7 @@ class Permissions():
 
 
 async def check_jwt_client_with_client(jwt_client, client_uuid):
-    if ENV == "local":
+    if JWT_ENFORCED == "false":
         return True
     else:
         if jwt_client == client_uuid:

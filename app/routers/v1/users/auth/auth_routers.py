@@ -9,12 +9,13 @@ from app.utilities.auth.auth_handler import access_token_creation
 router = APIRouter()
 
 ENV: str = os.environ.get("ENV", "local")
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()
 
 
 @router.post("/auth", response_model=AuthResponseModel)
 async def post_auth(create_auth_model: CreateAuthModel):
     return_model = await AuthActions.post_auth_handler(create_auth_model)
-    if ENV == "local":
+    if JWT_ENFORCED == "false":
         return return_model
     else:
         prod_return = AuthResponseModel(
