@@ -17,7 +17,7 @@ services:
     image: ${IMAGE_TAG}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
       restart_policy:
         condition: on-failure
       update_config:
@@ -34,7 +34,9 @@ services:
       AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
       AWS_ROLE_ARN: "${AWS_ROLE_ARN}"
       BASE_URL: "https://milestones-dev-4.blueboard.app"
-      DD_TRACE_ENABLED: "false" # Datadog is fully disabled
+      # No CRON env var
+      DD_TRACE_ENABLED: "false"
+      CRON: "true" # this is an experiment
       ENV: dev
       FERNET_KEY: "${FERNET_KEY}"
       LOG_LEVEL: debug
@@ -46,11 +48,43 @@ services:
       MYSQL_USER: milestones
       SECRET_KEY: "${SECRET_KEY}"
       SPARKPOST_KEY: "${SPARKPOST_KEY}"
+      TEMPORARY_TOKEN: "${TEMPORARY_TOKEN}" # this is an experiment
       TWILIO_FROM: "+16193299600"
     networks:
       - blueboard-network
     ports:
       - 8080:80
+    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
+  worker:
+    image: ${IMAGE_TAG}
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 15s
+        order: start-first
+    environment:
+      # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
+      ACCOUNT_SID: "${ACCOUNT_SID}"
+      ACCOUNT_TOKEN: "${ACCOUNT_TOKEN}"
+      ALGORITHM: "${ALGORITHM}"
+      CRON: "true"
+      FERNET_KEY: "${FERNET_KEY}"
+      LOG_LEVEL: debug
+      MYSQL_DATABASE: blueboard_milestones
+      MYSQL_HOSTNAME: "${MYSQL_HOSTNAME}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_PORT: 3306
+      MYSQL_USER: milestones
+      SECRET_KEY: "${SECRET_KEY}"
+      SPARKPOST_KEY: "${SPARKPOST_KEY}"
+      TEMPORARY_TOKEN: "${TEMPORARY_TOKEN}" # TODO remove this once the /internal routes are callable w/o a token
+      TWILIO_FROM: "+16193299600"
+    networks:
+      - blueboard-network
     entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
 
 networks:

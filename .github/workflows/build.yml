@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-postman-tests:
-    name: Run Postman test suite
+    name: Run Postman Tests
     runs-on: ubuntu-latest
     env:
         DD_API_KEY: "foobar"
@@ -17,6 +17,8 @@ jobs:
         ALGORITHM: "HS256"
         AWS_ACCESS_KEY_ID: "foobar"
         AWS_SECRET_ACCESS_KEY: "foobar"
+        ENV: "local"
+        FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
         SECRET_KEY: "foobar"
         SPARKPOST_KEY: "foobar"
         TWILIO_FROM: "+16193299600"
@@ -25,10 +27,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Start Docker containers
+        # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
+        # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
+        # above
         run: |
           docker-compose up --build --detach
 
-      - name: Pause to let app to start
+      - name: Pause to let app to fully start
+        # this may be problematic in the future
         run: |
           sleep 30
 

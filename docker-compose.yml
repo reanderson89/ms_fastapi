@@ -40,6 +40,7 @@ services:
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
       AWS_ROLE_ARN: ${AWS_ROLE_ARN}
       BASE_URL: "http://localhost:5173/"
+      # No CRON
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
       LOG_LEVEL: debug

@@ -3,9 +3,10 @@
 FROM python:3.11.4-slim-bullseye
 WORKDIR /app
 
-RUN apt-get update
-RUN apt -y install iputils-ping vim
-RUN apt -y install default-mysql-client python3-pymysql alembic
+RUN apt-get update \
+  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic \
+  && apt-get clean
+
 RUN pip install --upgrade pip
 # ruff is for linting
 RUN pip install ruff

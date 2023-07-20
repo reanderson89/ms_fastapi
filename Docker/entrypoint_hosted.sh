@@ -43,10 +43,15 @@ fi
 # Append our cron to the system crontab and start crond
 if [ ! -z ${CRON} ]; then
     echo "Configuring cron..."
-    cat /crontab >> /etc/crontab
+    # envsubst is used here to put a bearer token into the crontab
+    envsubst < /crontab >> /etc/crontab
     crontab /etc/crontab
     service cron start
     service cron status
+else
+    echo "Skipping cron..."
 fi
 
-ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
+# TODO decide if we want to use Datadog, e.g.
+# ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
+uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
