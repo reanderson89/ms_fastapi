@@ -1236,7 +1236,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"UPDATED-Program Award Test\",\n  \"description\": \"UPDATED-Program Award Test\",\n  \"hero_image\": 1\n}",
+							"raw": "{\n  \"name\": \"UPDATED-Program Award Test\",\n  \"description\": \"UPDATED-Program Award Test\",\n  \"hero_image\": \"new_hero_image.jpeg\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

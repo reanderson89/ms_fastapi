@@ -1,11 +1,13 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.dependencies import default_query_params, verify_program_award
 from app.routers.v1.pagination import Page
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
+from app.models.uploads import UploadType
 from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+
 
 router = APIRouter(
 	prefix="/clients/{client_uuid}/programs/{program_9char}",
@@ -44,6 +46,18 @@ async def get_award(
 ):
 	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 	return await ProgramAwardActions.get_award(path_params)
+
+
+@router.get(
+		"/awards/{program_award_9char}/upload",
+		dependencies=[Depends(verify_program_award)]
+	)
+async def get_award_upload_url(
+	file_name: str,
+	upload_type: UploadType,
+	path_params: dict = Depends(path_params)
+):
+	return await ProgramAwardActions.get_upload_url(path_params, file_name, upload_type.value)
 
 
 @router.post("/awards/{client_award_9char}", response_model=list[ProgramAwardResponse] | ProgramAwardResponse)

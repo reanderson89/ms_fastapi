@@ -6,6 +6,8 @@ from app.exceptions import ExceptionHandling
 from app.models.clients import ClientUserModelDB
 from app.models.clients import ClientModelDB
 from app.models.clients.client_award_models import ClientAwardModelDB
+from app.models.programs import ProgramAwardModelDB
+from app.models.segments import SegmentAward
 
 class SortOrder(str, Enum):
 	ASC = "ASC"
@@ -47,13 +49,37 @@ async def verify_client_uuid(client_uuid: str):
 		raise HTTPException(400, "Client UUID does not exist")
 
 
-async def verify_client_award(client_uuid: str, client_award_9char: str):
+async def verify_client_award(client_uuid: str, client_award_9char: str,  award_model=ClientAwardModelDB):
 	response =  await BaseActions.check_if_exists(
-		ClientAwardModelDB,
+		award_model,
 		[
-			ClientAwardModelDB.client_uuid == client_uuid,
-			ClientAwardModelDB.client_award_9char == client_award_9char
+			award_model.client_uuid == client_uuid,
+			award_model.client_award_9char == client_award_9char
 		]
 	)
 	if not response:
-		raise HTTPException(400, "Client Award does not exist")
+		raise HTTPException(400, "The provided Client Award does not exist")
+
+
+async def verify_program_award(client_uuid: str, program_award_9char: str,  award_model=ProgramAwardModelDB):
+	response =  await BaseActions.check_if_exists(
+		award_model,
+		[
+			award_model.client_uuid == client_uuid,
+			award_model.program_award_9char == program_award_9char
+		]
+	)
+	if not response:
+		raise HTTPException(400, "The provided Program Award does not exist")
+
+
+async def verify_segment_award(client_uuid: str, segment_award_9char: str,  award_model=SegmentAward):
+	response =  await BaseActions.check_if_exists(
+		award_model,
+		[
+			award_model.client_uuid == client_uuid,
+			award_model.segment_award_9char == segment_award_9char
+		]
+	)
+	if not response:
+		raise HTTPException(400, "The provided Client Award does not exist")
