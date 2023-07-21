@@ -18,3 +18,14 @@ Ruff is a linter.  Linting is the process of running a program that will analyse
 ## Notes
 
 - We probably want to ignore UP007 (`Use X | Y for type annotations`)
+
+## Tabs versus Spaces, Oh My
+
+pycodestyle rule W191 says that spaces are preferred over tabs.
+
+Potential one-time fix:
+
+```
+sudo apt-get install moreutils
+find ./ -iname '*.java' -type f -exec bash -c 'expand -t 4 "$0" | sponge "$0"' {} \;
+```
