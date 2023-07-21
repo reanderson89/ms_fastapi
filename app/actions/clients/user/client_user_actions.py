@@ -99,8 +99,8 @@ class ClientUserActions:
 				title=await HelperActions.get_title(data),
 				department=await HelperActions.get_department(data),
 				active=await HelperActions.get_active(data) if "active" in data.keys() else 1,
-				time_hire=int(time()),
-				time_start=int(time()),
+				time_hire=data.get('time_hire'),
+				time_start=data.get('time_start'),
 				admin=await HelperActions.get_admin(data),
 			)
 

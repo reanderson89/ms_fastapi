@@ -112,7 +112,7 @@ class AdminSwap:
     def __call__(
             self,
             auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)
-        ):
+    ):
         try:
             verify = jwt.decode(auth.credentials, SECRET_KEY, algorithms=[ALGORITHM])
             if verify and 2 == verify['admin']:
