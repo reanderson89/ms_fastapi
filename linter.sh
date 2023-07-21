@@ -24,4 +24,14 @@ do
     done
 done
 
-echo "Git commit message:  Linting fixups for: unused imports, parentheses after class definition, single quote docstring, multiple imports on one line and unused variables"
+cat <<EOT
+Suggested Git message:
+
+Ruff linter auto-fixes for:
+- Unused imports
+- Unused variables
+- Parentheses after class definition
+- Single quote docstrings
+- Multiple imports on one line
+
+EOT

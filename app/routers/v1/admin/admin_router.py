@@ -4,7 +4,6 @@ from fastapi import APIRouter, Response, Depends
 from app.utilities.auth.auth_handler import AdminSwap, swap_client_uuid_in_jwt, Permissions
 from app.actions.clients.user import ClientUserActions
 from app.models.admin import AdminCreate, AdminClientSwap
-from app.models.clients import ClientUserUpdate
 
 router = APIRouter()
 
@@ -42,7 +41,7 @@ async def swap_client_uuid(
 	old_client_uuid = decoded_jwt["client_uuid"]
 	new_jwt = await swap_client_uuid_in_jwt(decoded_jwt, client_uuid)
 	
-	swapped_client = await ClientUserActions.update_admin_client_user(
+	await ClientUserActions.update_admin_client_user(
 		{"client_uuid": old_client_uuid, "user_uuid": decoded_jwt["uuid"]},
 		AdminClientSwap(client_uuid=client_uuid)
 	)
