@@ -1,63 +1,50 @@
-import pytest
-import httpx
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from app.routers.v1.segments.segment_award_router import router as awards_router
-
-app = FastAPI()
-app.include_router(awards_router)
-client = TestClient(app)
+from tests.testutil import new_segment_award, update_segment_award
 
 
-@pytest.mark.asyncio
-async def test_integration_create_award():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Created award"}
+def test_integration_get_segment_awards(test_app, segment_award):
+	response = test_app.get(f"/v1/clients/{segment_award['client_uuid']}/programs/{segment_award['program_9char']}/segments/{segment_award['segment_9char']}/awards")
+	assert response.status_code == 200
+	response = response.json()["items"][0]
+	assert len(response["segment_award_9char"]) == 9
+	assert response["program_award_9char"] == segment_award["program_award_9char"]
+	assert response["client_award_9char"] == segment_award["client_award_9char"]
+	assert response["name"] == segment_award["name"]
+	assert response["description"] == segment_award["description"]
 
-@pytest.mark.asyncio
-async def test_integration_get_awards():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Got all awards"}
 
-@pytest.mark.asyncio
-async def test_integration_get_award():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	award_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards/{award_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Got awards for {award_9char}"}
+def test_integration_get_segment_award(test_app, segment_award):
+	response = test_app.get(f"/v1/clients/{segment_award['client_uuid']}/programs/{segment_award['program_9char']}/segments/{segment_award['segment_9char']}/awards/{segment_award['segment_award_9char']}")
+	assert response.status_code == 200
+	response = response.json()
+	assert response["program_award_9char"] == segment_award["program_award_9char"]
+	assert response["description"] == segment_award["description"]
+	assert response["name"] == segment_award["name"]
+	assert response["program_award_9char"] == segment_award["program_award_9char"]
+	assert response["client_award_9char"] == segment_award["client_award_9char"]
 
-@pytest.mark.asyncio
-async def test_integration_update_award():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	award_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards/{award_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated award for {award_9char}"}
 
-@pytest.mark.asyncio
-async def test_integration_delete_award():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	award_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.delete(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}/awards/{award_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Deleted award for {award_9char}"}
+def test_integration_create_segment_award(program_award, segment_award):
+	assert len(segment_award["segment_award_9char"]) == 9
+	assert segment_award["client_award_9char"] == program_award["client_award_9char"]
+	assert segment_award["program_award_9char"] == program_award["program_award_9char"]
+	assert segment_award["uuid"] == segment_award['client_uuid'] + segment_award['program_9char'] + segment_award["segment_9char"] + segment_award['client_award_9char']
+
+
+def test_integration_update_segment_award(test_app, segment_award):
+	response = test_app.put(f"/v1/clients/{segment_award['client_uuid']}/programs/{segment_award['program_9char']}/segments/{segment_award['segment_9char']}/awards/{segment_award['segment_award_9char']}", json=update_segment_award)
+	assert response.status_code == 200
+	response = response.json()
+	assert response["program_award_9char"] == segment_award["program_award_9char"]
+	assert response["client_award_9char"] == segment_award["client_award_9char"]
+	assert response["name"] == update_segment_award["name"]
+	assert response["description"] == update_segment_award["description"]
+	
+def test_integration_delete_segment_award(test_app, segment_award):
+	response = test_app.delete(f"/v1/clients/{segment_award['client_uuid']}/programs/{segment_award['program_9char']}/segments/{segment_award['segment_9char']}/awards/{segment_award['segment_award_9char']}")
+	assert response.status_code == 200
+	response = response.json()
+	assert response["ok"] == True
+	assert response["Deleted"]["program_award_9char"] == segment_award["program_award_9char"]
+	assert response["Deleted"]["client_uuid"] == segment_award["client_uuid"]
+	assert response["Deleted"]["program_9char"] == segment_award["program_9char"]
+	assert response["Deleted"]["segment_9char"] == segment_award["segment_9char"]

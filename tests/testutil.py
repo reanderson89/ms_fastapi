@@ -5,6 +5,7 @@ first_client_uuid = SHA224Hash()
 second_client_uuid = SHA224Hash()
 client_user_uuid = SHA224Hash()
 program_uuid = SHA224Hash()
+award_uuid = SHA224Hash()
 
 
 new_user = {
@@ -100,6 +101,81 @@ new_program_admin = {
 
 update_program_admin = {
     "permissions": 1
+}
+
+new_program_event = {
+    "event_type": 1,
+    "parent_9char": None,
+	"event_data": "pytest-event",
+	"status": 1
+}
+
+update_program_event = {
+    "event_type": 2,
+    "event_data": "pytest-updated-event",
+    "status": 2
+}
+
+new_program_segment = {
+    "budget_9char": None,
+    "name": "pytest segment",
+    "description": "this is a segment",
+    "status": 1
+}
+
+new_award = {
+    "uuid": award_uuid,
+	"name": "pytest Award",
+	"description": "Just a pytest award",
+	"channel": 5,
+	"award_type": 2,
+	"value": 5000
+}
+
+update_award = {
+	"name": "pytest Award UPDATE",
+	"description": "Just a pytest award UPDATE",
+	"channel": 4,
+	"award_type": 1,
+	"value": 10000
+}
+    
+new_client_award = {
+	"award_uuid": award_uuid,
+	"name": "pytest Client Award",
+	"description": "Just a pytest client award",
+	"hero_image": None
+}
+
+update_client_award = {
+    "name": "pytest Client Award UPDATE",
+	"description": "Just a pytest client award UPDATE",
+	"hero_image": None
+}
+
+new_program_award = {
+	"name": "pytest Program Award",
+	"description": "Just a pytest program award",
+    "hero_image": None
+}
+
+update_program_award = {
+    "name": "pytest Program Award UPDATE",
+	"description": "Just a pytest program award UPDATE",
+    "hero_image": None
+}
+
+new_segment_award = {
+    "client_award_9char": None,
+    "name": "pytest Segment Award Test",
+    "description": "Just a pytest segment award",
+    "hero_image": None
+}
+
+update_segment_award = {
+    "name": "pytest Segment Award Test UPDATE",
+    "description": "Just a pytest segment award UPDATE",
+    "hero_image": None
 }
 
 
