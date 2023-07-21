@@ -35,7 +35,6 @@ services:
       AWS_ROLE_ARN: "${AWS_ROLE_ARN}"
       BASE_URL: "https://milestones-dev-4.blueboard.app"
       # No CRON env var
-      DD_TRACE_ENABLED: "false"
       ENV: dev
       FERNET_KEY: "${FERNET_KEY}"
       JWT_ENFORCED: "False" # TODO this is temporary
@@ -54,7 +53,7 @@ services:
       - blueboard-network
     ports:
       - 8080:80
-    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
+    entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
   worker:
     image: ${IMAGE_TAG}
     deploy:
@@ -85,7 +84,7 @@ services:
       TWILIO_FROM: "+16193299600"
     networks:
       - blueboard-network
-    entrypoint: /entrypoint.sh # this is renamed entrypoint_hosted.sh
+    entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
 
 networks:
   blueboard-network:

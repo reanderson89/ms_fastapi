@@ -1,5 +1,5 @@
 # For Docker testing, you can edit the Dockerfile then build/tag:
-#   docker build -t bullseye:test -f Docker/Dockerfile.milestones_api_hosted .
+#   docker build -t bullseye:test -f Docker/Dockerfile.milestones_api_localhost .
 # Then use the tagged image (below)
 
 version: '3'
@@ -47,7 +47,7 @@ services:
       LOG_LEVEL: debug
       MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.3.sql"
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: milestones_db # this is basically container name (above)
+      MYSQL_HOSTNAME: milestones_db
       MYSQL_PASSWORD: milestones
       MYSQL_PORT: 3306
       MYSQL_USER: milestones

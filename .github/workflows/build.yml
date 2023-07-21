@@ -83,7 +83,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Docker/Dockerfile.milestones_api_hosted
+          file: Docker/Dockerfile.milestones_api_swarm
           push: true
           cache-from: type=registry,ref=blueboardinc/milestones-api:latest
           cache-to: type=inline
