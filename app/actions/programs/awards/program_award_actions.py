@@ -54,8 +54,7 @@ class ProgramAwardActions:
 					client_uuid=path_params["client_uuid"],
 					program_9char=path_params["program_9char"],
 					client_award_9char=path_params["client_award_9char"]
-				) for award in award_obj
-			]
+				) for award in award_obj]
 			for award in award_models:
 				existing_award = await cls.check_if_award_exists(award.uuid)
 				if existing_award:
@@ -86,7 +85,7 @@ class ProgramAwardActions:
 		award_updates: ProgramAwardUpdate
 	):
 		if award_updates.name:
-			await cls.check_if_award_exists_by_name(path_params.get("client_uuid"), award_updates.name)
+			await cls.check_if_award_exists_by_name(path_params, award_updates.name)
 		if award_updates.hero_image:
 			award_updates.hero_image, _ = await UploadActions.verify_upload_file("image", award_updates.hero_image)
 			# TODO: add s3 query to check if file exists and is valid
@@ -125,16 +124,17 @@ class ProgramAwardActions:
 		)
 
 	@staticmethod
-	async def check_if_award_exists_by_name(client_uuid: str, name: str, error=True):
+	async def check_if_award_exists_by_name(path_params, name: str):
 		award = await BaseActions.check_if_exists(
 			ProgramAwardModelDB,
 			[
 				ProgramAwardModelDB.name == name,
-				ProgramAwardModelDB.client_uuid == client_uuid
+				ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
+				ProgramAwardModelDB.program_9char == path_params["program_9char"]
 			]
 		)
 		if award and error:
-			return await ExceptionHandling.custom409(f"Client award with name '{name}' already exists.")
+			return await ExceptionHandling.custom409(f"Program award with name '{name}' already exists.")
 		elif award and not error:
 			return award
 		else:

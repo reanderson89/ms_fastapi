@@ -52,7 +52,7 @@ async def get_award(
 		"/awards/{program_award_9char}/upload",
 		dependencies=[Depends(verify_program_award)]
 	)
-async def get_award_upload_url(
+async def get_program_award_upload_url(
 	file_name: str,
 	upload_type: UploadType,
 	path_params: dict = Depends(path_params)
@@ -80,12 +80,10 @@ async def update_award(
 	return await ProgramAwardActions.update_award(path_params, award_updates)
 
 
-# TODO: this should only work if there is no segment awards associated with the award
 @router.delete("/awards/{program_award_9char}")
 async def delete_award(
 	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
 	path_params: dict = Depends(path_params)
 ):
 	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	#TODO: add check for segment awards
 	return await ProgramAwardActions.delete_award(path_params)

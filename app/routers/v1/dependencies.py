@@ -82,4 +82,4 @@ async def verify_segment_award(client_uuid: str, segment_award_9char: str,  awar
 		]
 	)
 	if not response:
-		raise HTTPException(400, "The provided Client Award does not exist")
+		raise HTTPException(400, "The provided Segment Award does not exist")

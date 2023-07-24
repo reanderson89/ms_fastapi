@@ -1936,13 +1936,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"",
-							"var jsonData = pm.response.json()",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"",
-							"",
 							"",
 							"pm.test(\"name should be updated\", function () {",
 							"    var jsonData = pm.response.json();",
@@ -1977,7 +1973,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n{\n\"name\": \"UPDATED-Segment Award Test\",\n\"description\": \"UPDATED-Segment Award Test\",\n\"hero_image\": \"png\"\n}\n",
+					"raw": "{\n  \"name\": \"UPDATED-Segment Award Test\",\n  \"description\": \"UPDATED-Segment Award Test\",\n  \"hero_image\": \"new_hero_image.jpeg\"\n}",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -2467,6 +2463,11 @@
 							"",
 							"pm.test(\"ok should be true\", function () {",
 							"    pm.expect(jsonData.ok).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"program_award_9char should match deleted program_award_9char\", function(){",
+							"    var program_award_9char = pm.collectionVariables.get(\"program_award_9char\");",
+							"        pm.expect(jsonData.Deleted.program_award_9char).to.eql(program_award_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2509,6 +2510,11 @@
 							"",
 							"pm.test(\"ok should be true\", function () {",
 							"    pm.expect(jsonData.ok).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"client_award_9char should match deleted client_award_9char\", function(){",
+							"    var client_award_9char = pm.collectionVariables.get(\"client_award_9char\");",
+							"        pm.expect(jsonData.Deleted.client_award_9char).to.eql(client_award_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2739,6 +2745,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -2746,6 +2754,11 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});",
+							"",
+							"pm.test(\"program_9char should match deleted program_9char\", function(){",
+							"    var program_9char = pm.collectionVariables.get(\"program_9char\");",
+							"        pm.expect(jsonData.Deleted.program_9char).to.eql(program_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2929,6 +2942,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status test\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -2936,6 +2951,11 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});",
+							"",
+							"pm.test(\"client_user_uuid should match deleted client_user_uuid\", function(){",
+							"    var client_user_uuid = pm.collectionVariables.get(\"client_user_uuid\");",
+							"        pm.expect(jsonData.Deleted.uuid).to.eql(client_user_uuid);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -3119,6 +3139,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status test\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -3126,6 +3148,11 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});",
+							"",
+							"pm.test(\"client_uuid should match deleted client_uuid\", function(){",
+							"    var client_uuid = pm.collectionVariables.get(\"client_uuid\");",
+							"        pm.expect(jsonData.Deleted.uuid).to.eql(client_uuid);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -3292,6 +3319,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status test\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -3299,6 +3328,11 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});",
+							"",
+							"pm.test(\"service_uuid should match deleted service_uuid\", function(){",
+							"    var service_uuid = pm.collectionVariables.get(\"service_uuid\");",
+							"        pm.expect(jsonData.Deleted.uuid).to.eql(service_uuid);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -3467,6 +3501,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
 							"pm.test(\"Status test\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -3474,6 +3510,11 @@
 							"pm.test(\"ok should be true\", function(){",
 							"    var jsonData = pm.response.json()",
 							"    pm.expect(jsonData.ok).to.eql(true)",
+							"});",
+							"",
+							"pm.test(\"user_uuid should match deleted user_uuid\", function(){",
+							"    var user_uuid = pm.collectionVariables.get(\"user_uuid\");",
+							"        pm.expect(jsonData.Deleted.uuid).to.eql(user_uuid);",
 							"});"
 						],
 						"type": "text/javascript"
