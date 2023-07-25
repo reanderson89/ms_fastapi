@@ -50,7 +50,7 @@ async def create_message_from_template(
 async def send_message(
 		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
 		message_9char: str,
-    send_model: MessageSend
+		send_model: MessageSend
 ):
 	return await MessageActions.send_message(message_9char, send_model)
 

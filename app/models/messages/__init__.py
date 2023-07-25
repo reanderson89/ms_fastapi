@@ -1,1 +1,1 @@
-from .message_models import MessageModelDB, MessageCreate, MessageUpdate, MessageModel, MessageSend
+from .message_models import MessageModelDB, MessageCreate, MessageUpdate, MessageModel, MessageSend, MessageRecipient

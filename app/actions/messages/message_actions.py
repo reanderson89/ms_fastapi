@@ -1,8 +1,10 @@
+from app.actions.awards.awards_actions import AwardActions
 from app.actions.base_actions import BaseActions
+from app.actions.clients.client_actions import ClientActions
 from app.actions.helper_actions import HelperActions
 from app.models.clients.client_user_models import ClientUserModelDB
 from app.models.programs import ProgramModelDB
-from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend
+from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend, MessageRecipient
 from app.exceptions import ExceptionHandling
 from app.actions.messages.send_message import MessageSendingHandler
 from app.actions.users.user_actions import UserActions
@@ -25,10 +27,11 @@ class MessageActions:
 		)
 
 	@staticmethod
-	async def get_one(message_9char: str):
+	async def get_one(message_9char: str, check: bool = True):
 		return await BaseActions.get_one_where(
 			MessageModelDB,
-			[MessageModelDB.message_9char == message_9char]
+			[MessageModelDB.message_9char == message_9char],
+			check
 		)
 
 	@staticmethod
@@ -100,29 +103,35 @@ class MessageActions:
 
 	@classmethod
 	async def send_message(cls, message_9char: str, send_model: MessageSend):
-		message = await cls.get_one(message_9char)
-		recipients_models = await BaseActions.get_all_where(
+		return await MessageSendingHandler.send_message({
+			"message": await cls.get_one(message_9char), 
+			"client": await ClientActions.get_client(send_model.client_uuid),
+			"recipients": await cls.get_recipient_and_award(send_model.recipients), 
+		})
+	
+	@staticmethod
+	async def get_recipient_and_award(recipients: list[MessageRecipient]):
+		recipient_list = []
+
+		recipient_client_user_models = await BaseActions.get_all_where(
 			ClientUserModelDB,
-			[ClientUserModelDB.uuid.in_(send_model.recipients)],
+			[ClientUserModelDB.uuid.in_([recipient.client_user_uuid for recipient in recipients])],
 			None,
 			False,
 			False
 		)
-		user_uuids = [i.user_uuid for i in recipients_models]
-		service_id_type = {
-			1: "email", #email
-			2: "cell", #sms - text
-			4: "slack", #p2p - slack
-			8: "msteams", #p2p - ms teams
-			16: "web" #web
-		}[message.channel]
-		recipients = await cls.get_user_and_service(user_uuids, service_id_type)
-		return await MessageSendingHandler.send_message(message, recipients)
-	
-	
-	@classmethod
-	async def get_user_and_service(cls, user_uuids: list, service_id_type: str):
-		users = []
-		for uuid in user_uuids:
-			users.append(await UserActions.get_user(uuid, True))
-		return users
+
+		#sorts both lists to be in same order
+		recipients = sorted(recipients, key=lambda x: x.client_user_uuid, reverse=True) #sorts incoming recipients by client_user_uuid in reverse order
+		recipient_client_user_models = sorted(recipient_client_user_models, key=lambda x: x.uuid, reverse=True) #sorts client_user_models by uuid in reverse order
+
+		for client_user_model in recipient_client_user_models:
+			recipient_list.append(
+				{
+					"user": await UserActions.get_user(client_user_model.user_uuid, True),
+					"award": await AwardActions.get_award(recipients[recipient_client_user_models.index(client_user_model)].award_uuid),
+					"anniversary": recipients[recipient_client_user_models.index(client_user_model)].anniversary if recipients[recipient_client_user_models.index(client_user_model)].anniversary else None
+				}
+			)
+
+		return recipient_list

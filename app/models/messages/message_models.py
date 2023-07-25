@@ -3,6 +3,18 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
 
+message_types = {
+	1: "welcome",
+	2: "auth",
+	3: "award",
+	4: "anniversary",
+	5: "birthday",
+	6: "redeem",
+	7: "message",
+	8: "reminder",
+	9: "survey"
+}
+
 class MessageModelDB(Base):
 	__tablename__ = "message"
 
@@ -37,13 +49,13 @@ class MessageModel(BasePydantic):
 
 class MessageCreate(BasePydantic):
 	name: str
-	body: str
+	body: Optional[str]
 	channel: int
 	message_uuid: Optional[str] = None
 	client_uuid: Optional[str] = None
 	program_9char: Optional[str] = None
 	segment_9char: Optional[str] = None
-	message_type: Optional[int] = None
+	message_type: int
 	status: Optional[int] = None
 
 class MessageUpdate(BasePydantic):
@@ -53,7 +65,11 @@ class MessageUpdate(BasePydantic):
 	status: Optional[int] = None
 	body: Optional[str] = None
 
+class MessageRecipient(BasePydantic):
+	client_user_uuid: str
+	anniversary: Optional[int] = None
+	award_uuid: str
+
 class MessageSend(BasePydantic):
-	template_uuid: str
 	client_uuid: str
-	recipients: list[str] #client_user_uuids
+	recipients: list[MessageRecipient] 

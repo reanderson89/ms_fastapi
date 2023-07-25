@@ -15,11 +15,6 @@ class HelperActions:
 	default_cell_types = {"Primary Cell Number", "primary_cell_number", "cell_number", "cell", "cell_phone"}
 
 	@staticmethod
-	async def get_session():
-		with Session(engine) as session:
-			yield session
-
-	@staticmethod
 	async def make_username(first, last):
 		first = first.lower()
 		last = last.lower()
@@ -34,17 +29,6 @@ class HelperActions:
 			return csv_items
 
 	ServiceType = namedtuple("ServiceType", ["type", "value"])
-
-	@classmethod
-	def flatten(cls, seq):
-		output = []
-		for elt in seq:
-			if type(elt) is tuple or type(elt) is list:
-				for elt2 in cls.flatten(elt):
-					output.append(elt2)
-			else:
-				output.append(elt)
-		return output
 
 	@classmethod
 	async def get_email_from_header(cls, data, type=None):
@@ -154,26 +138,6 @@ class HelperActions:
 		else:
 			return 1
 			# raise Exception
-
-	@classmethod
-	async def check_for_existing(cls, model, search_by):
-		with Session(engine) as session:
-			item = session.get(model, search_by)
-			return (item if item else None)
-
-	@staticmethod
-	async def update(statement, updates):
-		with Session(engine) as session:
-			response = session.scalars(statement).one_or_none()
-			await ExceptionHandling.check404(response)
-
-			updated_mapped_columns = updates.dict(exclude_unset=True)
-			for key, value in updated_mapped_columns.items():
-				setattr(response, key, value)
-			session.add(response)
-			session.commit()
-			session.refresh(response)
-			return response
 
 	@staticmethod
 	async def generate_9char():
