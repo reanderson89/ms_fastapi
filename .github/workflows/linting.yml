@@ -35,11 +35,16 @@ jobs:
       - name: Convert tabs to 4 spaces
         run: |
           find ./app -iname "*.py" -type f -exec bash -c "expand -t 4 "$0" | sponge "$0"" {} \;
-          git add ./app
-          git commit -a -m "Tabs to spaces" --allow-empty
+          # only commit if there are changes, --allow-empty can probably be omitted
+          RESULT=$(git diff-index HEAD -- | awk '{print $3}' | wc  -l)
+          if [ ${RESULT} -ne "0" ]; then
+            git add ./app
+            git commit -a -m "Tabs to spaces" --allow-empty
+          fi
 
       - name: Run Ruff and auto-fix common rules
         run: |
+          # run through and auto-fix these simple rules
           declare -A RUFF_RULES=(
             ["F401"]="remove unused imports"
             ["UP039"]="parentheses after class definition"
@@ -50,9 +55,12 @@ jobs:
           for RULE in "${!RUFF_RULES[@]}";
           do
             ruff check ./app --select ${RULE} --fix
-            # export MSG="${RUFF_RULES[${RULE}]}, ${RULE}"
-            git add ./app
-            git commit -a -m "${RUFF_RULES[${RULE}]}" --allow-empty
+            # only commit if there are changes, --allow-empty can probably be omitted
+            RESULT=$(git diff-index HEAD -- | awk '{print $3}' | wc  -l)
+            if [ ${RESULT} -ne "0" ]; then
+              git add ./app
+              git commit -a -m "${RUFF_RULES[${RULE}]}" --allow-empty
+            fi
           done
 
       - name: Push changes
