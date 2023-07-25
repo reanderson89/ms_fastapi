@@ -10,56 +10,56 @@ router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tag
 
 
 def path_params(client_uuid: str, program_9char: str, user_uuid: str= None):
-	return {"client_uuid": client_uuid, "program_9char": program_9char, "user_uuid": user_uuid}
+    return {"client_uuid": client_uuid, "program_9char": program_9char, "user_uuid": user_uuid}
 
 def query_params(offset: int, limit: int = Query(default=100, lte=100)):
-	return {"offset": offset, "limit": limit}
+    return {"offset": offset, "limit": limit}
 
 
 @router.get("/admins")
 async def get_admins(
-	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-	query_params: dict = Depends(default_query_params),
-	path_params: dict = Depends(path_params)
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    query_params: dict = Depends(default_query_params),
+    path_params: dict = Depends(path_params)
 ) -> Page[AdminModel]:
-	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	return await ProgramAdminActions.get_program_admins(path_params, query_params)
+    await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
+    return await ProgramAdminActions.get_program_admins(path_params, query_params)
 
 
 @router.get("/admins/{user_uuid}", response_model=AdminModelDB)
 async def get_admin(
-	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-	expand: AdminExpand = None,
-	path_params: dict = Depends(path_params)
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    expand: AdminExpand = None,
+    path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	return await ProgramAdminActions.get_program_admin(path_params)
+    await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
+    return await ProgramAdminActions.get_program_admin(path_params)
 
 
 @router.post("/admins", response_model= Union[list[AdminStatus], AdminStatus])
 async def create_admin(
-	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-	path_params: dict = Depends(path_params),
-	admins: Union[AdminCreate, list[AdminCreate]] = Depends(ProgramAdminActions.check_existing)
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    path_params: dict = Depends(path_params),
+    admins: Union[AdminCreate, list[AdminCreate]] = Depends(ProgramAdminActions.check_existing)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	return await ProgramAdminActions.create_program_admins(path_params, admins)
+    await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
+    return await ProgramAdminActions.create_program_admins(path_params, admins)
 
 
 @router.put("/admins/{user_uuid}", response_model=AdminModelDB)
 async def update_admin(
-	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-	admin_updates: AdminUpdate,
-	path_params: dict = Depends(path_params)
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    admin_updates: AdminUpdate,
+    path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	return await ProgramAdminActions.update_program_admin(path_params, admin_updates)
+    await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
+    return await ProgramAdminActions.update_program_admin(path_params, admin_updates)
 
 
 @router.delete("/admins/{user_uuid}")
 async def delete_admin(
-	client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-	path_params: dict = Depends(path_params)
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    path_params: dict = Depends(path_params)
 ):
-	await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
-	return await ProgramAdminActions.delete_program_admin(path_params)
+    await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
+    return await ProgramAdminActions.delete_program_admin(path_params)

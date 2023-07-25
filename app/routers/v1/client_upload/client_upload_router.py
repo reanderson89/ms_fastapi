@@ -14,18 +14,18 @@ router = APIRouter(tags=["Upload"], prefix="/clients/{client_uuid}")
 
 @router.get("/upload", response_model_by_alias=True)
 async def get_upload_url(
-		client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-		client_uuid: str,
-		file_name: str,
-		upload_type: UploadType):
-	await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
-	return await ClientUploadActions.get_upload_url(upload_type.value, file_name, client_uuid)
+        client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+        client_uuid: str,
+        file_name: str,
+        upload_type: UploadType):
+    await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
+    return await ClientUploadActions.get_upload_url(upload_type.value, file_name, client_uuid)
 
 
 @router.post("/upload", response_model_by_alias=True)
 async def post_upload_url(
-		client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-		client_uuid: str,
-		file_name: UploadFile):
-	await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
-	return await ClientUploadActions.process_roster_file(file_name, client_uuid)
+        client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+        client_uuid: str,
+        file_name: UploadFile):
+    await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
+    return await ClientUploadActions.process_roster_file(file_name, client_uuid)

@@ -1,5 +1,4 @@
-from datetime import date, datetime
-import numpy as np
+from datetime import datetime
 
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -8,7 +7,6 @@ from sqlalchemy import select
 from app.models.clients import ClientUserModelDB
 from app.models.users import UserModelDB
 from app.routers.v1.v1CommonRouting import ExceptionHandling
-from pprint import pprint as pp
 
 
 rule = {

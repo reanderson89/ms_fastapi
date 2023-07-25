@@ -14,18 +14,18 @@ from app.seed_data import seed_database
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-	bootstrap_envs = ["LOCAL", "DEV"]
-	env = os.getenv("ENV", "LOCAL").upper()
-	if env in bootstrap_envs:
-		"""
-		try/except was added because when the container would reload when a change was made,
-		it would error out on the fact that the users already existed.
-		"""
-		try:
-			await seed_database()
-			yield
-		except:
-			yield
+    bootstrap_envs = ["LOCAL", "DEV"]
+    env = os.getenv("ENV", "LOCAL").upper()
+    if env in bootstrap_envs:
+        """
+        try/except was added because when the container would reload when a change was made,
+        it would error out on the fact that the users already existed.
+        """
+        try:
+            await seed_database()
+            yield
+        except:
+            yield
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
@@ -38,7 +38,7 @@ app.include_router(cron_routers, prefix="/blue")
 add_pagination(app)
 
 if __name__ == "__main__":
-	uvicorn.run(
-		"main:app",
-		**run_config.__dict__
-	)
+    uvicorn.run(
+        "main:app",
+        **run_config.__dict__
+    )

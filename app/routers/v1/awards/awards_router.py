@@ -12,55 +12,55 @@ router = APIRouter(tags=["Awards"])
 
 @router.get("/awards")
 async def get_all_awards(
-	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-	query_params: dict = {"order_by": "value", "sort": "ASC"},
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    query_params: dict = {"order_by": "value", "sort": "ASC"},
 ) -> Page[AwardModel]:
-	return await AwardActions.get_all_awards(query_params)
+    return await AwardActions.get_all_awards(query_params)
 
 
 @router.get("/awards/{award_uuid}")
 async def get_award(
-		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-		award_uuid: str
+        client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+        award_uuid: str
 ):
-	return await AwardActions.get_award(award_uuid)
+    return await AwardActions.get_award(award_uuid)
 
 
 @router.get("/awards/{award_uuid}/upload")
 async def get_award_upload_url(
-		client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-		award_uuid: str,
-		file_name: str,
-		upload_type: UploadType
+        client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+        award_uuid: str,
+        file_name: str,
+        upload_type: UploadType
 ):
-	return await AwardActions.get_upload_url(award_uuid, file_name, upload_type.value)
+    return await AwardActions.get_upload_url(award_uuid, file_name, upload_type.value)
 
 
 @router.post("/awards", response_model=(list[AwardModel] | AwardModel))
 async def create_award(
-	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-	awards: (list[AwardModelDB] | AwardModelDB)
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    awards: (list[AwardModelDB] | AwardModelDB)
 ):
-	return await AwardActions.create_award(awards)
+    return await AwardActions.create_award(awards)
 
 
 @router.put("/awards/{award_uuid}", response_model=AwardModel)
 async def update_award(
-	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-	award_uuid: str,
-	award_updates: AwardUpdate
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    award_uuid: str,
+    award_updates: AwardUpdate
 ):
-	return await AwardActions.update_award(
-		award_uuid,
-		award_updates
-	)
+    return await AwardActions.update_award(
+        award_uuid,
+        award_updates
+    )
 
 
 # TODO: this should only work if there is no client_awards or program_awards associated with the award
 @router.delete("/awards/{award_uuid}")
 async def delete_award(
-	client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-	award_uuid: str
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    award_uuid: str
 ):
-	#TODO: add check for programs
-	return await AwardActions.delete_award(award_uuid)
+    #TODO: add check for programs
+    return await AwardActions.delete_award(award_uuid)

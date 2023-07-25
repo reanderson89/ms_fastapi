@@ -1,14 +1,10 @@
 name: Lint Code
 
 on:
-  push:
-    branches:
-      - "clark*"
-      - "BLUE-10002-*"
-#   pull_request:
-#     types:
-#       - opened
-#       - reopened
+  pull_request:
+    types:
+      - opened
+      - reopened
 
 jobs:
   lint-code:
@@ -34,13 +30,9 @@ jobs:
 
       - name: Convert tabs to 4 spaces
         run: |
-          find ./app -iname "*.py" -type f -exec bash -c "expand -t 4 "$0" | sponge "$0"" {} \;
-          # only commit if there are changes, --allow-empty can probably be omitted
-          RESULT=$(git diff-index HEAD -- | awk '{print $3}' | wc  -l)
-          if [ ${RESULT} -ne "0" ]; then
-            git add ./app
-            git commit -a -m "Tabs to spaces" --allow-empty
-          fi
+          find ./app -name "*.py" -type f -exec bash -c 'expand -t 4 "$0" | sponge "$0"' {} \;
+          git add ./app
+          git commit -a -m "Tabs to spaces" --allow-empty
 
       - name: Run Ruff and auto-fix common rules
         run: |

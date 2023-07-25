@@ -25,7 +25,7 @@ class RejectedAuthMessage(BaseModel):
     detail: str = "Forbidden"
 
 
-class Permissions():
+class Permissions:
 
     def __init__(self, level: str):
         self.level = level

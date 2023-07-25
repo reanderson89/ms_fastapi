@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "faea7daa-9c66-4cf2-98b1-539f9f223a97",
+		"_postman_id": "0188f539-4ce9-4630-b0c0-13a25044473d",
 		"name": "Milestones_program_rules",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25650478"
@@ -818,7 +818,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n  {\n    \"rule_type\": 0,\n    \"logic\": \"Program Rule Test\",\n    \"status\": 0\n  }\n]\n",
+					"raw": "[\n  {\n    \"rule_type\": 0,\n    \"logic\": {\"condition\": \"Program Rule Test\"},\n    \"status\": 0\n  }\n]\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1503,7 +1503,7 @@
 							"});",
 							"",
 							"pm.test(\"logic should equal 'UPDATED-Program Rule Test'\", function () {",
-							"    pm.expect(jsonData.logic).to.eql(\"UPDATED-Program Rule Test\");",
+							"    pm.expect(jsonData.logic.condition).to.eql(\"UPDATED-Program Rule Test\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1534,7 +1534,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"rule_type\": 1,\n  \"logic\": \"UPDATED-Program Rule Test\",\n  \"status\": 1\n}",
+					"raw": "{\n  \"rule_type\": 1,\n  \"logic\": {\"condition\": \"UPDATED-Program Rule Test\"},\n  \"status\": 1\n}",
 					"options": {
 						"raw": {
 							"headerFamily": "json",

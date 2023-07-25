@@ -413,7 +413,7 @@ CREATE TABLE `program_rule` (
   `rule_9char` varchar(9) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `rule_type` int(11) DEFAULT NULL,
-  `logic` longtext DEFAULT NULL,
+  `logic` JSON DEFAULT NULL,
   `time_created` int(11) DEFAULT NULL,
   `time_updated` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),

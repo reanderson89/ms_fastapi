@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from app.actions.cron.cron_actions import CronActions
 
-from app.routers.v1.dependencies import default_query_params
 
 
 router = APIRouter()
