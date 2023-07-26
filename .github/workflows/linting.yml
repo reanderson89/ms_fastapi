@@ -1,10 +1,11 @@
 name: Lint Code
 
 on:
-  push:
-    branches-ignore:
-      - staging
-      - main
+  pull_request:
+  # push:
+  #   branches-ignore:
+  #     - staging
+  #     - main
 
 jobs:
   lint-code:
@@ -55,8 +56,19 @@ jobs:
             fi
           done
 
-      - name: Push changes
+      - name: Push changes back to branch
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.head_ref }}
+
+# github.ref:
+#
+#   This variable represents the Git reference that triggered the workflow. It provides the full reference name, including the prefix (e.g., refs/heads/ for branches or refs/tags/ for tags).
+#   For example, if your workflow is triggered by a push to a branch named feature/xyz, then github.ref will have the value refs/heads/feature/xyz.
+#   If the workflow is triggered by the creation of a new tag v1.0, then github.ref will be refs/tags/v1.0.
+#
+#   github.head_ref:
+#   This variable is only available when the workflow is triggered by a pull request event. It represents the head (source) branch of the pull request.
+#   For example, if a pull request is opened from a branch named feature/xyz to merge into main, then github.head_ref will have the value feature/xyz.
+#   If the workflow is not triggered by a pull request event, github.head_ref will be undefined, and you should handle this scenario in your workflow accordingly.
