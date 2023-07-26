@@ -56,6 +56,11 @@ jobs:
             fi
           done
 
+      - name: Display ref information for debugging
+        run: |
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+
       - name: Push changes back to branch
         uses: ad-m/github-push-action@master
         with:
