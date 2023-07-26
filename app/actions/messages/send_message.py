@@ -1,7 +1,6 @@
 from app.libraries.sparkpost import send_message_email
 from app.libraries.sms import send_message_text
-from app.models.users import UserExpanded
-from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend
+from app.models.messages import MessageSend
 
 class MessageSendingHandler:
 

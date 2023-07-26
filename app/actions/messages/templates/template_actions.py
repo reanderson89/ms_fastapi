@@ -1,5 +1,5 @@
 from string import Template
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 
 templateLoader = FileSystemLoader(searchpath="app/templates/system_templates")
 templateEnv = Environment(loader=templateLoader)

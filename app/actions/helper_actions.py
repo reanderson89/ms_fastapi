@@ -5,9 +5,6 @@ import time
 
 from collections import namedtuple
 from fastapi import UploadFile, File
-from sqlalchemy.orm import Session
-from app.database.config import engine
-from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash, PositiveNumbers
 
 class HelperActions:
