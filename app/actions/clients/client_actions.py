@@ -21,7 +21,7 @@ class ClientActions:
             ClientModelDB.name,
             [ClientModelDB.uuid == client_uuid]
         )
-    
+
     @staticmethod
     async def check_if_client_exists_by_name(client_name: str, error=True):
         client = await BaseActions.check_if_exists(
@@ -34,7 +34,7 @@ class ClientActions:
             return client
         else:
             return None
-        
+
     @staticmethod
     async def to_client_db_model(client_data):
         return ClientModelDB(

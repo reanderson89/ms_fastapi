@@ -24,8 +24,6 @@ class AwardActions:
         :params query_params(dict): A dictionary of query parameters
             - order_by(str): The field to sort by
             - sort(str): The sort order ('ASC' or 'DESC')
-            - offset(int): The number of results to skip
-            - limit(int): The maximum number of results to return
         :return: A list of model objects, for example [model(DataModel),...]
         """
         return await BaseActions.get_all(
@@ -41,8 +39,6 @@ class AwardActions:
         :param params(dict): A dictionary of query parameters
             - order_by(str): The field to sort by
             - sort(str): The sort order ('ASC' or 'DESC')
-            - offset(int): The number of results to skip
-            - limit(int): The maximum number of results to return
         :return: A list of model objects, for example [model(DataModel),...]
         """
         return await BaseActions.get_all_where(

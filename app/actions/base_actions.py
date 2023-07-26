@@ -253,28 +253,38 @@ class BaseActions:
             return results
 
     @classmethod
-    async def get_all(cls, model, params: dict):
+    async def get_all(
+        cls,
+        model,
+        params: dict,
+        check404: bool = True,
+        pagination: bool = True
+    ):
         """
-        Get all rows from the database for a given model/table
-        :param model(DataModel): The model/table to query
-        :param params(dict): A dictionary of query parameters
-            - order_by(str): The field to sort by
-            - sort(str): The sort order ('ASC' or 'DESC')
-            - offset(int): The number of results to skip
-            - limit(int): The maximum number of results to return
-        :return: A list of model instances
+        Get all rows from the database for a given model/table.
+
+        :param model: The model/table to query.
+        :param params: A dictionary of query parameters. Possible parameters include:
+            - order_by: The field to sort by, defaults to None.
+            - sort: The sort order ('ASC' or 'DESC'), defaults to 'DESC'.
+        :param check404: If True, the method will raise a 404 error if no results are found.
+        :param pagination: If True, the method will return a paginated response.
+        :return: A list of model instances.
         """
 
         with Session(engine) as session:
             query = select(model)
-            query = cls._add_ordering_to_query(
-                model,
-                query,
-                params.get("order_by"),
-                params.get("sort", "DESC")
-            )
-            db_query = paginate(session, query)
-            await ExceptionHandling.check404(db_query.items)
+            query = cls._add_ordering_to_query(model, query, **params)
+
+            if pagination:
+                db_query = paginate(session, query)
+                if check404:
+                    await ExceptionHandling.check404(db_query.items)
+            else:
+                db_query = session.scalars(query).all()
+                if check404:
+                    await ExceptionHandling.check404(db_query)
+
             return db_query
 
     @classmethod
