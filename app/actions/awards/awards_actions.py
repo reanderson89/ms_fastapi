@@ -4,7 +4,6 @@ from app.models.award import AwardModelDB, AwardUpdate
 from app.actions.upload import UploadActions
 from app.models.clients import ClientAwardModelDB
 
-
 class AwardActions:
 
     @staticmethod

@@ -6,11 +6,15 @@ from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
 from app.models.segments import SegmentRuleModel, SegmentRuleUpdate
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Client Program Segment Rules"])
+router = APIRouter(
+    prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}",
+    tags=["Client Program Segment Rules"]
+)
 
 def get_session():
     with Session(engine) as session:
         yield session
+
 
 @router.get("/rules", response_model=list[SegmentRuleModel])
 async def get_rules(
@@ -34,6 +38,7 @@ async def get_rules(
     await ExceptionHandling.check404(rules)
     return rules
 
+
 @router.get("/rules/{rule_9char}", response_model=SegmentRuleModel)
 async def get_rule(
     client_uuid: str,
@@ -54,9 +59,11 @@ async def get_rule(
     await ExceptionHandling.check404(rule)
     return rule
 
+
 @router.post("/rules", response_model=(list[SegmentRuleModel] | SegmentRuleModel))
 async def create_rule(rules: (list[SegmentRuleModel] | SegmentRuleModel)):
     return await CommonRoutes.create_one_or_many(rules)
+
 
 @router.put("/rules/{rule_9char}", response_model=SegmentRuleModel)
 async def update_rule(
@@ -85,6 +92,7 @@ async def update_rule(
     session.commit()
     session.refresh(rule)
     return rule
+
 
 @router.delete("/rules/{rule_9char}")
 async def delete_rule(
