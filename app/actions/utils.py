@@ -1,10 +1,7 @@
+import pycountry
+import requests
 from time import time
 from collections import namedtuple
-import logging
-
-import pycountry
-from geopy.geocoders import Nominatim
-
 from app.utilities import PositiveNumbers
 
 
@@ -19,20 +16,42 @@ def new_9char():
     return char_9
 
 
-def convert_coordinates(value):
+def degrees_to_microdegrees(degrees: float):
+    """Convert degrees to microdegrees.
+    :param: degrees (float): Degrees to convert
+    :returns: int: Converted value
+    """
+    return int(degrees * 10**6)
+
+
+def microdegrees_to_degrees(microdegrees: int):
+    """Convert microdegrees to degrees.
+    :param: microdegrees (int): Microdegrees to convert
+    :returns: float: Converted value
+    """
+    return microdegrees / 10**6
+
+
+def convert_coordinates(value: int|float|str):
     """Convert coordinates to/from microdegrees.
-
-    :param: value (float or int):
-        Value to convert
-
+    :param: value (float,int, or str):
+        Int(microdegrees) value is converted to float degrees.
+        Float value is converted to microdegrees.
+        String value is converted to a numerical value and is then converted to microdegrees or degrees.
     :returns: float or int: Converted value
     """
-    if isinstance(value, float):
-        return int(value * 10**6)
+    if isinstance(value, str):
+        if value.isdigit():
+            return microdegrees_to_degrees(int(value))
+        elif value.replace(".", "", 1).replace('-', '', 1).isdigit():
+            return degrees_to_microdegrees(float(value))
+    elif isinstance(value, float):
+        return degrees_to_microdegrees(value)
     elif isinstance(value, int):
-        return value / 10**6
+        return microdegrees_to_degrees(value)
     else:
-        return value
+        return None
+
 
 STATE_ABBREVIATIONS = {
     "AL": "Alabama",
@@ -125,40 +144,44 @@ def parse_input_param(input_param):
     return {"city": city}
 
 
-def query_location(input_param):
-    from geopy.exc import GeocoderServiceError
+def query_location(location_param, lat = None, lon = None):
+    """Query location data from Blueboard's location API.
 
-    geolocator = Nominatim(user_agent="milestone_app")
+    :param: location_param (str): Location string to get data for
+    :param: lat (float): Latitude
+    :param: lon (float): Longitude
 
-    MAX_RETRIES = 4
-    for retries in range(MAX_RETRIES):
-        try:
-            location = geolocator.geocode(input_param, timeout=5)
-            if location is not None:
-                return location
-        except GeocoderServiceError as e:
-            if "502" in e.args[0]:
-                logging.warning("Geocoding failed due to 502 error. Retrying...")
-            else:
-                logging.error("Geocoding failed with error: %s", e)
-    # handle case where all retries failed
-    logging.error("Geocoding failed after %d retries", MAX_RETRIES)
+    :returns: requests.Response: Response object from Blueboard's location API
+    """
+    headers = {
+        'Authorization': 'Bearer 970a47790af4f835532beeca40fc38265b620522053553d124e1a7d45ff1752f'
+    }
+    if lat and lon:
+        url = f"http://location.blueboard.app/reverse?lat={lat}&lon={lon}"
+    elif location_param:
+        url = f"http://location.blueboard.app/search?q={location_param}"
+    else:
+        return None
+    return requests.get(url, headers=headers, timeout=5)
+
+
+def get_location_data(location: str = None, lat = None, lon = None):
+    """Get location data from Blueboard's Nominatim location API.
+
+    :param: location (str): Location string to get data for
+    :param: lat (float): Latitude
+    :param: lon (float): Longitude
+
+    :returns: namedtuple: Location data
+    """
+    location_response = None
+    if lat and lon:
+        location_response = query_location(f"{lat},{lon}")
+    elif location:
+        location_response = query_location(location)
+
+    if location_response:
+        location_data = location_response.json()["response"]["data"][0]
+        Location = namedtuple("Location", location_data.keys())
+        return Location(**location_data)
     return None
-
-
-def get_location_data(location_string):
-    """
-    Get location data from a string using geopy and Nominatim.
-
-    :param str location_string: Location string to get data for
-
-    :returns: Location: namedtuple with latitude and longitude
-    """
-    Location = namedtuple("Location", ["latitude", "longitude", "location"])
-
-    query_dict = parse_input_param(location_string)
-    location = query_location(query_dict)
-
-    return Location(
-            location.latitude, location.longitude, location
-        ) if location else Location(None, None, None)

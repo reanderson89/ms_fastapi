@@ -5,6 +5,8 @@ from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.users import UserModelDB, UserServiceModelDB, UserExpanded
 
+from app.actions.utils import get_location_data, convert_coordinates
+
 class UserActions:
 
     @staticmethod
@@ -97,14 +99,16 @@ class UserActions:
                     raise Exception
                 return user
 
-        # TODO: Location implemented but not in use due to slow response times
-        # location = get_location_data(new_user_data.get("location"))
+        location = new_user_data.get("location")
+        location_data = get_location_data(location)
+        lat = convert_coordinates(getattr(location_data, "lat", None))
+        lon = convert_coordinates(getattr(location_data, "lon", None))
 
         new_user_obj = UserModelDB(
             first_name = await HelperActions.get_fname_from_header(new_user_data),
             last_name= await HelperActions.get_lname_from_header(new_user_data),
-            latitude = 407127281, # convert_coordinates(location.latitude),
-            longitude = -740060152, # convert_coordinates(location.longitude),
+            latitude = lat,
+            longitude = lon,
             time_ping = int(time()),
             admin = await HelperActions.get_admin(new_user_data)
             #time_birthday=  UsersActions.getTimeFromBday(employee_data['hire_date'] or employee_data['Hire Date']),
