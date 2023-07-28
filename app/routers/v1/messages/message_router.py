@@ -4,9 +4,11 @@ from app.routers.v1.pagination import Page
 from app.models.messages import MessageCreate, MessageUpdate, MessageModel, MessageSend
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.programs.program_event_router import ProgramEventRouter
 from app.utilities.auth.auth_handler import Permissions
 
-router = APIRouter(tags=["Messages"])
+router = APIRouter(tags=["Messages"], route_class=ProgramEventRouter)
+#router.route_class.event_type = 3
 
 @router.get("/messages")
 async def get_messages(

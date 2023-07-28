@@ -31,7 +31,7 @@ async def get_segments(
     return await SegmentActions.get_all_segments(path_params, query_params)
 
 
-@router.get("/segments/{segment_9char}", response_model=SegmentModel)
+@router.get("/segments/{segment_9char}", response_model=SegmentModelDB)
 async def get_segment(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params),
@@ -40,7 +40,7 @@ async def get_segment(
     return await SegmentActions.get_segment(path_params)
 
 
-@router.post("/segments", response_model=(list[SegmentModel] | SegmentModel))
+@router.post("/segments", response_model=(list[SegmentModelDB] | SegmentModelDB))
 async def create_segment(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     segments: (list[SegmentCreate] | SegmentCreate),
@@ -50,7 +50,7 @@ async def create_segment(
     return await SegmentActions.create_segment(segments, path_params)
 
 
-@router.put("/segments/{segment_9char}", response_model=SegmentModel)
+@router.put("/segments/{segment_9char}", response_model=SegmentModelDB)
 async def update_segment(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     segment_updates: SegmentUpdate,

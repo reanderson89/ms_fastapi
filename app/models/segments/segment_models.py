@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
-class SegmentModel(Base):
+class SegmentModelDB(Base):
     __tablename__ = "program_segment"
 
     uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
@@ -17,10 +17,10 @@ class SegmentModel(Base):
     time_updated: Mapped[int] = mapped_column(default=None)
 
 class SegmentReturn(BasePydantic):
-    uuid: str 
-    client_uuid: str 
-    program_9char: str 
-    segment_9char: str 
+    uuid: str
+    client_uuid: str
+    program_9char: str
+    segment_9char: str
     budget_9char: Optional[str] = None
     name: Optional[str] = None
     description: Optional[str] = None

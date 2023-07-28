@@ -5,13 +5,15 @@ from app.routers.v1.dependencies import default_query_params
 from app.actions.clients.budgets import ClientBudgetActions
 from app.models.clients import ClientBudgetModelDB, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetModel
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from app.routers.v1.programs.program_event_router import ProgramEventRouter
 
-router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"])
+router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"], route_class=ProgramEventRouter)
+router.route_class.event_type = 4
 
 @router.get("/budgets")
 async def get_budgets(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-    client_uuid: str, 
+    client_uuid: str,
     query_params=Depends(default_query_params)
 ) -> Page[ClientBudgetModel]:
     await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
@@ -30,7 +32,8 @@ async def get_budget(
 async def create_budget(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         client_uuid: str,
-        new_budget: ClientBudgetCreate):
+        new_budget: ClientBudgetCreate
+        ):
     await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
     return await ClientBudgetActions.create_budget(new_budget, client_uuid)
 
@@ -39,7 +42,8 @@ async def update_budget(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         budget_9char: str,
         client_uuid: str,
-        budget_updates: ClientBudgetUpdate):
+        budget_updates: ClientBudgetUpdate
+        ):
     await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
     return await ClientBudgetActions.update_budget(budget_updates, budget_9char, client_uuid)
 
@@ -48,6 +52,7 @@ async def update_budget(
 async def delete_budget(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         budget_9char: str,
-        client_uuid: str):
+        client_uuid: str
+        ):
     await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
     return await ClientBudgetActions.delete_budget(budget_9char, client_uuid)

@@ -2,6 +2,13 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
+program_types = {
+    1: "award",
+    2: "approval",
+    3: "notification",
+    4: "budget"
+}
+
 
 class ProgramEventModelDB(Base):
     __tablename__ = "program_event"

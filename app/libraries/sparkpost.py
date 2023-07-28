@@ -28,9 +28,6 @@ async def send_auth_email(user_service: UserServiceModelDB):
     return response
 
 async def send_message_email(message_details: dict, recipient: UserBase, recipient_email: str):
-    print("\n\n\n", message_details, "\n\n\n")
-    print("\n\n\n", recipient, "\n\n\n")
-    print("\n\n\n", recipient_email, "\n\n\n")
     response = sp.transmissions.send(
         use_sandbox=False,
         recipients=[recipient_email],

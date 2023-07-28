@@ -5,7 +5,7 @@ from app.models.programs import ProgramModelDB
 from app.models.clients import ClientUserModelDB
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_event_models import ProgramEventModelDB
-from app.models.segments.segment_models import SegmentModel
+from app.models.segments.segment_models import SegmentModelDB
 from app.actions.base_actions import BaseActions
 
 
@@ -129,10 +129,10 @@ class ProgramActions:
     @classmethod
     async def check_for_program_segment(cls, path_params):
         return await BaseActions.check_if_one_exists(
-            SegmentModel,
+            SegmentModelDB,
             [
-                SegmentModel.client_uuid == path_params["client_uuid"],
-                SegmentModel.program_9char == path_params["program_9char"]
+                SegmentModelDB.client_uuid == path_params["client_uuid"],
+                SegmentModelDB.program_9char == path_params["program_9char"]
             ]
         )
 

@@ -1,5 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from app.actions.programs.events.program_event_actions import ProgramEventActions
+from app.models.programs.program_event_models import ProgramEventReturn
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.models.clients import ClientModelDB, ClientUpdate, ClientCreate, ClientModel
@@ -52,3 +54,10 @@ async def delete_client_by_uuid(
     await check_jwt_client_with_client(client_uuid_jwt, client_uuid)
     #TODO: add check to see if there is anything else associated with the client
     return await ClientActions.delete_client(client_uuid)
+
+@router.get("/clients/{client_uuid}/events")
+async def get_all_client_events(
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    query_params: dict = Depends(default_query_params)
+) -> Page[ProgramEventReturn]:
+    return await ProgramEventActions.get_all_client_events(client_uuid, query_params)
