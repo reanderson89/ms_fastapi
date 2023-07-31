@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.models.segments import SegmentModel, SegmentUpdate, SegmentCreate, SegmentReturn
+from app.models.segments import SegmentModelDB, SegmentUpdate, SegmentCreate, SegmentReturn
 from app.actions.segments import SegmentActions
 
 

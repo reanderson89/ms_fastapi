@@ -1,6 +1,7 @@
+import json
 from app.actions.awards.awards_actions import AwardActions
-from app.actions.base_actions import BaseActions
 from app.actions.clients.client_actions import ClientActions
+from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.clients.client_user_models import ClientUserModelDB
 from app.models.programs import ProgramModelDB
@@ -209,3 +210,26 @@ class MessageActions:
             )
 
         return recipient_list
+
+
+
+class ClientMessageEventActions:
+
+    async def create_program_event(new_event, request, response):
+        event_data = json.loads(new_event.event_data)
+        if request.method == "DELETE":
+            event_data = event_data['Deleted']
+        elif request.method == "POST" and "/send" in request.url.path: #sent messages
+            message_9char = request.path_params['message_9char']
+            message = await MessageActions.get_one(message_9char)
+            new_event.program_9char = message.program_9char if message.program_9char else "system"
+            new_event.segment_9char = message.segment_9char if message.segment_9char else None
+            new_event.program_uuid = await MessageActions.get_program_uuid(message.program_9char) if message.program_9char else "system"
+            new_event.client_uuid = json.loads(request._body.decode("utf-8"))['client_uuid']
+            return new_event
+
+        new_event.client_uuid = event_data['client_uuid'] if new_event.client_uuid == None else new_event.client_uuid
+        new_event.program_9char = event_data['program_9char'] if event_data['program_9char'] else "system"
+        new_event.program_uuid = await MessageActions.get_program_uuid(new_event.program_9char) if new_event.program_9char else "system"
+        new_event.segment_9char = event_data['segment_9char'] if event_data['segment_9char'] else None
+        return new_event

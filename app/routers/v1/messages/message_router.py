@@ -1,14 +1,30 @@
 from fastapi import APIRouter, Depends
-from typing import Union, Annotated
+from fastapi.routing import APIRoute
+from typing import Union, Annotated, Callable
+from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.routers.v1.pagination import Page
 from app.models.messages import MessageCreate, MessageUpdate, MessageModel, MessageSend
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
-from app.routers.v1.programs.program_event_router import ProgramEventRouter
 from app.utilities.auth.auth_handler import Permissions
 
-router = APIRouter(tags=["Messages"], route_class=ProgramEventRouter)
-#router.route_class.event_type = 3
+class MessageEventRouter(APIRoute):
+
+    event_type = 3
+
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_handler()
+
+        async def custom_route_handler(request):
+            response = await original_route_handler(request)
+            if response.status_code == 200 and request.method in ['POST', 'PUT', 'DELETE']:
+                await ProgramEventActions.create_event_from_route(self, request, response)
+            return response
+
+        return custom_route_handler
+
+
+router = APIRouter(tags=["Messages"], route_class=MessageEventRouter)
 
 @router.get("/messages")
 async def get_messages(

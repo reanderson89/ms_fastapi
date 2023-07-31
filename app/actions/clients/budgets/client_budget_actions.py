@@ -215,7 +215,7 @@ class ClientBudgetEventActions:
             else:
                 budget_9char = event_data['budget_9char']
         elif request.method == "DELETE":
-            budget_9char = event_data['updated']['budget_9char']
+            budget_9char = event_data['Deleted']['budget_9char']
         else: #created budgets
             budget_9char = event_data['budget_9char']
 

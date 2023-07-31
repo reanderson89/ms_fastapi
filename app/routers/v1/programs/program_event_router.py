@@ -10,7 +10,7 @@ from fastapi.routing import APIRoute
 
 class ProgramEventRouter(APIRoute):
 
-    event_type: int = None
+    event_type: int
 
     def get_route_handler(self) -> Callable:
         original_route_handler = super().get_route_handler()

@@ -1,14 +1,29 @@
-from typing import Optional, Annotated
+from typing import Optional, Annotated, Callable
 from fastapi import APIRouter, Depends
+from fastapi.routing import APIRoute
+from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.actions.clients.budgets import ClientBudgetActions
 from app.models.clients import ClientBudgetModelDB, ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetModel
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
-from app.routers.v1.programs.program_event_router import ProgramEventRouter
 
-router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"], route_class=ProgramEventRouter)
-router.route_class.event_type = 4
+class BudgetEventRouter(APIRoute):
+
+    event_type = 4
+
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_handler()
+
+        async def custom_route_handler(request):
+            response = await original_route_handler(request)
+            if response.status_code == 200 and request.method in ['POST', 'PUT', 'DELETE']:
+                await ProgramEventActions.create_event_from_route(self, request, response)
+            return response
+
+        return custom_route_handler
+
+router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Budgets"], route_class=BudgetEventRouter)
 
 @router.get("/budgets")
 async def get_budgets(

@@ -5,8 +5,7 @@ from app.models.programs.program_models import ProgramModelDB
 from app.models.programs.program_event_models import ProgramEventModelDB
 from app.utilities import SHA224Hash
 from app.actions.helper_actions import HelperActions
-from app.actions.programs.program_actions import ProgramActions
-from app.actions.segments.segment_actions import SegmentActions
+from app.actions.messages.message_actions import ClientMessageEventActions
 from app.actions.clients.budgets import ClientBudgetEventActions
 
 class ProgramEventActions:
@@ -24,14 +23,14 @@ class ProgramEventActions:
         new_event = await {
             #1: AwardActions.create_program_event,
             #2: SegmentActions.create_program_event,
-            #3: MessageActions.create_program_event,
+            3: ClientMessageEventActions.create_program_event,
             4: ClientBudgetEventActions.create_program_event
         }[new_event.event_type](new_event, request, response)
 
-        new_event.event_data = str({
+        new_event.event_data = json.dumps({
             "request_url": request.url.path,
             "request_method": request.method,
-            "request_body": json.dumps(json.loads(request._body.decode("utf-8"))), #double json. to remove the escape characters and save as a str
+            "request_body": json.dumps(json.loads(request._body.decode("utf-8"))) if '_body' in request.__dict__ else None, #double json. to remove the escape characters and save as a str
             "response_status": response.status_code,
             "response_body": response.body.decode("utf-8")
         })

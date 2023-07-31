@@ -2,10 +2,10 @@ from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
-program_types = {
-    1: "award",
-    2: "approval",
-    3: "notification",
+event_types = {
+    1: "award", #creating, updating, deleting custom awards
+    2: "approval", #decision gate on whether an award can be sent
+    3: "notification", #messages
     4: "budget"
 }
 
@@ -44,7 +44,6 @@ class ProgramEventUpdate(BasePydantic):
     event_type: Optional[int] = None
     event_data: Optional[str] = None
     status: Optional[int] = None
-
 
 class ProgramEventCreate(BasePydantic):
     event_type: Optional[int] = None
