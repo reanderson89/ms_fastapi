@@ -7,6 +7,7 @@ from app.utilities import SHA224Hash
 from app.actions.helper_actions import HelperActions
 from app.actions.messages.message_actions import ClientMessageEventActions
 from app.actions.clients.budgets import ClientBudgetEventActions
+from app.actions.clients.awards.client_award_actions import AwardEventActions
 
 class ProgramEventActions:
 
@@ -21,7 +22,7 @@ class ProgramEventActions:
             status = response.status_code,
         )
         new_event = await {
-            #1: AwardActions.create_program_event,
+            1: AwardEventActions.create_program_event,
             #2: SegmentActions.create_program_event,
             3: ClientMessageEventActions.create_program_event,
             4: ClientBudgetEventActions.create_program_event

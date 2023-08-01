@@ -114,3 +114,9 @@ class ClientAwardActions:
                 ClientAwardModelDB.client_uuid == client_uuid
             ]
         )
+
+class AwardEventActions:
+
+    async def create_program_event(new_event, request, response):
+        return new_event
+        #currently no method to retrieve the program_9char, program_uuid, and segment_9char from client_awards

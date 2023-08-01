@@ -1,16 +1,12 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.actions.awards import AwardActions
 from app.models.award import AwardModelDB, AwardUpdate, AwardModel
-from app.routers.v1.programs.program_event_router import ProgramEventRouter
 from app.utilities.auth.auth_handler import Permissions
 from app.models.uploads import UploadType
 
-router = APIRouter(tags=["Awards"], route_class=ProgramEventRouter)
-router.route_class.event_type = 1
-
+router = APIRouter(tags=["Awards"])
 
 @router.get("/awards")
 async def get_all_awards(

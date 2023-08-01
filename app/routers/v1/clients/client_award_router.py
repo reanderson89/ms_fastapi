@@ -1,14 +1,30 @@
-from typing import Annotated
-
+from typing import Annotated, Callable
 from fastapi import APIRouter, Depends
+from fastapi.routing import APIRoute
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params, verify_client_award
 from app.actions.clients.awards.client_award_actions import ClientAwardActions
+from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.models.clients import ClientAwardModelDB, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 from app.models.uploads import UploadType
 
-router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"])
+class AwardEventRouter(APIRoute):
+
+    event_type = 1
+
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_handler()
+
+        async def custom_route_handler(request):
+            response = await original_route_handler(request)
+            if response.status_code == 200 and request.method in ['POST', 'PUT', 'DELETE']:
+                await ProgramEventActions.create_event_from_route(self, request, response)
+            return response
+
+        return custom_route_handler
+
+router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Awards"], route_class=AwardEventRouter)
 
 
 @router.get("/awards")
