@@ -10,6 +10,21 @@ os.environ["TEST_MODE"] = "True"
 from app.main import app
 
 
+def delete_budget(test_app, budget):
+    response = test_app.delete(f"/v1/clients/{budget['client_uuid']}/budgets/{budget['budget_9char']}")
+    assert response.status_code == 200
+    try:
+        response = response.json()
+        assert response["ok"] == True
+        assert response["Deleted"]["uuid"] == budget["uuid"]
+        assert response["Deleted"]["budget_9char"] == budget["budget_9char"]
+    except TypeError:
+        response = response[0]
+        assert response["ok"] == True
+        assert response["Deleted"]["uuid"] == budget["uuid"]
+        assert response["Deleted"]["budget_9char"] == budget["budget_9char"]
+
+
 def delete_user(test_app: TestClient, user_uuid: str, service_uuid: str):
 	try:
 		service_response = test_app.delete(f"/v1/users/{user_uuid}/services/{service_uuid}")
@@ -26,11 +41,10 @@ def delete_user(test_app: TestClient, user_uuid: str, service_uuid: str):
 			assert user_response.status_code == 200
 
 
-
 @pytest.fixture(scope="module")
 def test_app():
-	client = TestClient(app)
-	yield client
+    client = TestClient(app)
+    yield client
 
 
 @pytest.fixture(scope="module")

@@ -215,7 +215,10 @@ class ClientBudgetEventActions:
             else:
                 budget_9char = event_data['budget_9char']
         elif request.method == "DELETE":
-            budget_9char = event_data['Deleted']['budget_9char']
+            try:
+                budget_9char = event_data['Deleted']['budget_9char']
+            except TypeError:
+                budget_9char = event_data[0]['Deleted']['budget_9char']
         else: #created budgets
             budget_9char = event_data['budget_9char']
 

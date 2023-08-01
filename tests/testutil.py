@@ -198,6 +198,72 @@ update_segment_award = {
     "hero_image": None
 }
 
+new_static_budget = {
+    "name": "static Budget pytest",
+    "value": 1000,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 0
+}
+
+update_static_budget = {
+    "name": "UPDATED static Budget pytest",
+    "value": 500,
+    "parent_9char": None,
+    "budget_type": 0,
+    "active": "True"
+}
+
+# check if you need this, or if you can just use "new_static_budget"
+new_parent_static_budget = {
+    "name": "parent static Budget pytest",
+    "value": 500,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 0
+}
+
+# check if you need this, or if you can just use "new_static_budget"
+new_sub_static_budget = {
+    "name": "sub static Budget pytest",
+    "value": 1000,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 0
+}
+
+new_parent_budget_no_cap = {
+    "name": "Parent Budget pytest with no cap",
+    "value": 0,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 1
+}
+
+new_parent_budget_cap = {
+    "name": "Parent Budget pytest with cap",
+    "value": 2000,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 2
+}
+
+new_sub_budget_no_cap = {
+    "name": "sub Budget pytest with no cap",
+    "value": 0,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 1
+}
+
+new_sub_budget_cap = {
+    "name": "sub Budget pytest with cap",
+    "value": 2000,
+    "parent_9char": None,
+    "active": "True",
+    "budget_type": 2
+}
+
 new_program_rule = {
     "rule_type": 0,
     "status": 0,
