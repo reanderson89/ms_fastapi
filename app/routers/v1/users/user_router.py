@@ -25,17 +25,18 @@ async def get_users(
 async def get_user(
         client_uuid: Annotated[str, Depends(Permissions(level="1"))],
         user_uuid: str,
-        expand_services: bool = False,
+        expand_services: bool = False
 ):
     return await UserActions.get_user(user_uuid, expand_services)
 
 
-@router.post("/users", response_model=UserModelDB)
+@router.post("/users")
 async def create_user(
         client_uuid: Annotated[str, Depends(Permissions(level="1"))],
-        users: dict
+        users: list|dict,
+        expand_services: bool = False
 ):
-    return await UserActions.create_user(users)
+    return await UserActions.create_user(users, expand_services)
 
 
 @router.put("/users/{user_uuid}", response_model=UserModelDB)

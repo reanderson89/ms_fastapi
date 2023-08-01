@@ -1,6 +1,7 @@
 import pycountry
 import requests
 from time import time
+from datetime import datetime
 from collections import namedtuple
 from app.utilities import PositiveNumbers
 
@@ -14,6 +15,21 @@ def new_9char():
     uuid_time = int(str(time()).replace(".", "")[:16])
     char_9 = generator.encode(uuid_time)
     return char_9
+
+
+def convert_date_to_int(date):
+    if date is None:
+        return None
+    if isinstance(date, int):
+        return date
+    try:
+        date_obj = datetime.strptime(date, "%m/%d/%Y")
+    except ValueError:
+        date_obj = datetime.strptime(date, "%m/%d/%y")
+    if date_obj:
+        epoch_time = int(date_obj.timestamp())
+        return epoch_time
+    return None
 
 
 def degrees_to_microdegrees(degrees: float):
@@ -163,6 +179,18 @@ def query_location(location_param, lat = None, lon = None):
     else:
         return None
     return requests.get(url, headers=headers, timeout=5)
+
+
+async def get_location_coord(location: str):
+    if location is None:
+        return None, None
+    location_data = await get_location_data(location)
+    if location_data:
+        lat = convert_coordinates(getattr(location_data, "lat", None))
+        lon = convert_coordinates(getattr(location_data, "lon", None))
+        return lat, lon
+    return None, None
+
 
 
 def get_location_data(location: str = None, lat = None, lon = None):

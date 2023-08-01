@@ -7,10 +7,10 @@ from app.actions.base_actions import BaseActions
 class UserServiceActions(BaseActions):
 
     @classmethod
-    async def check_existing(cls, item:UserServiceCreate):
-        id = item.service_user_id
+    async def check_existing(cls, service:UserServiceCreate):
+        id = service.service_user_id
 
-        service = await cls.check_if_exists(
+        service_obj = await cls.check_if_exists(
             UserServiceModelDB,
             [
             UserServiceModelDB.service_user_id == id,
@@ -18,11 +18,11 @@ class UserServiceActions(BaseActions):
             ]
         )
 
-        if service:
-            existing_service = ServiceStatus.from_orm(service)
+        if service_obj:
+            existing_service = ServiceStatus.from_orm(service_obj)
             existing_service.status = "exists"
             return existing_service
-        return item
+        return service
 
     @classmethod
     async def create_service_for_new_user(cls, user_obj, service_id: namedtuple):

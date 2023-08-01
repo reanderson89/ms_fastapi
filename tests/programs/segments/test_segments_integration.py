@@ -1,58 +1,38 @@
-import pytest
-import httpx
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routers.v1.segments.segment_router import router as segments_router
-
-app = FastAPI()
-app.include_router(segments_router)
-client = TestClient(app)
+import tests.testutil as utils
 
 
-@pytest.mark.asyncio
-async def test_integration_create_segment():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/segments")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Created segment"}
+def test_get_all_segments(test_app: TestClient, segment: dict):
+	response = test_app.get(f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments")
+	assert response.status_code == 200
+	assert response.json()["items"][0]["name"] == segment["name"]
 
-@pytest.mark.asyncio
-async def test_integration_get_segments():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/segments")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Got all segments"}
 
-@pytest.mark.asyncio
-async def test_integration_get_segment():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Got segments for {segment_9char}"}
+def test_get_segment(test_app: TestClient, segment: dict):
+	response = test_app.get(
+		f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}"
+	)
+	assert response.status_code == 200
+	assert response.json()["name"] == segment["name"]
 
-@pytest.mark.asyncio
-async def test_integration_update_segment():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated segment for {segment_9char}"}
 
-@pytest.mark.asyncio
-async def test_integration_delete_segment():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	segment_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.delete(f"clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Deleted segment for {segment_9char}"}
+def test_create_segment(segment: dict):
+	assert "uuid" in segment
+	assert segment["name"] == utils.new_program_segment["name"]
+
+
+def test_update_segment(test_app: TestClient, segment: dict):
+	response = test_app.put(
+		f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}",
+		json = utils.update_program_segment
+	)
+	assert response.status_code == 200
+	assert response.json()["name"] == utils.update_program_segment["name"]
+
+
+def test_delete_segment(test_app: TestClient, segment: dict):
+	response = test_app.delete(
+		f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}"
+	)
+	assert response.status_code == 200
+	assert response.json()["ok"] == True

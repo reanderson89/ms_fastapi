@@ -56,8 +56,8 @@ class ClientUserUpdate(BasePydantic):
     department: Optional[str] = None
     active: Optional[bool] = None
     admin: Optional[int] = None
-    
-    
+
+
 class ClientUserExpand(ClientUserModel):
     user: Optional[UserBase]
-    user_service: Optional[dict]
+    # user_service: Optional[dict]

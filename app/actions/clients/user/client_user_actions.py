@@ -1,7 +1,8 @@
+from app.actions.utils import convert_date_to_int
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.actions.users import UserActions
-from app.models.clients import ClientUserModelDB, ClientUserExpand 
+from app.models.clients import ClientUserModelDB, ClientUserExpand
 from app.models.users import UserModelDB, UserServiceModelDB
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
@@ -9,14 +10,15 @@ from app.utilities import SHA224Hash
 class ClientUserActions:
 
     @staticmethod
-    async def get_client_user_by_user_uuid(uuid: str):
+    async def get_client_user_by_user_uuid(client_uuid: str, user_uuid: str):
         return await BaseActions.check_if_exists(
             ClientUserModelDB,
             [
-                ClientUserModelDB.user_uuid == uuid
+                ClientUserModelDB.client_uuid == client_uuid,
+                ClientUserModelDB.user_uuid == user_uuid
             ]
         )
-    
+
     @staticmethod
     async def expand_client_user(client_user, user):
         client_user_expanded = ClientUserExpand.from_orm(client_user)
@@ -24,7 +26,7 @@ class ClientUserActions:
         return client_user_expanded
 
     @classmethod
-    async def create_client_user(cls, data: dict, path_params: dict, expand: bool = False):
+    async def create_client_user(cls, data: dict, path_params: dict, expand: bool = True):
         service_id = ["work_email", "personal_email", "cell_phone", "email_address"]
         user_objs = []
         client_user_objs = []
@@ -46,49 +48,62 @@ class ClientUserActions:
         if len(client_user_obj) > 1:
             raise ValueError("Multiple client user objects returned for different service IDs")
 
-        new_client_user = await cls.add_new_client_user(
+        client_user = await cls.add_new_client_user(
                 data, path_params, user_objs[0]
             ) if not client_user_objs else client_user_objs[0]
-        return new_client_user
+        return client_user
 
     @classmethod
     async def handle_user_and_service(cls, data: dict, path_params, expand, service_id = None):
         user = None
+        service = data.get(service_id) if service_id in data.keys() else None
         if service_id not in data.keys() and "user_uuid" not in data.keys():
-            return await ExceptionHandling.custom500("Not enough information to create a new Client User. Please include either email address or the user_uuid.")
-        if service_id in data.keys():
+            return await ExceptionHandling.custom500(
+                "Not enough information to create a new Client User. Please include either email address or the user_uuid."
+            )
+        if "user_uuid" in data.keys():
+            user = await BaseActions.check_if_exists(
+                UserModelDB,
+                [
+                    UserModelDB.uuid == data.get("user_uuid")
+                ])
+        elif service_id in data.keys():
             user = await BaseActions.check_if_exists(
                 UserModelDB,
                 [
                     UserServiceModelDB.service_user_id == data.get(service_id),
-                    UserModelDB.uuid == UserServiceModelDB.user_uuid
+                    UserModelDB.uuid == UserServiceModelDB.user_uuid,
+                    UserModelDB.first_name == data.get("first_name"),
+                    UserModelDB.last_name == data.get("last_name")
                 ])
 
-        if "user_uuid" in data.keys() or user is not None:
-            uuid = user.uuid if user is not None else data["user_uuid"]
-            client_user = await cls.get_client_user_by_user_uuid(uuid)
-            if client_user and expand:
-                return await cls.expand_client_user(client_user, user)
-            return client_user
+        if user:
+            uuid = user.uuid
+            client_user = await cls.get_client_user_by_user_uuid(path_params["client_uuid"], uuid)
+            if client_user:
+                if expand:
+                    return await cls.expand_client_user(client_user, user)
+                return client_user
 
-        if not user and service_id in data.keys():
+        if service and not user:
             admin = data.setdefault("admin", 0)
             if admin not in [0,1,2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
             user = await UserActions.create_user_and_service(data, service_id)
 
-        if not user and service_id not in data.keys() and "user_uuid" not in data.keys():
-            return await ExceptionHandling.custom409("Not enough information to create a new Client User, User, and Service User. Please include an email address.")
+        if not user and not service:
+            return await ExceptionHandling.custom409(
+                "Not enough information to create a new Client User, User, and Service User. Please include an email address."
+            )
 
         return user
 
     @classmethod
-    async def add_new_client_user(cls, data: dict, path_params: dict, user):
+    async def add_new_client_user(cls, data: dict, path_params: dict, user, expand: bool = False):
         # Check if client user already exists
-        client_user = await cls.get_client_user_by_user_uuid(user.uuid)
-        
+        client_user = await cls.get_client_user_by_user_uuid(user.uuid, user.uuid)
+
         if not client_user:
-            # Create new client user object
             client_user_obj = ClientUserModelDB(
                 uuid=SHA224Hash(),
                 user_uuid=user.uuid,
@@ -98,12 +113,11 @@ class ClientUserActions:
                 title=await HelperActions.get_title(data),
                 department=await HelperActions.get_department(data),
                 active=await HelperActions.get_active(data) if "active" in data.keys() else 1,
-                time_hire=data.get('time_hire'),
-                time_start=data.get('time_start'),
+                time_hire=convert_date_to_int(data.get('time_hire')),
+                time_start=convert_date_to_int(data.get('time_start')),
                 admin=await HelperActions.get_admin(data),
             )
 
-            # Save client user object to database
             client_user = await BaseActions.create(client_user_obj)
         return await cls.expand_client_user(client_user, user)
 
@@ -158,7 +172,7 @@ class ClientUserActions:
             user_updates,
             uuid_list
         )
-    
+
     @staticmethod
     async def update_admin_client_user(path_params: dict, user_updates):
         if path_params.get("client_uuid") is None:
@@ -168,7 +182,7 @@ class ClientUserActions:
                 ClientUserModelDB.client_uuid == path_params['client_uuid'],
                 ClientUserModelDB.user_uuid == path_params['user_uuid']
             ]
-        
+
         return await BaseActions.update(
             ClientUserModelDB,
             conditions,

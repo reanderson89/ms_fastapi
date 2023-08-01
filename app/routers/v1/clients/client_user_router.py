@@ -37,7 +37,7 @@ async def get_user(
     return await ClientUserActions.get_user(path_params)
 
 
-@router.post("/users", response_model=(list[ClientUserModelDB] | ClientUserModelDB))
+@router.post("/users")
 async def create_user(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         users: (list[dict] | dict),

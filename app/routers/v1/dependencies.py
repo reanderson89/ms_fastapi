@@ -16,6 +16,7 @@ class SortOrder(str, Enum):
     def __str__(self):
         return self.value
 
+
 def default_query_params(
         order_by: Optional[str] = "time_created",
         sort: SortOrder = Query(default = SortOrder.DESC)

@@ -16,10 +16,10 @@ class UserModelDB(Base):
     time_ping: Mapped[int] = mapped_column(default=None)
     time_birthday: Mapped[int] = mapped_column(default=None)
     admin: Mapped[int] = mapped_column(default=0)
-    # Not part of v1.0, but may be added in future iteration.
+    # TODO: Not part of v1.0, but may be added in future iteration.
     # Just a standin for now.
     # client_uuid_list: Mapped[str] = mapped_column(default=None)
-    
+
 
 class UserBase(BasePydantic):
     uuid: Optional[str]
@@ -42,8 +42,8 @@ class UserUpdate(BasePydantic):
     longitude: Optional[int]
     time_birthday: Optional[int]
     admin: Optional[int]
-    
-    
+
+
 # class UserAdminUpdate(BasePydantic):
 #   client_uuid_list: Optional[list]
 
