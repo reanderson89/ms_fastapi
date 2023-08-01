@@ -98,17 +98,6 @@ class ProgramRuleActions:
         )
 
     @classmethod
-    async def check_if_rule_exists(cls, path_params):
-        return await BaseActions.check_if_exists(
-            ProgramRuleModelDB,
-            [
-                ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
-                ProgramRuleModelDB.program_9char == path_params["program_9char"],
-                ProgramRuleModelDB.client_uuid == path_params["client_uuid"]
-            ]
-        )
-
-    @classmethod
     async def check_if_rule_exists(cls, path_params: dict, rule_logic: dict, error: bool = False):
         rule = await BaseActions.check_if_exists(
             ProgramRuleModelDB,
