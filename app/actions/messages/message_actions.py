@@ -86,10 +86,11 @@ class MessageActions:
         )
 
     @staticmethod
-    async def get_program_uuid(program_9char: str):
+    async def get_program_uuid(program_9char: str, check404: bool = True):
         return await BaseActions.get_one_where(
             ProgramModelDB.uuid,
-            [ProgramModelDB.program_9char == program_9char]
+            [ProgramModelDB.program_9char == program_9char],
+            check404
         )
 
     @staticmethod
@@ -230,6 +231,6 @@ class ClientMessageEventActions:
 
         new_event.client_uuid = event_data['client_uuid'] if new_event.client_uuid == None else new_event.client_uuid
         new_event.program_9char = event_data['program_9char'] if event_data['program_9char'] else "system"
-        new_event.program_uuid = await MessageActions.get_program_uuid(new_event.program_9char) if new_event.program_9char else "system"
+        new_event.program_uuid = await MessageActions.get_program_uuid(new_event.program_9char, False) if new_event.program_9char else "system"
         new_event.segment_9char = event_data['segment_9char'] if event_data['segment_9char'] else None
         return new_event
