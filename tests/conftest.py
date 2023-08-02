@@ -273,3 +273,114 @@ def segment_award(test_app: TestClient, segment, program_award):
 			test_app.delete(
 				f"/v1/clients/{segment_award['client_uuid']}/programs/{segment_award['program_9char']}/segments/{segment_award['segment_9char']}/awards/{segment_award['segment_award_9char']}"
 			)
+
+
+@pytest.fixture(scope="function")
+def static_budget(test_app, client):
+    try:
+        static_budget = test_app.post(f"/v1/clients/{client['uuid']}/budgets", json=util.new_static_budget)
+        static_budget = static_budget.json()
+        yield static_budget
+    except: 
+        raise Exception("client static budget Creation Failed")
+    finally:
+        if static_budget is not None:
+            delete_budget(test_app, static_budget)
+
+
+@pytest.fixture(scope="function")
+def parent_static_budget(test_app, static_budget):
+    try:
+        util.new_parent_static_budget["parent_9char"] = static_budget["budget_9char"]
+        parent_static_budget = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_static_budget)
+        parent_static_budget = parent_static_budget.json()
+        yield parent_static_budget
+    except: 
+        raise Exception("client Parent Budget Creation Failed")
+    finally:
+        if parent_static_budget is not None:
+            delete_budget(test_app, parent_static_budget)
+
+
+@pytest.fixture(scope="function")
+def parent_budget_no_cap(test_app, static_budget):
+    try:
+        util.new_parent_budget_no_cap["parent_9char"] = static_budget["budget_9char"]
+        parent_budget_no_cap = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_budget_no_cap)
+        parent_budget_no_cap = parent_budget_no_cap.json()
+        yield parent_budget_no_cap
+    except: 
+        raise Exception("client Sub Budget Creation Failed")
+    finally:
+        if parent_budget_no_cap is not None:
+            delete_budget(test_app, parent_budget_no_cap)
+
+
+@pytest.fixture(scope="function")
+def parent_budget_cap(test_app, static_budget):
+    try:
+        util.new_parent_budget_cap["parent_9char"] = static_budget["budget_9char"]
+        parent_budget_cap = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_budget_cap)
+        parent_budget_cap = parent_budget_cap.json()
+        yield parent_budget_cap
+    except: 
+        raise Exception("client Sub Budget Creation Failed")
+    finally:
+        if parent_budget_cap is not None:
+            delete_budget(test_app, parent_budget_cap)
+
+
+@pytest.fixture(scope="function")
+def sub_budget_cap_from_parent_with_cap(test_app, parent_budget_cap):
+    try:
+        util.new_sub_budget_cap["parent_9char"] = parent_budget_cap["budget_9char"]
+        sub_budget_cap = test_app.post(f"/v1/clients/{parent_budget_cap['client_uuid']}/budgets", json=util.new_sub_budget_cap)
+        sub_budget_cap = sub_budget_cap.json()
+        yield sub_budget_cap
+    except: 
+        raise Exception("Client Sub Budget Creation Failed")
+    finally:
+        if sub_budget_cap is not None:
+            delete_budget(test_app, sub_budget_cap)
+
+
+@pytest.fixture(scope="function")
+def sub_budget_cap_from_parent_no_cap(test_app, parent_budget_no_cap):
+    try:
+        util.new_sub_budget_cap["parent_9char"] = parent_budget_no_cap["budget_9char"]
+        sub_budget_cap = test_app.post(f"/v1/clients/{parent_budget_no_cap['client_uuid']}/budgets", json=util.new_sub_budget_cap)
+        sub_budget_cap = sub_budget_cap.json()
+        yield sub_budget_cap
+    except: 
+        raise Exception("Client Sub Budget Creation Failed")
+    finally:
+        if sub_budget_cap is not None:
+            delete_budget(test_app, sub_budget_cap)
+
+
+@pytest.fixture(scope="function")
+def sub_budget_no_cap_from_parent_with_cap(test_app, parent_budget_cap):
+    try:
+        util.new_sub_budget_no_cap["parent_9char"] = parent_budget_cap["budget_9char"]
+        sub_budget_no_cap = test_app.post(f"/v1/clients/{parent_budget_cap['client_uuid']}/budgets", json=util.new_sub_budget_no_cap)
+        sub_budget_no_cap = sub_budget_no_cap.json()
+        yield sub_budget_no_cap
+    except: 
+        raise Exception("Client Sub Budget Creation Failed")
+    finally:
+        if sub_budget_no_cap is not None:
+            delete_budget(test_app, sub_budget_no_cap)
+
+
+@pytest.fixture(scope="function")
+def sub_budget_no_cap_from_parent_no_cap(test_app, parent_budget_no_cap):
+    try:
+        util.new_sub_budget_no_cap["parent_9char"] = parent_budget_no_cap["budget_9char"]
+        sub_budget_no_cap = test_app.post(f"/v1/clients/{parent_budget_no_cap['client_uuid']}/budgets", json=util.new_sub_budget_no_cap)
+        sub_budget_no_cap = sub_budget_no_cap.json()
+        yield sub_budget_no_cap
+    except: 
+        raise Exception("Client Sub Budget Creation Failed")
+    finally:
+        if sub_budget_no_cap is not None:
+            delete_budget(test_app, sub_budget_no_cap)
