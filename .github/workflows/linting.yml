@@ -75,6 +75,18 @@ jobs:
           branch: ${{ github.head_ref }}
           force: true
 
+      - name: Echo job status
+        if: always()
+        run: |
+          echo "Job status is ${{ job.status }}"
+
+      - name: Update Github with job status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v2
+        with:
+          name: "Postman test results"
+          status: ${{ job.status }}
+
 #
 # test by adding an unused import
 #
@@ -90,3 +102,4 @@ jobs:
 #   This variable is only available when the workflow is triggered by a pull request event. It represents the head (source) branch of the pull request.
 #   For example, if a pull request is opened from a branch named feature/xyz to merge into main, then github.head_ref will have the value feature/xyz.
 #   If the workflow is not triggered by a pull request event, github.head_ref will be undefined, and you should handle this scenario in your workflow accordingly.
+#

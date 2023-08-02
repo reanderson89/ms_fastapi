@@ -47,7 +47,7 @@ jobs:
         run: |
           docker-compose down
 
-      - name: Echo job status
+      - name: Echo job status (debugging)
         if: always()
         run: |
           echo "Job status is ${{ job.status }}"
