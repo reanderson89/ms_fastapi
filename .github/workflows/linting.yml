@@ -75,7 +75,7 @@ jobs:
           branch: ${{ github.head_ref }}
           force: true
 
-      - name: Echo job status
+      - name: Echo job status (debugging)
         if: always()
         run: |
           echo "Job status is ${{ job.status }}"
