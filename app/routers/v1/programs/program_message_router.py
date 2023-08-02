@@ -5,8 +5,9 @@ from app.models.messages import MessageCreate, MessageUpdate, MessageModel, Mess
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
 from app.utilities.auth.auth_handler import Permissions
+from app.routers.v1.messages.message_router import MessageEventRouter
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Program Messages"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Program Messages"], route_class=MessageEventRouter)
 
 def path_params(client_uuid: str, program_9char: str):
     return {

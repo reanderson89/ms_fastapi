@@ -82,12 +82,12 @@ class SegmentActions:
         )
 
     @staticmethod
-    async def check_if_segment_exists( path_params, segment):
+    async def check_if_segment_exists(path_params, segment):
         return await BaseActions.check_if_exists(
             SegmentModelDB,
             [
-            SegmentModelDB.segment_9char == segment["name"],
-            SegmentModelDB.client_uuid == path_params["client_uuid"],
-            SegmentModelDB.program_9char == path_params["program_9char"]
+                SegmentModelDB.segment_9char == segment.name,
+                SegmentModelDB.client_uuid == path_params['client_uuid'],
+                SegmentModelDB.program_9char == path_params['program_9char']
             ]
         )

@@ -5,8 +5,9 @@ from app.models.messages import MessageCreate, MessageUpdate, MessageModel, Mess
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
 from app.utilities.auth.auth_handler import Permissions
+from app.routers.v1.programs.program_message_router import MessageEventRouter
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Segment Messages"])
+router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Segment Messages"], route_class=MessageEventRouter)
 
 def path_params(client_uuid: str, program_9char: str, segment_9char: str=None):
     return {
