@@ -1,5 +1,6 @@
 from app.actions.base_actions import BaseActions
 from app.models.clients import ClientModelDB, ClientUpdate
+from app.models.programs.program_event_models import ProgramEventModelDB
 from app.exceptions import ExceptionHandling
 
 class ClientActions:
@@ -81,4 +82,25 @@ class ClientActions:
         return await BaseActions.delete_one(
             ClientModelDB,
             [ClientModelDB.uuid == client_uuid]
+        )
+    
+    # These is for postman and pytest purposes only. Only accesible in those enviornments.
+    @staticmethod
+    async def delete_all_client_events(client_uuid: str):
+        return await BaseActions.delete_all(
+            ProgramEventModelDB,
+            [
+                ProgramEventModelDB.client_uuid == client_uuid
+            ]
+        )
+
+    
+    # this is only being used for postman/pytests through various checks
+    @staticmethod
+    async def delete_all_test_message_events(program_9char: str):
+        return await BaseActions.delete_all(
+            ProgramEventModelDB,
+            [
+                ProgramEventModelDB.program_9char == program_9char
+            ]
         )

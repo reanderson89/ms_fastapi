@@ -13,6 +13,7 @@ class MessageEventRouter(APIRoute):
     event_type = 3
 
     def get_route_handler(self) -> Callable:
+
         original_route_handler = super().get_route_handler()
 
         async def custom_route_handler(request):
@@ -45,7 +46,7 @@ async def get_message(
     return await MessageActions.get_one(message_9char)
 
 
-@router.post("/messages", response_model=list[dict]|dict)
+@router.post("/messages", response_model= list[dict]|dict)
 async def create_message(
         client_uuid: Annotated[str, Depends(Permissions(level="2"))],
         new_message_obj: Union[list[MessageCreate], MessageCreate]
@@ -87,3 +88,5 @@ async def delete_message(
         message_9char: str
 ):
     return await MessageActions.delete_message(message_9char)
+
+

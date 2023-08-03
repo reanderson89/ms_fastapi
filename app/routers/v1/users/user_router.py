@@ -1,14 +1,12 @@
-import os
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
-from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.dependencies import default_query_params, test_mode
 from app.actions.users import UserActions
 from app.models.users import UserModelDB, UserUpdate, UserBase
 from app.utilities.auth.auth_handler import Permissions
 
-test_mode = os.getenv("TEST_MODE", False)
 
 router = APIRouter(tags=["Users"])
 
@@ -54,16 +52,11 @@ async def delete_user(
     return await UserActions.delete_user(user_uuid)
 
 
-def test_mode():
-    from fastapi import HTTPException
-    if not test_mode:
-        raise HTTPException(status_code=404, detail="Not Found")
 
-
-@router.delete("/delete_test_user/{user_uuid}")
+@router.delete("/delete_test_user/{user_uuid}", dependencies=[Depends(test_mode)])
 async def delete_test_user(
         client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-        user_uuid: str, test_mode: None = Depends(test_mode)
+        user_uuid: str
 ):
     from fastapi import Response
     await UserActions.delete_test_user(user_uuid)

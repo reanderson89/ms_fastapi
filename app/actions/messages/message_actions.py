@@ -1,5 +1,6 @@
 import json
 from app.actions.awards.awards_actions import AwardActions
+from app.routers.v1.dependencies import is_test_mode
 from app.actions.clients.client_actions import ClientActions
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
@@ -233,4 +234,5 @@ class ClientMessageEventActions:
         new_event.program_9char = event_data['program_9char'] if event_data['program_9char'] else "system"
         new_event.program_uuid = await MessageActions.get_program_uuid(new_event.program_9char, False) if new_event.program_9char else "system"
         new_event.segment_9char = event_data['segment_9char'] if event_data['segment_9char'] else None
+        new_event.program_9char = "test_mesg" if is_test_mode() else new_event.program_9char
         return new_event

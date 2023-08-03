@@ -240,7 +240,6 @@ class BaseActions:
                 select(model)
                 .where(*conditions)
                 ).all()
-            await ExceptionHandling.check404(*db_items)
 
             results = []
             for item in db_items:

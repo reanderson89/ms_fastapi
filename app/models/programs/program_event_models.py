@@ -28,9 +28,9 @@ class ProgramEventModelDB(Base):
 
 class ProgramEventReturn(BasePydantic):
     uuid: str
-    program_uuid: str
+    program_uuid: Optional[str]
     client_uuid: str
-    program_9char: str
+    program_9char: Optional[str]
     event_9char: str
     event_type: Optional[int] = None
     parent_9char: Optional[str] = None

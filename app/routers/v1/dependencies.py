@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from typing import Optional
 from fastapi import Query, HTTPException
@@ -84,3 +85,23 @@ async def verify_segment_award(client_uuid: str, segment_award_9char: str,  awar
     )
     if not response:
         raise HTTPException(400, "The provided Segment Award does not exist")
+
+
+def test_mode():
+    pm = os.environ.get("ENV")
+    pytest = os.environ.get("TEST_MODE", False)
+    if pm != "local" and not pytest:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not Found")
+    else:
+        return True
+    
+
+def is_test_mode():
+    pm = os.environ.get("ENV")
+    pytest = os.environ.get("TEST_MODE", False)
+    if pm != "local" and not pytest:
+        return False
+    else:
+        return True
+

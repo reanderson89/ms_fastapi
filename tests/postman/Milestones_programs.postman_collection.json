@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "2523bbe3-f4b2-4aed-990e-5356c169eb35",
+		"_postman_id": "675fce47-a526-4d4d-ba34-657ff8560886",
 		"name": "Milestones_programs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "25650478"
+		"_exporter_id": "13402166"
 	},
 	"item": [
 		{
@@ -2180,6 +2180,450 @@
 										},
 										{
 											"key": "user_uuid"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Static Budget",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"ok should be true\", function(){",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.ok).to.eql(true)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/budgets/{{static_parent_9char}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"clients",
+								"{{client_uuid}}",
+								"budgets",
+								"{{static_parent_9char}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/budgets/:budget_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"budgets",
+										":budget_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "budget_9char"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/budgets/:budget_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"budgets",
+										":budget_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "budget_9char"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/budgets/:budget_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"budgets",
+										":budget_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "budget_9char"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete All Client Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/{{client_uuid}}/delete_client_events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"{{client_uuid}}",
+								"delete_client_events"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"program_uuid\": \"<string>\",\n  \"client_uuid\": \"<string>\",\n  \"program_9char\": \"<string>\",\n  \"event_9char\": \"<string>\",\n  \"event_type\": \"<integer>\",\n  \"parent_9char\": \"<string>\",\n  \"segment_9char\": \"<string>\",\n  \"event_data\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char/events/:event_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char",
+										"events",
+										":event_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										},
+										{
+											"key": "event_9char"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"uuid\": \"<string>\",\n  \"program_uuid\": \"<string>\",\n  \"client_uuid\": \"<string>\",\n  \"program_9char\": \"<string>\",\n  \"event_9char\": \"<string>\",\n  \"event_type\": \"<integer>\",\n  \"parent_9char\": \"<string>\",\n  \"segment_9char\": \"<string>\",\n  \"event_data\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"time_created\": \"<integer>\",\n  \"time_updated\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"program_uuid\": \"<string>\",\n  \"client_uuid\": \"<string>\",\n  \"program_9char\": \"<string>\",\n  \"event_9char\": \"<string>\",\n  \"event_type\": \"<integer>\",\n  \"parent_9char\": \"<string>\",\n  \"segment_9char\": \"<string>\",\n  \"event_data\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char/events/:event_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char",
+										"events",
+										":event_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										},
+										{
+											"key": "event_9char"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": \"Bearer token missing or unknown\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"program_uuid\": \"<string>\",\n  \"client_uuid\": \"<string>\",\n  \"program_9char\": \"<string>\",\n  \"event_9char\": \"<string>\",\n  \"event_type\": \"<integer>\",\n  \"parent_9char\": \"<string>\",\n  \"segment_9char\": \"<string>\",\n  \"event_data\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"time_updated\": \"<integer>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/clients/:client_uuid/programs/:program_9char/events/:event_9char",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"clients",
+										":client_uuid",
+										"programs",
+										":program_9char",
+										"events",
+										":event_9char"
+									],
+									"variable": [
+										{
+											"key": "client_uuid"
+										},
+										{
+											"key": "program_9char"
+										},
+										{
+											"key": "event_9char"
 										}
 									]
 								}

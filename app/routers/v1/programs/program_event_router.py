@@ -1,12 +1,12 @@
 from typing import Annotated, Callable
-
 from fastapi import APIRouter, Depends
-from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.dependencies import default_query_params, test_mode
 from app.routers.v1.pagination import Page
 from app.models.programs import ProgramEventModelDB, ProgramEventUpdate, ProgramEventReturn
 from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 from fastapi.routing import APIRoute
+
 
 class ProgramEventRouter(APIRoute):
 
@@ -85,3 +85,13 @@ async def update_event(
 # ):
 #     await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 #     return await ProgramEventActions.delete_event(path_params)
+
+
+@router.delete("/delete_program_events/{event_9char}", dependencies=[Depends(test_mode)])
+async def delete_event(
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
+    path_params: dict = Depends(path_params)
+):
+    from fastapi import Response
+    await ProgramEventActions.delete_event(path_params)
+    return Response(status_code=200, content="Test Program Event Deleted")

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.models.programs.program_event_models import ProgramEventReturn
 from app.routers.v1.pagination import Page
-from app.routers.v1.dependencies import default_query_params
+from app.routers.v1.dependencies import default_query_params, test_mode
 from app.models.clients import ClientModelDB, ClientUpdate, ClientCreate, ClientModel
 from app.actions.clients.client_actions import ClientActions
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
@@ -57,7 +57,29 @@ async def delete_client_by_uuid(
 
 @router.get("/clients/{client_uuid}/events")
 async def get_all_client_events(
-    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
+    client_uuid: str,
     query_params: dict = Depends(default_query_params)
 ) -> Page[ProgramEventReturn]:
     return await ProgramEventActions.get_all_client_events(client_uuid, query_params)
+
+
+
+
+
+# this route can only be accessed through postman/pytests when running locally.
+@router.delete("/{client_uuid}/delete_client_events", dependencies=[Depends(test_mode)])
+async def delete_all_client_test_events(
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
+    client_uuid: str,
+):
+    return await ClientActions.delete_all_client_events(client_uuid)
+
+# this route can only be accessed through postman/pytests when running locally
+# in test_mode program_9char is hardcoded in the request to "test_mesg"
+@router.delete("/delete_all_message_events", dependencies=[Depends(test_mode)])
+async def delete_all_test_messages(
+    client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
+    program_9char: str = "test_mesg",
+):
+    return await ClientActions.delete_all_test_message_events(program_9char)
