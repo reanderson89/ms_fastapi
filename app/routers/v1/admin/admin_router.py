@@ -5,7 +5,7 @@ from app.utilities.auth.auth_handler import AdminSwap, swap_client_uuid_in_jwt, 
 from app.actions.clients.user import ClientUserActions
 from app.models.admin import AdminCreate, AdminClientSwap
 
-router = APIRouter()
+router = APIRouter(tags=["Admin"])
 
 
 @router.post("/admin/user", response_model_by_alias=True)
@@ -40,11 +40,11 @@ async def swap_client_uuid(
 ):
     old_client_uuid = decoded_jwt["client_uuid"]
     new_jwt = await swap_client_uuid_in_jwt(decoded_jwt, client_uuid)
-    
+
     await ClientUserActions.update_admin_client_user(
         {"client_uuid": old_client_uuid, "user_uuid": decoded_jwt["uuid"]},
         AdminClientSwap(client_uuid=client_uuid)
     )
-    
+
     response.headers["Bearer"] = new_jwt
     return True

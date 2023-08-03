@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e53d86a1-7a97-41be-80a7-6aa04387b9b3",
+		"_postman_id": "4b5d7b13-e79d-4847-b238-e5504c68d9d4",
 		"name": "Milestones_client_awards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -938,12 +938,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/{{client_uuid}}/delete_client_events",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/delete_client_events",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
+								"clients",
 								"{{client_uuid}}",
 								"delete_client_events"
 							]

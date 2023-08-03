@@ -51,36 +51,36 @@ async def verify_client_uuid(client_uuid: str):
         raise HTTPException(400, "Client UUID does not exist")
 
 
-async def verify_client_award(client_uuid: str, client_award_9char: str,  award_model=ClientAwardModelDB):
+async def verify_client_award(client_uuid: str, client_award_9char: str):
     response =  await BaseActions.check_if_exists(
-        award_model,
+        ClientAwardModelDB,
         [
-            award_model.client_uuid == client_uuid,
-            award_model.client_award_9char == client_award_9char
+            ClientAwardModelDB.client_uuid == client_uuid,
+            ClientAwardModelDB.client_award_9char == client_award_9char
         ]
     )
     if not response:
         raise HTTPException(400, "The provided Client Award does not exist")
 
 
-async def verify_program_award(client_uuid: str, program_award_9char: str,  award_model=ProgramAwardModelDB):
+async def verify_program_award(client_uuid: str, program_award_9char: str):
     response =  await BaseActions.check_if_exists(
-        award_model,
+        ProgramAwardModelDB,
         [
-            award_model.client_uuid == client_uuid,
-            award_model.program_award_9char == program_award_9char
+            ProgramAwardModelDB.client_uuid == client_uuid,
+            ProgramAwardModelDB.program_award_9char == program_award_9char
         ]
     )
     if not response:
         raise HTTPException(400, "The provided Program Award does not exist")
 
 
-async def verify_segment_award(client_uuid: str, segment_award_9char: str,  award_model=SegmentAward):
+async def verify_segment_award(client_uuid: str, segment_award_9char: str):
     response =  await BaseActions.check_if_exists(
-        award_model,
+        SegmentAward,
         [
-            award_model.client_uuid == client_uuid,
-            award_model.segment_award_9char == segment_award_9char
+            SegmentAward.client_uuid == client_uuid,
+            SegmentAward.segment_award_9char == segment_award_9char
         ]
     )
     if not response:
@@ -92,10 +92,10 @@ def test_mode():
     pytest = os.environ.get("TEST_MODE", False)
     if pm != "local" and not pytest:
         from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="Not Found")
+        raise HTTPException(status_code=403, detail="No tests running")
     else:
         return True
-    
+
 
 def is_test_mode():
     pm = os.environ.get("ENV")
@@ -104,4 +104,3 @@ def is_test_mode():
         return False
     else:
         return True
-

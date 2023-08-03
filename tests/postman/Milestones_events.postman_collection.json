@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "86a1aff8-c1c5-4cb9-a040-219118967984",
+		"_postman_id": "4dc66fc8-9a60-4036-9681-dd05a4ed3b42",
 		"name": "Milestones_events",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -3186,12 +3186,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/{{client_uuid}}/delete_client_events",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/delete_client_events",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
+								"clients",
 								"{{client_uuid}}",
 								"delete_client_events"
 							]

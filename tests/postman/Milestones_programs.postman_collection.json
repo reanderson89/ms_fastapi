@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "675fce47-a526-4d4d-ba34-657ff8560886",
+		"_postman_id": "39be87d5-9e22-4268-8bb7-1f12544b54b9",
 		"name": "Milestones_programs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -2436,12 +2436,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/{{client_uuid}}/delete_client_events",
+							"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/delete_client_events",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
+								"clients",
 								"{{client_uuid}}",
 								"delete_client_events"
 							]

@@ -4,6 +4,7 @@ from app.configs import run_config
 from app.routers import routers
 from app.middleware import LoggingMiddleware
 from app.routers import auth_routers
+from app.routers import admin_routers
 from app.routers import cron_routers
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
@@ -33,6 +34,7 @@ app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handle
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(routers, prefix="/v1")
 app.include_router(auth_routers, prefix="/v1")
+app.include_router(admin_routers, prefix="/v1")
 app.include_router(cron_routers, prefix="/blue")
 
 add_pagination(app)

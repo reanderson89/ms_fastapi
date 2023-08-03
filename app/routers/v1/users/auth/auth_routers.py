@@ -6,7 +6,7 @@ from app.models.users.auth.auth_models import CreateAuthModel, RedeemAuthModel, 
 from app.actions.users.auth.auth_actions import AuthActions
 from app.utilities.auth.auth_handler import access_token_creation
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 
 ENV: str = os.environ.get("ENV", "local")
 JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()

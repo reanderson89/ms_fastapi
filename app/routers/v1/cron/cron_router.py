@@ -4,7 +4,7 @@ from app.actions.cron.cron_actions import CronActions
 
 
 
-router = APIRouter()
+router = APIRouter(tags=["Cron Jobs"])
 
 
 @router.get("/cron", response_model_by_alias=True)

@@ -68,7 +68,7 @@ async def get_all_client_events(
 
 
 # this route can only be accessed through postman/pytests when running locally.
-@router.delete("/{client_uuid}/delete_client_events", dependencies=[Depends(test_mode)])
+@router.delete("/clients/{client_uuid}/delete_client_events", dependencies=[Depends(test_mode)])
 async def delete_all_client_test_events(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
     client_uuid: str,
