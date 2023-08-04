@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 from typing import Optional
-from fastapi import Query, HTTPException
+from fastapi import Query, HTTPException, Request
 from app.actions.base_actions import BaseActions
 from app.exceptions import ExceptionHandling
 from app.models.clients import ClientUserModelDB
@@ -19,13 +19,20 @@ class SortOrder(str, Enum):
 
 
 def default_query_params(
+        request: Request,
         order_by: Optional[str] = "time_created",
         sort: SortOrder = Query(default = SortOrder.DESC)
     ):
-    return {
+    params = {
         "order_by": order_by,
-        "sort": str(sort)
+        "sort": str(sort),
+        "filters": {},
     }
+    for param in request.query_params._dict:
+        if param not in params["filters"] and param not in params:
+            params["filters"].update({param: request.query_params._dict.get(param)})
+    #params.update({"filters": request.query_params._dict} if request.query_params else {})
+    return params
 
 
 async def verify_client_user(user_uuid: str, client_uuid: str):

@@ -5,13 +5,14 @@ from app.actions.awards import AwardActions
 from app.models.award import AwardModelDB, AwardUpdate, AwardModel
 from app.utilities.auth.auth_handler import Permissions
 from app.models.uploads import UploadType
+from app.routers.v1.dependencies import default_query_params
 
 router = APIRouter(tags=["Awards"])
 
 @router.get("/awards")
 async def get_all_awards(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
-    query_params: dict = {"order_by": "value", "sort": "ASC"},
+    query_params: dict =  Depends(default_query_params),
 ) -> Page[AwardModel]:
     return await AwardActions.get_all_awards(query_params)
 

@@ -10,7 +10,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 class BaseActions:
 
     @staticmethod
-    def _add_ordering_to_query(model, query, order_by=None, sort="DESC"):
+    def _add_ordering_to_query(model, query, params):
         """
         Adds ordering to a query based on the specified field and sort order
         :param model(DataModel): The model/table to query
@@ -19,12 +19,25 @@ class BaseActions:
         :param sort(str): The sort order ('ASC' or 'DESC')
         :return: The modified query(select) with the ordering applied
         """
-        if not order_by:
+        if "order_by" not in params:
             return query
 
-        model_filter = getattr(model, order_by)
-        model_filter = model_filter.desc() if sort == "DESC" else model_filter.asc()
+        model_filter = getattr(model, params["order_by"])
+        model_filter = model_filter.desc() if params["sort"] == "DESC" else model_filter.asc()
         return query.order_by(model_filter)
+
+    @staticmethod
+    def _filter_query(model, query, params):
+        """
+        Filters a query based on the specified filters
+        :param query(select): The initial select statement to augment
+        :param filters(list): The filters to apply
+        :return: The modified query(select) with the filters applied
+        """
+        if "filters" not in params:
+            return query
+
+        return query.where(*[getattr(model, k) == v for k, v in params["filters"].items()])
 
     @staticmethod
     async def delete_without_lookup(item):
@@ -273,7 +286,8 @@ class BaseActions:
 
         with Session(engine) as session:
             query = select(model)
-            query = cls._add_ordering_to_query(model, query, **params)
+            query = cls._add_ordering_to_query(model, query, params) if params else query
+            query = cls._filter_query(model, query, params) if params else query
 
             if pagination:
                 db_query = paginate(session, query)
@@ -307,13 +321,8 @@ class BaseActions:
 
         with Session(engine) as session:
             query = select(model).where(*conditions)
-            if params:
-                query = cls._add_ordering_to_query(
-                    model,
-                    query,
-                    params.get("order_by"),
-                    params.get("sort", "DESC")
-                )
+            query = cls._add_ordering_to_query(model, query, params) if params else query
+            query = cls._filter_query(model, query, params) if params else query
             if pagination:
                 db_query = paginate(session, query)
             else:

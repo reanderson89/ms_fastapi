@@ -25,6 +25,7 @@ class AwardActions:
             - sort(str): The sort order ('ASC' or 'DESC')
         :return: A list of model objects, for example [model(DataModel),...]
         """
+        query_params["order_by"] = "value"
         return await BaseActions.get_all(
             AwardModelDB,
             query_params
