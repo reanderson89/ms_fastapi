@@ -46,8 +46,12 @@ def is_deleted(response):
 
 @pytest.fixture(scope="module")
 def test_app():
-    client = TestClient(app)
-    yield client
+    try:
+        client = TestClient(app)
+        yield client
+    finally:
+        response = client.delete(f"/v1/delete_all_message_events")
+        is_deleted(response)
 
 
 @pytest.fixture(scope="module")
@@ -404,4 +408,17 @@ def client_message(test_app):
     finally:
         if message is not None:
             response = test_app.delete(f"/v1/messages/{message['message_9char']}")
+            is_deleted(response)
+
+            
+@pytest.fixture(scope="function")
+def program_message(test_app, program):
+    try:
+        program_message = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/messages",  json=util.new_message).json()
+        yield program_message
+    except:
+        raise Exception("program_message Creation Failed")
+    finally:
+        if program_message is not None:
+            response = test_app.delete(f"/v1/messages/{program_message['message_9char']}")
             is_deleted(response)

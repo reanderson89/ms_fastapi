@@ -44,9 +44,6 @@ def test_integration_update_message(test_app, message):
 def test_integration_delete_message(test_app):
     try:
         message = test_app.post(f"/v1/messages",  json=new_message).json()
-    except:
-        raise Exception("Message Creation Failed")
-    finally:
         if message is not None:
             response = test_app.delete(f"/v1/messages/{message['message_9char']}").json()
             assert response["ok"] == True
@@ -54,4 +51,8 @@ def test_integration_delete_message(test_app):
             assert response["Deleted"]["message_9char"] == message["message_9char"]
             if response["Deleted"]["client_uuid"] is not None:
                 assert response["Deleted"]["status"] is not 2
+    except:
+        raise Exception("Message Creation Failed")
+    finally:
+        response = test_app.delete(f"/v1/messages/{message['message_9char']}").json()
 
