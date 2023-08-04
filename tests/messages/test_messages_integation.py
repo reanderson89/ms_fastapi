@@ -1,78 +1,57 @@
-import pytest
-import httpx
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from app.routers.v1.messages.message_router import router as messages_router
-
-app = FastAPI()
-app.include_router(messages_router)
-client = TestClient(app)
+from tests.testutil import new_message, update_message
 
 
-@pytest.mark.asyncio
-async def test_integration_create_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/messages")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Created message"}
+def test_integration_create_message(message):
+    assert "uuid" in message
+    assert len(message["message_9char"]) == 9
+    assert message["name"] == new_message["name"]
+    assert message["body"] == new_message["body"]
 
-@pytest.mark.asyncio
-async def test_integration_get_messages():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/messages")
-		assert response.status_code == 200
-		assert response.json() == {"message": "Got all messages"}
+def test_integration_get_messages(test_app, message):
+    response = test_app.get(f"/v1/messages")
+    assert response.status_code == 200
+    response = response.json()["items"]
+    for item in response:
+        assert ["uuid", "name", "body"] is not None
+        assert len(item["message_9char"]) == 9
 
-@pytest.mark.asyncio
-async def test_integration_get_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	message_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.get(f"clients/{client_uuid}/programs/{program_9char}/messages/{message_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Got messages for {message_9char}"}
+def test_integration_get_all_client_messages(test_app, client_message):
+    response = test_app.get(f"/v1/messages/client/{client_message['client_uuid']}")
+    assert response.status_code == 200
+    response = response.json()["items"]
+    for item in response:
+        assert ["uuid", "name", "body"] is not None
+        assert len(item["message_9char"]) == 9
 
-@pytest.mark.asyncio
-async def test_integration_create_template_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	message_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/messages/{message_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Created message from template for {message_9char}"}
+def test_integration_get_message(test_app, message):
+    response = test_app.get(f"/v1/messages/{message['message_9char']}")
+    assert response.status_code == 200
+    response = response.json()
+    assert response["uuid"] in message["uuid"]
+    assert response["message_9char"] == message["message_9char"]
+    assert response["name"] == message["name"]
+    assert response["body"] == message["body"]
 
-@pytest.mark.asyncio
-async def test_integration_test_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	message_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/messages/{message_9char}/test")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Tested message for {message_9char}"}
+def test_integration_update_message(test_app, message):
+    response = test_app.put(f"/v1/messages/{message['message_9char']}", json=update_message)
+    assert response.status_code == 200
+    response = response.json()
+    assert response["uuid"] in message["uuid"]
+    assert response["message_9char"] == message["message_9char"]
+    assert response["name"] == update_message["name"]
+    assert response["body"] == update_message["body"]
 
-@pytest.mark.asyncio
-async def test_integration_send_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	message_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.post(f"clients/{client_uuid}/programs/{program_9char}/messages/{message_9char}/send")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Sent message for {message_9char}"}
+def test_integration_delete_message(test_app):
+    try:
+        message = test_app.post(f"/v1/messages",  json=new_message).json()
+    except:
+        raise Exception("Message Creation Failed")
+    finally:
+        if message is not None:
+            response = test_app.delete(f"/v1/messages/{message['message_9char']}").json()
+            assert response["ok"] == True
+            assert response["Deleted"]["uuid"] == message["uuid"]
+            assert response["Deleted"]["message_9char"] == message["message_9char"]
+            if response["Deleted"]["client_uuid"] is not None:
+                assert response["Deleted"]["status"] is not 2
 
-@pytest.mark.asyncio
-async def test_integration_upate_message():
-	client_uuid = "test_client_uuid"
-	program_9char = "testchr"
-	message_9char = "testchr"
-	async with httpx.AsyncClient(app=app, base_url="http://test") as ac:
-		response = await ac.put(f"clients/{client_uuid}/programs/{program_9char}/messages/{message_9char}")
-		assert response.status_code == 200
-		assert response.json() == {"message": f"Updated message for {message_9char}"}

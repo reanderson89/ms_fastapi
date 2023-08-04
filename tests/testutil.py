@@ -289,3 +289,29 @@ update_program_rule = {
     "status": 1,
     "logic": {"condition": "UPDATED logic"}
 }
+
+
+new_message = {
+    "name": "Pytest Message Test",
+    "body": "a message body - Message Test",
+    "channel": 2,
+    "message_type": 2,
+    "status": 1
+}
+
+update_message = {
+    "name": "UPDATED Pytest Message Test",
+    "message_type": 2,
+    "channel": 2,
+    "status": 1,
+    "body": "UPDATED Body Message Test"
+}
+
+new_client_message = {
+    "name": "Pytest Message Test",
+    "body": "a message body - Message Test",
+    "client_uuid": test_uuids.first_client_uuid,
+    "channel": 2,
+    "message_type": 2,
+    "status": 1
+}
