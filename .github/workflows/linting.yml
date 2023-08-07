@@ -2,13 +2,6 @@ name: Lint Code
 
 on:
   push:
-    branches:
-      - BLUE-10000-add-permissions
-  pull_request:
-  # push:
-  #   branches-ignore:
-  #     - staging
-  #     - main
 
 jobs:
   lint-code:
