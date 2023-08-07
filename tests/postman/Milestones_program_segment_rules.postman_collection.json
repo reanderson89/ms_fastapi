@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "cd8b988b-a499-42c1-8f21-f5c2c9008083",
-		"name": "Milestones_program_segment_designs",
+		"_postman_id": "9707a657-682f-4bb2-8075-1c8b4cfc5a4c",
+		"name": "Milestones_program_segment_rules",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "13402166"
 	},
@@ -1046,7 +1046,7 @@
 			]
 		},
 		{
-			"name": "Create Segment Design",
+			"name": "Create Segment Rule",
 			"event": [
 				{
 					"listen": "test",
@@ -1059,10 +1059,12 @@
 							"});",
 							"",
 							"if (Array.isArray(jsonData)) {",
-							"  pm.collectionVariables.set(\"design_9char\", jsonData[0].design_9char);",
+							"  pm.collectionVariables.set(\"rule_9char\", jsonData[0].rule_9char);",
 							"} else {",
-							"  pm.collectionVariables.set(\"design_9char\", jsonData.design_9char);",
-							"}"
+							"  pm.collectionVariables.set(\"rule_9char\", jsonData.rule_9char);",
+							"}",
+							"",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1092,7 +1094,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n  {\n    \"channel\": 1,\n    \"status\": 1,\n    \"message_uuid\": \"message_uuid\"\n  }\n\n",
+					"raw": "\n  {\n    \"status\": 2,\n    \"rule_type\": 2,\n    \"logic\": {\n        \"conditions\": [\n            {\n            \"var\": \"hire_anniversary\",\n            \"operator\": \"=\",\n            \"value\": \"today\"\n            }\n        ],\n        \"details\": {\n            \"award_type\": \"1\",\n            \"client_award\": \"client_award_uuid\",\n            \"program_award\": \"program_award_uuid\",\n            \"segment_award\": \"segment_award_uuid\",\n            \"message\": \"message_uuid\"\n        }\n    }\n  }\n\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1101,7 +1103,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/rules",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1113,7 +1115,7 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"designs"
+						"rules"
 					]
 				}
 			},
@@ -1301,7 +1303,7 @@
 			]
 		},
 		{
-			"name": "Get All Segment Designs",
+			"name": "Get All Segment Rules",
 			"event": [
 				{
 					"listen": "test",
@@ -1354,7 +1356,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/rules",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1366,7 +1368,7 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"designs"
+						"rules"
 					]
 				}
 			},
@@ -1554,7 +1556,7 @@
 			]
 		},
 		{
-			"name": "Get Segment Design",
+			"name": "Get Segment Rule",
 			"event": [
 				{
 					"listen": "test",
@@ -1564,10 +1566,10 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.test(\"design_9char should equal path variable\", function () {",
+							"pm.test(\"rule_9char should equal path variable\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    let design_9char = pm.collectionVariables.get(\"design_9char\")",
-							"    pm.expect(jsonData.design_9char).to.eql(design_9char);",
+							"    let rule_9char = pm.collectionVariables.get(\"rule_9char\")",
+							"    pm.expect(jsonData.rule_9char).to.eql(rule_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1610,7 +1612,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/rules/{{rule_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1622,8 +1624,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"designs",
-						"{{design_9char}}"
+						"rules",
+						"{{rule_9char}}"
 					]
 				}
 			},
@@ -1811,7 +1813,7 @@
 			]
 		},
 		{
-			"name": "Update Segment Design",
+			"name": "Update Segment Rule",
 			"event": [
 				{
 					"listen": "test",
@@ -1821,9 +1823,9 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.test(\"status should be 0\", function () {",
+							"pm.test(\"logic should be UPDATED\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.status).to.eql(0);",
+							"    pm.expect(jsonData.logic.condition).to.eql(\"UPDATED\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1854,7 +1856,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n    \"channel\": 1,\n    \"status\": 0\n  }\n",
+					"raw": "  {\n    \"status\": 2,\n    \"rule_type\": 2,\n    \"logic\": {\"condition\":\"UPDATED\"}\n  }\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1863,7 +1865,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/rules/{{rule_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1875,8 +1877,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"designs",
-						"{{design_9char}}"
+						"rules",
+						"{{rule_9char}}"
 					]
 				}
 			},
@@ -2064,7 +2066,7 @@
 			]
 		},
 		{
-			"name": "Delete Segment Design",
+			"name": "Delete Segment Rule",
 			"event": [
 				{
 					"listen": "test",
@@ -2082,9 +2084,9 @@
 							"    pm.expect(jsonData.ok).to.eql(true);",
 							"});",
 							"",
-							"pm.test(\"design_9char should match deleted design_9char\", function(){",
-							"    var design_9char = pm.collectionVariables.get(\"design_9char\");",
-							"        pm.expect(jsonData.Deleted.design_9char).to.eql(design_9char);",
+							"pm.test(\"rule_9char should match deleted rule_9char\", function(){",
+							"    var rule_9char = pm.collectionVariables.get(\"rule_9char\");",
+							"        pm.expect(jsonData.Deleted.rule_9char).to.eql(rule_9char);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2124,7 +2126,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/designs/{{design_9char}}",
+					"raw": "{{baseUrl}}/v1/clients/{{client_uuid}}/programs/{{program_9char}}/segments/{{segment_9char}}/rules/{{rule_9char}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -2136,8 +2138,8 @@
 						"{{program_9char}}",
 						"segments",
 						"{{segment_9char}}",
-						"designs",
-						"{{design_9char}}"
+						"rules",
+						"{{rule_9char}}"
 					]
 				}
 			},

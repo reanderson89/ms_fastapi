@@ -34,9 +34,10 @@ async def get_segment_design(
 @router.post("/designs", response_model=(list[SegmentDesignModel] | SegmentDesignModel))
 async def create_segment_design(
     designs: (list[SegmentDesignCreate] | SegmentDesignCreate),
+    program_uuid: str = Depends(SegmentDesignActions.get_program_uuid),
     path_params: dict = Depends(path_params)
 ):
-    return await SegmentDesignActions.create_designs(designs, path_params)
+    return await SegmentDesignActions.create_designs(designs, path_params, program_uuid)
 
 
 @router.put("/designs/{design_9char}", response_model=SegmentDesignModel)

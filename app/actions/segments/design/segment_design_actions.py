@@ -1,8 +1,17 @@
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
 from app.models.segments.segment_design_models import SegmentDesignModel
+from app.models.programs.program_models import ProgramModelDB
 
 class SegmentDesignActions:
+
+    @staticmethod
+    async def get_program_uuid(program_9char: str, check404: bool = True):
+        return await BaseActions.get_one_where(
+            ProgramModelDB.uuid,
+            [ProgramModelDB.program_9char == program_9char],
+            check404
+        )
 
     @staticmethod
     async def get_all_segment_designs(path_params, query_params):
@@ -29,13 +38,14 @@ class SegmentDesignActions:
         )
     
     @staticmethod
-    async def create_designs(designs, path_params):
+    async def create_designs(designs, path_params, program_uuid):
         if isinstance(designs, list):
             designs = [SegmentDesignModel(
                 **design.dict(),
                 client_uuid = path_params["client_uuid"],
                 program_9char = path_params["program_9char"],
                 segment_9char = path_params["segment_9char"],
+                program_uuid = program_uuid,
                 design_9char = await HelperActions.generate_9char()
             ) for design in designs]
             return await BaseActions.create(designs)
@@ -44,6 +54,7 @@ class SegmentDesignActions:
                 client_uuid = path_params["client_uuid"],
                 program_9char = path_params["program_9char"],
                 segment_9char = path_params["segment_9char"],
+                program_uuid = program_uuid,
                 design_9char = await HelperActions.generate_9char()
         )
         return await BaseActions.create(designs)

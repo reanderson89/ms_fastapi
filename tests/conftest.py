@@ -207,6 +207,38 @@ def segment(test_app: TestClient, program):
             )
 
 @pytest.fixture(scope="module")
+def segment_rule(test_app: TestClient, segment):
+    try:
+        segment_rule = test_app.post(
+            f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}/rules",
+            json=util.new_segment_rule
+        ).json()
+        yield segment_rule
+    except:
+        raise Exception("Segment Rule Creation Failed")
+    finally:
+        if segment_rule is not None:
+            test_app.delete(
+                f"/v1/clients/{segment_rule['client_uuid']}/programs/{segment_rule['program_9char']}/segments/{segment_rule['segment_9char']}/rules/{segment_rule['rule_9char']}"
+            )
+
+@pytest.fixture(scope="module")
+def segment_design(test_app: TestClient, segment):
+    try:
+        segment_design = test_app.post(
+            f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}/designs",
+            json=util.new_segment_design
+        ).json()
+        yield segment_design
+    except:
+        raise Exception("Segment design Creation Failed")
+    finally:
+        if segment_design is not None:
+            test_app.delete(
+                f"/v1/clients/{segment_design['client_uuid']}/programs/{segment_design['program_9char']}/segments/{segment_design['segment_9char']}/designs/{segment_design['design_9char']}"
+            )
+
+@pytest.fixture(scope="module")
 def award(test_app: TestClient):
     try:
         award = test_app.post(f"/v1/awards", json=util.new_award).json()

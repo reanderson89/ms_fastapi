@@ -285,6 +285,43 @@ update_program_rule = {
     "logic": {"condition": "UPDATED logic"}
 }
 
+new_segment_rule = {
+    "rule_type": 0,
+    "status": 0,
+    "logic": {
+        "conditions": [
+            {
+            "var": "hire_anniversary",
+            "operator": "=",
+            "value": "today"
+            }
+        ],
+        "details": {
+            "award_type": "1",
+            "client_award": "client_award_uuid",
+            "program_award": "program_award_uuid",
+            "segment_award": "segment_award_uuid",
+            "message": "message_uuid"
+        }
+    }
+}
+
+update_segment_rule = {
+    "rule_type": 1,
+    "status": 1,
+    "logic": {"condition": "UPDATED logic"}
+}
+
+new_segment_design = {
+    "channel": 1,
+    "status": 1,
+    "message_uuid": "message_uuid"
+}
+
+update_segment_design = {
+    "channel": 0,
+    "status": 0,
+}
 
 new_message = {
     "name": "Pytest Message Test",

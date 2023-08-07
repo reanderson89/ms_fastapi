@@ -35,7 +35,6 @@ class SegmentDesignReturn(BasePydantic):
     time_updated: Optional[int] = None
 
 class SegmentDesignCreate(BasePydantic):
-    program_uuid: Optional[str] = None
     message_uuid: Optional[str] = None
     channel: Optional[int] = None
     status: Optional[int] = None

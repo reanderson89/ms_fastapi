@@ -1,116 +1,65 @@
-from time import time
-from sqlalchemy import select
-from fastapi import APIRouter, Query, Depends
-from app.database.config import engine
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.models.segments import SegmentRuleModel, SegmentRuleUpdate
-from sqlalchemy.orm import Session
+from typing import Annotated
+from fastapi import APIRouter, Depends
+from app.routers.v1.pagination import Page
+from app.routers.v1.dependencies import default_query_params
+from app.utilities.auth.auth_handler import Permissions
+from app.actions.segments.rules import SegmentRuleActions
+from app.models.segments import SegmentRuleUpdate, SegmentRuleCreate, SegmentRuleReturn
 
 router = APIRouter(
     prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}",
     tags=["Client Program Segment Rules"]
 )
 
-def get_session():
-    with Session(engine) as session:
-        yield session
+def path_params(client_uuid: str, program_9char: str, segment_9char: str, rule_9char: str=None):
+    return {
+        "client_uuid": client_uuid,
+        "program_9char": program_9char,
+        "segment_9char": segment_9char, 
+        "rule_9char": rule_9char
+    }
 
 
-@router.get("/rules", response_model=list[SegmentRuleModel])
+@router.get("/rules")
 async def get_rules(
-    client_uuid: str,
-    program_9char: str,
-    segment_9char: str,
-    offset: int = 0,
-    limit: int = Query(default=100, lte=100),
-    session: Session = Depends(get_session)
-):
-    rules = session.scalars(
-        select(SegmentRuleModel)
-        .where(
-            SegmentRuleModel.client_uuid == client_uuid,
-            SegmentRuleModel.program_9char == program_9char,
-            SegmentRuleModel.segment_9char == segment_9char
-        )
-        .offset(offset)
-        .limit(limit)
-        ).all()
-    await ExceptionHandling.check404(rules)
-    return rules
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    path_params: dict = Depends(path_params),
+    query_params: dict = Depends(default_query_params)
+) -> Page[SegmentRuleReturn]:
+    return await SegmentRuleActions.get_all_segment_rules(path_params, query_params)
 
 
-@router.get("/rules/{rule_9char}", response_model=SegmentRuleModel)
+@router.get("/rules/{rule_9char}", response_model=SegmentRuleReturn)
 async def get_rule(
-    client_uuid: str,
-    program_9char: str,
-    segment_9char: str,
-    rule_9char: str,
-    session: Session = Depends(get_session)
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    path_params: dict = Depends(path_params),
 ):
-    rule = session.scalars(
-        select(SegmentRuleModel)
-        .where(
-            SegmentRuleModel.rule_9char == rule_9char,
-            SegmentRuleModel.client_uuid == client_uuid,
-            SegmentRuleModel.program_9char == program_9char,
-            SegmentRuleModel.segment_9char == segment_9char
-        )
-    ).one_or_none()
-    await ExceptionHandling.check404(rule)
-    return rule
+    return await SegmentRuleActions.get_segment_rule(path_params)
 
 
-@router.post("/rules", response_model=(list[SegmentRuleModel] | SegmentRuleModel))
-async def create_rule(rules: (list[SegmentRuleModel] | SegmentRuleModel)):
-    return await CommonRoutes.create_one_or_many(rules)
+@router.post("/rules", response_model=(list[SegmentRuleReturn] | SegmentRuleReturn))
+async def create_rule(
+    rules: (list[SegmentRuleCreate] | SegmentRuleCreate),
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    program_uuid: str = Depends(SegmentRuleActions.get_program_uuid),
+    path_params: dict = Depends(path_params),
+):
+    return await SegmentRuleActions.create_rules(rules, path_params, program_uuid)
 
 
-@router.put("/rules/{rule_9char}", response_model=SegmentRuleModel)
+@router.put("/rules/{rule_9char}", response_model=SegmentRuleReturn)
 async def update_rule(
-    client_uuid: str,
-    program_9char: str,
-    segment_9char: str,
-    rule_9char: str,
     rule_updates: SegmentRuleUpdate,
-    session: Session = Depends(get_session)
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    path_params: dict = Depends(path_params)
 ):
-    rule = session.scalars(
-        select(SegmentRuleModel)
-        .where(
-            SegmentRuleModel.rule_9char == rule_9char,
-            SegmentRuleModel.client_uuid == client_uuid,
-            SegmentRuleModel.program_9char == program_9char,
-            SegmentRuleModel.segment_9char == segment_9char
-        )
-    ).one_or_none()
-    await ExceptionHandling.check404(rule)
-    update_rule = rule_updates.dict(exclude_unset=True)
-    for k, v in update_rule.items():
-        setattr(rule, k, v)
-    rule.time_updated = int(time())
-    session.add(rule)
-    session.commit()
-    session.refresh(rule)
-    return rule
+    return await SegmentRuleActions.update_rule(rule_updates, path_params)
 
 
 @router.delete("/rules/{rule_9char}")
 async def delete_rule(
-    client_uuid: str,
-    program_9char: str,
-    segment_9char: str,
-    rule_9char: str,
-    session: Session = Depends(get_session)
+    client_uuid: Annotated[str, Depends(Permissions(level="2"))],
+    path_params: dict = Depends(path_params),
 ):
-    rule = session.scalars(
-        select(SegmentRuleModel)
-        .where(
-            SegmentRuleModel.rule_9char == rule_9char,
-            SegmentRuleModel.client_uuid == client_uuid,
-            SegmentRuleModel.program_9char == program_9char,
-            SegmentRuleModel.segment_9char == segment_9char
-        )
-    ).one_or_none()
-    session.delete(rule)
-    session.commit()
-    return {"ok": True, "Deleted": rule}
+    return await SegmentRuleActions.delete_rule(path_params)
+

@@ -40,6 +40,7 @@ tests=(
    "$SOURCE_DIR"/Milestones_program_segment_awards.postman_collection.json
    "$SOURCE_DIR"/Milestones_program_segments.postman_collection.json
    "$SOURCE_DIR"/Milestones_program_segment_designs.postman_collection.json
+   "$SOURCE_DIR"/Milestones_program_segment_rules.postman_collection.json
    "$SOURCE_DIR"/Milestones_users.postman_collection.json
 )
 
