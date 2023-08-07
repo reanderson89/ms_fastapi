@@ -156,21 +156,6 @@ def program_admin(test_app: TestClient, program):
                 f"/v1/clients/{program_admin['client_uuid']}/programs/{program_admin['program_9char']}/admins/{program_admin['user_uuid']}"
             )
 
-@pytest.fixture(scope="module")
-def program_event(test_app: TestClient, program):
-    try:
-        program_event = test_app.post(
-            f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/events",
-            json = util.new_program_event
-        ).json()
-        yield program_event
-    except:
-        raise Exception("Program Event Creation Failed")
-    finally:
-        if program_event is not None:
-            test_app.delete(
-                f"/v1/clients/{program_event['client_uuid']}/programs/{program_event['program_9char']}/events/{program_event['event_9char']}"
-            )
 
 @pytest.fixture(scope="module")
 def sub_event(test_app: TestClient, program_event):
@@ -414,7 +399,7 @@ def client_message(test_app):
 @pytest.fixture(scope="function")
 def program_message(test_app, program):
     try:
-        program_message = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/messages",  json=util.new_message).json()
+        program_message = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/messages",  json=util.new_program_message).json()
         yield program_message
     except:
         raise Exception("program_message Creation Failed")
@@ -422,3 +407,33 @@ def program_message(test_app, program):
         if program_message is not None:
             response = test_app.delete(f"/v1/messages/{program_message['message_9char']}")
             is_deleted(response)
+
+
+@pytest.fixture(scope="function")
+def segment_message(test_app, segment):
+    try:
+        segment_message = test_app.post(f"/v1/clients/{segment['client_uuid']}/programs/{segment['program_9char']}/segments/{segment['segment_9char']}/messages",  json=util.new_segment_message).json()
+        yield segment_message
+    except:
+        raise Exception("segment_message Creation Failed")
+    finally:
+        if segment_message is not None:
+            response = test_app.delete(f"/v1/messages/{segment_message['message_9char']}")
+            is_deleted(response)
+
+
+@pytest.fixture(scope="function")
+def program_with_updated_budget(test_app, client_user, static_budget):
+    try:
+        util.new_program["budget_9char"] = static_budget["budget_9char"]
+        util.new_program["user_uuid"] = client_user["user_uuid"]
+        program_with_updated_budget = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/programs/", json=util.new_program).json()[0]
+        # updating budget triggers an event that shows the connection of the budget with program
+        updated_budget = test_app.put(f"/v1/clients/{program_with_updated_budget['client_uuid']}/budgets/{program_with_updated_budget['budget_9char']}", json=util.update_static_budget).json()
+        yield program_with_updated_budget
+    except:
+        raise Exception("Program with updated budget creation failed")
+    finally:
+        if program_with_updated_budget is not None:
+            deleted_program = test_app.delete(f"/v1/clients/{program_with_updated_budget['client_uuid']}/programs/{program_with_updated_budget['program_9char']}")
+            is_deleted(deleted_program)

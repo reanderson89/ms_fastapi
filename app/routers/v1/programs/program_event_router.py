@@ -86,7 +86,7 @@ async def update_event(
 #     await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
 #     return await ProgramEventActions.delete_event(path_params)
 
-
+# this route is only available when running application locally or with pytests
 @router.delete("/delete_program_events/{event_9char}", dependencies=[Depends(test_mode)])
 async def delete_event(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],

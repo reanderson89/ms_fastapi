@@ -90,11 +90,6 @@ update_client_user = {
     "department": "test"
 }
 
-new_message = {
-    "channel": 0,
-    "body": "string",
-}
-
 new_program = {
     "uuid": test_uuids.program_uuid,
     "user_uuid": None,
@@ -293,6 +288,22 @@ update_program_rule = {
 
 new_message = {
     "name": "Pytest Message Test",
+    "body": "a message body - Message Test",
+    "channel": 2,
+    "message_type": 2,
+    "status": 1
+}
+
+new_program_message = {
+    "name": "Pytest Program Message Test",
+    "body": "a message body - Message Test",
+    "channel": 2,
+    "message_type": 2,
+    "status": 1
+}
+
+new_segment_message = {
+    "name": "Pytest Segment Message Test",
     "body": "a message body - Message Test",
     "channel": 2,
     "message_type": 2,
