@@ -2,6 +2,10 @@ name: Lint Code
 
 on:
   push:
+    branches-ignore:
+      - master
+      - main
+      - staging
 
 jobs:
   lint-code:
