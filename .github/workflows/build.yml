@@ -6,6 +6,59 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
+  run-pytest-tests:
+    name: Run pytest Tests
+    runs-on: ubuntu-latest
+    env:
+      DD_API_KEY: "foobar"
+      DD_APP_KEY: "foobar"
+      ACCOUNT_SID: "foobar"
+      ACCOUNT_TOKEN: "foobar"
+      ALGORITHM: "HS256"
+      AWS_ACCESS_KEY_ID: "foobar"
+      AWS_SECRET_ACCESS_KEY: "foobar"
+      ENV: "local"
+      FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
+      SECRET_KEY: "foobar"
+      SPARKPOST_KEY: "foobar"
+      TWILIO_FROM: "+16193299600"
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Start Docker containers
+        # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
+        # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
+        # above
+        run: |
+          docker-compose up --build --detach
+
+      - name: Pause to let app to fully start
+        # this may be problematic in the future
+        run: |
+          sleep 30
+
+      - name: Run pytest tests
+        run: |
+          docker exec --tty milestones_api pytest -v /app/tests/
+
+      - name: Stop Docker containers
+        if: always()
+        run: |
+          docker-compose down
+
+      - name: Echo job status (debugging)
+        if: always()
+        run: |
+          echo "pytest job status is ${{ job.status }}"
+
+      - name: Update Github with job status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v2
+        with:
+          name: "Postman test results"
+          status: ${{ job.status }}
+
   run-postman-tests:
     name: Run Postman Tests
     runs-on: ubuntu-latest
@@ -50,7 +103,7 @@ jobs:
       - name: Echo job status (debugging)
         if: always()
         run: |
-          echo "Job status is ${{ job.status }}"
+          echo "Postman test job status is ${{ job.status }}"
 
       - name: Update Github with job status
         if: always()
@@ -61,7 +114,9 @@ jobs:
 
   build-api:
     name: Build API
-    needs: run-postman-tests
+    needs:
+       - run-postman-tests
+       - run-pytest-tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
