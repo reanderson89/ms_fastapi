@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-pytest-tests:
-    name: Run pytest Tests
+    name: Run Pytest Tests
     runs-on: ubuntu-latest
     env:
       DD_API_KEY: "foobar"
@@ -50,13 +50,13 @@ jobs:
       - name: Echo job status (debugging)
         if: always()
         run: |
-          echo "pytest job status is ${{ job.status }}"
+          echo "Pytest job status is ${{ job.status }}"
 
       - name: Update Github with job status
         if: always()
         uses: ouzi-dev/commit-status-updater@v2
         with:
-          name: "Postman test results"
+          name: "Pytest test results"
           status: ${{ job.status }}
 
   run-postman-tests:
