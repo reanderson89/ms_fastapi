@@ -38,7 +38,7 @@ jobs:
         run: |
           sleep 30
 
-      - name: Run pytest tests
+      - name: Run Pytest tests
         run: |
           docker exec --tty milestones_api pytest -v /app/tests/
 
@@ -80,9 +80,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Start Docker containers
-        # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
-        # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
-        # above
+        # see comment above
         run: |
           docker-compose up --build --detach
 
