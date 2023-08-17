@@ -101,7 +101,7 @@ jobs:
         if: github.event.inputs.environment == 'staging'
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.DEV_HOSTS }}                                # organization
+          host: ${{ secrets.STAGING_HOSTS }}                            # organization
           port: 22
           username: blueboard
           key: ${{ secrets.DEV_SSH_KEY }}                               # organization
