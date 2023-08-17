@@ -130,7 +130,7 @@ jobs:
           key: ${{ secrets.DEV_SSH_KEY }}                               # organization
           script: |
             cd /home/blueboard
-            ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones > out.log
+            ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones-api > out.log
 
       - name: Stop VPN connection
         if: always()
