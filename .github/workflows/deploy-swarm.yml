@@ -13,6 +13,7 @@ on:
         default: 'development'
         options:
           - development
+          - staging
       ref:
         description: 'Branch with Docker Swarm YAML template?'
         default: 'staging'
@@ -51,9 +52,15 @@ jobs:
       - name: Connect VPN
         run: sudo openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon
 
-      - name: Wait for a VPN connection
+      - name: Wait for a VPN connection to development
         timeout-minutes: 1
+        if: github.event.inputs.environment == 'development'
         run: until ping -c1 ${{ secrets.DEV_LEADER }}; do sleep 2; done
+
+      - name: Wait for a VPN connection to staging
+        timeout-minutes: 1
+        if: github.event.inputs.environment == 'staging'
+        run: until ping -c1 ${{ secrets.STAGING_LEADER }}; do sleep 2; done
 
       - name: Prepare the Docker Swarm YAML file
         env:
@@ -79,7 +86,8 @@ jobs:
           envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
           echo -en ${YAML_COMMENT} >> ${SWARM_YAML}
 
-      - name: Copy the Docker Swarm YAML files to all nodes
+      - name: Copy the Docker Swarm YAML files to all development nodes
+        if: github.event.inputs.environment == 'development'
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.DEV_HOSTS }}                                # organization
@@ -89,7 +97,19 @@ jobs:
           source: "docker-*-swarm.yml" # TODO this action doesn't seem to use an env var here?  e.g. ${SWARM_YAML}
           target: /home/blueboard
 
-      - name: Pull image and update Docker Swarm on leader node
+      - name: Copy the Docker Swarm YAML files to all staging nodes
+        if: github.event.inputs.environment == 'staging'
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DEV_HOSTS }}                                # organization
+          port: 22
+          username: blueboard
+          key: ${{ secrets.DEV_SSH_KEY }}                               # organization
+          source: "docker-*-swarm.yml" # TODO this action doesn't seem to use an env var here?  e.g. ${SWARM_YAML}
+          target: /home/blueboard
+
+      - name: Pull image and update Docker Swarm on development leader node
+        if: github.event.inputs.environment == 'staging'
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.DEV_LEADER }}                               # organization
@@ -98,7 +118,19 @@ jobs:
           key: ${{ secrets.DEV_SSH_KEY }}                               # organization
           script: |
             cd /home/blueboard
-            ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones > out.log # DOCKERHUB_TOKEN or DOCKERHUB_TOKEN_RW?
+            ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones > out.log
+
+      - name: Pull image and update Docker Swarm on staging leader node
+        if: github.event.inputs.environment == 'staging'
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_LEADER }}                           # organization
+          port: 22
+          username: blueboard
+          key: ${{ secrets.DEV_SSH_KEY }}                               # organization
+          script: |
+            cd /home/blueboard
+            ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones > out.log
 
       - name: Stop VPN connection
         if: always()
