@@ -19,7 +19,7 @@ on:
         default: 'staging'
 
 env:
-  SWARM_YAML: "docker-milestones-api.yml"
+  SWARM_YAML: "docker-milestones-api-swarm.yml"
 
 jobs:
   deploy:
