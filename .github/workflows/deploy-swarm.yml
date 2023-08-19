@@ -71,6 +71,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # environment
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}               # environment
           AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}                     # environment
+          ENV: ${{ github.event.inputs.environment }}                   # workflow variable
           FERNET_KEY: ${{ secrets.FERNET_KEY }}                         # environment
           IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
           MYSQL_HOSTNAME: ${{ secrets.MYSQL_HOSTNAME }}                 # environment

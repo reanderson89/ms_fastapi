@@ -11,7 +11,7 @@
 # If you omit the mode key or set it to ingress, the routing mesh is used.
 # https://docs.docker.com/engine/swarm/ingress/
 #
-version: "3.9"
+version: '3.9'
 services:
   api:
     image: ${IMAGE_TAG}
@@ -25,32 +25,32 @@ services:
         delay: 15s
         order: start-first
     environment:
-      ACCOUNT_SID: "${ACCOUNT_SID}"
-      ACCOUNT_TOKEN: "${ACCOUNT_TOKEN}"
-      ALEMBIC_INI_FILE: "NO"
-      ALGORITHM: "${ALGORITHM}"
-      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
-      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
-      AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
-      AWS_ROLE_ARN: "${AWS_ROLE_ARN}"
-      BASE_URL: "https://milestones-dev-4.blueboard.app"
+      ACCOUNT_SID: '${ACCOUNT_SID}'
+      ACCOUNT_TOKEN: '${ACCOUNT_TOKEN}'
+      ALEMBIC_INI_FILE: 'NO'
+      ALGORITHM: '${ALGORITHM}'
+      AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID}'
+      AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY}'
+      AWS_BUCKET_NAME: '${AWS_BUCKET_NAME}'
+      AWS_ROLE_ARN: '${AWS_ROLE_ARN}'
+      BASE_URL: 'https://milestones-dev.blueboard.app'
       # No CRON env var
-      ENV: dev
-      FERNET_KEY: "${FERNET_KEY}"
-      JWT_ENFORCED: "False" # TODO this is temporary
+      ENV: '${ENV}'
+      FERNET_KEY: '${FERNET_KEY}'
+      JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MILESTONES_BOOTSTRAP: "NO"
+      MILESTONES_BOOTSTRAP: 'NO'
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: "${MYSQL_HOSTNAME}"
-      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_HOSTNAME: '${MYSQL_HOSTNAME}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       MYSQL_PORT: 3306
       MYSQL_USER: milestones
-      SECRET_KEY: "${SECRET_KEY}"
-      SPARKPOST_KEY: "${SPARKPOST_KEY}"
-      TEMPORARY_TOKEN: "${TEMPORARY_TOKEN}" # this is an experiment
-      TWILIO_FROM: "+16193299600"
+      SECRET_KEY: '${SECRET_KEY}'
+      SPARKPOST_KEY: '${SPARKPOST_KEY}'
+      TEMPORARY_TOKEN: '${TEMPORARY_TOKEN}' # this is an experiment
+      TWILIO_FROM: '+16193299600'
     networks:
-      - blueboard-network
+      - blueboard-network-${ENV}
     ports:
       - 8080:80
     entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
@@ -67,25 +67,26 @@ services:
         order: start-first
     environment:
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
-      ACCOUNT_SID: "${ACCOUNT_SID}"
-      ACCOUNT_TOKEN: "${ACCOUNT_TOKEN}"
-      ALGORITHM: "${ALGORITHM}"
-      CRON: "true"
-      FERNET_KEY: "${FERNET_KEY}"
+      ACCOUNT_SID: '${ACCOUNT_SID}'
+      ACCOUNT_TOKEN: '${ACCOUNT_TOKEN}'
+      ALGORITHM: '${ALGORITHM}'
+      CRON: 'true'
+      ENV: '${ENV}'
+      FERNET_KEY: '${FERNET_KEY}'
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: "${MYSQL_HOSTNAME}"
-      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_HOSTNAME: '${MYSQL_HOSTNAME}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       MYSQL_PORT: 3306
       MYSQL_USER: milestones
-      SECRET_KEY: "${SECRET_KEY}"
-      SPARKPOST_KEY: "${SPARKPOST_KEY}"
-      TEMPORARY_TOKEN: "${TEMPORARY_TOKEN}" # TODO remove this once the /internal routes are callable w/o a token
-      TWILIO_FROM: "+16193299600"
+      SECRET_KEY: '${SECRET_KEY}'
+      SPARKPOST_KEY: '${SPARKPOST_KEY}'
+      TEMPORARY_TOKEN: '${TEMPORARY_TOKEN}' # TODO remove this once the /internal routes are callable w/o a token
+      TWILIO_FROM: '+16193299600'
     networks:
-      - blueboard-network
+      - blueboard-network-${ENV}
     entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
 
 networks:
-  blueboard-network:
+  blueboard-network-${ENV}:
     external: true
