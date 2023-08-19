@@ -50,7 +50,7 @@ services:
       TEMPORARY_TOKEN: '${TEMPORARY_TOKEN}' # this is an experiment
       TWILIO_FROM: '+16193299600'
     networks:
-      - blueboard-network-${ENV}
+      - blueboard-${ENV}
     ports:
       - 8080:80
     entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
@@ -84,9 +84,9 @@ services:
       TEMPORARY_TOKEN: '${TEMPORARY_TOKEN}' # TODO remove this once the /internal routes are callable w/o a token
       TWILIO_FROM: '+16193299600'
     networks:
-      - blueboard-network-${ENV}
+      - blueboard-${ENV}
     entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
 
 networks:
-  blueboard-network-${ENV}:
+  blueboard-${ENV}:
     external: true
