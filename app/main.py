@@ -27,6 +27,8 @@ async def lifespan(app: FastAPI):
             yield
         except:
             yield
+    else:
+        yield
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
