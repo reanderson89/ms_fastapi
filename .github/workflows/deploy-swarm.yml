@@ -14,6 +14,7 @@ on:
         options:
           - dev
           - staging
+          - prod
       ref:
         description: 'Branch with Docker Swarm YAML template?'
         default: 'staging'
@@ -55,7 +56,7 @@ jobs:
       - name: Wait for the VPN connection
         timeout-minutes: 1
         run: |
-          until ping -c1 ${{ github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}; do sleep 2; done
+          until ping -c1 ${{ github.event.inputs.environment == 'dev' && secrets.DEV_LEADER || github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.PROD_LEADER }}; do sleep 2; done
 
       - name: Export all GitHub secrets as environment variables
         env:
@@ -93,20 +94,20 @@ jobs:
       - name: Copy the YAML file to all Docker Swarm nodes
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ github.event.inputs.environment == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
+          host: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_HOSTS || github.event.inputs.environment == 'staging' && secrets.STAGING_HOSTS || secrets.PROD_HOSTS }}
           port: 22
           username: blueboard
-          key: ${{ github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.DEV_SSH_KEY }}
+          key: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_SSH_KEY || github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.PROD_SSH_KEY }}
           source: ${{ env.SWARM_YAML }}
           target: /home/blueboard
 
       - name: Pull image and update Docker Swarm
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+          host: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_LEADER || github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.PROD_LEADER }}
           port: 22
           username: blueboard
-          key: ${{ github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.DEV_SSH_KEY }}
+          key: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_SSH_KEY || github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.PROD_SSH_KEY }}
           script: |
             cd /home/blueboard
             ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones-api > milestones-api.log
