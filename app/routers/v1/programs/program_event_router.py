@@ -37,12 +37,12 @@ def path_params(client_uuid: str, program_9char: str, event_9char: str=None):
     }
 
 
-@router.get("/events")
+@router.get("/events", response_model=Page[ProgramEventReturn])
 async def get_events(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params),
     query_params: dict = Depends(default_query_params)
-) -> Page[ProgramEventReturn]:
+):
     await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
     return await ProgramEventActions.get_all_program_events(path_params, query_params)
 

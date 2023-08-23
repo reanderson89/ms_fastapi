@@ -31,47 +31,52 @@ class ClientUserActions:
         user_objs = []
         client_user_objs = []
         for service in service_id:
-            if service in data: #.keys()
+            service_value = data.get(service)
+            if service_value:
                 response_obj = await cls.handle_user_and_service(data, path_params, expand, service)
-                if isinstance(response_obj, UserModelDB):
+                if type(response_obj) is UserModelDB:
                     user_objs.append(response_obj)
-                elif isinstance(response_obj, ClientUserModelDB) or isinstance(response_obj, ClientUserExpand):
+                elif type(response_obj) in (ClientUserModelDB, ClientUserExpand):
                     client_user_objs.append(response_obj)
-        if not user_objs and not client_user_objs:
+        if not (user_objs or client_user_objs):
             raise ValueError("No user or client user objects returned")
 
-        user_obj = set([user.uuid for user in user_objs if user is not None])
-        if len(user_obj) > 1:
+        user_uuids = [user.uuid for user in user_objs if user is not None]
+        if len(set(user_uuids)) > 1:
             raise ValueError("Multiple user objects returned for different service IDs")
 
-        client_user_obj = set([user.uuid for user in client_user_objs if user is not None])
-        if len(client_user_obj) > 1:
+        client_user_uuids = [client_user.uuid for client_user in client_user_objs if client_user is not None]
+        if len(set(client_user_uuids)) > 1:
             raise ValueError("Multiple client user objects returned for different service IDs")
 
+        user_obj = user_objs[0] if user_objs else None
+        client_user_obj = client_user_objs[0] if client_user_objs else None
+
         client_user = await cls.add_new_client_user(
-                data, path_params, user_objs[0]
-            ) if not client_user_objs else client_user_objs[0]
+            data, path_params, user_obj
+        ) if not client_user_obj else client_user_obj
         return client_user
 
     @classmethod
-    async def handle_user_and_service(cls, data: dict, path_params, expand, service_id = None):
+    async def handle_user_and_service(cls, data: dict, path_params, expand, service_id=None):
         user = None
-        service = data.get(service_id) if service_id in data.keys() else None
-        if service_id not in data.keys() and "user_uuid" not in data.keys():
+        user_uuid = data.get("user_uuid")
+        service = data.get(service_id)
+        if not (user_uuid or service):
             return await ExceptionHandling.custom500(
                 "Not enough information to create a new Client User. Please include either email address or the user_uuid."
             )
-        if "user_uuid" in data.keys():
+        if user_uuid:
             user = await BaseActions.check_if_exists(
                 UserModelDB,
                 [
-                    UserModelDB.uuid == data.get("user_uuid")
+                    UserModelDB.uuid == data["user_uuid"]
                 ])
-        elif service_id in data.keys():
+        elif service:
             user = await BaseActions.check_if_exists(
                 UserModelDB,
                 [
-                    UserServiceModelDB.service_user_id == data.get(service_id),
+                    UserServiceModelDB.service_user_id == service,
                     UserModelDB.uuid == UserServiceModelDB.user_uuid,
                     UserModelDB.first_name == data.get("first_name"),
                     UserModelDB.last_name == data.get("last_name")
@@ -85,15 +90,15 @@ class ClientUserActions:
                     return await cls.expand_client_user(client_user, user)
                 return client_user
 
-        if service and not user:
-            admin = data.setdefault("admin", 0)
-            if admin not in [0,1,2]:
+        if not user and service:
+            admin = data.get("admin", 0)
+            if admin not in [0, 1, 2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
             user = await UserActions.create_user_and_service(data, service_id)
 
-        if not user and not service:
+        if not (user or service):
             return await ExceptionHandling.custom409(
-                "Not enough information to create a new Client User, User, and Service User. Please include an email address."
+                "Not enough information to create a new Client User, User, and Service User."
             )
 
         return user

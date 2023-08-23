@@ -1,5 +1,7 @@
 from typing import Optional
+from pydantic import validator
 from sqlalchemy.orm import Mapped, mapped_column
+from app.enums import Status
 from app.models.base_class import Base, BasePydantic
 
 class SegmentModelDB(Base):
@@ -16,26 +18,46 @@ class SegmentModelDB(Base):
     time_created: Mapped[int] = mapped_column(default=None)
     time_updated: Mapped[int] = mapped_column(default=None)
 
-class SegmentReturn(BasePydantic):
+
+class SegmentModel(BasePydantic):
     uuid: str
     client_uuid: str
     program_9char: str
     segment_9char: str
-    budget_9char: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[int] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
+    budget_9char: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    status: Optional[Status]
+    time_created: Optional[int]
+    time_updated: Optional[int]
+
+
+class SegmentResponse(SegmentModel):
+    pass
+
 
 class SegmentUpdate(BasePydantic):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    budget_9char: Optional[str] = None
-    status: Optional[int] = None
+    name: Optional[str]
+    description: Optional[str]
+    budget_9char: Optional[str]
+    status: Optional[Status]
+
+    @validator('status', pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
+
 
 class SegmentCreate(BasePydantic):
     budget_9char: Optional[str]
     name: Optional[str]
     description: Optional[str]
-    status: Optional[int]
+    status: Optional[Status]
+
+    @validator('status', pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
+
+
+class SegmentDelete(BasePydantic):
+    ok: bool
+    Deleted: SegmentModel

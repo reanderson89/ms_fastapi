@@ -4,21 +4,22 @@ from app.actions.programs.events.program_event_actions import ProgramEventAction
 from app.models.programs.program_event_models import ProgramEventReturn
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params, test_mode
-from app.models.clients import ClientModelDB, ClientUpdate, ClientCreate, ClientModel
+from app.models.base_class import DeleteWarning
+from app.models.clients import ClientUpdate, ClientCreate, ClientResponse, ClientDelete
 from app.actions.clients.client_actions import ClientActions
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 
 router = APIRouter(tags=["Clients"])
 
 
-@router.get("/clients")
+@router.get("/clients", response_model=Page[ClientResponse])
 async def get_clients(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     query_params: dict = Depends(default_query_params)
-) -> Page[ClientModel]:
+):# -> Page[ClientModel]
     return await ClientActions.get_all_clients(query_params)
 
-@router.get("/clients/{client_uuid}", response_model=ClientModel)
+@router.get("/clients/{client_uuid}", response_model=ClientResponse)
 async def get_client(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         client_uuid: str
@@ -27,7 +28,7 @@ async def get_client(
     return await ClientActions.get_client(client_uuid)
 
 
-@router.post("/clients", response_model=list[ClientModelDB]|ClientModelDB)
+@router.post("/clients", response_model=list[ClientResponse]|ClientResponse)
 async def create_client(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
     clients: list[ClientCreate] | ClientCreate
@@ -35,7 +36,7 @@ async def create_client(
     return await ClientActions.create_client(clients)
 
 
-@router.put("/clients/{client_uuid}", response_model=ClientModel)
+@router.put("/clients/{client_uuid}", response_model=ClientResponse)
 async def update_client(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
     client_uuid: str,
@@ -46,7 +47,7 @@ async def update_client(
 
 
 # this should only work if there is nothing else associated with the client
-@router.delete("/clients/{client_uuid}")
+@router.delete("/clients/{client_uuid}", response_model=ClientDelete|DeleteWarning)
 async def delete_client_by_uuid(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
         client_uuid: str
@@ -55,12 +56,12 @@ async def delete_client_by_uuid(
     #TODO: add check to see if there is anything else associated with the client
     return await ClientActions.delete_client(client_uuid)
 
-@router.get("/clients/{client_uuid}/events")
+@router.get("/clients/{client_uuid}/events", response_model=Page[ProgramEventReturn])
 async def get_all_client_events(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
     client_uuid: str,
     query_params: dict = Depends(default_query_params)
-) -> Page[ProgramEventReturn]:
+):
     return await ProgramEventActions.get_all_client_events(client_uuid, query_params)
 
 

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "27ee81f9-1dbe-4d3c-8b7e-7917184702f4",
+		"_postman_id": "cc773b21-846f-45fa-8a1b-a8c969bc806a",
 		"name": "Milestones_messages",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -697,9 +697,9 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"status to equal 1\", function () {",
+									"pm.test(\"status to equal draft\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.status).to.eql(1);",
+									"    pm.expect(jsonData.status).to.eql(\"draft\");",
 									"});"
 								],
 								"type": "text/javascript"

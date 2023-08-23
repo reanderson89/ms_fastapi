@@ -1,6 +1,8 @@
 from typing import Optional
+from pydantic import validator
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, mapped_column
+from app.enums import RuleType, Status
 from app.models.base_class import Base, BasePydantic
 
 
@@ -13,32 +15,49 @@ class ProgramRuleModelDB(Base):
     program_9char: Mapped[str] = mapped_column(default=None, index=True)
     rule_9char: Mapped[str] = mapped_column(default=None, index=True)
     rule_type: Mapped[int] = mapped_column(default=None, index=True)
-    logic: Mapped[JSON] = mapped_column("logic", JSON, default=None, index=True)
     status: Mapped[int] = mapped_column(default=None, index=True)
+    logic: Mapped[JSON] = mapped_column("logic", JSON, default=None, index=True)
     time_created: Mapped[int] = mapped_column(default=None)
     time_updated: Mapped[int] = mapped_column(default=None)
 
 
-class ProgramRuleResponse(BasePydantic):
-    uuid: Optional[str] = None
-    program_uuid: Optional[str] = None
-    client_uuid: Optional[str] = None
-    program_9char: Optional[str] = None
-    rule_9char: Optional[str] = None
-    rule_type: Optional[int] = None
-    logic: Optional[dict] = None
-    status: Optional[int] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
+class ProgramRuleModel(BasePydantic):
+    uuid: Optional[str]
+    program_uuid: Optional[str]
+    client_uuid: Optional[str]
+    program_9char: Optional[str]
+    rule_9char: Optional[str]
+    rule_type: Optional[RuleType]
+    status: Optional[Status]
+    logic: Optional[dict]
+    time_created: Optional[int]
+    time_updated: Optional[int]
+
+
+class ProgramRuleResponse(ProgramRuleModel):
+    pass
 
 
 class ProgramRuleUpdate(BasePydantic):
-    rule_type: Optional[int] = None
-    logic: Optional[dict] = None
-    status: Optional[int] = None
+    rule_type: Optional[RuleType]
+    status: Optional[Status]
+    logic: Optional[dict]
+
+    @validator("rule_type", "status", pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
 
 
 class ProgramRuleCreate(BasePydantic):
-    rule_type: Optional[int] = None
+    rule_type: Optional[RuleType]
+    status: Optional[Status]
     logic: dict
-    status: Optional[int] = None
+
+    @validator("rule_type", "status", pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
+
+
+class ProgramRuleDelete(BasePydantic):
+    ok: bool
+    Deleted: ProgramRuleModel

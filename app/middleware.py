@@ -80,13 +80,31 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         detail["details"] = exception_vals
         tb = traceback.format_exception(exc)
         error_string = tb[-2].split(",")
-        file_name = error_string[0].split("/app")[-1].replace('"', "")
-        line = error_string[1].split(" ")[-1]
-        error = {
-            "error_type": f"{exception_name}: {exception_value}",
-            "file_and_line": f"{file_name}:{line}",
-            "code_piece": str(error_string[2:]).split("    ")[1].replace("', '", ", ").replace("\\n", "")
-        }
+        error_string_alt = tb[-3].split(",")
+        if len(error_string) >= 3 and len(code:=str(error_string[2:]).split("    ")) >= 2:
+            file_name = error_string[0].split("/app")[-1].replace('"', "")
+            line = error_string[1].split(" ")[-1]
+            error = {
+                "error_type": f"{exception_name}: {exception_value}",
+                "file_and_line": f"{file_name}:{line}",
+                "code_piece": code[1].replace("', '", ", ")
+            }
+
+        elif len(error_string) >= 3 and len(code:=str(error_string_alt[2:]).split("    ")) >= 2:
+            file_name = error_string[0].split("/app")[-1].replace('"', "")
+            line = error_string[1].split(" ")[-1]
+
+            error = {
+                "error_type": f"{exception_name}: {exception_value}",
+                "file_and_line": f"{file_name}:{line}",
+                "code_piece": code[1].replace("', '", ", ")
+            }
+        else:
+            error = {
+                "error_type": f"{exception_name}: {exception_value}",
+                "file_and_line": "unknown",
+                "code_piece": "unknown"
+            }
         detail["error"] = error
         i_time = datetime.utcnow()
         logger_error = {

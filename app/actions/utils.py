@@ -18,18 +18,24 @@ def new_9char():
 
 
 def convert_date_to_int(date):
-    if date is None:
-        return None
-    if isinstance(date, int):
+    if date is None or isinstance(date, int):
         return date
-    try:
-        date_obj = datetime.strptime(date, "%m/%d/%Y")
-    except ValueError:
-        date_obj = datetime.strptime(date, "%m/%d/%y")
-    if date_obj:
-        epoch_time = int(date_obj.timestamp())
-        return epoch_time
+    formats = ["%m/%d/%Y", "%Y/%m/%d", "%m/%d/%y", "%Y-%m-%d"]
+    for fmt in formats:
+        try:
+            date_obj = datetime.strptime(date, fmt)
+            epoch_time = int(date_obj.timestamp())
+            return epoch_time
+        except ValueError:
+            pass
     return None
+    raise ValueError(f"Invalid date format: {date}")
+
+
+def convert_int_to_date_string(date_int):
+    if date_int is None or isinstance(date_int, str):
+        return date_int
+    return datetime.fromtimestamp(date_int).strftime("%m/%d/%Y")
 
 
 def degrees_to_microdegrees(degrees: float):

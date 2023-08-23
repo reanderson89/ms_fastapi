@@ -7,7 +7,7 @@ from app.models.clients import ClientAwardModelDB
 class AwardActions:
 
     @staticmethod
-    async def check_for_existing_by_name(name, error = True):
+    async def check_if_award_exists(name, error = True):
         award = await BaseActions.check_if_exists(AwardModelDB, [AwardModelDB.name == name])
         if award and error:
             return await ExceptionHandling.custom409(f"Award with name '{name}' already exists.")
@@ -67,16 +67,42 @@ class AwardActions:
         raise ExceptionHandling.custom400(f"Upload type {upload_type} is not supported")
 
     @classmethod
-    async def create_award(cls, award_objs):
+    async def create_award(cls, awards):
         """
         Create one or more awards in the database
         :param award_objs(AwardModel | list[AwardModel]): A list of Award models to create
         :return: The list of created award models
         """
-        award = await cls.check_for_existing_by_name(award_objs.name, False)
-        if award:
-            return award
-        return await BaseActions.create(award_objs)
+        if isinstance(awards, list):
+            to_create = []
+            to_return = []
+            for award in awards:
+                award_model = await cls.to_award_model(award)
+                existing = await cls.check_if_award_exists(
+                        award_model.name,
+                        False
+                    )
+                if existing:
+                    to_return.append(existing)
+                else:
+                    to_create.append(award_model)
+            if to_create:
+                to_return.extend(await BaseActions.create(to_create))
+            return to_return
+        award_model = await cls.to_award_model(awards)
+        existing = await cls.check_if_award_exists(
+                award_model.name,
+                False
+            )
+        if existing:
+            return existing
+        return await BaseActions.create(award_model)
+
+    @staticmethod
+    async def to_award_model(award):
+        return AwardModelDB(
+            **award.dict()
+        )
 
     @classmethod
     async def update_award(cls, award_uuid: str, update_obj: AwardUpdate):
@@ -87,7 +113,7 @@ class AwardActions:
         :return: The updated award model
         """
         if update_obj.name:
-            await cls.check_for_existing_by_name(update_obj.name)
+            await cls.check_if_award_exists(update_obj.name)
         if update_obj.hero_image:
             update_obj.hero_image, _ = await UploadActions.verify_upload_file("image", update_obj.hero_image)
         return await BaseActions.update(

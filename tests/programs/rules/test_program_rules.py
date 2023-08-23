@@ -20,7 +20,7 @@ def test_get_program_rule(test_app: TestClient, program_rule: dict):
 
 def test_create_program_rule(program_rule: dict):
     assert "uuid" in program_rule
-    assert program_rule["status"] == utils.new_program_rule["status"]
+    assert program_rule["status"] == "published"
 
 
 def test_update_program_rule(test_app: TestClient, program_rule: dict):
@@ -29,7 +29,7 @@ def test_update_program_rule(test_app: TestClient, program_rule: dict):
         json = utils.update_program_rule
     )
     assert response.status_code == 200
-    assert response.json()["status"] == utils.update_program_rule["status"]
+    assert response.json()["status"] == "draft"
 
 
 def test_delete_program_rule(test_app: TestClient, program_rule: dict):

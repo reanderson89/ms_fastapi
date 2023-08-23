@@ -5,7 +5,7 @@ from app.actions.base_actions import BaseActions
 from app.actions.utils import new_9char
 from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardResponse
 
-class SegmentAward(Base):
+class SegmentAwardModelDB(Base):
     __tablename__ = "program_segment_award"
 
     uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
@@ -28,49 +28,39 @@ class SegmentAward(Base):
         if not self.uuid:
             self.uuid = (self.client_uuid + self.program_9char + self.segment_9char + self.client_award_9char)
 
-class SegmentAwardReturn(BasePydantic):
-    uuid: str 
-    client_uuid: str 
-    program_9char: str 
-    program_award_9char: str 
-    segment_9char: str 
-    segment_award_9char: str 
-    client_award_9char: str
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
+
+class SegmentAwardModel(BasePydantic):
+    uuid: Optional[str]
+    client_uuid: Optional[str]
+    program_9char: Optional[str]
+    program_award_9char: Optional[str]
+    segment_9char: Optional[str]
+    segment_award_9char: Optional[str]
+    client_award_9char: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
+    time_created: Optional[int]
+    time_updated: Optional[int]
+
 
 class SegmentAwardUpdate(BasePydantic):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
+
 
 class SegmentAwardCreate(BasePydantic):
-    client_award_9char: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
+    client_award_9char: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
 
-class SegmentAwardBase(BasePydantic):
-    uuid: Optional[str] = None 
-    client_uuid: Optional[str] = None 
-    program_9char: Optional[str] = None 
-    program_award_9char: Optional[str] = None 
-    segment_9char: Optional[str] = None 
-    segment_award_9char: Optional[str] = None
-    client_award_9char: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
 
-class SegmentAwardResponse(SegmentAwardBase):
-    channel: Optional[int] = None
-    award_type: Optional[int] = None
-    value: Optional[int] = None
+class SegmentAwardResponse(SegmentAwardModel):
+    channel: Optional[int|str]
+    award_type: Optional[int|str]
+    value: Optional[int]
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -84,3 +74,8 @@ class SegmentAwardResponse(SegmentAwardBase):
         self.channel = client_award.channel
         self.award_type = client_award.award_type
         self.value = client_award.value
+
+
+class ProgramAwardDelete(BasePydantic):
+    ok: bool
+    Deleted: SegmentAwardModelDB

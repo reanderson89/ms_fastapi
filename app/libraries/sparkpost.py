@@ -5,7 +5,7 @@ from app.models.messages import MessageModel
 from app.actions.messages.templates.template_actions import MessageTemplateActions
 from sparkpost import SparkPost
 
-from app.models.users.user_models import UserBase
+from app.models.users.user_models import UserModel
 _scriptname = "ThirdParty.SparkPost"
 
 
@@ -27,7 +27,7 @@ async def send_auth_email(user_service: UserServiceModelDB):
 
     return response
 
-async def send_message_email(message_details: dict, recipient: UserBase, recipient_email: str):
+async def send_message_email(message_details: dict, recipient: UserModel, recipient_email: str):
     response = sp.transmissions.send(
         use_sandbox=False,
         recipients=[recipient_email],

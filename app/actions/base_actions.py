@@ -45,9 +45,12 @@ class BaseActions:
         Deleting an item that has been previously looked up and processed inside its respective Model Action file.
         """
         with Session(engine) as session:
-            session.delete(item)
-            session.commit()
-            return {"ok": True, "Deleted": item}
+            try:
+                session.delete(item)
+                session.commit()
+                return {"ok": True, "Deleted": item}
+            except:
+                return {"ok": False, "Not Deleted": item}
 
     @staticmethod
     async def get_one_where(
@@ -323,15 +326,19 @@ class BaseActions:
             query = select(model).where(*conditions)
             query = cls._add_ordering_to_query(model, query, params) if params else query
             query = cls._filter_query(model, query, params) if params else query
+
             if pagination:
                 db_query = paginate(session, query)
+
             else:
                 db_query = session.scalars(query).all()
+
             if check404:
+                message = "No items found matching the specified conditions"
                 if pagination:
-                    await ExceptionHandling.check404(db_query.items)
+                    await ExceptionHandling.check404(db_query.items, message=message)
                 else:
-                    await ExceptionHandling.check404(db_query)
+                    await ExceptionHandling.check404(db_query, message=message)
             return db_query
 
     @classmethod

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "cd8b988b-a499-42c1-8f21-f5c2c9008083",
+		"_postman_id": "7b0240a0-0ea2-457e-b317-e8d25250d46d",
 		"name": "Milestones_program_segment_designs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -1092,7 +1092,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "\n  {\n    \"channel\": 1,\n    \"status\": 1,\n    \"message_uuid\": \"message_uuid\"\n  }\n\n",
+					"raw": "\n  {\n    \"channel\": 1,\n    \"status\": 2,\n    \"message_uuid\": \"message_uuid\"\n  }\n\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",
@@ -1821,9 +1821,9 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
-							"pm.test(\"status should be 0\", function () {",
+							"pm.test(\"status should be draft\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.status).to.eql(0);",
+							"    pm.expect(jsonData.status).to.eql(\"draft\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1854,7 +1854,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n    \"channel\": 1,\n    \"status\": 0\n  }\n",
+					"raw": "  {\n    \"channel\": 2,\n    \"status\": 1\n  }\n",
 					"options": {
 						"raw": {
 							"headerFamily": "json",

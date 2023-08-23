@@ -1,4 +1,28 @@
-from .segment_models import SegmentModelDB, SegmentUpdate, SegmentCreate, SegmentReturn
-from .segment_award_models import SegmentAward, SegmentAwardUpdate, SegmentAwardReturn, SegmentAwardCreate
-from .segment_design_models import SegmentDesignModel, SegmentDesignUpdate, SegmentDesignCreate, SegmentDesignReturn
-from .segment_rule_models import SegmentRuleModel, SegmentRuleUpdate, SegmentRuleCreate, SegmentRuleReturn
+from .segment_models import (
+    SegmentModelDB,
+    SegmentUpdate,
+    SegmentCreate,
+    SegmentResponse,
+    SegmentDelete,
+)
+from .segment_award_models import (
+    SegmentAwardModelDB,
+    SegmentAwardUpdate,
+    SegmentAwardResponse,
+    SegmentAwardCreate,
+    ProgramAwardDelete,
+)
+from .segment_design_models import (
+    SegmentDesignModelDB,
+    SegmentDesignUpdate,
+    SegmentDesignCreate,
+    SegmentDesignResponse,
+    SegmentDesignDelete,
+)
+from .segment_rule_models import (
+    SegmentRuleModelDB,
+    SegmentRuleUpdate,
+    SegmentRuleCreate,
+    SegmentRuleResponse,
+    SegmentRuleDelete,
+)

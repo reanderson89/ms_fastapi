@@ -1,13 +1,19 @@
 from fastapi import APIRouter, Depends
 from typing import Union, Annotated
 from app.routers.v1.pagination import Page
-from app.models.messages import MessageCreate, MessageUpdate, MessageModel, MessageSend
+from app.models.messages import MessageCreate, MessageUpdate, MessageSend, MessageResponse
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
 from app.utilities.auth.auth_handler import Permissions
 from app.routers.v1.programs.program_message_router import MessageEventRouter
 
-router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}", tags=["Segment Messages"], route_class=MessageEventRouter)
+
+router = APIRouter(
+    prefix="/clients/{client_uuid}/programs/{program_9char}/segments/{segment_9char}",
+    tags=["Segment Messages"],
+    route_class=MessageEventRouter
+)
+
 
 def path_params(client_uuid: str, program_9char: str, segment_9char: str=None):
     return {
@@ -16,15 +22,17 @@ def path_params(client_uuid: str, program_9char: str, segment_9char: str=None):
         "segment_9char": segment_9char
     }
 
-@router.get("/messages")
+
+@router.get("/messages", response_model=Page[MessageResponse])
 async def get_segment_messages(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     path_params: dict = Depends(path_params),
     query_params: dict = Depends(default_query_params)
-)-> Page[MessageModel]:
+):
     return await MessageActions.get_all_segment_messages(query_params, path_params)
 
-@router.get("/messages/{message_9char}", response_model=MessageModel)
+
+@router.get("/messages/{message_9char}", response_model=MessageResponse)
 async def get_segment_message(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     message_9char: str,
@@ -33,7 +41,7 @@ async def get_segment_message(
     return await MessageActions.get_segment_message(message_9char, path_params)
 
 
-@router.post("/messages", response_model=list[dict]|dict)
+@router.post("/messages", response_model=list[MessageResponse]|MessageResponse)
 async def create_segment_message(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     new_message_obj: Union[list[MessageCreate], MessageCreate],
@@ -41,13 +49,15 @@ async def create_segment_message(
 ):
     return await MessageActions.create_message(new_message_obj, path_params)
 
-@router.put("/messages/{message_9char}", response_model=MessageModel)
+
+@router.put("/messages/{message_9char}", response_model=MessageResponse)
 async def update_message(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     message_9char: str,
     message_updates: MessageUpdate
 ):
     return await MessageActions.update_message(message_9char, message_updates)
+
 
 @router.post("/messages/{message_9char}/send")
 async def send_message(

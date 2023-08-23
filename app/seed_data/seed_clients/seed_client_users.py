@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 from faker import Faker
@@ -9,6 +9,12 @@ import pandas as pd
 Faker.seed(0)
 faker = Faker()
 faker.add_provider(job)
+
+def fake_date():
+    return int(faker.date_time_between(start_date="-1y", end_date="now").timestamp())
+
+def fake_bday():
+    return int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp())
 
 client_user_uuid_list = ['4f54406dabc9099978458b6ed7ab91af9c5fde5e18b07afaba122adb',
                          '684a6e7e21f0f2793adbcf6bcedf7413d240459e587bdc8c24e044d0',
@@ -386,11 +392,12 @@ owen = {
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "department": "Sr Bug Creator",
         "admin": 2,
-        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
-        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_start": fake_date(),
+        "time_hire": fake_date(),
         "active": 1,
         "employee_id": faker.pystr(),
-        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp())}
+        "time_birthday": fake_bday()
+    }
 
 clark = {
         "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
@@ -401,11 +408,11 @@ clark = {
         "department": "Domestique", #faker doesnt have a job department field
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
-        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_start": fake_date(),
+        "time_hire": fake_date(),
         "active": 1,
         "employee_id": faker.pystr(),
-        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+        "time_birthday": fake_bday() #we dont ask for birthday during client user creation
     }
 
 ryan = {
@@ -417,11 +424,11 @@ ryan = {
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
         "department": "Racecar Recreation Enthusiast",
         "admin": 2,
-        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
-        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_start": fake_date(),
+        "time_hire": fake_date(),
         "active": 1,
         "employee_id": faker.pystr(),
-        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+        "time_birthday": fake_bday() #we dont ask for birthday during client user creation
     }
 
 jason = {
@@ -433,11 +440,11 @@ jason = {
         "department": "Quality Assurance Intern", #faker doesnt have a job department field
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "time_start": datetime.fromtimestamp(int(datetime.now().timestamp())),
-        "time_hire": datetime.fromtimestamp(int(datetime.now().timestamp())),
+        "time_start": fake_date(),
+        "time_hire": fake_date(),
         "active": 1,
         "employee_id": faker.pystr(),
-        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+        "time_birthday": fake_bday() #we dont ask for birthday during client user creation
         }
 
 josh = {
@@ -449,11 +456,11 @@ josh = {
         "department": "Tooth Hurts",
         "admin": 2,
         "manager_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
-        "time_start": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
-        "time_hire": int(faker.date_time_between(start_date="-1y", end_date="now").timestamp()),
+        "time_start": fake_date(),
+        "time_hire": fake_date(),
         "active": 1,
         "employee_id": faker.pystr(),
-        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()) #we dont ask for birthday during client user creation
+        "time_birthday": fake_bday() #we dont ask for birthday during client user creation
     }
 
 
@@ -485,11 +492,12 @@ async def generate_client_users(clients: list):
                         "time_hire": time_use,
                         "active": 1,
                         "employee_id": faker.pystr(),
-                        "time_birthday": int(faker.date_time_between(start_date="-50y", end_date="-18y").timestamp()), #we dont ask for birthday during client user creation
+                        "time_birthday": fake_bday(), #we dont ask for birthday during client user creation
                     },
                     {"client_uuid": client.uuid, "user_uuid": None}
                 )
     for i in new:
-        await ClientUserActions.create_client_user(i, {
-           "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
-        })
+        await ClientUserActions.create_client_user(
+            i,
+            {"client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",}
+        )

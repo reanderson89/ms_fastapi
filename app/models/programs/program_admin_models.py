@@ -4,6 +4,7 @@ from pydantic import Field
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
+# TODO: finalize what permissions are needed/wanted
 class AdminPermissions(IntEnum):
     none = 0
     supervisor = 1
@@ -13,10 +14,6 @@ class ProgramAdminStatus(Enum):
     exists = "existing admin"
     created = "admin created"
 
-class AdminExpand(str, Enum):
-    client = "client"
-    program = "program"
-    user = "user"
 
 class AdminModelDB(Base):
     __tablename__ = "program_admin"
@@ -50,3 +47,8 @@ class AdminStatus(AdminModel):
 
 class AdminUpdate(BasePydantic):
     permissions: Optional[int]
+
+
+class AdminDelete(BasePydantic):
+    ok: bool
+    Deleted: AdminModel

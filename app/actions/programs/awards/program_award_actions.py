@@ -2,7 +2,7 @@ from app.exceptions import ExceptionHandling
 from app.actions.base_actions import BaseActions
 from app.actions.upload import UploadActions
 from app.models.programs.program_award_models import ProgramAwardModelDB, ProgramAwardUpdate
-from app.models.segments import SegmentAward
+from app.models.segments import SegmentAwardModelDB
 
 
 
@@ -102,11 +102,11 @@ class ProgramAwardActions:
     @staticmethod
     async def delete_award(path_params: dict):
         segment =  await BaseActions.get_one_where(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-                SegmentAward.client_uuid == path_params["client_uuid"],
-                SegmentAward.program_9char == path_params["program_9char"],
-                SegmentAward.program_award_9char == path_params["program_award_9char"]
+                SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+                SegmentAwardModelDB.program_9char == path_params["program_9char"],
+                SegmentAwardModelDB.program_award_9char == path_params["program_award_9char"]
             ],
             False
         )

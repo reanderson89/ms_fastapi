@@ -25,18 +25,24 @@ def test_get_award(test_app, award):
 
 
 def test_create_award(award):
-	assert award["uuid"] == utils.new_award['uuid']
-	assert award["description"] == award["description"]
-	assert award["name"] == award["name"]
+	assert "uuid" in award
+	assert award["name"] == utils.new_award['name']
+	assert award["description"] == utils.new_award["description"]
+	assert award["channel"] == utils.new_award['channel']
+	assert award["award_type"] == "recognition"
+	assert award["value"] == utils.new_award['value']
 
 
 def test_update_award(test_app, award):
 	response = test_app.put(f"/v1/awards/{award['uuid']}", json=utils.update_award)
 	assert response.status_code == 200
 	response = response.json()
-	assert response["uuid"] == utils.new_award['uuid']
 	assert response["name"] == utils.update_award["name"]
 	assert response["description"] == utils.update_award["description"]
+	assert response["hero_image"] == "jpeg"
+	assert response["channel"] == utils.update_award["channel"]
+	assert response["award_type"] == "reward"
+	assert response["value"] == utils.update_award["value"]
 
 
 def test_delete_award(test_app, award):

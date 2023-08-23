@@ -5,8 +5,8 @@ def test_create_static_budget(client, static_budget):
     assert "uuid" in static_budget
     assert client["uuid"] == static_budget["client_uuid"]
     assert "budget_9char" in static_budget
-    assert static_budget["budget_type"] == 0
-    
+    assert static_budget["budget_type"] == "static"
+
 # test creation of static parent from static budget, and that the static value is removed from it's parent.
 def test_create_parent_static_budget_from_static(test_app, client, parent_static_budget):
     static_budget = test_app.get(f"/v1/clients/{parent_static_budget['client_uuid']}/budgets/{parent_static_budget['parent_9char']}")
@@ -14,48 +14,48 @@ def test_create_parent_static_budget_from_static(test_app, client, parent_static
     assert "uuid" in parent_static_budget
     assert client["uuid"] == parent_static_budget["client_uuid"]
     assert static_budget["budget_9char"] == parent_static_budget["parent_9char"]
-    assert parent_static_budget["budget_type"] == 0
+    assert parent_static_budget["budget_type"] == "static"
     assert parent_static_budget["value"] == util.new_parent_static_budget["value"]
     assert static_budget["value"] == util.new_static_budget["value"] - parent_static_budget["value"]
 
-    
+
 def test_create_parent_budget_no_cap_from_static(client, static_budget, parent_budget_no_cap):
     assert "uuid" in parent_budget_no_cap
     assert client["uuid"] == parent_budget_no_cap["client_uuid"]
     assert static_budget["budget_9char"] == parent_budget_no_cap["parent_9char"]
-    assert parent_budget_no_cap["budget_type"] == 1
+    assert parent_budget_no_cap["budget_type"] == "passthru_nocap"
 
 
 def test_create_parent_budget_cap_from_static(client, static_budget, parent_budget_cap):
     assert "uuid" in parent_budget_cap
     assert client["uuid"] == parent_budget_cap["client_uuid"]
     assert static_budget["budget_9char"] == parent_budget_cap["parent_9char"]
-    assert parent_budget_cap["budget_type"] == 2
+    assert parent_budget_cap["budget_type"] == "passthru_cap"
 
 
 def test_create_sub_budget_no_cap_from_parent_with_cap(parent_budget_cap, sub_budget_no_cap_from_parent_with_cap):
     sub_budget_no_cap = sub_budget_no_cap_from_parent_with_cap
     assert sub_budget_no_cap["parent_9char"] == parent_budget_cap["budget_9char"]
-    assert sub_budget_no_cap["budget_type"] == 1
+    assert sub_budget_no_cap["budget_type"] == "passthru_nocap"
 
 
 def test_create_sub_budget_cap_from_parent_with_cap(parent_budget_cap, sub_budget_cap_from_parent_with_cap):
     sub_budget_cap = sub_budget_cap_from_parent_with_cap
     assert sub_budget_cap["parent_9char"] == parent_budget_cap["budget_9char"]
-    assert sub_budget_cap["budget_type"] == 2
+    assert sub_budget_cap["budget_type"] == "passthru_cap"
 
 
 def test_create_sub_budget_no_cap_from_parent_with_no_cap(parent_budget_no_cap, sub_budget_no_cap_from_parent_no_cap):
     sub_budget_no_cap = sub_budget_no_cap_from_parent_no_cap
     assert sub_budget_no_cap["parent_9char"] == parent_budget_no_cap["budget_9char"]
-    assert sub_budget_no_cap["budget_type"] == 1
-        
+    assert sub_budget_no_cap["budget_type"] == "passthru_nocap"
+
 
 def test_create_sub_budget_with_cap_from_parent_with_no_cap(parent_budget_no_cap, sub_budget_cap_from_parent_no_cap):
     sub_budget_cap = sub_budget_cap_from_parent_no_cap
     assert sub_budget_cap["parent_9char"] == parent_budget_no_cap["budget_9char"]
-    assert sub_budget_cap["budget_type"] == 2
-        
+    assert sub_budget_cap["budget_type"] == "passthru_cap"
+
 
 def test_create_static_budget_from_parent_with_cap(test_app, parent_budget_cap):
     util.new_sub_static_budget["parent_9char"] = parent_budget_cap["budget_9char"]
@@ -161,5 +161,3 @@ def test_integration_delete_budget(test_app, client):
         assert response["Deleted"]["budget_9char"] == budget["budget_9char"]
     finally:
         test_app.delete(f"/v1/clients/{client['uuid']}/budgets/{budget['budget_9char']}")
-        
-

@@ -16,7 +16,7 @@ class BaseDB:
 class LocalDB(BaseDB):
     # these env vars are coming from docker-compose.yml
     HOST: str =  os.environ.get("MYSQL_HOSTNAME", "localhost")
-    PORT: int = os.environ.get("MYSQL_PORT", 32776)
+    PORT: int = os.environ.get("MYSQL_PORT", 3306)
     USER: str = os.environ.get("MYSQL_USER", "root")
     PASSWD: str = os.environ.get("MYSQL_PASSWORD", "password")
     DB: str = os.environ.get("MYSQL_DATABASE", "blueboard_milestones")
@@ -25,7 +25,7 @@ class LocalDB(BaseDB):
 class DevDB(BaseDB):
     # these env vars are coming from docker-compose.yml
     HOST: str =  os.environ.get("MYSQL_HOSTNAME", "localhost")
-    PORT: int = os.environ.get("MYSQL_PORT", 32776)
+    PORT: int = os.environ.get("MYSQL_PORT", 3306)
     USER: str = os.environ.get("MYSQL_USER", "root")
     PASSWD: str = os.environ.get("MYSQL_PASSWORD", "password")
     DB: str = os.environ.get("MYSQL_DATABASE", "blueboard_milestones")
@@ -34,7 +34,7 @@ class DevDB(BaseDB):
 class StagingDB(BaseDB):
     # these env vars are coming from docker-compose.yml
     HOST: str =  os.environ.get("MYSQL_HOSTNAME", "localhost")
-    PORT: int = os.environ.get("MYSQL_PORT", 32776)
+    PORT: int = os.environ.get("MYSQL_PORT", 3306)
     USER: str = os.environ.get("MYSQL_USER", "root")
     PASSWD: str = os.environ.get("MYSQL_PASSWORD", "password")
     DB: str = os.environ.get("MYSQL_DATABASE", "blueboard_milestones")
@@ -43,7 +43,7 @@ class StagingDB(BaseDB):
 class ProdDB(BaseDB):
     # these env vars are coming from docker-compose.yml
     HOST: str =  os.environ.get("MYSQL_HOSTNAME", "localhost")
-    PORT: int = os.environ.get("MYSQL_PORT", 32776)
+    PORT: int = os.environ.get("MYSQL_PORT", 3306)
     USER: str = os.environ.get("MYSQL_USER", "root")
     PASSWD: str = os.environ.get("MYSQL_PASSWORD", "password")
     DB: str = os.environ.get("MYSQL_DATABASE", "blueboard_milestones")

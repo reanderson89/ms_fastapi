@@ -7,8 +7,8 @@ class MessageSendingHandler:
     channel_types = {
                 1: "email",
                 2: "cell",
-                # 4: "slack",
-                # 8: "msteams",
+                # 4: "p2p_slack",
+                # 8: "p2p_teams",
                 # 16: "web"
             }
 

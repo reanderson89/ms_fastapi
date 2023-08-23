@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from fastapi.routing import APIRoute
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params, verify_client_award
+from app.models.base_class import DeleteWarning
 from app.actions.clients.awards.client_award_actions import ClientAwardActions
 from app.actions.programs.events.program_event_actions import ProgramEventActions
-from app.models.clients import ClientAwardModelDB, ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse
+from app.models.clients import ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse, ClientAwardDelete
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 from app.models.uploads import UploadType
 
@@ -57,7 +58,12 @@ async def get_award_upload_url(
     file_name: str,
     upload_type: UploadType
 ):
-    return await ClientAwardActions.get_upload_url(client_uuid, client_award_9char, file_name, upload_type.value)
+    return await ClientAwardActions.get_upload_url(
+        client_uuid,
+        client_award_9char,
+        file_name,
+        upload_type.value
+    )
 
 
 @router.post("/awards", response_model=list[ClientAwardResponse] | ClientAwardResponse)
@@ -70,7 +76,7 @@ async def create_award(
     return await ClientAwardActions.create_award(client_uuid, awards)
 
 
-@router.put("/awards/{client_award_9char}", response_model=ClientAwardModelDB)
+@router.put("/awards/{client_award_9char}", response_model=ClientAwardResponse)
 async def update_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     client_uuid: str,
@@ -82,7 +88,7 @@ async def update_award(
 
 
 # this should only work if there is no programs or segments associated with the award
-@router.delete("/awards/{client_award_9char}")
+@router.delete("/awards/{client_award_9char}", response_model=ClientAwardDelete|DeleteWarning)
 async def delete_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     client_uuid: str,

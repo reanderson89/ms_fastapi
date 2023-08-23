@@ -8,7 +8,7 @@ from app.models.clients import ClientUserModelDB
 from app.models.clients import ClientModelDB
 from app.models.clients.client_award_models import ClientAwardModelDB
 from app.models.programs import ProgramAwardModelDB
-from app.models.segments import SegmentAward
+from app.models.segments import SegmentAwardModelDB
 
 class SortOrder(str, Enum):
     ASC = "ASC"
@@ -84,10 +84,10 @@ async def verify_program_award(client_uuid: str, program_award_9char: str):
 
 async def verify_segment_award(client_uuid: str, segment_award_9char: str):
     response =  await BaseActions.check_if_exists(
-        SegmentAward,
+        SegmentAwardModelDB,
         [
-            SegmentAward.client_uuid == client_uuid,
-            SegmentAward.segment_award_9char == segment_award_9char
+            SegmentAwardModelDB.client_uuid == client_uuid,
+            SegmentAwardModelDB.segment_award_9char == segment_award_9char
         ]
     )
     if not response:

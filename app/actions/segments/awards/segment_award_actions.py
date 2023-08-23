@@ -1,18 +1,18 @@
 from app.exceptions import ExceptionHandling
 from app.actions.base_actions import BaseActions
 from app.actions.upload import UploadActions
-from app.models.segments.segment_award_models import SegmentAward
+from app.models.segments.segment_award_models import SegmentAwardModelDB
 
 class SegmentAwardActions:
 
     @staticmethod
     async def get_all_segment_awards(path_params, query_params):
         return await BaseActions.get_all_where(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-            SegmentAward.client_uuid == path_params["client_uuid"],
-            SegmentAward.program_9char == path_params["program_9char"],
-            SegmentAward.segment_9char == path_params["segment_9char"]
+            SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+            SegmentAwardModelDB.program_9char == path_params["program_9char"],
+            SegmentAwardModelDB.segment_9char == path_params["segment_9char"]
             ],
             query_params
         )
@@ -20,12 +20,12 @@ class SegmentAwardActions:
     @staticmethod
     async def get_segment_award(path_params):
         return await BaseActions.get_one_where(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-            SegmentAward.segment_9char == path_params["segment_9char"],
-            SegmentAward.client_uuid == path_params["client_uuid"],
-            SegmentAward.program_9char == path_params["program_9char"],
-            SegmentAward.segment_award_9char == path_params["segment_award_9char"]
+            SegmentAwardModelDB.segment_9char == path_params["segment_9char"],
+            SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+            SegmentAwardModelDB.program_9char == path_params["program_9char"],
+            SegmentAwardModelDB.segment_award_9char == path_params["segment_award_9char"]
             ]
         )
 
@@ -48,7 +48,7 @@ class SegmentAwardActions:
         if isinstance(segment_awards, list):
             to_create = []
             return_list = []
-            award_models = [SegmentAward(
+            award_models = [SegmentAwardModelDB(
                 **segment_award.dict(),
                 client_uuid = path_params["client_uuid"],
                 program_9char = path_params["program_9char"],
@@ -65,7 +65,7 @@ class SegmentAwardActions:
                 return_list.extend(await BaseActions.create(to_create))
             return return_list
 
-        award_model = SegmentAward(
+        award_model = SegmentAwardModelDB(
             **segment_awards.dict(),
                 client_uuid = path_params["client_uuid"],
                 program_9char = path_params["program_9char"],
@@ -85,12 +85,12 @@ class SegmentAwardActions:
             segment_award_updates.hero_image, _ = await UploadActions.verify_upload_file("image", segment_award_updates.hero_image)
             # TODO: add s3 query to check if file exists and is valid
         return await BaseActions.update(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-            SegmentAward.segment_9char == path_params["segment_9char"],
-            SegmentAward.client_uuid == path_params["client_uuid"],
-            SegmentAward.program_9char == path_params["program_9char"],
-            SegmentAward.segment_award_9char == path_params["segment_award_9char"]
+            SegmentAwardModelDB.segment_9char == path_params["segment_9char"],
+            SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+            SegmentAwardModelDB.program_9char == path_params["program_9char"],
+            SegmentAwardModelDB.segment_award_9char == path_params["segment_award_9char"]
             ],
             segment_award_updates
         )
@@ -98,12 +98,12 @@ class SegmentAwardActions:
     @staticmethod
     async def delete_segment_award(path_params):
         return await BaseActions.delete_one(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-            SegmentAward.segment_9char == path_params["segment_9char"],
-            SegmentAward.client_uuid == path_params["client_uuid"],
-            SegmentAward.program_9char == path_params["program_9char"],
-            SegmentAward.segment_award_9char == path_params["segment_award_9char"]
+            SegmentAwardModelDB.segment_9char == path_params["segment_9char"],
+            SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+            SegmentAwardModelDB.program_9char == path_params["program_9char"],
+            SegmentAwardModelDB.segment_award_9char == path_params["segment_award_9char"]
             ]
         )
 
@@ -111,12 +111,12 @@ class SegmentAwardActions:
     async def check_if_award_name_exists(path_params, name):
         # check using cleint id, program id, segment id, and award name
         award = await BaseActions.check_if_exists(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-            SegmentAward.client_uuid == path_params["client_uuid"],
-            SegmentAward.program_9char == path_params["program_9char"],
-            SegmentAward.segment_9char == path_params["segment_9char"],
-            SegmentAward.name == name
+            SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
+            SegmentAwardModelDB.program_9char == path_params["program_9char"],
+            SegmentAwardModelDB.segment_9char == path_params["segment_9char"],
+            SegmentAwardModelDB.name == name
             ]
         )
         if award:
@@ -125,9 +125,9 @@ class SegmentAwardActions:
     @staticmethod
     async def check_if_award_exists(award_uuid: str):
         award = await BaseActions.check_if_exists(
-            SegmentAward,
+            SegmentAwardModelDB,
             [
-                SegmentAward.uuid == award_uuid
+                SegmentAwardModelDB.uuid == award_uuid
             ]
         )
         return award

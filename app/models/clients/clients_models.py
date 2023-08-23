@@ -1,5 +1,7 @@
 from typing import Optional
+from pydantic import validator
 from sqlalchemy.orm import Mapped, mapped_column
+from app.enums import ClientStatus
 from app.models.base_class import Base, BasePydantic
 
 
@@ -13,7 +15,8 @@ class ClientModelDB(Base):
     time_created: Mapped[int] = mapped_column(default=None)
     time_updated: Mapped[int] = mapped_column(default=None)
     time_ping: Mapped[int] = mapped_column(default=None)
-    status: Mapped[int] = mapped_column(default=0)
+    status: Mapped[int] = mapped_column(default=1)
+
 
 class ClientModel(BasePydantic):
     uuid: Optional[str]
@@ -23,18 +26,38 @@ class ClientModel(BasePydantic):
     time_created: Optional[int]
     time_updated: Optional[int]
     time_ping: Optional[int]
-    status: Optional[int]
+    status: Optional[ClientStatus]
+
+
+class ClientResponse(ClientModel):
+    pass
+
 
 class ClientExpanded(ClientModel):
-    budgets: dict = None
+    budgets: dict
 
-class ClientUpdate(BasePydantic):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[int] = None
 
 class ClientCreate(BasePydantic):
     name: str
     description: str
-    status: Optional[int] = None
-    url: Optional[str] = None
+    status: Optional[ClientStatus]
+    url: Optional[str]
+
+    @validator('status', pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
+
+
+class ClientUpdate(BasePydantic):
+    name: Optional[str]
+    description: Optional[str]
+    status: Optional[ClientStatus]
+
+    @validator('status', pre=False)
+    def validate_award_type(cls, v, field):
+        return field.type_[v].value
+
+
+class ClientDelete(BasePydantic):
+    ok: bool
+    Deleted: ClientModel

@@ -5,7 +5,8 @@ from app.routers.v1.dependencies import default_query_params, verify_program_awa
 from app.routers.v1.pagination import Page
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
 from app.models.uploads import UploadType
-from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse
+from app.models.base_class import DeleteWarning
+from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse, ProgramAwardDelete
 from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
 
 
@@ -29,12 +30,12 @@ def path_params(
     }
 
 
-@router.get("/awards")
+@router.get("/awards", response_model=Page[ProgramAwardResponse])
 async def get_awards(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params),
     query_params: dict = Depends(default_query_params)
-) -> Page[ProgramAwardResponse]:
+):
     await check_jwt_client_with_client(client_uuid_jwt, path_params["client_uuid"])
     return await ProgramAwardActions.get_program_awards(path_params, query_params)
 
@@ -80,7 +81,7 @@ async def update_award(
     return await ProgramAwardActions.update_award(path_params, award_updates)
 
 
-@router.delete("/awards/{program_award_9char}")
+@router.delete("/awards/{program_award_9char}", response_model=ProgramAwardDelete|DeleteWarning)
 async def delete_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

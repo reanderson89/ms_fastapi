@@ -18,7 +18,8 @@ new_user = {
     "client_uuid": test_uuids.first_client_uuid,
     "first_name": "Test",
     "last_name": "User",
-    "primary_work_email": "test.user123@testclient.com",
+    "work_email": "test.user123@testclient.com",
+    "cell_number": "(579)741-2145",
     "hire_date": "1/1/2015",
     "continuous_service_date": "1/1/2015",
     "employee_id": 1139,
@@ -93,7 +94,7 @@ update_client_user = {
 new_program = {
     "uuid": test_uuids.program_uuid,
     "user_uuid": None,
-    "name": "Blueboard 2023 Anniversary Program",
+    "name": "Pytest Blueboard 2023 Anniversary Program",
     "description": "This program sends rewards to Blueboard employees on the Anniversary of their start date at the Company.",
     "budget_9char": "budg_9cha",
     "status": 1,
@@ -142,7 +143,7 @@ new_award = {
     "uuid": test_uuids.award_uuid,
     "name": "pytest Award",
     "description": "Just a pytest award",
-    "channel": 5,
+    "channel": 2,
     "award_type": 2,
     "value": 5000
 }
@@ -150,6 +151,7 @@ new_award = {
 update_award = {
     "name": "pytest Award UPDATE",
     "description": "Just a pytest award UPDATE",
+    "hero_image": "new_hero_image.jpeg",
     "channel": 4,
     "award_type": 1,
     "value": 10000
@@ -260,8 +262,8 @@ new_sub_budget_cap = {
 }
 
 new_program_rule = {
-    "rule_type": 0,
-    "status": 0,
+    "rule_type": 1,
+    "status": 2,
     "logic": {
         "conditions": [
             {
@@ -280,14 +282,14 @@ new_program_rule = {
 }
 
 update_program_rule = {
-    "rule_type": 1,
+    "rule_type": 2,
     "status": 1,
     "logic": {"condition": "UPDATED logic"}
 }
 
 new_segment_rule = {
-    "rule_type": 0,
-    "status": 0,
+    "rule_type": 1,
+    "status": 1,
     "logic": {
         "conditions": [
             {
@@ -307,8 +309,8 @@ new_segment_rule = {
 }
 
 update_segment_rule = {
-    "rule_type": 1,
-    "status": 1,
+    "rule_type": 2,
+    "status": 3,
     "logic": {"condition": "UPDATED logic"}
 }
 
@@ -319,8 +321,8 @@ new_segment_design = {
 }
 
 update_segment_design = {
-    "channel": 0,
-    "status": 0,
+    "channel": 2,
+    "status": 3,
 }
 
 new_message = {

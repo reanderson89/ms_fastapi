@@ -1,4 +1,3 @@
-from enum import Enum
 from pydantic import BaseModel
 from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
@@ -20,25 +19,21 @@ class Base(DeclarativeBase, MappedAsDataclass):#, dataclass_callable=pydantic.da
 class BasePydantic(BaseModel):
     class Config:
         orm_mode = True
+        validate_assignment = True
 
 
-class BaseEnum(Enum):
-    def __getitem__(self, item):
-        return self.__class__.__members__[item]
+class S3FieldsModel(BaseModel):
+    key: str
+    AWSAccessKeyId: str
+    x_amz_security_token: str
+    policy: str
+    signature: str
 
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
 
-    @classmethod
-    def validate(cls, v):
-        if isinstance(v, cls):
-            return v.name
+class S3ResponseModel(BaseModel):
+    url: str
+    fields: S3FieldsModel
 
-        if isinstance(v, int):
-            return cls(v).name
 
-        if isinstance(v, str) and v in cls.__members__:
-            return cls[v].name
-
-        raise ValueError("Invalid value")
+class DeleteWarning(BasePydantic):
+    message: str

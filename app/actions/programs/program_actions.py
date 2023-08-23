@@ -1,8 +1,4 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from app.database.config import engine
 from app.models.programs import ProgramModelDB
-from app.models.clients import ClientUserModelDB
 from app.actions.helper_actions import HelperActions
 from app.models.programs.program_event_models import ProgramEventModelDB
 from app.models.segments.segment_models import SegmentModelDB
@@ -12,78 +8,47 @@ from app.actions.base_actions import BaseActions
 class ProgramActions:
 
     @classmethod
-    async def create_program_handler(cls, programs, path_params):
-        to_return = []
+    async def create_program(cls, programs, client_uuid):
         if isinstance(programs, list):
-            for i in programs:
-                program = await cls.create_program(i, path_params["client_uuid"])
-                to_return.append(program)
-        else:
-            program = await cls.create_program(programs, path_params["client_uuid"])
-            to_return.append(program)
-        return to_return
+            to_create = []
+            to_return = []
+            for program in programs:
+                program_model = await cls.to_program_model(program, client_uuid)
+                existing = await cls.check_if_program_exists(
+                    program_model.name, program_model.client_uuid
+                )
+                if existing:
+                    to_return.append(existing)
+                else:
+                    to_create.append(program_model)
+            if to_create:
+                to_return.extend(await BaseActions.create(to_create))
+            return to_return
+        program_model = await cls.to_program_model(programs, client_uuid)
+        existing = await cls.check_if_program_exists(
+            program_model.name, program_model.client_uuid
+        )
+        if existing:
+            return existing
+        return await BaseActions.create(program_model)
+
+    @staticmethod
+    async def to_program_model(program, client_uuid):
+        return ProgramModelDB(
+            **program.dict(),
+            client_uuid=client_uuid,
+            program_9char = await HelperActions.generate_9char()
+        )
 
     @classmethod
-    async def create_program(cls, program_data, client_uuid):
-        # is_admin() looks to have been replaced by the router level Permissions() check
-        # admin_check = await cls.is_admin(program_data.user_uuid)
-        # if admin_check:
-
-        check = await cls.check_for_existing(program_data.name)
-        if check:
-            return check
-            #return ProgramModel.from_orm(check) TODO: this is not working
-        else:
-            new_program = ProgramModelDB(
-                name=program_data.name,
-                cadence=program_data.cadence,
-                cadence_value=program_data.cadence_value,
-                program_type=program_data.program_type,
-                status=program_data.status,
-                description=program_data.description,
-                user_uuid=program_data.user_uuid,
-                budget_9char=program_data.budget_9char,
-                client_uuid=client_uuid,
-                program_9char = await HelperActions.generate_9char()
-            )
-        program = await BaseActions.create(new_program)
-        return program
-        #return ProgramModel.from_orm(program) TODO: this is not working
-
-        # connected to is_admin() check
-        # else:
-        #   return admin_check
-
-    @classmethod
-    async def check_for_existing(cls, name):
-        program = await cls.get_program_by_name(name)
-        if not program:
-            return None
-        else:
-            return program
-
-    @classmethod
-    async def get_program_by_name(cls, name):
-        with Session(engine) as session:
-            return session.scalars(select(ProgramModelDB)
-                                .where(ProgramModelDB.name == name)).one_or_none()
-
-    @classmethod
-    async def is_admin(cls, user_uuid):
-        admin = await cls.check_is_admin(user_uuid)
-        #await ExceptionHandling.check404(admin) #TODO: if this is not an admin, it will return a 404 and never get to the else statement
-        return True
-        if admin.admin == 1:
-            return True
-        else:
-            return False
-
-    @classmethod
-    async def check_is_admin(cls, user_uuid):
-        with Session(engine) as session:
-            return session.scalars(select(ClientUserModelDB)
-                                .where(ClientUserModelDB.user_uuid == user_uuid)
-                                ).one_or_none()
+    async def check_if_program_exists(cls, name, client_uuid):
+        return await BaseActions.check_if_exists(
+            ProgramModelDB,
+            [
+                ProgramModelDB.name == name,
+                ProgramModelDB.client_uuid == client_uuid
+            ]
+        )
 
     @classmethod
     async def get_by_program_9char(cls, path_params):

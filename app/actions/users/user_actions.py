@@ -17,7 +17,9 @@ class UserActions:
             UserModelDB,
             [
                 UserServiceModelDB.service_user_id == service_id,
-                UserServiceModelDB.user_uuid == user_uuid
+                UserServiceModelDB.user_uuid == user_uuid,
+                UserServiceModelDB.user_uuid == UserModelDB.uuid
+
             ]
         )
 
@@ -53,7 +55,7 @@ class UserActions:
         return user_expand
 
     @staticmethod
-    async def get_service_id(new_user_obj, service_id=None):
+    async def get_service_id(new_user_obj: dict, service_id=None):
         """Get the service ID from the specified user object
         :param new_user_obj: The user object to get the service ID from
         :return: A namedtuple containing the service type and service ID, or None if it couldn't be found
@@ -80,7 +82,9 @@ class UserActions:
         return users
 
     @classmethod
-    async def create_user_and_service(cls, new_user_data: dict, service=None):
+    async def create_user_and_service(cls, new_user_data, service=None):
+        if hasattr(new_user_data, "dict"):
+            new_user_data: dict = new_user_data.dict(exclude_none=True)
         service_id = await cls.get_service_id(new_user_data, service)
         if not service_id:
             raise Exception("service_id required")
@@ -88,7 +92,7 @@ class UserActions:
         last_name = await HelperActions.get_lname_from_header(new_user_data)
         birthday = convert_date_to_int(new_user_data.get('time_birthday'))
 
-        user = await cls.get_user_by_name(new_user_data["first_name"], new_user_data["last_name"]) # , service_id.value
+        user = await cls.get_user_by_name(new_user_data["first_name"], new_user_data["last_name"])
 
         if user:
             # TODO: change to "status = exists" class format
@@ -101,7 +105,7 @@ class UserActions:
                     raise Exception("Service Creation Failed")
                 return user
 
-        # TODO: turn bacl on as soon as Nominatim server is back up
+        # TODO: turn back on when Nominatim server is working
         # lat, lon = await utils.get_location_coord(new_user_data.get("location"))
         lat, lon = None, None
 

@@ -1,5 +1,6 @@
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
+from app.enums import EventType
 from app.models.base_class import Base, BasePydantic
 
 event_types = {
@@ -26,28 +27,31 @@ class ProgramEventModelDB(Base):
     time_created: Mapped[int] = mapped_column(default=None)
     time_updated: Mapped[int] = mapped_column(default=None)
 
+
 class ProgramEventReturn(BasePydantic):
     uuid: str
     program_uuid: Optional[str]
     client_uuid: str
     program_9char: Optional[str]
     event_9char: str
-    event_type: Optional[int] = None
-    parent_9char: Optional[str] = None
-    segment_9char: Optional[str] = None
-    event_data: Optional[str] = None
-    status: Optional[int] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
+    event_type: Optional[EventType]
+    parent_9char: Optional[str]
+    segment_9char: Optional[str]
+    event_data: Optional[str]
+    status: Optional[int] # status code value
+    time_created: Optional[int]
+    time_updated: Optional[int]
+
 
 class ProgramEventUpdate(BasePydantic):
-    event_type: Optional[int] = None
-    event_data: Optional[str] = None
-    status: Optional[int] = None
+    event_type: Optional[int]
+    event_data: Optional[str]
+    status: Optional[int] # status code value
+
 
 class ProgramEventCreate(BasePydantic):
-    event_type: Optional[int] = None
-    parent_9char: Optional[str] = None
-    segment_9char: Optional[str] = None
-    event_data: Optional[str] = None
-    status: Optional[int] = None
+    event_type: Optional[int]
+    parent_9char: Optional[str]
+    segment_9char: Optional[str]
+    event_data: Optional[str]
+    status: Optional[int] # status code value

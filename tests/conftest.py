@@ -3,15 +3,21 @@ import pytest
 import traceback
 from fastapi.testclient import TestClient
 import tests.testutil as util
+from dotenv import load_dotenv
+load_dotenv()
 
 os.environ["TEST_MODE"] = "True"
 
 from app.main import app
 
 
+def err_msg(response):
+    return f"Response[{response.status_code}]: {response.text} "
+
+
 def delete_budget(test_app, budget):
     response = test_app.delete(f"/v1/clients/{budget['client_uuid']}/budgets/{budget['budget_9char']}")
-    assert response.status_code == 200
+    assert response.status_code == 200, err_msg(response)
     try:
         response = response.json()
         assert response["ok"] == True
@@ -127,7 +133,7 @@ def program(test_app: TestClient, client_user):
         program = test_app.post(
             f"/v1/clients/{client_user['client_uuid']}/programs/",
             json=util.new_program
-        ).json()[0]
+        ).json()
         yield program
     except Exception as e:
         print(f"Exception encountered: {e}")
@@ -300,11 +306,11 @@ def segment_award(test_app: TestClient, segment, program_award):
 
 
 @pytest.fixture(scope="function")
-def static_budget(test_app, client):
+def static_budget(test_app: TestClient, client):
     try:
         static_budget = test_app.post(f"/v1/clients/{client['uuid']}/budgets", json=util.new_static_budget).json()
         yield static_budget
-    except: 
+    except:
         raise Exception("client static budget Creation Failed")
     finally:
         if static_budget is not None:
@@ -312,12 +318,12 @@ def static_budget(test_app, client):
 
 
 @pytest.fixture(scope="function")
-def parent_static_budget(test_app, static_budget):
+def parent_static_budget(test_app: TestClient, static_budget):
     try:
         util.new_parent_static_budget["parent_9char"] = static_budget["budget_9char"]
         parent_static_budget = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_static_budget).json()
         yield parent_static_budget
-    except: 
+    except:
         raise Exception("client Parent Budget Creation Failed")
     finally:
         if parent_static_budget is not None:
@@ -325,12 +331,12 @@ def parent_static_budget(test_app, static_budget):
 
 
 @pytest.fixture(scope="function")
-def parent_budget_no_cap(test_app, static_budget):
+def parent_budget_no_cap(test_app: TestClient, static_budget):
     try:
         util.new_parent_budget_no_cap["parent_9char"] = static_budget["budget_9char"]
         parent_budget_no_cap = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_budget_no_cap).json()
         yield parent_budget_no_cap
-    except: 
+    except:
         raise Exception("client Sub Budget Creation Failed")
     finally:
         if parent_budget_no_cap is not None:
@@ -338,12 +344,12 @@ def parent_budget_no_cap(test_app, static_budget):
 
 
 @pytest.fixture(scope="function")
-def parent_budget_cap(test_app, static_budget):
+def parent_budget_cap(test_app: TestClient, static_budget):
     try:
         util.new_parent_budget_cap["parent_9char"] = static_budget["budget_9char"]
         parent_budget_cap = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/budgets", json=util.new_parent_budget_cap).json()
         yield parent_budget_cap
-    except: 
+    except:
         raise Exception("client Sub Budget Creation Failed")
     finally:
         if parent_budget_cap is not None:
@@ -351,12 +357,12 @@ def parent_budget_cap(test_app, static_budget):
 
 
 @pytest.fixture(scope="function")
-def sub_budget_cap_from_parent_with_cap(test_app, parent_budget_cap):
+def sub_budget_cap_from_parent_with_cap(test_app: TestClient, parent_budget_cap):
     try:
         util.new_sub_budget_cap["parent_9char"] = parent_budget_cap["budget_9char"]
         sub_budget_cap = test_app.post(f"/v1/clients/{parent_budget_cap['client_uuid']}/budgets", json=util.new_sub_budget_cap).json()
         yield sub_budget_cap
-    except: 
+    except:
         raise Exception("Client Sub Budget Creation Failed")
     finally:
         if sub_budget_cap is not None:
@@ -364,12 +370,12 @@ def sub_budget_cap_from_parent_with_cap(test_app, parent_budget_cap):
 
 
 @pytest.fixture(scope="function")
-def sub_budget_cap_from_parent_no_cap(test_app, parent_budget_no_cap):
+def sub_budget_cap_from_parent_no_cap(test_app: TestClient, parent_budget_no_cap):
     try:
         util.new_sub_budget_cap["parent_9char"] = parent_budget_no_cap["budget_9char"]
         sub_budget_cap = test_app.post(f"/v1/clients/{parent_budget_no_cap['client_uuid']}/budgets", json=util.new_sub_budget_cap).json()
         yield sub_budget_cap
-    except: 
+    except:
         raise Exception("Client Sub Budget Creation Failed")
     finally:
         if sub_budget_cap is not None:
@@ -377,12 +383,12 @@ def sub_budget_cap_from_parent_no_cap(test_app, parent_budget_no_cap):
 
 
 @pytest.fixture(scope="function")
-def sub_budget_no_cap_from_parent_with_cap(test_app, parent_budget_cap):
+def sub_budget_no_cap_from_parent_with_cap(test_app: TestClient, parent_budget_cap):
     try:
         util.new_sub_budget_no_cap["parent_9char"] = parent_budget_cap["budget_9char"]
         sub_budget_no_cap = test_app.post(f"/v1/clients/{parent_budget_cap['client_uuid']}/budgets", json=util.new_sub_budget_no_cap).json()
         yield sub_budget_no_cap
-    except: 
+    except:
         raise Exception("Client Sub Budget Creation Failed")
     finally:
         if sub_budget_no_cap is not None:
@@ -390,20 +396,20 @@ def sub_budget_no_cap_from_parent_with_cap(test_app, parent_budget_cap):
 
 
 @pytest.fixture(scope="function")
-def sub_budget_no_cap_from_parent_no_cap(test_app, parent_budget_no_cap):
+def sub_budget_no_cap_from_parent_no_cap(test_app: TestClient, parent_budget_no_cap):
     try:
         util.new_sub_budget_no_cap["parent_9char"] = parent_budget_no_cap["budget_9char"]
         sub_budget_no_cap = test_app.post(f"/v1/clients/{parent_budget_no_cap['client_uuid']}/budgets", json=util.new_sub_budget_no_cap).json()
         yield sub_budget_no_cap
-    except: 
+    except:
         raise Exception("Client Sub Budget Creation Failed")
     finally:
         if sub_budget_no_cap is not None:
             delete_budget(test_app, sub_budget_no_cap)
-        
+
 
 @pytest.fixture(scope="function")
-def message(test_app):
+def message(test_app: TestClient):
     try:
         message = test_app.post(f"/v1/messages",  json=util.new_message).json()
         yield message
@@ -416,7 +422,7 @@ def message(test_app):
 
 
 @pytest.fixture(scope="function")
-def client_message(test_app):
+def client_message(test_app: TestClient):
     try:
         message = test_app.post(f"/v1/messages",  json=util.new_client_message).json()
         yield message
@@ -427,7 +433,7 @@ def client_message(test_app):
             response = test_app.delete(f"/v1/messages/{message['message_9char']}")
             is_deleted(response)
 
-            
+
 @pytest.fixture(scope="function")
 def program_message(test_app, program):
     try:
@@ -459,7 +465,7 @@ def program_with_updated_budget(test_app, client_user, static_budget):
     try:
         util.new_program["budget_9char"] = static_budget["budget_9char"]
         util.new_program["user_uuid"] = client_user["user_uuid"]
-        program_with_updated_budget = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/programs/", json=util.new_program).json()[0]
+        program_with_updated_budget = test_app.post(f"/v1/clients/{static_budget['client_uuid']}/programs/", json=util.new_program).json()
         # updating budget triggers an event that shows the connection of the budget with program
         updated_budget = test_app.put(f"/v1/clients/{program_with_updated_budget['client_uuid']}/budgets/{program_with_updated_budget['budget_9char']}", json=util.update_static_budget).json()
         yield program_with_updated_budget

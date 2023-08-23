@@ -1,7 +1,8 @@
 from typing import Optional
 from sqlalchemy.orm import Mapped, mapped_column
-from app.models.base_class import Base, BasePydantic
 from app.actions.utils import new_9char
+from app.enums import AwardType, ChannelType
+from app.models.base_class import Base, BasePydantic
 from app.actions.base_actions import BaseActions
 from app.models.award.award_models import AwardModelDB
 
@@ -26,36 +27,36 @@ class ClientAwardModelDB(Base):
             self.uuid = self.client_uuid + self.client_award_9char
 
 
+class ClientAwardModel(BasePydantic):
+    uuid: str
+    client_uuid: Optional[str]
+    client_award_9char: Optional[str]
+    award_uuid: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
+    time_created: Optional[int]
+    time_updated: Optional[int]
+
+
 class ClientAwardCreate(BasePydantic):
-    award_uuid: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
+    award_uuid: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
 
 
 class ClientAwardUpdate(BasePydantic):
-    award_uuid: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
-
-
-class ClientAwardModel(BasePydantic):
-    uuid: str
-    client_uuid: Optional[str] = None
-    client_award_9char: Optional[str] = None
-    award_uuid: Optional[str] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    hero_image: Optional[str] = None
-    time_created: Optional[int] = None
-    time_updated: Optional[int] = None
+    award_uuid: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    hero_image: Optional[str]
 
 
 class ClientAwardResponse(ClientAwardModel):
-    channel: Optional[int] = None
-    award_type: Optional[int] = None
-    value: Optional[int] = None
+    channel: Optional[ChannelType]
+    award_type: Optional[AwardType]
+    value: Optional[int]
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -67,3 +68,8 @@ class ClientAwardResponse(ClientAwardModel):
             self.channel = award.channel
             self.award_type = award.award_type
             self.value = award.value
+
+
+class ClientAwardDelete(BasePydantic):
+    ok: bool
+    Deleted: ClientAwardModel

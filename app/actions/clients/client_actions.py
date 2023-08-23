@@ -56,7 +56,7 @@ class ClientActions:
                     return_list.append(existing_client)
                 else:
                     to_create.append(await cls.to_client_db_model(client))
-            if len(to_create) > 0:
+            if to_create:
                 return_list.extend(await BaseActions.create(to_create))
             return return_list
         client = await cls.check_if_client_exists_by_name(client_data.name, False)
@@ -83,7 +83,7 @@ class ClientActions:
             ClientModelDB,
             [ClientModelDB.uuid == client_uuid]
         )
-    
+
     # These is for postman and pytest purposes only. Only accesible in those enviornments.
     @staticmethod
     async def delete_all_client_events(client_uuid: str):
@@ -94,7 +94,7 @@ class ClientActions:
             ]
         )
 
-    
+
     # this is only being used for postman/pytests through various checks
     @staticmethod
     async def delete_all_test_message_events(program_9char: str):

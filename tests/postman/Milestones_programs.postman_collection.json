@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "39be87d5-9e22-4268-8bb7-1f12544b54b9",
+		"_postman_id": "c01779d5-5d08-46a0-9325-d4d488a8d460",
 		"name": "Milestones_programs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25650478"
@@ -1431,7 +1431,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"UPDATE-Client Program Test\",\n  \"description\": \"UPDATE-Client Program Test\",\n  \"budget_9char\": \"{{parent_budget_9char}}\",\n  \"status\": 0,\n  \"program_type\": 0,\n  \"cadence\": 0,\n  \"cadence_value\": 0\n}",
+							"raw": "{\n  \"name\": \"UPDATE-Client Program Test\",\n  \"description\": \"UPDATE-Client Program Test\",\n  \"budget_9char\": \"{{parent_budget_9char}}\",\n  \"status\": 1,\n  \"program_type\": 1,\n  \"cadence\": 1,\n  \"cadence_value\": 1\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

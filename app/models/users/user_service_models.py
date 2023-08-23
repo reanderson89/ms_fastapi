@@ -4,14 +4,24 @@ from pydantic import Field
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
 
+
 class ServiceID(str, Enum):
     email = "email"
     cell = "cell"
+    slack = "slack"
+    teams = "teams"
+    web = "web"
+
+    def __repr__(self) -> str:
+        # return super().__repr__()
+        return self.value
+
 
 class UserServiceStatus(str, Enum):
     exists = "exists"
     created = "service created"
     updated = "service updated"
+
 
 class UserServiceModelDB(Base):
     __tablename__ = "user_service"
@@ -30,6 +40,7 @@ class UserServiceModelDB(Base):
     login_secret: Mapped[Optional[str]] = mapped_column(default=None)
     login_token: Mapped[Optional[str]] = mapped_column(default=None)
 
+
 class UserServiceModel(BasePydantic):
     uuid: Optional[str]
     user_uuid: Optional[str]
@@ -45,15 +56,29 @@ class UserServiceModel(BasePydantic):
     login_secret: Optional[str]
     login_token: Optional[str]
 
+
+class UserServiceResponse(UserServiceModel):
+    pass
+
+
+class ServiceListResponse(BasePydantic):
+    email: Optional[list[UserServiceModel]]
+    cell: Optional[list[UserServiceModel]]
+
+
 class UserServiceCreate(BasePydantic):
     service_uuid: ServiceID
     service_user_id: str
+    service_user_screenname: Optional[str]
+    service_user_name: Optional[str]
+
 
 class ServiceStatus(UserServiceModel):
     status: Optional[UserServiceStatus] = Field(
         default=None,
         description="This mapped_column can have the values 'exists' or 'admin created'."
     )
+
 
 class UserServiceUpdate(BasePydantic):
     service_user_screenname: Optional[str]
@@ -64,8 +89,10 @@ class UserServiceUpdate(BasePydantic):
     login_secret: Optional[str]
     login_token: Optional[str]
 
+
 class ServiceBulk(UserServiceUpdate):
     uuid: str
+
 
 class ServiceDelete(BasePydantic):
     service_uuid: str
