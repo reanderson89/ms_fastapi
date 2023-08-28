@@ -31,32 +31,49 @@ jobs:
 
       - name: Convert tabs to 4 spaces
         run: |
+          echo "---Converting tabs to spaces---"
           find ./app -name "*.py" -type f -exec bash -c 'expand -t 4 "$0" | sponge "$0"' {} \;
           # only commit if there are changes, --allow-empty can probably be omitted
-          RESULT=$(git diff-index HEAD | awk '{print $3}' | wc  -l)
+          RESULT=$(git diff --name-only | grep '\.py$' | wc -l)
+          echo "${RESULT} file/s changed"
+
           if [ ${RESULT} -ne "0" ]; then
+            echo "⎷ Committing changes"
             git add ./app
             git commit -a -m "Tabs to spaces" --allow-empty
+          else
+            echo "᙭ NO changes to commit"
           fi
 
       - name: Run Ruff and auto-fix common rules
         run: |
+
           # run through and auto-fix these simple rules
           declare -A RUFF_RULES=(
             ["F401"]="remove unused imports"
             ["UP039"]="parentheses after class definition"
             ["Q002"]="single quote docstring"
-            ["E401"]="multiple imports on one line"
+            # E401 auto-fix for this rule seems to not be supported, see https://beta.ruff.rs/docs/rules/
+            # ["E401"]="multiple imports on one line"
             ["F841"]="remove unused variables"
           )
           for RULE in "${!RUFF_RULES[@]}";
           do
+            echo
+            echo "----${RUFF_RULES[${RULE}]}----"
+            echo "⇒ Running check"
+
             ruff check ./app --select ${RULE} --fix
             # only commit if there are changes, --allow-empty can probably be omitted
             RESULT=$(git diff-index HEAD | awk '{print $3}' | wc  -l)
+            echo "${RESULT} changed file(s) found"
+
             if [ ${RESULT} -ne "0" ]; then
+              echo "⎷ Committing changes"
               git add ./app
               git commit -a -m "${RUFF_RULES[${RULE}]}" --allow-empty
+            else
+              echo "᙭ NO changes to commit"
             fi
           done
 
