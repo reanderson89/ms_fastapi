@@ -82,6 +82,7 @@ jobs:
         env:
           ENV: ${{ github.event.inputs.environment }}                   # workflow variable
           IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
+          REPLICAS: ${{ vars.REPLICAS || 1 }}
         run: |
           # append the tag to form a fully qualified Docker tag
           export IMAGE_TAG=blueboardinc/milestones-api:${IMAGE_TAG}

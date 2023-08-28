@@ -17,7 +17,7 @@ services:
     image: ${IMAGE_TAG}
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: ${REPLICAS}
       restart_policy:
         condition: on-failure
       update_config:
