@@ -29,3 +29,7 @@ Potential one-time fix:
 sudo apt-get install moreutils
 find ./ -iname '*.java' -type f -exec bash -c 'expand -t 4 "$0" | sponge "$0"' {} \;
 ```
+
+## E401
+
+The [E401](https://beta.ruff.rs/docs/rules/multiple-imports-on-one-line/) rule appears to maybe be incompatiable with imports like `from pydantic import Field, validator`.
