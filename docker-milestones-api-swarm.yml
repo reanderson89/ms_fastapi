@@ -32,7 +32,7 @@ services:
       AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID}'
       AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY}'
       AWS_BUCKET_NAME: '${AWS_BUCKET_NAME}'
-      AWS_ROLE_ARN: '${AWS_ROLE_ARN}'
+      AWS_ROLE_ARN: 'arn:aws:iam::252606574785:role/milestones-app-user-${ENV}-role'
       BASE_URL: 'https://milestones-dev.blueboard.app'
       # No CRON env var
       ENV: '${ENV}'
