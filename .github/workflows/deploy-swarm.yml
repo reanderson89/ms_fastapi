@@ -42,16 +42,31 @@ jobs:
           sudo apt-get --assume-yes --no-install-recommends install openvpn
 
       - name: Setup VPN config using organization secrets
-        # these values are from the OpenVPN config and defined as Organization secrets in GitHub
-        # secret.txt is in the form of usename and password, each on its own line
         run: |
-          echo "${{ secrets.DEV_VPN_CA_CRT }}" > ca.crt
-          echo "${{ secrets.DEV_VPN_CERT_CRT }}" > user.crt
-          echo "${{ secrets.DEV_VPN_CERT_KEY }}" > user.key && chmod 400 user.key
-          echo "${{ secrets.DEV_VPN_SECRET_USERNAME_PASSWORD }}" > secret.txt && chmod 400 secret.txt
-          echo "${{ secrets.DEV_VPN_TLS_KEY }}" > tls.key
+          touch secret.txt && chmod 600 secret.txt
+          # these values can be confirmed to be valid with:  openssl x509 -text -in <file>
+          echo ${{ secrets.DEV_VPN_CA_CRT_B64 }} | base64 --decode > ca.crt
+          echo ${{ secrets.DEV_VPN_CERT_CRT_B64 }} | base64 --decode > user.crt
+          echo ${{ secrets.DEV_VPN_TLS_KEY_B64 }} | base64 --decode > tls.key
 
-      - name: Connect VPN
+          # these are just strings -- secret.txt is in the form of usename and password,
+          # each on its own line
+          echo ${{ secrets.DEV_VPN_SECRET_USERNAME }} > secret.txt
+          echo ${{ secrets.DEV_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
+
+          # validate key with ssh-keygenb
+          echo ${{ secrets.DEV_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
+          ssh-keygen -y -e -f user.key
+
+      - name: Create and validate the private key
+        run: |
+          mkdir ${{ github.workspace }}/.ssh
+          chmod 700 ${{ github.workspace }}/.ssh
+          echo ${{ secrets.DEV_SSH_KEY_B64 }} | base64 --decode > ${{ github.workspace }}/.ssh/id_ecdsa
+          chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
+          ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
+
+      - name: Start the VPN
         run: sudo openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon
 
       - name: Wait for the VPN connection
@@ -100,22 +115,22 @@ jobs:
           host: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_HOSTS || github.event.inputs.environment == 'staging' && secrets.STAGING_HOSTS || secrets.PROD_HOSTS }}
           port: 22
           username: blueboard
-          key: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_SSH_KEY || github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.PROD_SSH_KEY }}
+          key_path: ${{ github.workspace }}/.ssh/id_ecdsa
           source: ${{ env.SWARM_YAML }}
           target: /home/blueboard
 
       - name: Pull image and update Docker Swarm
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_LEADER || github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.PROD_LEADER }}
           port: 22
           username: blueboard
-          key: ${{ github.event.inputs.environment == 'dev' && secrets.DEV_SSH_KEY || github.event.inputs.environment == 'staging' && secrets.STAGING_SSH_KEY || secrets.PROD_SSH_KEY }}
+          key_path: ${{ github.workspace }}/.ssh/id_ecdsa
           script: |
             cd /home/blueboard
             ./run.sh ${{ secrets.DOCKERHUB_USERNAME }} ${{ secrets.DOCKERHUB_TOKEN_RO }} milestones-api > milestones-api.log
 
-      - name: Stop VPN connection
+      - name: Stop the VPN
         if: always()
         run: |
           sudo chmod 444 vpn.log
