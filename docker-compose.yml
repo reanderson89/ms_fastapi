@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: Docker/Dockerfile.milestones_api_localhost
     # You can also use existing image like this:
-    # image: blueboardinc/milestones-api:0.0.2
+    # image: blueboardinc/milestones_api:0.0.2
     container_name: milestones_api
     environment:
       ACCOUNT_SID: ${ACCOUNT_SID}

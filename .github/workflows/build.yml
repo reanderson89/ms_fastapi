@@ -130,7 +130,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: blueboardinc/milestones-api
+          images: blueboardinc/milestones_api
 
       - name: Build, tag and push Docker image
         uses: docker/build-push-action@v4
@@ -138,7 +138,7 @@ jobs:
           context: .
           file: Docker/Dockerfile.milestones_api_swarm
           push: true
-          cache-from: type=registry,ref=blueboardinc/milestones-api:latest
+          cache-from: type=registry,ref=blueboardinc/milestones_api:latest
           cache-to: type=inline
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

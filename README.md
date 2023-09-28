@@ -28,7 +28,7 @@ There are literally thousands of tutorials, YouTube videos, blogs, and so on, on
 
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), licensing is TBD
 
-## Docker files used in milestones-api
+## Docker files used in milestones_api
 
 - `docker-compose.yml` orchistrates two containers:
   - The first container is named `milestones_db` -- it is simply runs an instance of `mariadb:latest`.  Note the use of environment variables.
@@ -50,7 +50,7 @@ In this example, we use `docker ps` to list running containers.
 ```
 ❯ docker ps
 CONTAINER ID   IMAGE                   COMMAND                  CREATED        STATUS        PORTS                    NAMES
-429850ef1ab4   milestones-api-server   "/start.sh"              16 hours ago   Up 16 hours   0.0.0.0:80->80/tcp       milestones_api
+429850ef1ab4   milestones_api-server   "/start.sh"              16 hours ago   Up 16 hours   0.0.0.0:80->80/tcp       milestones_api
 4b1654034516   mariadb:latest          "docker-entrypoint.s…"   16 hours ago   Up 16 hours   0.0.0.0:3306->3306/tcp   milestones_db
 ```
 

@@ -1,2 +1,0 @@
-FROM gcr.io/datadoghq/agent:latest
-COPY datadog.yaml /etc/datadog-agent/datadog.yaml

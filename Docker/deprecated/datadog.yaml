@@ -1,5 +1,0 @@
-log_level: info
-
-apm_config:
-  enabled: false
-#   apm_non_local_traffic: true

@@ -24,6 +24,10 @@ services:
         parallelism: 2
         delay: 15s
         order: start-first
+      placement:
+        constraints:
+          - node.hostname != 'bb-prod-5'
+          - node.hostname != 'bb-prod-6'
     environment:
       ACCOUNT_SID: '${ACCOUNT_SID}'
       ACCOUNT_TOKEN: '${ACCOUNT_TOKEN}'
@@ -65,6 +69,10 @@ services:
         parallelism: 1
         delay: 15s
         order: start-first
+      placement:
+        constraints:
+          - node.hostname != 'bb-prod-5'
+          - node.hostname != 'bb-prod-6'
     environment:
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
       ACCOUNT_SID: '${ACCOUNT_SID}'

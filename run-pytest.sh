@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # # build the docker image
-# docker build -f ./Docker/Dockerfile.milestones_api_localhost  -t milestones-api-milestones_api .
+# docker build -f ./Docker/Dockerfile.milestones_api_localhost  -t milestones_api-milestones_api .
 
 # # run the tests in a docker container
-# docker run --env-file .env --name milestones_api_test milestones-api-milestones_api
+# docker run --env-file .env --name milestones_api_test milestones_api-milestones_api
 
 # # get the test results
 # docker logs milestones_api_test > test_results.log

@@ -21,7 +21,7 @@ on:
 
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
-  MILESTONES_DOCKER_REPO: "blueboardinc/milestones-api"
+  MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
 
 jobs:
   deploy:

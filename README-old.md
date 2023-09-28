@@ -1,6 +1,6 @@
-# milestones-api
+# milestones_api
 
-milestones-api is a FastAPI based web application that provides an intuitive and efficient way to manage project milestones. The application is built on the Unicorn web server and utilizes a MariaDB MySQL database for data storage. This ReadMe file serves as a comprehensive guide to help you understand, install, and set up milestones-api, as well as run its unit and integration tests.
+milestones_api is a FastAPI based web application that provides an intuitive and efficient way to manage project milestones. The application is built on the Unicorn web server and utilizes a MariaDB MySQL database for data storage. This ReadMe file serves as a comprehensive guide to help you understand, install, and set up milestones-api, as well as run its unit and integration tests.
 
 ## Table of Contents
 
