@@ -2,8 +2,12 @@ FROM python:3.11.4-slim-bullseye
 WORKDIR /app
 
 RUN apt-get update \
-  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic \
+  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic curl \
   && apt-get clean
+
+RUN npm cache clean -f
+RUN npm install -g n
+RUN n stable
 
 RUN pip install --upgrade pip
 # ruff is for linting
