@@ -26,12 +26,12 @@ services:
         order: start-first
       placement:
         constraints:
-          - node.hostname != 'bb-prod-5'
-          - node.hostname != 'bb-prod-6'
+          - node.hostname != bb-prod-5
+          - node.hostname != bb-prod-6
     environment:
       ACCOUNT_SID: '${ACCOUNT_SID}'
       ACCOUNT_TOKEN: '${ACCOUNT_TOKEN}'
-      ALEMBIC_INI_FILE: 'NO'
+      ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: '${ALGORITHM}'
       AWS_ACCESS_KEY_ID: '${AWS_ACCESS_KEY_ID}'
       AWS_SECRET_ACCESS_KEY: '${AWS_SECRET_ACCESS_KEY}'
@@ -43,7 +43,6 @@ services:
       FERNET_KEY: '${FERNET_KEY}'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MILESTONES_BOOTSTRAP: 'NO'
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: '${MYSQL_HOSTNAME}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
@@ -71,8 +70,8 @@ services:
         order: start-first
       placement:
         constraints:
-          - node.hostname != 'bb-prod-5'
-          - node.hostname != 'bb-prod-6'
+          - node.hostname != bb-prod-5
+          - node.hostname != bb-prod-6
     environment:
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
       ACCOUNT_SID: '${ACCOUNT_SID}'

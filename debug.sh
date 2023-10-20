@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Starting db container..."
-docker-compose up --build -d milestones_db
+docker-compose -f docker-compose.debug.yml up --build -d milestones_db
 
 echo "Sleeping for 5 seconds..."
 sleep 5
@@ -18,4 +18,4 @@ else
     alembic revision --autogenerate -m "Initial migration"
 fi
 
-docker-compose up --build
+docker-compose -f docker-compose.debug.yml up --build

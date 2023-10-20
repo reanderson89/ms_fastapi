@@ -1,8 +1,12 @@
 from enum import IntEnum, Enum
 from typing import Optional
 from pydantic import Field
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
+
 
 # TODO: finalize what permissions are needed/wanted
 class AdminPermissions(IntEnum):
@@ -18,14 +22,14 @@ class ProgramAdminStatus(Enum):
 class AdminModelDB(Base):
     __tablename__ = "program_admin"
 
-    uuid: Mapped[Optional[str]] = mapped_column(default=None, primary_key=True, index=True)
-    program_uuid: Mapped[Optional[str]] = mapped_column(default=None, index=True)
-    client_uuid: Mapped[Optional[str]] = mapped_column(default=None, index=True)
-    program_9char: Mapped[Optional[str]] = mapped_column(default=None, index=True)
-    user_uuid: Mapped[Optional[str]] = mapped_column(default=None, index=True)
-    permissions: Mapped[Optional[int]] = mapped_column(default=0, index=True)
-    time_created: Mapped[Optional[int]] = mapped_column(default=None)
-    time_updated: Mapped[Optional[int]] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(56), default=None, primary_key=True, index=True)
+    program_uuid: Mapped[Optional[str]] = mapped_column(String(65), default=None, index=True, nullable=True)
+    client_uuid: Mapped[Optional[str]] = mapped_column(String(56), default=None, index=True, nullable=True)
+    program_9char: Mapped[Optional[str]] = mapped_column(String(9), default=None, index=True, nullable=True)
+    user_uuid: Mapped[Optional[str]] = mapped_column(String(56), default=None, index=True, nullable=True)
+    permissions: Mapped[Optional[int]] = mapped_column(Integer(11), default=0, index=True, nullable=True)
+    time_created: Mapped[Optional[int]] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[Optional[int]] = mapped_column(Integer(11), default=None, nullable=True)
 
 class AdminModel(BasePydantic):
     uuid: Optional[str]

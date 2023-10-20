@@ -1,8 +1,11 @@
 from typing import Optional
 from pydantic import validator
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import ChannelType, MessageType, Status
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 # see enums.py for message_types enum class
 message_types = {
@@ -20,20 +23,20 @@ message_types = {
 class MessageModelDB(Base):
     __tablename__ = "message"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(default=None)
-    message_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    message_9char: Mapped[str] = mapped_column(default=None, index=True)
-    program_9char: Mapped[str] = mapped_column(default=None, index=True)
-    segment_9char: Mapped[str] = mapped_column(default=None, index=True)
-    message_type: Mapped[int] = mapped_column(default=1)
+    uuid: Mapped[str] = mapped_column(String(83), default=None, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(255), default=None)
+    message_uuid: Mapped[str] = mapped_column(String(74), default=None, index=True, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    message_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    segment_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    message_type: Mapped[int] = mapped_column(Integer(11), default=1, nullable=True)
     # Options: 1 = email, 2 = text, 4 = slack, 8 = ms teams, 16 = web
-    channel: Mapped[int] = mapped_column(default=None)
-    status: Mapped[int] = mapped_column(default=1)
-    body: Mapped[str] = mapped_column(default=None)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    channel: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    status: Mapped[int] = mapped_column(Integer(11), default=1, nullable=True)
+    body: Mapped[str] = mapped_column(Text, default=None, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
 
 class MessageModel(BasePydantic):

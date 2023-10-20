@@ -45,7 +45,6 @@ services:
       ENV: local
       JWT_ENFORCED: "False"
       LOG_LEVEL: debug
-      MILESTONES_BOOTSTRAP: "migrations/milestones_nodata_v1.9.3.sql"
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: milestones_db
       MYSQL_PASSWORD: milestones
@@ -55,6 +54,12 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: "+16193299600"
       FERNET_KEY: ${FERNET_KEY}
+    command:
+      [
+        "sh",
+        "-c",
+        "uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors",
+      ]
     volumes:
       - ./app:/app/app
       - ./tests:/app/tests

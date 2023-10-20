@@ -1,24 +1,26 @@
 from typing import Optional
 from pydantic import validator
-from sqlalchemy import JSON
+from sqlalchemy import JSON, String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import RuleType, Status
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 
 class ProgramRuleModelDB(Base):
     __tablename__ = "program_rule"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    program_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    program_9char: Mapped[str] = mapped_column(default=None, index=True)
-    rule_9char: Mapped[str] = mapped_column(default=None, index=True)
-    rule_type: Mapped[int] = mapped_column(default=None, index=True)
-    status: Mapped[int] = mapped_column(default=None, index=True)
-    logic: Mapped[JSON] = mapped_column("logic", JSON, default=None, index=True)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(81), default=None, primary_key=True, index=True)
+    program_uuid: Mapped[str] = mapped_column(String(65), default=None, index=True, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    rule_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    rule_type: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    status: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    logic: Mapped[JSON] = mapped_column("logic", JSON, default=None, index=True, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
 
 class ProgramRuleModel(BasePydantic):

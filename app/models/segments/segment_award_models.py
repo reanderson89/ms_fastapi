@@ -1,25 +1,29 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import Optional
+from sqlalchemy import String, Text
 from app.models.base_class import Base, BasePydantic
 from app.actions.base_actions import BaseActions
 from app.actions.utils import new_9char
 from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardResponse
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
+
 
 class SegmentAwardModelDB(Base):
     __tablename__ = "program_segment_award"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
-    program_9char: Mapped[str] = mapped_column(default=None)
-    program_award_9char: Mapped[str] = mapped_column(default=None)
-    segment_9char: Mapped[str] = mapped_column(default=None)
-    segment_award_9char: Mapped[str] = mapped_column(default=None)
-    client_award_9char: Mapped[str] = mapped_column(default=None)
-    client_uuid: Mapped[str] = mapped_column(default=None)
-    name: Mapped[str] = mapped_column(default=None)
-    description: Mapped[str] = mapped_column(default=None)
-    hero_image: Mapped[str] = mapped_column(default=None)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(83), default=None, primary_key=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, nullable=True)
+    program_award_9char: Mapped[str] = mapped_column(String(9), default=None, nullable=True)
+    segment_9char: Mapped[str] = mapped_column(String(9), default=None, nullable=True)
+    segment_award_9char: Mapped[str] = mapped_column(String(9), default=None, nullable=True)
+    client_award_9char: Mapped[str] = mapped_column(String(9), default=None, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, nullable=True)
+    name: Mapped[str] = mapped_column(String(255), default=None, nullable=True)
+    description: Mapped[str] = mapped_column(Text, default=None, nullable=True)
+    hero_image: Mapped[str] = mapped_column(String(4), default=None, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
     def __init__(self, **data):
         super().__init__(**data)

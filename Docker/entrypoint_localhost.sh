@@ -7,23 +7,14 @@ set -e
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-echo "Sleeping for 10 seconds to allow Maria DB to start..."
-sleep 10;
+echo "Sleeping for 5 seconds to allow Maria DB to start..."
+sleep 5;
 
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
 alias bb-mysql="mysql -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
 alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.3.sql"
 EOF
-
-# temporary solution to bootstrapping db
-echo "Checking if bootstrap file '${MILESTONES_BOOTSTRAP}' exists"
-if [ -f "${MILESTONES_BOOTSTRAP}" ]; then
-    echo "Bootstrapping ${MYSQL_DATABASE} with SQL file ${MILESTONES_BOOTSTRAP}..."
-    mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE} < ${MILESTONES_BOOTSTRAP}
-else
-    echo "Bootstrap file '${MILESTONES_BOOTSTRAP}' does not exist, skipping database bootstrapping..."
-fi
 
 if [ -f "${ALEMBIC_INI_FILE}" ]; then
     echo "Alembic config file '${ALEMBIC_INI_FILE}' exists, getting alembic ready..."
@@ -43,4 +34,5 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' does not exist, skipping Alembic migrations..."
 fi
 
-uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
+echo "App running."
+exec "$@"

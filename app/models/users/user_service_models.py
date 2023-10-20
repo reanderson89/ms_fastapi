@@ -1,8 +1,11 @@
 from enum import Enum
 from typing import Optional
 from pydantic import Field
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 
 class ServiceID(str, Enum):
@@ -26,19 +29,19 @@ class UserServiceStatus(str, Enum):
 class UserServiceModelDB(Base):
     __tablename__ = "user_service"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True)
-    user_uuid: Mapped[Optional[str]] = mapped_column(default=None)
-    service_uuid: Mapped[Optional[str]] = mapped_column(default=None)
-    service_user_id: Mapped[Optional[str]] = mapped_column(default=None)
-    service_user_screenname: Mapped[Optional[str]] = mapped_column(default=None)
-    service_user_name: Mapped[Optional[str]] = mapped_column(default=None)
-    service_access_token: Mapped[Optional[str]] = mapped_column(default=None)
-    service_access_secret: Mapped[Optional[str]] = mapped_column(default=None)
-    service_refresh_token: Mapped[Optional[str]] = mapped_column(default=None)
-    time_created: Mapped[Optional[int]] = mapped_column(default=None)
-    time_updated: Mapped[Optional[int]] = mapped_column(default=None)
-    login_secret: Mapped[Optional[str]] = mapped_column(default=None)
-    login_token: Mapped[Optional[str]] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(56), default=None, primary_key=True)
+    user_uuid: Mapped[Optional[str]] = mapped_column(String(56), default=None, nullable=True)
+    service_uuid: Mapped[Optional[str]] = mapped_column(String(56), default=None, nullable=True)
+    service_user_id: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    service_user_screenname: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    service_user_name: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    service_access_token: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    service_access_secret: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    service_refresh_token: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    time_created: Mapped[Optional[int]] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[Optional[int]] = mapped_column(Integer(11), default=None, nullable=True)
+    login_secret: Mapped[Optional[str]] = mapped_column(String(255), default=None, nullable=True)
+    login_token: Mapped[Optional[str]] = mapped_column(String(56), default=None, nullable=True)
 
 
 class UserServiceModel(BasePydantic):

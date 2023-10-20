@@ -1,7 +1,11 @@
 from typing import Optional
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import EventType
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
+
 
 event_types = {
     1: "award", #creating, updating, deleting custom awards
@@ -14,18 +18,18 @@ event_types = {
 class ProgramEventModelDB(Base):
     __tablename__ = "program_event"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    program_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    program_9char: Mapped[str] = mapped_column(default=None, index=True)
-    event_9char: Mapped[str] = mapped_column(default=None, index=True)
-    event_type: Mapped[int] = mapped_column(default=None, index=True)
-    parent_9char: Mapped[str] = mapped_column(default=None, index=True)
-    segment_9char: Mapped[str] = mapped_column(default=None, index=True)
-    event_data: Mapped[str] = mapped_column(default=None)
-    status: Mapped[int] = mapped_column(default=None, index=True)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(72), default=None, primary_key=True, index=True)
+    program_uuid: Mapped[str] = mapped_column(String(65), default=None, index=True, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    event_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    event_type: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    parent_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    segment_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    event_data: Mapped[str] = mapped_column(Text, default=None, nullable=True)
+    status: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
 
 class ProgramEventReturn(BasePydantic):

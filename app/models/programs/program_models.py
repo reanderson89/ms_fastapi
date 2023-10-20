@@ -1,26 +1,29 @@
 from typing import Optional
 from pydantic import validator
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import Cadence, CadenceValue, Status, ProgramType
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 
 class ProgramModelDB(Base):
     __tablename__ = "program"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    user_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    program_9char: Mapped[str] = mapped_column(default=None, index=True)
-    name: Mapped[str] = mapped_column(default=None, index=True)
-    description: Mapped[str] = mapped_column(default=None, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    budget_9char: Mapped[str] = mapped_column(default=None, index=True)
-    status: Mapped[int] = mapped_column(default=None, index=True)
-    program_type: Mapped[int] = mapped_column(default=None, index=True)
-    cadence: Mapped[int] = mapped_column(default=None, index=True)
-    cadence_value: Mapped[int] = mapped_column(default=None, index=True)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(65), default=None, primary_key=True, index=True)
+    user_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    name: Mapped[str] = mapped_column(String(255), default=None, index=True, nullable=True)
+    description: Mapped[str] = mapped_column(Text, default=None, index=True, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    budget_9char: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    status: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    program_type: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    cadence: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    cadence_value: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
 
 class ProgramModel(BasePydantic):

@@ -29,6 +29,8 @@ COPY alembic.ini /app
 # linter script
 COPY linter.sh /app
 RUN chmod +x /app/linter.sh
+# debug mode funtionality
+RUN pip install debugpy
 # tests
 COPY ./tests/ /app/tests
 COPY Docker/entrypoint_localhost.sh /entrypoint.sh

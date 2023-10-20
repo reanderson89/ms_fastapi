@@ -14,15 +14,6 @@ alias bb-mysql="mysql -v -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} $
 alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.3.sql"
 EOF
 
-# temporary solution to bootstrapping db
-echo "Checking if bootstrap file '${MILESTONES_BOOTSTRAP}' exists"
-if [ -f "${MILESTONES_BOOTSTRAP}" ]; then
-    echo "Bootstrapping ${MYSQL_DATABASE} with SQL file ${MILESTONES_BOOTSTRAP}..."
-    mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE} < ${MILESTONES_BOOTSTRAP}
-else
-    echo "Bootstrap file '${MILESTONES_BOOTSTRAP}' is not set or does not exist, skipping database bootstrapping..."
-fi
-
 if [ -f "${ALEMBIC_INI_FILE}" ]; then
     echo "Alembic config file '${ALEMBIC_INI_FILE}' exists, getting Alembic ready..."
     export CONN="sqlalchemy.url = mysql+pymysql\:\/\/${MYSQL_USER}\:${MYSQL_PASSWORD}\@${MYSQL_HOSTNAME}\:${MYSQL_PORT}\/${MYSQL_DATABASE}"

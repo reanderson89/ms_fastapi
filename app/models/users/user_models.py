@@ -1,27 +1,30 @@
 from typing import Optional
 from pydantic import validator, root_validator
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import Admin
 from app.models.base_class import Base, BasePydantic
 from app.actions.utils import convert_int_to_date_string
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 
 class UserModelDB(Base):
     __tablename__ = "user"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    first_name: Mapped[str] = mapped_column(default=None)
-    last_name: Mapped[str] = mapped_column(default=None)
-    latitude: Mapped[int] = mapped_column(default=None)
-    longitude: Mapped[int] = mapped_column(default=None)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
-    time_ping: Mapped[int] = mapped_column(default=None)
-    time_birthday: Mapped[int] = mapped_column(default=None)
-    admin: Mapped[int] = mapped_column(default=0)
+    uuid: Mapped[str] = mapped_column(String(56), default=None, primary_key=True, index=True)
+    first_name: Mapped[str] = mapped_column(String(255), default=None, nullable=True)
+    last_name: Mapped[str] = mapped_column(String(255), default=None, nullable=True)
+    latitude: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    longitude: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_ping: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_birthday: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    admin: Mapped[int] = mapped_column(Integer(11), default=0, nullable=True)
     # TODO: Not part of v1.0, but may be added in future iteration.
     # Just a standin for now.
-    # client_uuid_list: Mapped[str] = mapped_column(default=None)
+    # client_uuid_list: Mapped[str] = mapped_column(String(56), default=None)
 
 
 class UserModel(BasePydantic):

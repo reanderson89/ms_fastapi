@@ -1,24 +1,27 @@
 from typing import Optional
 from pydantic import validator
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import BudgetType
 from app.models.base_class import Base, BasePydantic
 from app.models.clients.clients_models import ClientModel
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
 
 
 class ClientBudgetModelDB(Base):
     __tablename__ = "client_budget"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    budget_9char: Mapped[str] = mapped_column(default=None, index=True)
-    parent_9char: Mapped[str] = mapped_column(default=None, index=True)
-    name: Mapped[str] = mapped_column(default=None)
-    value: Mapped[int] = mapped_column(default=0)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
-    active: Mapped[bool] = mapped_column(default=True)
-    budget_type: Mapped[int] = mapped_column(default=0)
+    uuid: Mapped[str] = mapped_column(String(65), default=None, primary_key=True, index=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    budget_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    parent_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    name: Mapped[str] = mapped_column(String(255), default=None, nullable=True)
+    value: Mapped[int] = mapped_column(Integer(11), default=0, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    active: Mapped[bool] = mapped_column(default=True, nullable=True)
+    budget_type: Mapped[int] = mapped_column(Integer(11), default=0, nullable=True)
 
 
 class ClientBudgetModel(BasePydantic):

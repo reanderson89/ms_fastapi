@@ -1,23 +1,27 @@
 from typing import Optional
 from pydantic import validator
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from app.enums import ChannelType, Status
 from app.models.base_class import Base, BasePydantic
+from sqlalchemy.dialects import mysql
+Integer = mysql.INTEGER
+
 
 class SegmentDesignModelDB(Base):
     __tablename__ = "program_segment_design"
 
-    uuid: Mapped[str] = mapped_column(default=None, primary_key=True, index=True)
-    client_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    program_9char: Mapped[str] = mapped_column(default=None, index=True)
-    segment_9char: Mapped[str] = mapped_column(default=None, index=True)
-    design_9char: Mapped[str] = mapped_column(default=None, index=True)
-    message_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    program_uuid: Mapped[str] = mapped_column(default=None, index=True)
-    channel: Mapped[int] = mapped_column(default=None, index=True)
-    status: Mapped[int] = mapped_column(default=None, index=True)
-    time_created: Mapped[int] = mapped_column(default=None)
-    time_updated: Mapped[int] = mapped_column(default=None)
+    uuid: Mapped[str] = mapped_column(String(81), default=None, primary_key=True, index=True)
+    program_uuid: Mapped[str] = mapped_column(String(65), default=None, index=True, nullable=True)
+    client_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    program_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    segment_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    design_9char: Mapped[str] = mapped_column(String(9), default=None, index=True, nullable=True)
+    message_uuid: Mapped[str] = mapped_column(String(56), default=None, index=True, nullable=True)
+    channel: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    status: Mapped[int] = mapped_column(Integer(11), default=None, index=True, nullable=True)
+    time_created: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
+    time_updated: Mapped[int] = mapped_column(Integer(11), default=None, nullable=True)
 
 
 class SegmentDesignModel(BasePydantic):
