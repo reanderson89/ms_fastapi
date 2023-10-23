@@ -41,8 +41,8 @@ jobs:
           sudo apt-get update
           sudo apt-get --assume-yes --no-install-recommends install openvpn
 
-      - name: Setup VPN config using organization secrets
-        if: ${{ github.event.inputs.environment }} != 'prod'
+      - name: Setup VPN config for dev/staging using organization secrets
+        if: "${{ github.event.inputs.level != 'prod' }}"
         run: |
           touch secret.txt && chmod 600 secret.txt
           # these values can be confirmed to be valid with:  openssl x509 -text -in <file>
@@ -58,8 +58,9 @@ jobs:
           # validate key with ssh-keygenb
           echo ${{ secrets.DEV_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
           ssh-keygen -y -e -f user.key
-      - name: Setup VPN config using organization secrets
-        if: ${{ github.event.inputs.environment }} == 'prod'
+
+      - name: Setup VPN config for prod using organization secrets
+        if: "${{ github.event.inputs.level == 'prod' }}"
         run: |
           echo "production"
           exit_with_success
