@@ -42,7 +42,7 @@ jobs:
           sudo apt-get --assume-yes --no-install-recommends install openvpn
 
       - name: Setup VPN config for dev/staging using organization secrets
-        if: "${{ github.event.inputs.level != 'prod' }}"
+        if: "${{ github.event.inputs.environment != 'prod' }}"
         run: |
           touch secret.txt && chmod 600 secret.txt
           # these values can be confirmed to be valid with:  openssl x509 -text -in <file>
@@ -60,7 +60,7 @@ jobs:
           ssh-keygen -y -e -f user.key
 
       - name: Setup VPN config for prod using organization secrets
-        if: "${{ github.event.inputs.level == 'prod' }}"
+        if: "${{ github.event.inputs.environment == 'prod' }}"
         run: |
           echo "production"
           exit_with_success
