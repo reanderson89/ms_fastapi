@@ -55,17 +55,28 @@ jobs:
           echo ${{ secrets.DEV_VPN_SECRET_USERNAME }} > secret.txt
           echo ${{ secrets.DEV_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
 
-          # validate key with ssh-keygenb
+          # validate key with ssh-keygen
           echo ${{ secrets.DEV_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
           ssh-keygen -y -e -f user.key
 
+      # this step is identical to the one above, just different values for the prod env
       - name: Setup VPN config for prod using organization secrets
         if: "${{ github.event.inputs.environment == 'prod' }}"
         run: |
-          echo "production"
-          exit_with_success
 
-      - name: Create and validate the private key
+          touch secret.txt && chmod 600 secret.txt
+          echo ${{ secrets.PROD_VPN_CA_CRT_B64 }} | base64 --decode > ca.crt
+          echo ${{ secrets.PROD_VPN_CERT_CRT_B64 }} | base64 --decode > user.crt
+          echo ${{ secrets.PROD_VPN_TLS_KEY_B64 }} | base64 --decode > tls.key
+          echo ${{ secrets.PROD_VPN_SECRET_USERNAME }} > secret.txt
+          echo ${{ secrets.PROD_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
+          echo ${{ secrets.PROD_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
+          ssh-keygen -y -e -f user.key
+
+      # this step (and the one below) are not really necessary, it is not more than informational
+      # to validate the ssh key for correctness
+      - name: Create and validate the private key for dev/staging
+        if: "${{ github.event.inputs.environment != 'prod' }}"
         run: |
           mkdir ${{ github.workspace }}/.ssh
           chmod 700 ${{ github.workspace }}/.ssh
@@ -73,8 +84,22 @@ jobs:
           chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
           ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
 
-      - name: Start the VPN
+      - name: Create and validate the private key for dev/staging
+        if: "${{ github.event.inputs.environment == 'prod' }}"
+        run: |
+          mkdir ${{ github.workspace }}/.ssh
+          chmod 700 ${{ github.workspace }}/.ssh
+          echo ${{ secrets.PROD_SSH_KEY_B64 }} | base64 --decode > ${{ github.workspace }}/.ssh/id_ecdsa
+          chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
+          ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
+
+      - name: Start the VPN to dev/staging
+        if: "${{ github.event.inputs.environment != 'prod' }}"
         run: sudo openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon
+
+      - name: Start the VPN to prod
+        if: "${{ github.event.inputs.environment == 'prod' }}"
+        run: sudo openvpn --config ".github/vpn/config-prod.ovpn" --log "vpn.log" --daemon
 
       - name: Wait for the VPN connection
         timeout-minutes: 1
