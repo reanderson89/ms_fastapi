@@ -68,15 +68,16 @@ jobs:
           echo ${{ secrets.PROD_VPN_CA_CRT_B64 }} | base64 --decode > ca.crt
           echo ${{ secrets.PROD_VPN_CERT_CRT_B64 }} | base64 --decode > user.crt
           echo ${{ secrets.PROD_VPN_TLS_KEY_B64 }} | base64 --decode > tls.key
+
           echo ${{ secrets.PROD_VPN_SECRET_USERNAME }} > secret.txt
-          # echo ${{ secrets.PROD_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
-          echo "bad_password" >> secret.txt && chmod 400 secret.txt
+          echo ${{ secrets.PROD_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
+
           echo ${{ secrets.PROD_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
           ssh-keygen -y -e -f user.key
 
       # this step (and the one below) are not really necessary, it is not more than informational
       # to validate the ssh key for correctness
-      - name: Create and validate the private key for dev/staging
+      - name: Create and validate the private SSH key for dev/staging
         if: "${{ github.event.inputs.environment != 'prod' }}"
         run: |
           mkdir ${{ github.workspace }}/.ssh
@@ -85,7 +86,7 @@ jobs:
           chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
           ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
 
-      - name: Create and validate the private key for prod
+      - name: Create and validate the private SSH key for prod
         if: "${{ github.event.inputs.environment == 'prod' }}"
         run: |
           mkdir ${{ github.workspace }}/.ssh
