@@ -104,9 +104,9 @@ jobs:
       - name: Wait for the VPN connection
         timeout-minutes: 1
         run: |
-          if ${{ github.event.inputs.environment }} == 'prod'; then
+          if [[ ${{ github.event.inputs.environment }} == 'prod' ]]; then
             export PING_HOST=${{ secrets.PROD_LEADER }}
-          elif ${{ github.event.inputs.environment }} == 'staging'; then
+          elif [[ ${{ github.event.inputs.environment }} == 'staging' ]]; then
             export PING_HOST=${{ secrets.STAGING_LEADER }}
           else
             export PING_HOST=${{ secrets.DEV_LEADER }}
