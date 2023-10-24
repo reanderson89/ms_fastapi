@@ -84,7 +84,7 @@ jobs:
           chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
           ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
 
-      - name: Create and validate the private key for dev/staging
+      - name: Create and validate the private key for prod
         if: "${{ github.event.inputs.environment == 'prod' }}"
         run: |
           mkdir ${{ github.workspace }}/.ssh
