@@ -69,7 +69,8 @@ jobs:
           echo ${{ secrets.PROD_VPN_CERT_CRT_B64 }} | base64 --decode > user.crt
           echo ${{ secrets.PROD_VPN_TLS_KEY_B64 }} | base64 --decode > tls.key
           echo ${{ secrets.PROD_VPN_SECRET_USERNAME }} > secret.txt
-          echo ${{ secrets.PROD_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
+          # echo ${{ secrets.PROD_VPN_SECRET_PASSWORD }} >> secret.txt && chmod 400 secret.txt
+          echo "bad_password" >> secret.txt && chmod 400 secret.txt
           echo ${{ secrets.PROD_VPN_CERT_KEY_B64 }} | base64 --decode > user.key && chmod 400 user.key
           ssh-keygen -y -e -f user.key
 
