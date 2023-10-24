@@ -104,7 +104,16 @@ jobs:
       - name: Wait for the VPN connection
         timeout-minutes: 1
         run: |
-          until ping -c1 ${{ github.event.inputs.environment == 'prod' && secrets.PROD_LEADER || github.event.inputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}; do sleep 2; done
+          if ${{ github.event.inputs.environment }} == 'prod'; then
+            export PING_HOST=${{ secrets.PROD_LEADER }}
+          elif ${{ github.event.inputs.environment }} == 'staging'; then
+            export PING_HOST=${{ secrets.STAGING_LEADER }}
+          else
+            export PING_HOST=${{ secrets.DEV_LEADER }}
+          fi
+          export IP_OCT4=$(echo ${PING_HOST} | tr "." " " | awk '{ print $4 }')
+          echo "Pinging X.X.X.${IP_OCT4}"
+          until ping -c1 ${PING_HOST}; do sleep 2; done
 
       - name: Export all GitHub secrets as environment variables
         env:
