@@ -118,6 +118,9 @@ jobs:
           echo "Pinging ${IP_OCT1}.${IP_OCT2}.${IP_OCT3}.${IP_OCT4}"
           echo "Pinging ${PING_HOST}"
 
+          echo "Pinging ${IP_OCT1}.X.X.X"
+          echo "Pinging X.${IP_OCT2}.X.X"
+          echo "Pinging X.X.${IP_OCT3}.X"
           echo "Pinging X.X.X.${IP_OCT4}"
 
           until ping -c1 ${PING_HOST}; do sleep 2; done
