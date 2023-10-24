@@ -63,7 +63,6 @@ jobs:
       - name: Setup VPN config for prod using organization secrets
         if: "${{ github.event.inputs.environment == 'prod' }}"
         run: |
-
           touch secret.txt && chmod 600 secret.txt
           echo ${{ secrets.PROD_VPN_CA_CRT_B64 }} | base64 --decode > ca.crt
           echo ${{ secrets.PROD_VPN_CERT_CRT_B64 }} | base64 --decode > user.crt
@@ -101,7 +100,7 @@ jobs:
 
       - name: Start the VPN to prod
         if: "${{ github.event.inputs.environment == 'prod' }}"
-        run: sudo openvpn --config ".github/vpn/config-prod.ovpn" --log "vpn.log" --daemon
+        run: sudo openvpn --config ".github/vpn/config-prod.ovpn" --verb 3 --log "vpn.log" --daemon
 
       - name: Wait for the VPN connection
         timeout-minutes: 1
