@@ -94,13 +94,15 @@ jobs:
           chmod 400 ${{ github.workspace }}/.ssh/id_ecdsa
           ssh-keygen -y -e -f ${{ github.workspace }}/.ssh/id_ecdsa
 
-      - name: Start the VPN to dev/staging
+      - name: Start the VPN daemon to dev/staging
         if: "${{ github.event.inputs.environment != 'prod' }}"
-        run: sudo openvpn --config ".github/vpn/config.ovpn" --log "vpn.log" --daemon
+        # openvpn default auth type is SHA256
+        run: sudo openvpn --config ".github/vpn/config.ovpn" --verb 3 --log "vpn.log" --daemon
 
-      - name: Start the VPN to prod
+      - name: Start the VPN daemon to prod
         if: "${{ github.event.inputs.environment == 'prod' }}"
-        run: sudo openvpn --config ".github/vpn/config-prod.ovpn" --verb 3 --log "vpn.log" --daemon
+        # must explicitly pass auth type of SHA384
+        run: sudo openvpn --config ".github/vpn/config-prod.ovpn" --auth SHA384 --verb 3 --log "vpn.log" --daemon
 
       - name: Wait for the VPN connection
         timeout-minutes: 1
