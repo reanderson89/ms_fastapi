@@ -111,8 +111,15 @@ jobs:
           else
             export PING_HOST=${{ secrets.DEV_LEADER }}
           fi
+          export IP_OCT1=$(echo ${PING_HOST} | tr "." " " | awk '{ print $1 }')
+          export IP_OCT2=$(echo ${PING_HOST} | tr "." " " | awk '{ print $2 }')
+          export IP_OCT3=$(echo ${PING_HOST} | tr "." " " | awk '{ print $3 }')
           export IP_OCT4=$(echo ${PING_HOST} | tr "." " " | awk '{ print $4 }')
+          echo "Pinging ${IP_OCT1}.${IP_OCT2}.${IP_OCT3}.${IP_OCT4}"
+          echo "Pinging ${PING_HOST}"
+
           echo "Pinging X.X.X.${IP_OCT4}"
+
           until ping -c1 ${PING_HOST}; do sleep 2; done
 
       - name: Export all GitHub secrets as environment variables
