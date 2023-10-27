@@ -1,0 +1,119 @@
+name: Tag Release
+
+# The purpose of this GHA is to parse a semver from a PR merge and commit a tag back to the project
+# Said tag, in turn, triggers the build GHA.concurrency:
+#
+# There are some intricies here, not the least of which is the persist-credentials: false bit under
+# the checkout and the use of a Personal Access Token for the push.
+#
+# When you use the repository’s GITHUB_TOKEN to perform tasks on behalf of the GitHub Actions app,
+# events triggered by the GITHUB_TOKEN will not create a new workflow run. This prevents you from
+# accidentally creating recursive workflow runs.
+#
+# https://docs.github.com/en/actions/using-workflows/triggering-a-workflow
+#
+# Very good thread:
+# https://github.com/orgs/community/discussions/26220
+#
+
+on:
+  push:
+    branches-ignore:
+      - test*
+
+jobs:
+  tag-release:
+    name: Tag Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          # this must be false to subsequently use the PAT in the tag push (below)
+          persist-credentials: false
+
+      - name: Setup git client
+        run: |
+          # user.name/user.email comes from the last commit
+          git config --global user.name "$(git log -n 1 --pretty=format:%an)"
+          git config --global user.email  "$(git log -n 1 --pretty=format:%ae)"
+
+          # reconfigure Git client to use the PAT
+          git remote remove origin
+          git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/blueboard/${{ github.event.repository.name }}.git
+
+      - name: Get current version and bump level
+        id: get-version
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          # fetch the most recent tag
+          git fetch origin --tags
+          git tag --list --sort=creatordate > tags
+
+          # the cut is to strip off the SHA, or everything past the dash
+          VERSION=$( tail -1 tags | cut -d "-" -f 1 )
+
+          # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+          # if the words "major", "minor" or "patch" are in the PR subject or commit message
+          # then set LEVEL to that
+
+          export MAJOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(major).*$/\1/ip' )
+          if [[ ! -z ${MAJOR} ]]; then
+            echo "LEVEL=major" >> $GITHUB_OUTPUT
+          fi
+
+          export MINOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(minor).*$/\1/ip' )
+          if [[ ! -z ${MINOR} ]]; then
+            echo "LEVEL=minor" >> $GITHUB_OUTPUT
+          fi
+
+          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
+          if [[ ! -z ${PATCH} ]]; then
+            echo "LEVEL=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Echo the version and level (debugging)
+        run: |
+          echo "VERSION: ${{ steps.get-version.outputs.VERSION }}"
+          echo "LEVEL: ${{ steps.get-version.outputs.VERSION }}"
+
+      - name: Get the next version
+        id: sem-ver
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.get-version.outputs.VERSION }}
+
+      - name: Select which new version to use
+        id: new-version
+        if: ${{ steps.sem-ver.outputs.major != '' }}
+        run: |
+          # github-action-next-semvers actually calculates all of the various next semver permutations, so we
+          # have to decide which one to use based on the commit message in the step above
+          if [ ${{ steps.get-version.outputs.LEVEL  }} == 'major' ]; then
+            echo "NEW_VERSION=${{ steps.sem-ver.outputs.major }}" >> $GITHUB_OUTPUT
+          elif [ ${{ steps.get-version.outputs.LEVEL }} == 'minor' ]; then
+            echo "NEW_VERSION=${{ steps.sem-ver.outputs.minor }}" >> $GITHUB_OUTPUT
+          elif [ ${{ steps.get-version.outputs.LEVEL }} == 'patch' ]; then
+            echo "NEW_VERSION=${{ steps.sem-ver.outputs.patch }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Tag new version
+        if: ${{ steps.new-version.outputs.NEW_VERSION != '' }}
+        run: |
+          echo "Updating version tag from ${{ steps.get-version.outputs.VERSION }} to ${{ steps.new-version.outputs.NEW_VERSION }}"
+
+          # reconstruct the full tag, e.g. v5.5.3-39a1b0b
+          export SHA=$(git rev-parse --short HEAD)
+
+          # adds "v" prefix
+          export FULL_TAG="v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}"
+
+          # this PERSONAL_ACCESS_TOKEN is an org secret and tied to Clark's account since GITHUB_TOKEN does
+          # not have the permission to push tags
+          git tag ${FULL_TAG}
+          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
