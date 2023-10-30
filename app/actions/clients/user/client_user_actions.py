@@ -149,6 +149,16 @@ class ClientUserActions:
                 ClientUserModelDB.user_uuid == path_params["user_uuid"]
             ]
         )
+    
+    @staticmethod
+    async def auth_get_user(user_uuid):
+        return await BaseActions.get_one_where(
+            ClientUserModelDB,
+            [
+                ClientUserModelDB.user_uuid == user_uuid
+            ]
+        )
+
 
     @staticmethod
     async def update_user(path_params: dict, user_updates):
