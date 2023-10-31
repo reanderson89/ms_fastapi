@@ -1,0 +1,163 @@
+---
+
+    name: Deploy to Docker Swarm v3
+
+    on:
+      # This is triggered when 'Build Docker Images' GHA completes
+      # Note that there is likely an unintended situation wherein builds for staging or prod would
+      # also be auto-deployed into dev, and that may be undesirable
+      workflow_run:
+        workflows: [ "Build Docker Images" ]
+        types:
+          - completed
+        # it's not clear if we want this filter -- limited to dev, or limited to everything except dev
+        # likewise, it is not clear if there is a "branch" associated with things by the time it gets here
+        # as part of a workflow_run, which is triggered off a tag and not a branch -- this is a guess and TBD
+        branches-ignore:
+          - main
+
+      # This is triggered manually through the GitHub Actions user interface
+      workflow_dispatch:
+        inputs:
+          tag:
+            description: 'Which Docker image tag?'
+            required: true
+            default: 'latest'
+          environment:
+            description: 'To what environment?'
+            type: choice
+            default: 'dev'
+            options:
+              - dev
+              - staging
+              - prod
+
+    env:
+      SWARM_YAML: "docker-milestones-api-swarm.yml"
+      MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
+
+    jobs:
+      set-variables:
+        # The purpose of this setup job is to set, in the GITHUB_ENV, the values the user (a human) entered as part of the workflow_dispatch
+        # or, if this was triggered via a workflow_run, to set those values another way as the build GHA is not able to pass outputs as
+        # inputs to this Github Action, these values are then used in the deploy job
+        name: Setup variables
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+            with:
+              ref: ${{ github.head_ref }}
+              fetch-depth: 0
+
+          - name: Get and set tag
+            id: set-tag
+            run: |
+              if ${{ github.event.inputs.tag != '' }}
+              then
+                echo "Using the tag from user input: ${{ github.event.inputs.tag }}"
+                echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+              else
+                TAG=$( git fetch origin --tags 2>&1 && git tag --list --sort=creatordate | tail -1 )
+                echo "Using the most recently created tag: ${TAG}"
+                echo "TAG=$TAG" >> $GITHUB_ENV
+                # TODO should probably exit clean here if the tag is not found or something
+              fi
+
+          - name: Get and set the environment
+            id: set-environment
+            run: |
+              echo "The ref is: ${{ github.head_ref }}"
+              if ${{ github.event.inputs.environment != '' }}
+              then
+                echo "Using the environment from user input: ${{ github.event.inputs.environment }}"
+                echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+              else
+                # TODO how would this infer to deploy to anywhere other than dev?
+                echo "Environment is dev"
+                echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+              fi
+
+        outputs:
+          environment: ${{ env.ENVIRONMENT }}
+          tag: ${{ env.TAG }}
+
+      deploy:
+        name: Deploy ${{ needs.set-variables.outputs.tag }} to ${{ needs.set-variables.outputs.environment }}
+        runs-on: ubuntu-latest
+        needs: set-variables
+        environment: ${{ needs.set-variables.outputs.environment }}
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+            with:
+              ref: ${{ needs.set-variables.outputs.tag }}
+
+          - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
+            uses: ./.github/actions/setup-open-vpn
+            timeout-minutes: 1
+            with:
+              vpn_ca_crt_b64: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_CA_CRT_B64 || secrets.DEV_VPN_CA_CRT_B64 }}
+              vpn_cert_crt_b64: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_CERT_CRT_B64 || secrets.DEV_VPN_CERT_CRT_B64 }}
+              vpn_tls_key_b64: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_TLS_KEY_B64 || secrets.DEV_VPN_TLS_KEY_B64 }}
+              username: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_SECRET_USERNAME || secrets.DEV_VPN_SECRET_USERNAME }}
+              password: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_SECRET_PASSWORD || secrets.DEV_VPN_SECRET_PASSWORD }}
+              vpn_cert_key_b64: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_VPN_CERT_KEY_B64 || secrets.DEV_VPN_CERT_KEY_B64 }}
+              auth: ${{ needs.set-variables.outputs.environment == 'prod' && 'SHA384' || 'SHA256' }}
+              ssh_key_b64: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_SSH_KEY_B64 || secrets.DEV_SSH_KEY_B64 }}
+              config: ${{ needs.set-variables.outputs.environment == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
+              ping_host: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_LEADER || needs.set-variables.outputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+
+          - name: Export all GitHub secrets as environment variables
+            env:
+              SECRETS: ${{ toJson(secrets) }}
+            run: |
+              # the purpose of this step is to export all GitHub secrets as regular
+              # env vars so that we can use envsubst in a subsequent step
+              # Note: jq adds double quotes around the value, so we must use sed to
+              # re-wrap the values with single quotes, but still allowing for double
+              # quotes in the env var itself, i.e. so that we end up with this:
+              #
+              # foo='foobar'
+              # bar='barfoo'
+              # foobar='bar"foo"foo'
+              #
+              echo $SECRETS | jq --raw-output '. | to_entries[] | .key + "=" + (.value | tojson)' | \
+                sed "s/\=\"/\=\'/" | \
+                sed "s/\"$/'/" | \
+                sed "s/\"$/'/" >> $GITHUB_ENV
+              unset SECRETS
+
+          - name: Prepare the Docker Swarm YAML file
+            env:
+              ENV: ${{ github.event.inputs.environment }}                   # workflow variable
+              IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
+              REPLICAS: ${{ vars.REPLICAS || 1 }}
+            run: |
+              # append the tag to form a fully qualified Docker tag
+              export IMAGE_TAG="${{ env.MILESTONES_DOCKER_REPO }}:${IMAGE_TAG}"
+
+              YAML_COMMENT="\n#\n# This YAML config was auto-generated by a Github Action on $(date)\n#\n"
+              mv ${SWARM_YAML} ${SWARM_YAML}.orig
+              # the use of sed here is a primitive brute-force attempt to squash any double-single quotes
+              envsubst < ${SWARM_YAML}.orig | sed s/\'\'/\'/g > ${SWARM_YAML}
+              echo -en ${YAML_COMMENT} >> ${SWARM_YAML}
+
+          - name: Recycle Containers ♻️
+            uses: ./.github/actions/update-docker-swarm
+            timeout-minutes: 1
+            with:
+              hosts: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_HOSTS || needs.set-variables.outputs.environment == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
+              leader: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_LEADER || needs.set-variables.outputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+              yaml_file: ${{ env.SWARM_YAML }}
+              dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+              dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN_RO }}
+              app: 'shared'
+
+          - name: Stop the VPN
+            if: always()
+            run: |
+              sudo chmod 444 vpn.log
+              cat vpn.log
+              sudo killall openvpn

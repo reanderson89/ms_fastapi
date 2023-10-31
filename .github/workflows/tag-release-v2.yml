@@ -31,8 +31,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-          # this must be false to subsequently use the PAT in the tag push (below)
-          persist-credentials: false
+          persist-credentials: false # this must be false to use the PAT in the push below
 
       - name: Setup git client
         run: |
@@ -105,7 +104,7 @@ jobs:
       - name: Tag new version
         if: ${{ steps.new-version.outputs.NEW_VERSION != '' }}
         run: |
-          echo "Updating version tag from ${{ steps.get-version.outputs.VERSION }} to ${{ steps.new-version.outputs.NEW_VERSION }}"
+          echo "Updating version tag from ${{ steps.get-version.outputs.VERSION }} to v${{ steps.new-version.outputs.NEW_VERSION }}"
 
           # reconstruct the full tag, e.g. v5.5.3-39a1b0b
           export SHA=$(git rev-parse --short HEAD)
