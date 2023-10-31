@@ -4,7 +4,6 @@ from app.models.users import UserModelDB, UserServiceModelDB, UserServiceUpdate,
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
 
-from app.database.config import yass_engine
 
 class UserServiceActions:
 
@@ -18,7 +17,7 @@ class UserServiceActions:
             UserServiceModelDB.service_user_id == id,
             UserServiceModelDB.user_uuid == UserModelDB.uuid
             ],
-            engine=yass_engine
+            
         )
 
         if service_obj:
@@ -42,7 +41,7 @@ class UserServiceActions:
             login_token="place_holder",
             login_secret="place_holder"
         )
-        return await BaseActions.create(new_user_service, engine=yass_engine)
+        return await BaseActions.create(new_user_service, )
 
     @classmethod
     async def get_service(cls, user_uuid: str, service_uuid: str):
@@ -52,7 +51,7 @@ class UserServiceActions:
                 UserServiceModelDB.user_uuid == user_uuid,
                 UserServiceModelDB.uuid == service_uuid
             ],
-            engine=yass_engine
+            
         )
 
     @classmethod
@@ -62,7 +61,7 @@ class UserServiceActions:
             [UserServiceModelDB.user_uuid == user_uuid],
             query_params,
             pagination=False,
-            engine=yass_engine
+            
         )
 
         result = {}
@@ -83,7 +82,7 @@ class UserServiceActions:
             service_uuid = service_obj.service_uuid,
             service_user_id = service_obj.service_user_id
         )
-        service = await BaseActions.create(service_obj, engine=yass_engine)
+        service = await BaseActions.create(service_obj, )
         new_service = ServiceStatus.from_orm(service)
         new_service.status = "service created"
         return new_service
@@ -102,7 +101,7 @@ class UserServiceActions:
             UserServiceModelDB.uuid == service_uuid
             ],
             updates,
-            engine=yass_engine
+            
         )
 
     @classmethod
@@ -120,7 +119,7 @@ class UserServiceActions:
         return await BaseActions.delete_one(
             UserServiceModelDB,
             [UserServiceModelDB.uuid == service_uuid],
-            engine=yass_engine
+            
         )
 
     @classmethod
@@ -131,7 +130,7 @@ class UserServiceActions:
                 await BaseActions.delete_one(
                     UserServiceModelDB,
                     [UserServiceModelDB.uuid == service.service_uuid],
-                    engine=yass_engine
+                    
                 )
             )
         return deleted_services

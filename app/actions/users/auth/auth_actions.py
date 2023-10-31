@@ -16,7 +16,6 @@ from app.models.users import UserServiceModelDB, UserServiceUpdate
 from app.models.users.auth.auth_models import CreateAuthModel, AuthResponseModel, RedeemAuthModel
 from cryptography.fernet import Fernet, InvalidToken
 
-from app.database.config import yass_engine
 
 secretish_key = os.environ["FERNET_KEY"]
 key = bytes(secretish_key,'UTF-8')
@@ -48,8 +47,7 @@ class AuthActions(BaseActions):
             [
             UserServiceModelDB.service_uuid == auth_model.service_uuid,
             UserServiceModelDB.service_user_id == auth_model.service_user_id
-            ],
-            engine=yass_engine
+            ]
         )
 
         auth_object = await cls.generate_auth(service)
@@ -83,8 +81,7 @@ class AuthActions(BaseActions):
             [
                 UserServiceModelDB.login_token == redeem_auth_model.login_token,
                 UserServiceModelDB.login_secret == redeem_auth_model.login_secret
-            ],
-            engine=yass_engine
+            ]
         )
 
         try:
@@ -168,7 +165,6 @@ class AuthActions(BaseActions):
                 UserServiceModelDB.login_token == redeem_auth_model.login_token,
                 UserServiceModelDB.login_secret == redeem_auth_model.login_secret
             ],
-            updates,
-            engine=yass_engine
+            updates
         )
         return response

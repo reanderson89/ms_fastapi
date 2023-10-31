@@ -5,13 +5,12 @@ from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.users import UserModelDB, UserServiceModelDB, UserExpanded
 
-from app.database.config import yass_engine
 
 class UserActions:
 
     @classmethod
     async def get_user_by_uuid(cls, uuid):
-        return await BaseActions.get_one_where(UserModelDB, [UserModelDB.uuid == uuid], engine=yass_engine)
+        return await BaseActions.get_one_where(UserModelDB, [UserModelDB.uuid == uuid])
 
     @classmethod
     async def get_user_by_service_id(cls, user_uuid, service_id):
@@ -23,7 +22,7 @@ class UserActions:
                 UserServiceModelDB.user_uuid == UserModelDB.uuid
 
             ],
-            engine=yass_engine
+    
         )
 
     @classmethod
@@ -35,12 +34,12 @@ class UserActions:
                 UserModelDB.last_name == last_name#,
                 # UserServiceModelDB.service_user_id == service_id,
             ],
-            engine=yass_engine
+    
         )
 
     @classmethod
     async def get_all_users(cls, query_params: dict):
-        return await BaseActions.get_all(UserModelDB, query_params, engine=yass_engine)
+        return await BaseActions.get_all(UserModelDB, query_params)
 
     @classmethod
     async def get_user(cls, user_uuid, expand_services=False):
@@ -112,8 +111,10 @@ class UserActions:
         # TODO: turn back on when Nominatim server is working
         # lat, lon = await utils.get_location_coord(new_user_data.get("location"))
         lat, lon = None, None
+        user_uuid = new_user_data.get("user_uuid", None)
 
         new_user_obj = UserModelDB(
+            uuid = user_uuid,
             first_name = first_name,
             last_name= last_name,
             latitude = lat,
@@ -122,7 +123,7 @@ class UserActions:
             admin = await HelperActions.get_admin(new_user_data),
             time_birthday = birthday
         )
-        user_db = await BaseActions.create(new_user_obj, engine=yass_engine)
+        user_db = await BaseActions.create(new_user_obj)
         new_service = await UserServiceActions.create_service_for_new_user(user_db, service_id)
         if not new_service:
             raise Exception("Service Creation Failed")
@@ -130,15 +131,15 @@ class UserActions:
 
     @classmethod
     async def update_user(cls, user_uuid, updates):
-        return await BaseActions.update(UserModelDB, [UserModelDB.uuid == user_uuid], updates, engine=yass_engine)
+        return await BaseActions.update(UserModelDB, [UserModelDB.uuid == user_uuid], updates)
 
     @classmethod
     async def delete_user(cls, user_uuid):
-        return await BaseActions.delete_one(UserModelDB, [UserModelDB.uuid == user_uuid], engine=yass_engine)
+        return await BaseActions.delete_one(UserModelDB, [UserModelDB.uuid == user_uuid])
 
     @classmethod
     async def delete_test_user(cls, user_uuid):
         services = await UserServiceActions.get_all_services(user_uuid)
         for key, value in services.items():
             for item in value:
-                await BaseActions.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid], engine=yass_engine)
+                await BaseActions.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid])

@@ -1,13 +1,12 @@
+import httpx
 from app.actions.utils import convert_date_to_int
 from app.actions.base_actions import BaseActions
 from app.actions.helper_actions import HelperActions
-from app.actions.users import UserActions
-from app.models.clients import ClientUserModelDB, ClientUserExpand
-from app.models.users import UserModelDB, UserServiceModelDB
+from app.models.clients import ClientUserModelDB, ClientUserExpand, ClientUserModel
+from app.models.users import UserModel
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 
-from app.database.config import yass_engine
 
 class ClientUserActions:
 
@@ -36,9 +35,9 @@ class ClientUserActions:
             service_value = data.get(service)
             if service_value:
                 response_obj = await cls.handle_user_and_service(data, path_params, expand, service)
-                if type(response_obj) is UserModelDB:
+                if type(response_obj) is UserModel:
                     user_objs.append(response_obj)
-                elif type(response_obj) in (ClientUserModelDB, ClientUserExpand):
+                elif type(response_obj) in (ClientUserModel, ClientUserExpand):
                     client_user_objs.append(response_obj)
         if not (user_objs or client_user_objs):
             raise ValueError("No user or client user objects returned")
@@ -61,53 +60,50 @@ class ClientUserActions:
 
     @classmethod
     async def handle_user_and_service(cls, data: dict, path_params, expand, service_id=None):
-        user = None
-        user_uuid = data.get("user_uuid")
-        service = data.get(service_id)
-        if not (user_uuid or service):
-            return await ExceptionHandling.custom500(
-                "Not enough information to create a new Client User. Please include either email address or the user_uuid."
-            )
-        if user_uuid:
-            user = await BaseActions.check_if_exists(
-                UserModelDB,
-                [
-                    UserModelDB.uuid == data["user_uuid"]
-                ],
-                engine=yass_engine
-            )
-        elif service:
-            user = await BaseActions.check_if_exists(
-                UserModelDB,
-                [
-                    UserServiceModelDB.service_user_id == service,
-                    UserModelDB.uuid == UserServiceModelDB.user_uuid,
-                    UserModelDB.first_name == data.get("first_name"),
-                    UserModelDB.last_name == data.get("last_name")
-                ],
-                engine=yass_engine
-            )
+        async with httpx.AsyncClient(base_url="http://yass_app:83/v1") as client:
+            user = None
+            user_uuid = data.get("user_uuid")
+            service = data.get(service_id)
+            if not (user_uuid or service):
+                return await ExceptionHandling.custom500(
+                    "Not enough information to create a new Client User. Please include either email address or the user_uuid."
+                )
+            if user_uuid:
+                # check if user exists
+                user = await client.get(f"/users/{user_uuid}")
+                user = UserModel(**user.json()) if user.json() else None
 
-        if user:
-            uuid = user.uuid
-            client_user = await cls.get_client_user_by_user_uuid(path_params["client_uuid"], uuid)
-            if client_user:
-                if expand:
-                    return await cls.expand_client_user(client_user, user)
-                return client_user
+            elif service:
+                request_obj = {
+                    "first_name": data.get("first_name"),
+                    "last_name": data.get("last_name"),
+                    "service_user_id": service
+                }
+                user = await client.post(f"/users/alt", json=request_obj)
+                user = UserModel(**user.json()) if user.json() else None
 
-        if not user and service:
-            admin = data.get("admin", 0)
-            if admin not in [0, 1, 2]:
-                await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
-            user = await UserActions.create_user_and_service(data, service_id)
+            if user:
+                uuid = user.uuid
+                client_user = await cls.get_client_user_by_user_uuid(path_params["client_uuid"], uuid)
+                if client_user:
+                    if expand:
+                        return await cls.expand_client_user(client_user, user)
+                    return client_user
 
-        if not (user or service):
-            return await ExceptionHandling.custom409(
-                "Not enough information to create a new Client User, User, and Service User."
-            )
+            if not user and service:
+                admin = data.get("admin", 0)
+                if admin not in [0, 1, 2]:
+                    await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
+                user = await client.post(f"/users", json=data)
+                user = UserModel(**user.json()) if user.json().get("uuid") else None
+                # UserActions.create_user_and_service(data, service_id)
 
-        return user
+            if not (user or service):
+                return await ExceptionHandling.custom409(
+                    "Not enough information to create a new Client User, User, and Service User."
+                )
+
+            return user
 
     @classmethod
     async def add_new_client_user(cls, data: dict, path_params: dict, user, expand: bool = False):

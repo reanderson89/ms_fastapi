@@ -52,6 +52,7 @@ class UserResponse(UserModel):
 
 
 class UserServiceInput(BasePydantic):
+    email_address: Optional[str]
     email: Optional[str]
     work_email: Optional[str]
     personal_email: Optional[str]
@@ -61,6 +62,7 @@ class UserServiceInput(BasePydantic):
 
 
 class UserCreate(UserServiceInput):
+    user_uuid: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
     latitude: Optional[int]

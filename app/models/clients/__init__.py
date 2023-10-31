@@ -27,6 +27,7 @@ from .client_budget_models import (
 )
 from .client_user_models import (
     ClientUserModelDB,
+    ClientUserModel,
     ClientUserResponse,
     ClientUserCreate,
     ClientUserUpdate,
