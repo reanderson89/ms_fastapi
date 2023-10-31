@@ -23,8 +23,11 @@ inputs:
   vpn_cert_key_b64:
     description: 'Base64 encoded value for Open VPN config'
     required: true
+  config:
+    description: 'Path to the Open VPN to use'
+    default: '~/.github/vpn/config.ovpn'
   auth:
-    description: 'Auth type for OpenVPN'
+    description: 'Auth type for Open VPN'
     default: 'SHA256'
   ssh_key_b64:
     description: 'Base64 encoded SSH key to validate'

@@ -38,6 +38,7 @@
 
     jobs:
       set-variables:
+        if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' ) }}
         # The purpose of this setup job is to set, in the GITHUB_ENV, the values the user (a human) entered as part of the workflow_dispatch
         # or, if this was triggered via a workflow_run, to set those values another way as the build GHA is not able to pass outputs as
         # inputs to this Github Action, these values are then used in the deploy job
@@ -83,6 +84,7 @@
           tag: ${{ env.TAG }}
 
       deploy:
+        if: ${{ github.event_name == 'workflow_dispatch' || ( github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' ) }}
         name: Deploy ${{ needs.set-variables.outputs.tag }} to ${{ needs.set-variables.outputs.environment }}
         runs-on: ubuntu-latest
         needs: set-variables
