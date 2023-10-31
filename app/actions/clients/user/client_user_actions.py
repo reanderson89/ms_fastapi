@@ -7,6 +7,8 @@ from app.models.users import UserModelDB, UserServiceModelDB
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
 
+from app.database.config import yass_engine
+
 class ClientUserActions:
 
     @staticmethod
@@ -71,7 +73,9 @@ class ClientUserActions:
                 UserModelDB,
                 [
                     UserModelDB.uuid == data["user_uuid"]
-                ])
+                ],
+                engine=yass_engine
+            )
         elif service:
             user = await BaseActions.check_if_exists(
                 UserModelDB,
@@ -80,7 +84,9 @@ class ClientUserActions:
                     UserModelDB.uuid == UserServiceModelDB.user_uuid,
                     UserModelDB.first_name == data.get("first_name"),
                     UserModelDB.last_name == data.get("last_name")
-                ])
+                ],
+                engine=yass_engine
+            )
 
         if user:
             uuid = user.uuid
@@ -118,8 +124,8 @@ class ClientUserActions:
                 title=await HelperActions.get_title(data),
                 department=await HelperActions.get_department(data),
                 active=await HelperActions.get_active(data) if "active" in data.keys() else 1,
-                time_hire=convert_date_to_int(data.get('time_hire')),
-                time_start=convert_date_to_int(data.get('time_start')),
+                time_hire=convert_date_to_int(data.get("time_hire")),
+                time_start=convert_date_to_int(data.get("time_start")),
                 admin=await HelperActions.get_admin(data),
             )
 
@@ -149,7 +155,7 @@ class ClientUserActions:
                 ClientUserModelDB.user_uuid == path_params["user_uuid"]
             ]
         )
-    
+
     @staticmethod
     async def auth_get_user(user_uuid):
         return await BaseActions.get_one_where(
@@ -191,11 +197,11 @@ class ClientUserActions:
     @staticmethod
     async def update_admin_client_user(path_params: dict, user_updates):
         if path_params.get("client_uuid") is None:
-            conditions = [ClientUserModelDB.user_uuid == path_params['user_uuid']]
+            conditions = [ClientUserModelDB.user_uuid == path_params["user_uuid"]]
         else:
             conditions = [
-                ClientUserModelDB.client_uuid == path_params['client_uuid'],
-                ClientUserModelDB.user_uuid == path_params['user_uuid']
+                ClientUserModelDB.client_uuid == path_params["client_uuid"],
+                ClientUserModelDB.user_uuid == path_params["user_uuid"]
             ]
 
         return await BaseActions.update(

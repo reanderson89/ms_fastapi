@@ -22,10 +22,10 @@ from app.models.segments import (
     SegmentDesignModelDB, # noqa: F401
     SegmentRuleModelDB, # noqa: F401
 )
-from app.models.users import (
-    UserModelDB, # noqa: F401
-    UserServiceModelDB # noqa: F401
-)
+# from app.models.users import (
+#     UserModelDB, # noqa: F401
+#     UserServiceModelDB # noqa: F401
+# )
 from app.models.base_class import Base # noqa: F401
 
 # # this is the Alembic Config object, which provides

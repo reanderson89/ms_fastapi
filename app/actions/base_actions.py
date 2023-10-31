@@ -40,7 +40,7 @@ class BaseActions:
         return query.where(*[getattr(model, k) == v for k, v in params["filters"].items()])
 
     @staticmethod
-    async def delete_without_lookup(item):
+    async def delete_without_lookup(item, engine=engine):
         """
         Deleting an item that has been previously looked up and processed inside its respective Model Action file.
         """
@@ -56,7 +56,8 @@ class BaseActions:
     async def get_one_where(
         model,
         conditions: list,
-        check404: bool = True
+        check404: bool = True,
+        engine=engine
     ):
         """
         Get one row from the database
@@ -74,7 +75,7 @@ class BaseActions:
         return db_item
 
     @staticmethod
-    async def check_if_exists(model, conditions: list):
+    async def check_if_exists(model, conditions: list, engine=engine):
         """
         Check if a row exists in the database
         :param model(DataModel): The model/table to query
@@ -88,7 +89,7 @@ class BaseActions:
                 ).one_or_none()
 
     @staticmethod
-    async def check_if_one_exists(model, conditions: list):
+    async def check_if_one_exists(model, conditions: list, engine=engine):
         """
         Check if a row exists in the database
         :param model(DataModel): The model/table to query
@@ -102,7 +103,7 @@ class BaseActions:
                 ).first()
 
     @staticmethod
-    def get_one(model, conditions: list):
+    def get_one(model, conditions: list, engine=engine):
         """
         Non-Async method to get one row from the database
         :param model(DataModel): The model/table to query
@@ -116,7 +117,7 @@ class BaseActions:
                 ).one_or_none()
 
     @staticmethod
-    async def create(model_objs):
+    async def create(model_objs, engine=engine):
         """
         Create one or more rows in the database for the specified model
         :param model_objs(DataModel instance or list): The model instance(s) to create
@@ -138,7 +139,7 @@ class BaseActions:
             return model_objs if is_list else model_objs[0]
 
     @staticmethod
-    async def seed_database(model_objs):
+    async def seed_database(model_objs, engine=engine):
         """
         Create one or more rows in the database for the specified model
         :param model_objs(DataModel instance or list): The model instance(s) to create
@@ -160,7 +161,7 @@ class BaseActions:
         return model_objs if is_list else model_objs[0]
 
     @staticmethod
-    async def update(model, conditions: list, updates_obj):
+    async def update(model, conditions: list, updates_obj, engine=engine):
         """
         Update a row in the database for the specified model
         :param model(DataModel): The model/table to update
@@ -186,7 +187,7 @@ class BaseActions:
             return db_item
 
     @staticmethod
-    async def bulk_update(model, conditions: list, updates_objs, key_list: list):
+    async def bulk_update(model, conditions: list, updates_objs, key_list: list, engine=engine):
         """
         Update multiple rows in the database for the specified model
         :param model(DataModel): The model/table to update
@@ -222,7 +223,7 @@ class BaseActions:
 
 
     @staticmethod
-    async def delete_one(model, conditions: list):
+    async def delete_one(model, conditions: list, engine=engine):
         """
         Delete a row from the database for the specified model
         :param model(DataModel): The model/table to delete from
@@ -244,7 +245,7 @@ class BaseActions:
                 return {"ok": False, "Not Deleted": db_item}
 
     @staticmethod
-    async def delete_all(model, conditions: list):
+    async def delete_all(model, conditions: list, engine=engine):
         """
         Delete all rows from the database for the specified model
         :param model(DataModel): The model/table to delete from
@@ -273,7 +274,8 @@ class BaseActions:
         model,
         params: dict,
         check404: bool = True,
-        pagination: bool = True
+        pagination: bool = True,
+        engine=engine
     ):
         """
         Get all rows from the database for a given model/table.
@@ -310,7 +312,8 @@ class BaseActions:
         conditions: list,
         params: dict,
         check404: bool = True,
-        pagination: bool = True
+        pagination: bool = True,
+        engine=engine
     ):
         """
         Get all rows from the database that match the specified conditions
@@ -342,7 +345,7 @@ class BaseActions:
             return db_query
 
     @classmethod
-    async def update_without_lookup(cls, item, commit:bool = False):
+    async def update_without_lookup(cls, item, commit:bool = False, engine=engine):
         """
         Committing a change to an item that has been previously looked up and modified inside its respective Model Action file.
         """

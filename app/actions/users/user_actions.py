@@ -5,11 +5,13 @@ from app.actions.helper_actions import HelperActions
 from app.actions.users.services import UserServiceActions
 from app.models.users import UserModelDB, UserServiceModelDB, UserExpanded
 
+from app.database.config import yass_engine
+
 class UserActions:
 
     @classmethod
     async def get_user_by_uuid(cls, uuid):
-        return await BaseActions.get_one_where(UserModelDB, [UserModelDB.uuid == uuid])
+        return await BaseActions.get_one_where(UserModelDB, [UserModelDB.uuid == uuid], engine=yass_engine)
 
     @classmethod
     async def get_user_by_service_id(cls, user_uuid, service_id):
@@ -20,7 +22,8 @@ class UserActions:
                 UserServiceModelDB.user_uuid == user_uuid,
                 UserServiceModelDB.user_uuid == UserModelDB.uuid
 
-            ]
+            ],
+            engine=yass_engine
         )
 
     @classmethod
@@ -31,12 +34,13 @@ class UserActions:
                 UserModelDB.first_name == first_name,
                 UserModelDB.last_name == last_name#,
                 # UserServiceModelDB.service_user_id == service_id,
-            ]
+            ],
+            engine=yass_engine
         )
 
     @classmethod
     async def get_all_users(cls, query_params: dict):
-        return await BaseActions.get_all(UserModelDB, query_params)
+        return await BaseActions.get_all(UserModelDB, query_params, engine=yass_engine)
 
     @classmethod
     async def get_user(cls, user_uuid, expand_services=False):
@@ -90,7 +94,7 @@ class UserActions:
             raise Exception("service_id required")
         first_name = await HelperActions.get_fname_from_header(new_user_data)
         last_name = await HelperActions.get_lname_from_header(new_user_data)
-        birthday = convert_date_to_int(new_user_data.get('time_birthday'))
+        birthday = convert_date_to_int(new_user_data.get("time_birthday"))
 
         user = await cls.get_user_by_name(new_user_data["first_name"], new_user_data["last_name"])
 
@@ -118,7 +122,7 @@ class UserActions:
             admin = await HelperActions.get_admin(new_user_data),
             time_birthday = birthday
         )
-        user_db = await BaseActions.create(new_user_obj)
+        user_db = await BaseActions.create(new_user_obj, engine=yass_engine)
         new_service = await UserServiceActions.create_service_for_new_user(user_db, service_id)
         if not new_service:
             raise Exception("Service Creation Failed")
@@ -126,15 +130,15 @@ class UserActions:
 
     @classmethod
     async def update_user(cls, user_uuid, updates):
-        return await BaseActions.update(UserModelDB, [UserModelDB.uuid == user_uuid], updates)
+        return await BaseActions.update(UserModelDB, [UserModelDB.uuid == user_uuid], updates, engine=yass_engine)
 
     @classmethod
     async def delete_user(cls, user_uuid):
-        return await BaseActions.delete_one(UserModelDB, [UserModelDB.uuid == user_uuid])
+        return await BaseActions.delete_one(UserModelDB, [UserModelDB.uuid == user_uuid], engine=yass_engine)
 
     @classmethod
     async def delete_test_user(cls, user_uuid):
         services = await UserServiceActions.get_all_services(user_uuid)
         for key, value in services.items():
             for item in value:
-                await BaseActions.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid])
+                await BaseActions.delete_one(UserServiceModelDB, [UserServiceModelDB.uuid == item.uuid], engine=yass_engine)

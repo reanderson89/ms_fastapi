@@ -4,18 +4,21 @@ from app.models.users import UserModelDB, UserServiceModelDB, UserServiceUpdate,
 from app.actions.helper_actions import HelperActions
 from app.actions.base_actions import BaseActions
 
-class UserServiceActions(BaseActions):
+from app.database.config import yass_engine
+
+class UserServiceActions:
 
     @classmethod
     async def check_existing(cls, service:UserServiceCreate):
         id = service.service_user_id
 
-        service_obj = await cls.check_if_exists(
+        service_obj = await BaseActions.check_if_exists(
             UserServiceModelDB,
             [
             UserServiceModelDB.service_user_id == id,
             UserServiceModelDB.user_uuid == UserModelDB.uuid
-            ]
+            ],
+            engine=yass_engine
         )
 
         if service_obj:
@@ -39,25 +42,27 @@ class UserServiceActions(BaseActions):
             login_token="place_holder",
             login_secret="place_holder"
         )
-        return await cls.create(new_user_service)
+        return await BaseActions.create(new_user_service, engine=yass_engine)
 
     @classmethod
     async def get_service(cls, user_uuid: str, service_uuid: str):
-        return await cls.get_one_where(
+        return await BaseActions.get_one_where(
             UserServiceModelDB,
             [
                 UserServiceModelDB.user_uuid == user_uuid,
                 UserServiceModelDB.uuid == service_uuid
-            ]
+            ],
+            engine=yass_engine
         )
 
     @classmethod
     async def get_all_services(cls, user_uuid: str, query_params: Optional[dict] = None):
-        services = await cls.get_all_where(
+        services = await BaseActions.get_all_where(
             UserServiceModelDB,
             [UserServiceModelDB.user_uuid == user_uuid],
             query_params,
-            pagination=False
+            pagination=False,
+            engine=yass_engine
         )
 
         result = {}
@@ -78,7 +83,7 @@ class UserServiceActions(BaseActions):
             service_uuid = service_obj.service_uuid,
             service_user_id = service_obj.service_user_id
         )
-        service = await cls.create(service_obj)
+        service = await BaseActions.create(service_obj, engine=yass_engine)
         new_service = ServiceStatus.from_orm(service)
         new_service.status = "service created"
         return new_service
@@ -90,13 +95,14 @@ class UserServiceActions(BaseActions):
         service_uuid: str,
         updates: UserServiceUpdate
     ):
-        return await cls.update(
+        return await BaseActions.update(
             UserServiceModelDB,
             [
             UserServiceModelDB.user_uuid == user_uuid,
             UserServiceModelDB.uuid == service_uuid
             ],
-            updates
+            updates,
+            engine=yass_engine
         )
 
     @classmethod
@@ -111,9 +117,10 @@ class UserServiceActions(BaseActions):
 
     @classmethod
     async def delete_service(cls, service_uuid: str):
-        return await cls.delete_one(
+        return await BaseActions.delete_one(
             UserServiceModelDB,
-            [UserServiceModelDB.uuid == service_uuid]
+            [UserServiceModelDB.uuid == service_uuid],
+            engine=yass_engine
         )
 
     @classmethod
@@ -121,9 +128,10 @@ class UserServiceActions(BaseActions):
         deleted_services = []
         for service in service_delete:
             deleted_services.append(
-                await cls.delete_one(
+                await BaseActions.delete_one(
                     UserServiceModelDB,
-                    [UserServiceModelDB.uuid == service.service_uuid]
+                    [UserServiceModelDB.uuid == service.service_uuid],
+                    engine=yass_engine
                 )
             )
         return deleted_services

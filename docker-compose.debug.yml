@@ -20,3 +20,8 @@ services:
       - '80:80'
       - '5677:5677'
     entrypoint: /entrypoint.sh
+
+networks:
+  auth_network:
+      driver: bridge
+      name: auth_network

@@ -23,6 +23,8 @@ services:
       - 3306
     ports:
       - 3306:3306
+    networks:
+      - auth_network
   milestones_api:
     build:
       context: .
@@ -54,6 +56,7 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: "+16193299600"
       FERNET_KEY: ${FERNET_KEY}
+      YASS_DB_URL: ${YASS_DB_URL}
     command:
       [
         "sh",
@@ -67,5 +70,12 @@ services:
       - '80:80'
     depends_on:
       - milestones_db
-    entrypoint: /entrypoint.sh # use start-reload.sh as the entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api_deprecated
     restart: always
+    networks:
+      - auth_network
+    entrypoint: /entrypoint.sh # use start-reload.sh as the entrypoint only if using tiangolo's Docker image in Dockerfile.milestones_api_deprecated
+
+networks:
+  auth_network:
+      driver: bridge
+      name: auth_network

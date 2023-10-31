@@ -10,7 +10,7 @@ from .v1.cron.cron_router import router as cron_router
 
 
 ENV: str = os.environ.get("ENV", "local")
-JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", "False").lower()
 
 if JWT_ENFORCED == "false":
     routers = APIRouter()

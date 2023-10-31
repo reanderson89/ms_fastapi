@@ -15,7 +15,7 @@ ALGORITHM = os.environ["ALGORITHM"]
 ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 ENV: str = os.environ.get("ENV", "local")
-JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", 'False').lower()
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", "False").lower()
 
 class UnAuthedMessage(BaseModel):
     detail: str = "Bearer token missing or unknown"
@@ -31,14 +31,14 @@ class Permissions:
         self.level = level
 
     def __call__(self,
-        auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
+        auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)): #noqa
         if JWT_ENFORCED == "false":
             return True
         else:
             try:
                 verify = jwt.decode(auth.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-                if verify and int(self.level) <= verify['admin']:
-                    return verify['client_uuid']
+                if verify and int(self.level) <= verify["admin"]:
+                    return verify["client_uuid"]
                 else:
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -79,7 +79,7 @@ def check_token(credentials):
 
 
 async def get_token(
-        auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)
+        auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token) #noqa
 ) -> str:
     if auth is None or not check_token(auth):
         raise HTTPException(
@@ -111,11 +111,11 @@ async def access_token_creation(redeem):
 class AdminSwap:
     def __call__(
             self,
-            auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)
+            auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token) #noqa
     ):
         try:
             verify = jwt.decode(auth.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-            if verify and 2 == verify['admin']:
+            if verify and 2 == verify["admin"]:
                 return verify
             else:
                 raise HTTPException(
@@ -130,6 +130,6 @@ class AdminSwap:
 
 
 async def swap_client_uuid_in_jwt(decoded_jwt, new_client_uuid):
-    decoded_jwt['client_uuid'] = new_client_uuid
+    decoded_jwt["client_uuid"] = new_client_uuid
     encoded_jwt = jwt.encode(decoded_jwt, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
