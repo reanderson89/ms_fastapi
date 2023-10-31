@@ -88,10 +88,10 @@
         environment: ${{ needs.set-variables.outputs.environment }}
 
         steps:
-          # the purpose of the checkout step here is simply to get the Docker Swarm YAML template -- the project's source code is not actually
-          # needed or used -- this defaults to the reference or SHA for the event otherwise, uses the default branch
           - name: Checkout
             uses: actions/checkout@v4
+            with:
+              ref: ${{ needs.set-variables.outputs.tag }}
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
