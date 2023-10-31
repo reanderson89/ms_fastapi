@@ -91,7 +91,7 @@
           - name: Checkout
             uses: actions/checkout@v4
             with:
-              ref: ${{ needs.set-variables.outputs.tag }}
+              ref: dev
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
