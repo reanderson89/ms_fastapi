@@ -88,13 +88,10 @@
         environment: ${{ needs.set-variables.outputs.environment }}
 
         steps:
-          - name: Checkout Docker Swarm template from dev branch
+          - name: Checkout Docker Swarm template (from dev branch)
             uses: actions/checkout@v4
             with:
               ref: dev
-              sparse-checkout: |
-                ${SWARM_YAML}
-              sparse-checkout-cone-mode: false
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
