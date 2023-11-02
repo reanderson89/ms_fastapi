@@ -1,17 +1,7 @@
-# This is the Docker stack file that describes the Milestones application
-#
-# Do a Docker login then:
-# docker stack deploy --compose-file docker-swarm.yml --with-registry-auth milestones
-#
-# Compose file deploy reference:
-# https://docs.docker.com/compose/compose-file/deploy/
-#
-# Docker stacks do not support .env files so env var substitution in this file is done during CI/CD
-#
-# If you omit the mode key or set it to ingress, the routing mesh is used.
-# https://docs.docker.com/engine/swarm/ingress/
-#
+---
+
 version: '3.9'
+
 services:
   api:
     image: ${IMAGE_TAG}
@@ -41,7 +31,8 @@ services:
       # No CRON env var
       ENV: '${ENV}'
       FERNET_KEY: '${FERNET_KEY}'
-      JWT_ENFORCED: 'False' # TODO this is temporary
+      YASS_URL: "http://yass_api/v1"
+      JWT_ENFORCED: 'True' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: '${MYSQL_HOSTNAME}'

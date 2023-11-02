@@ -131,8 +131,8 @@
 
           - name: Prepare the Docker Swarm YAML file
             env:
-              ENV: ${{ github.event.inputs.environment }}                   # workflow variable
-              IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable
+              ENV: ${{ needs.set-variables.outputs.environment }}
+              IMAGE_TAG: ${{ needs.set-variables.outputs.tag }}
               REPLICAS: ${{ vars.REPLICAS || 1 }}
             run: |
               # append the tag to form a fully qualified Docker tag

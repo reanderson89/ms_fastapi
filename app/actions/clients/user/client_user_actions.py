@@ -1,3 +1,4 @@
+import os
 import httpx
 from app.actions.utils import convert_date_to_int
 from app.actions.base_actions import BaseActions
@@ -6,6 +7,8 @@ from app.models.clients import ClientUserModelDB, ClientUserExpand, ClientUserMo
 from app.models.users import UserModel
 from app.exceptions import ExceptionHandling
 from app.utilities import SHA224Hash
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class ClientUserActions:
@@ -60,7 +63,8 @@ class ClientUserActions:
 
     @classmethod
     async def handle_user_and_service(cls, data: dict, path_params, expand, service_id=None):
-        async with httpx.AsyncClient(base_url="http://yass_app:83/v1") as client:
+        YASS_URL = os.environ.get("YASS_URL")
+        async with httpx.AsyncClient(base_url=YASS_URL) as client:
             user = None
             user_uuid = data.get("user_uuid")
             service = data.get(service_id)

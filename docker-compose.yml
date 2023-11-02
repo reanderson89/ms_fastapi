@@ -45,7 +45,7 @@ services:
       # No CRON
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
-      JWT_ENFORCED: "False"
+      JWT_ENFORCED: "True"
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: milestones_db
@@ -57,6 +57,7 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: "+16193299600"
       FERNET_KEY: ${FERNET_KEY}
+      YASS_URL: "http://yass_app:83/v1"
     command:
       [
         "sh",

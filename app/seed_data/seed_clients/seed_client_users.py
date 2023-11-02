@@ -1,8 +1,12 @@
+import os
 from faker import Faker
 from faker.providers import job
 from app.actions.clients.user import ClientUserActions
 import httpx
+from dotenv import load_dotenv
+load_dotenv()
 
+YASS_URL = os.environ.get("YASS_URL")
 
 Faker.seed(0)
 faker = Faker()
@@ -116,7 +120,7 @@ new_admins = list(admins.values())
 async def generate_client_users(clients: list):
     # create clarks user first
     async with httpx.AsyncClient() as client:
-        await client.post(f"http://yass_app:83/v1/users", json=admins["clark"])
+        await client.post(f"{YASS_URL}/users", json=admins["clark"])
 
     for admin in new_admins:
         await ClientUserActions.create_client_user(
