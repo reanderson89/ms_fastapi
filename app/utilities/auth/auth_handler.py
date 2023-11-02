@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 import jwt
-from jwt import PyJWTError
+from jwt.exceptions import InvalidTokenError
 from fastapi import Depends, HTTPException
 from pydantic.datetime_parse import timedelta
 from starlette import status
@@ -44,7 +44,7 @@ class Permissions:
                         status_code=status.HTTP_401_UNAUTHORIZED,
                         detail=RejectedAuthMessage().detail
                     )
-            except PyJWTError:
+            except InvalidTokenError:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=UnAuthedMessage().detail
@@ -71,7 +71,7 @@ def check_token(credentials):
             return True
         else:
             return False
-    except PyJWTError:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=UnAuthedMessage().detail
@@ -122,7 +122,7 @@ class AdminSwap:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=RejectedAuthMessage().detail
                 )
-        except PyJWTError:
+        except InvalidTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=UnAuthedMessage().detail

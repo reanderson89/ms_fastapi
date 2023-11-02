@@ -77,13 +77,47 @@ list_of_clients = [
     "status": 0
     }
 ]
-new_client_user = {
+
+new_client_user_with_user_uuid = {
     "uuid": test_uuids.client_user_uuid,
+    "user_uuid": '06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf',
     "client_uuid": test_uuids.first_client_uuid,
-    "email_address": "test.user123@testclient.com",
-    "first_name": "Test",
-    "last_name": "User",
+    "email_address": "clark.ritchie@blueboard.com",
+    "first_name": "Clark",
+    "last_name": "Ritchie",
     "admin": 1
+}
+
+new_client_user_with_service = {
+    "email_address": "test.user@blueboard.com",
+    "first_name": "Test",
+    "last_name": "User"
+}
+
+user_with_service_from_yass = {
+    'uuid': 'test_user_uuid',
+    'first_name': 'Test',
+    'last_name': 'User',
+    'latitude': None,
+    'longitude': None,
+    'time_created': 1698865409,
+    'time_updated': 1698865409,
+    'time_ping': 1698865409,
+    'time_birthday': 0,
+    'admin': 'client_admin'
+}
+
+hardcoded_user_from_yass = {
+    'uuid': '06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf',
+    'first_name': 'Clark',
+    'last_name': 'Ritchie',
+    'latitude': None,
+    'longitude': None,
+    'time_created': 1698865409,
+    'time_updated': 1698865409,
+    'time_ping': 1698865409,
+    'time_birthday': 0,
+    'admin': 'system_admin'
 }
 
 update_client_user = {

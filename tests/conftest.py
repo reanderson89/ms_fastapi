@@ -4,6 +4,7 @@ import traceback
 from fastapi.testclient import TestClient
 import tests.testutil as util
 from dotenv import load_dotenv
+from unittest.mock import AsyncMock, Mock, patch
 load_dotenv()
 
 os.environ["TEST_MODE"] = "True"
@@ -105,26 +106,86 @@ def clients(test_app: TestClient):
 
 @pytest.fixture(scope="module")
 def client_user(test_app: TestClient, client):
-    client_user = None
-    try:
-        client_user = test_app.post(
-            f"/v1/clients/{client['uuid']}/users",
-            json=util.new_client_user
-        ).json()
-        user = test_app.get(f"/v1/users/{client_user['user_uuid']}?expand_services=true")
-        user = user.json()
-        service_uuid = user["services"]["email"][0]["uuid"]
-        yield client_user
-    except Exception as e:
-        print(f"Exception encountered: {e}")
-        traceback.print_exc()
-        raise e
-    finally:
-        if client_user is not None:
-            test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
-            test_app.delete(f"/v1/users/{user['uuid']}/services/{service_uuid}")
-            test_app.delete(f"/v1/users/{user['uuid']}")
 
+    call_count = 0
+    
+    # this function track how many tiems a get request is called and returns different information based on the number
+    def dynamic_response(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+
+        mock_get_response = AsyncMock()
+
+        if call_count == 1:
+            mock_get_response.json = Mock(return_value=util.hardcoded_user_from_yass)
+        else:
+            mock_get_response.json = Mock(return_value=None)
+
+        return mock_get_response
+    mock_async_client = AsyncMock()
+    mock_post_request = AsyncMock()
+    mock_post_request.json = Mock(return_value=util.hardcoded_user_from_yass)
+    mock_async_client.post.return_value = mock_post_request
+    mock_async_client.get.side_effect = dynamic_response
+    mock_async_client.__aenter__.return_value = mock_async_client
+    mock_async_client.__aexit__.return_value = None
+
+    # Applying the mock
+    with patch('httpx.AsyncClient', return_value=mock_async_client):
+        client_user = None
+        try:
+            client_user = test_app.post(
+                f"/v1/clients/{client['uuid']}/users",
+                json=util.new_client_user_with_user_uuid
+            ).json()
+            yield client_user
+        except Exception as e:
+            print(f"Exception encountered: {e}")
+            traceback.print_exc()
+            raise e
+        finally:
+            if client_user is not None:
+                test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
+
+@pytest.fixture(scope="module")
+def client_user_with_service(test_app: TestClient, client):
+    call_count = 0
+    
+    # this function track how many tiems a get request is called and returns different information based on the number
+    def dynamic_response(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+
+        mock_post_response = AsyncMock()
+
+        # the first time it runs call_count is 1 and a user will be returned, second time it runs no user is returned, 3rd time it runs a user is "created"
+        if call_count == 2:
+            mock_post_response.json = Mock(return_value=None)
+        else:
+            mock_post_response.json = Mock(return_value=util.user_with_service_from_yass)
+
+        return mock_post_response
+    mock_async_client = AsyncMock()
+    mock_async_client.post.side_effect = dynamic_response
+    mock_async_client.__aenter__.return_value = mock_async_client
+    mock_async_client.__aexit__.return_value = None
+
+    # Applying the mock
+    with patch('httpx.AsyncClient', return_value=mock_async_client):
+        client_user = None
+        try:
+            client_user = test_app.post(
+                f"/v1/clients/{client['uuid']}/users",
+                json=util.new_client_user_with_service
+            ).json()
+            yield client_user
+        except Exception as e:
+            print(f"Exception encountered: {e}")
+            traceback.print_exc()
+            raise e
+        finally:
+            if client_user is not None:
+                test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
 
 @pytest.fixture(scope="module")
 def program(test_app: TestClient, client_user):
