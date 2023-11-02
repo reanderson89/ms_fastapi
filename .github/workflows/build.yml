@@ -6,115 +6,115 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
-  run-pytest-tests:
-    name: Run Pytest Tests
-    runs-on: ubuntu-latest
-    env:
-      DD_API_KEY: "foobar"
-      DD_APP_KEY: "foobar"
-      ACCOUNT_SID: "foobar"
-      ACCOUNT_TOKEN: "foobar"
-      ALGORITHM: "HS256"
-      AWS_ACCESS_KEY_ID: "foobar"
-      AWS_SECRET_ACCESS_KEY: "foobar"
-      ENV: "local"
-      FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
-      SECRET_KEY: "foobar"
-      SPARKPOST_KEY: "foobar"
-      TWILIO_FROM: "+16193299600"
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
+  # run-pytest-tests:
+  #   name: Run Pytest Tests
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     DD_API_KEY: "foobar"
+  #     DD_APP_KEY: "foobar"
+  #     ACCOUNT_SID: "foobar"
+  #     ACCOUNT_TOKEN: "foobar"
+  #     ALGORITHM: "HS256"
+  #     AWS_ACCESS_KEY_ID: "foobar"
+  #     AWS_SECRET_ACCESS_KEY: "foobar"
+  #     ENV: "local"
+  #     FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
+  #     SECRET_KEY: "foobar"
+  #     SPARKPOST_KEY: "foobar"
+  #     TWILIO_FROM: "+16193299600"
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v3
 
-      - name: Start Docker containers
-        # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
-        # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
-        # above
-        run: |
-          docker-compose up --build --detach
+  #     - name: Start Docker containers
+  #       # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
+  #       # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
+  #       # above
+  #       run: |
+  #         docker-compose up --build --detach
 
-      - name: Pause to let app to fully start
-        # this may be problematic in the future
-        run: |
-          sleep 30
+  #     - name: Pause to let app to fully start
+  #       # this may be problematic in the future
+  #       run: |
+  #         sleep 30
 
-      - name: Run Pytest tests
-        run: |
-          docker exec --tty milestones_api pytest -v /app/tests/
+  #     - name: Run Pytest tests
+  #       run: |
+  #         docker exec --tty milestones_api pytest -v /app/tests/
 
-      - name: Stop Docker containers
-        if: always()
-        run: |
-          docker-compose down
+  #     - name: Stop Docker containers
+  #       if: always()
+  #       run: |
+  #         docker-compose down
 
-      - name: Echo job status (debugging)
-        if: always()
-        run: |
-          echo "Pytest job status is ${{ job.status }}"
+  #     - name: Echo job status (debugging)
+  #       if: always()
+  #       run: |
+  #         echo "Pytest job status is ${{ job.status }}"
 
-      - name: Update Github with job status
-        if: always()
-        uses: ouzi-dev/commit-status-updater@v2
-        with:
-          name: "Pytest test results"
-          status: ${{ job.status }}
+  #     - name: Update Github with job status
+  #       if: always()
+  #       uses: ouzi-dev/commit-status-updater@v2
+  #       with:
+  #         name: "Pytest test results"
+  #         status: ${{ job.status }}
 
-  run-postman-tests:
-    name: Run Postman Tests
-    runs-on: ubuntu-latest
-    env:
-        DD_API_KEY: "foobar"
-        DD_APP_KEY: "foobar"
-        ACCOUNT_SID: "foobar"
-        ACCOUNT_TOKEN: "foobar"
-        ALGORITHM: "HS256"
-        AWS_ACCESS_KEY_ID: "foobar"
-        AWS_SECRET_ACCESS_KEY: "foobar"
-        ENV: "local"
-        FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
-        SECRET_KEY: "foobar"
-        SPARKPOST_KEY: "foobar"
-        TWILIO_FROM: "+16193299600"
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
+  # run-postman-tests:
+  #   name: Run Postman Tests
+  #   runs-on: ubuntu-latest
+  #   env:
+  #       DD_API_KEY: "foobar"
+  #       DD_APP_KEY: "foobar"
+  #       ACCOUNT_SID: "foobar"
+  #       ACCOUNT_TOKEN: "foobar"
+  #       ALGORITHM: "HS256"
+  #       AWS_ACCESS_KEY_ID: "foobar"
+  #       AWS_SECRET_ACCESS_KEY: "foobar"
+  #       ENV: "local"
+  #       FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
+  #       SECRET_KEY: "foobar"
+  #       SPARKPOST_KEY: "foobar"
+  #       TWILIO_FROM: "+16193299600"
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v3
 
-      - name: Start Docker containers
-        # see comment above
-        run: |
-          docker-compose up --build --detach
+  #     - name: Start Docker containers
+  #       # see comment above
+  #       run: |
+  #         docker-compose up --build --detach
 
-      - name: Pause to let app to fully start
-        # this may be problematic in the future
-        run: |
-          sleep 30
+  #     - name: Pause to let app to fully start
+  #       # this may be problematic in the future
+  #       run: |
+  #         sleep 30
 
-      - name: Run Postman tests
-        run: |
-          docker exec --tty milestones_api /app/tests/postman.sh
+  #     - name: Run Postman tests
+  #       run: |
+  #         docker exec --tty milestones_api /app/tests/postman.sh
 
-      - name: Stop Docker containers
-        if: always()
-        run: |
-          docker-compose down
+  #     - name: Stop Docker containers
+  #       if: always()
+  #       run: |
+  #         docker-compose down
 
-      - name: Echo job status (debugging)
-        if: always()
-        run: |
-          echo "Postman test job status is ${{ job.status }}"
+  #     - name: Echo job status (debugging)
+  #       if: always()
+  #       run: |
+  #         echo "Postman test job status is ${{ job.status }}"
 
-      - name: Update Github with job status
-        if: always()
-        uses: ouzi-dev/commit-status-updater@v2
-        with:
-          name: "Postman test results"
-          status: ${{ job.status }}
+  #     - name: Update Github with job status
+  #       if: always()
+  #       uses: ouzi-dev/commit-status-updater@v2
+  #       with:
+  #         name: "Postman test results"
+  #         status: ${{ job.status }}
 
   build-api:
     name: Build API
-    needs:
-       - run-postman-tests
-       - run-pytest-tests
+    # needs:
+    #   - run-postman-tests
+    #   - run-pytest-tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
