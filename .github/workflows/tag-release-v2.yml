@@ -89,7 +89,7 @@ jobs:
       - name: Echo the version and level (debugging)
         run: |
           echo "VERSION: ${{ steps.get-version.outputs.VERSION }}"
-          echo "LEVEL: ${{ steps.get-version.outputs.VERSION }}"
+          echo "LEVEL: ${{ steps.get-version.outputs.LEVEL }}"
 
       - name: Get the next version
         id: sem-ver
