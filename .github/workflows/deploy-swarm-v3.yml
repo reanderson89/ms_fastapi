@@ -154,7 +154,7 @@
               yaml_file: ${{ env.SWARM_YAML }}
               dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
               dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN_RO }}
-              app: 'shared'
+              app: 'milestones_api'
 
           - name: Stop the VPN
             if: always()
