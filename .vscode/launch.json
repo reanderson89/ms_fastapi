@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug/Start Docker",
+            "type": "python",
+            "request": "attach",
+            "port": 5677,
+            "host": "localhost",
+            "preLaunchTask": "Wait for Debugger",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/app"
+                }
+            ]
+        },
+        {
             "name": "Debug Docker",
             "type": "python",
             "request": "attach",

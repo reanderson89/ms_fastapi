@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Debug Script",
+            "type": "shell",
+            "command": "./debug.sh; sleep 10",
+            "problemMatcher": [],
+            "isBackground": true,
+        },
+        {
+            "label": "Wait for Debugger",
+            "type": "shell",
+            "command": [
+                "while ! docker ps --filter 'name=milestones_api' --format '{{.Status}}' | grep 'Up'; do",
+                "  sleep .5;",
+                "done;",
+                "while ! nc -z localhost 5677; do",
+                "  sleep .5;",
+                "done;",
+                "sleep 1;",
+                "echo 'Ready!'"
+            ],
+            // "isBackground": true,
+            "problemMatcher": [],
+            "dependsOn": "Run Debug Script",
+            "dependsOrder": "sequence"
+        }
+    ]
+}

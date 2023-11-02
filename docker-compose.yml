@@ -51,6 +51,7 @@ services:
       MYSQL_HOSTNAME: milestones_db
       MYSQL_PASSWORD: milestones
       MYSQL_PORT: 3306
+      MQSQL_LOCAL_PORT: 3306
       MYSQL_USER: milestones
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}

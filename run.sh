@@ -3,9 +3,13 @@
 echo "Starting db container..."
 docker-compose up --build -d milestones_db
 
-echo "Sleeping for 5 seconds..."
-sleep 5
-
+export ENV="dev"
+read -r local_HOST local_USER local_PASSWD local_PORT local_DB<<< $(python3 app/configs/database_configs.py)
+while ! mysqladmin ping -h"$local_HOST" -P"$local_PORT" -u"$local_USER" -p"$local_PASSWD" --silent; do
+    echo "MariaDB not yet ready, sleeping..."
+    sleep 0.5
+done
+echo "DB ready, continuing..."
 
 # Check if Alembic versions folder exists and has relevant files
 VERSIONS_DIR="migrations/versions"

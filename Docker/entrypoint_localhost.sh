@@ -7,8 +7,10 @@ set -e
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-echo "Sleeping for 5 seconds to allow Maria DB to start..."
-sleep 5;
+while ! mysqladmin ping -h"$MYSQL_HOSTNAME" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
+    echo "MariaDB not yet ready, sleeping..."
+    sleep 0.5
+done
 
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
