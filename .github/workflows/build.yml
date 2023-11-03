@@ -117,8 +117,18 @@ jobs:
     #   - run-pytest-tests
     runs-on: ubuntu-latest
     steps:
+<<<<<<< Updated upstream
       - name: Check out the repo
         uses: actions/checkout@v3
+=======
+      - name: Checkout private tools
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
+          # which allows this service to checkout the submodule
+          token: ${{ secrets.BURP_PAT }}
+>>>>>>> Stashed changes
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
