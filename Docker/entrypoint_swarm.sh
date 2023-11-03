@@ -11,7 +11,6 @@ sleep 10;
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
 alias bb-mysql="mysql -v -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
-alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.3.sql"
 EOF
 
 if [ -f "${ALEMBIC_INI_FILE}" ]; then

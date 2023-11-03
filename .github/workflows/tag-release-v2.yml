@@ -51,7 +51,7 @@ jobs:
 
           # reconfigure Git client to use the PAT
           git remote remove origin
-          git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/blueboard/${{ github.event.repository.name }}.git
+          git remote add origin https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git
 
       - name: Get current version and bump level
         id: get-version
@@ -125,4 +125,4 @@ jobs:
           # this PERSONAL_ACCESS_TOKEN is an org secret and tied to Clark's account since GITHUB_TOKEN does
           # not have the permission to push tags
           git tag ${FULL_TAG}
-          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
+          git push https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
