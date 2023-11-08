@@ -149,3 +149,4 @@ dmypy.json
 
 # Local Maria DB data dir
 mariadb-data/**
+.idea
