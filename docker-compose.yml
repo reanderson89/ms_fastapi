@@ -57,7 +57,7 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: "+16193299600"
       FERNET_KEY: ${FERNET_KEY}
-      YASS_URL: "http://yass_app:83/v1"
+      YASS_URL: "http://yass_api:83/v1"
     command:
       [
         "sh",
