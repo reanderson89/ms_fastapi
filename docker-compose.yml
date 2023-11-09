@@ -9,7 +9,6 @@ services:
     build:
       context: .
       dockerfile: Docker/Dockerfile.milestones_db
-
     volumes:
       - './mariadb-data/:/var/lib/mysql'
     environment:
@@ -58,12 +57,6 @@ services:
       TWILIO_FROM: "+16193299600"
       FERNET_KEY: ${FERNET_KEY}
       YASS_URL: "http://yass_api:83/v1"
-    command:
-      [
-        "sh",
-        "-c",
-        "uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors",
-      ]
     volumes:
       - ./app:/app/app
       - ./tests:/app/tests

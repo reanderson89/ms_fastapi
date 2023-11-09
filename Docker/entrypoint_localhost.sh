@@ -7,7 +7,8 @@ set -e
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-while ! mysqladmin ping -h"$MYSQL_HOSTNAME" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
+# this is to allow Maria DB to fully start
+while ! mariadb-admin ping -h'milestones_db' -P3306 -u${MYSQL_USER} -p${MYSQL_PASSWORD} 2>/dev/null; do
     echo "MariaDB not yet ready, sleeping..."
     sleep 0.5
 done
@@ -36,5 +37,5 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' does not exist, skipping Alembic migrations..."
 fi
 
-echo "App running."
-exec "$@"
+echo "Starting Milestones app"
+uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
