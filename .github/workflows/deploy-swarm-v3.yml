@@ -89,10 +89,17 @@
         environment: ${{ needs.set-variables.outputs.environment }}
 
         steps:
-          - name: Checkout Docker Swarm template (from dev branch)
+          - name: Checkout Docker Swarm template
             uses: actions/checkout@v4
             with:
-              ref: dev
+              ref: ${{ github.event.base_ref || 'dev' }} # this is a test
+
+          - name: Checkout shared GitHub actions
+            uses: actions/checkout@v4
+            with:
+              repository: blueboard/github_actions
+              token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+              path: .github/actions
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
@@ -138,8 +145,9 @@
               # append the tag to form a fully qualified Docker tag
               export IMAGE_TAG="${{ env.MILESTONES_DOCKER_REPO }}:${IMAGE_TAG}"
 
-              # the use of sed here is a primitive brute-force attempt to squash any double-single quotes
-              mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig | sed s/\'\'/\'/g > ${SWARM_YAML}
+              # do the env substitution and fix any issues with single quotes (more details in the Rails API)
+              mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
+              sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
 
           - name: Stamp the Docker Swarm config
             uses: ./.github/actions/stamp-swarm-config

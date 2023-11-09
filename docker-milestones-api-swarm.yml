@@ -16,6 +16,11 @@ services:
         order: start-first
       placement:
         constraints:
+          # Always launch on dev-2 or staging-2
+          - node.hostname != bb-dev-1
+          - node.hostname != bb-dev-3
+          - node.hostname != bb-staging-1
+          - node.hostname != bb-staging-3
           - node.hostname != bb-prod-5
           - node.hostname != bb-prod-6
     environment:
