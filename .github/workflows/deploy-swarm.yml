@@ -120,7 +120,7 @@ jobs:
 
           until ping -c1 ${PING_HOST}; do sleep 2; done
 
-      - name: Export all GitHub secrets as environment variables
+      - name: Export all GitHub Secrets as Environment Variables
         env:
           SECRETS: ${{ toJson(secrets) }}
         run: |
@@ -140,7 +140,7 @@ jobs:
             sed "s/\"$/'/" >> $GITHUB_ENV
           unset SECRETS
 
-      - name: Prepare the Docker Swarm YAML file
+      - name: Create the Docker Swarm Configuration
         env:
           ENV: ${{ github.event.inputs.environment }}                   # workflow variable
           IMAGE_TAG: ${{ github.event.inputs.tag }}                     # workflow variable

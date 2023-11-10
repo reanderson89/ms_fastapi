@@ -48,7 +48,7 @@
           - name: Checkout
             uses: actions/checkout@v4
 
-          - name: Get and set tag
+          - name: Get and Set the Tag
             id: set-tag
             run: |
               if ${{ github.event.inputs.tag != '' }}
@@ -63,7 +63,7 @@
                 # TODO should probably exit clean here if the tag is not found or something
               fi
 
-          - name: Get and set the environment
+          - name: Get and Set the Environment
             id: set-environment
             run: |
               echo "The ref is: ${{ github.head_ref }}"
@@ -89,12 +89,12 @@
         environment: ${{ needs.set-variables.outputs.environment }}
 
         steps:
-          - name: Checkout Docker Swarm template
+          - name: Checkout the Docker Swarm Template From dev
             uses: actions/checkout@v4
             with:
-              ref: ${{ github.event.base_ref || 'dev' }} # this is a test
+              ref: dev
 
-          - name: Checkout shared GitHub actions
+          - name: Checkout Shared GitHub Actions
             uses: actions/checkout@v4
             with:
               repository: blueboard/github_actions
@@ -116,7 +116,7 @@
               config: ${{ needs.set-variables.outputs.environment == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
               ping_host: ${{ needs.set-variables.outputs.environment == 'prod' && secrets.PROD_LEADER || needs.set-variables.outputs.environment == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
 
-          - name: Export all GitHub secrets as environment variables
+          - name: Export all GitHub Secrets as Environment Variables
             env:
               SECRETS: ${{ toJson(secrets) }}
             run: |
@@ -136,7 +136,7 @@
                 sed "s/\"$/'/" >> $GITHUB_ENV
               unset SECRETS
 
-          - name: Prepare the Docker Swarm YAML file
+          - name: Create the Docker Swarm Configuration
             env:
               ENV: ${{ needs.set-variables.outputs.environment }}
               IMAGE_TAG: ${{ needs.set-variables.outputs.tag }}
@@ -149,7 +149,7 @@
               mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
               sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
 
-          - name: Stamp the Docker Swarm config
+          - name: Timestamp the Docker Swarm config
             uses: ./.github/actions/stamp-swarm-config
             with:
               file: ${{ env.SWARM_YAML }}

@@ -122,7 +122,8 @@ jobs:
           # adds "v" prefix
           export FULL_TAG="v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}"
 
-          # this PERSONAL_ACCESS_TOKEN is an org secret and tied to Clark's account since GITHUB_TOKEN does
-          # not have the permission to push tags
+          # BLUEBOARD_BOT_PAT is an organization secret for the BlueboardBot account on GitHub
+          # The default token that is automatically made available to GitHub actions does not
+          # have permission to push tags -- so we have to use a PAT here
           git tag ${FULL_TAG}
           git push https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
