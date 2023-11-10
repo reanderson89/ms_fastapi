@@ -35,7 +35,11 @@ jobs:
   tag-release:
     name: Tag Release
     runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch')"
     steps:
+      - name: Dump GitHub context
+        run: echo '${{ toJSON(github) }}'
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -43,7 +47,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false # this must be false to use the PAT in the push below
 
-      - name: Setup git client
+      - name: Setup Git Client
         run: |
           # user.name/user.email comes from the last commit
           git config --global user.name "$(git log -n 1 --pretty=format:%an)"
@@ -53,7 +57,7 @@ jobs:
           git remote remove origin
           git remote add origin https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git
 
-      - name: Get current version and bump level
+      - name: Get the Current Version and Bump Level from Commit Message or PR Subject
         id: get-version
         env:
           MESSAGE: ${{ github.event.head_commit.message }}
@@ -86,32 +90,33 @@ jobs:
             echo "LEVEL=patch" >> $GITHUB_OUTPUT
           fi
 
-      - name: Echo the version and level (debugging)
-        run: |
-          echo "VERSION: ${{ steps.get-version.outputs.VERSION }}"
-          echo "LEVEL: ${{ steps.get-version.outputs.LEVEL }}"
-
-      - name: Get the next version
+      - name: Get the Next Version
         id: sem-ver
         uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
           version: ${{ steps.get-version.outputs.VERSION }}
 
-      - name: Select which new version to use
+      - name: Select the Next Version to Use
         id: new-version
         if: ${{ steps.sem-ver.outputs.major != '' }}
         run: |
           # github-action-next-semvers actually calculates all of the various next semver permutations, so we
           # have to decide which one to use based on the commit message in the step above
-          if [ ${{ steps.get-version.outputs.LEVEL  }} == 'major' ]; then
+          if [ "${{ steps.get-version.outputs.LEVEL }}" == "major" ]; then
             echo "NEW_VERSION=${{ steps.sem-ver.outputs.major }}" >> $GITHUB_OUTPUT
-          elif [ ${{ steps.get-version.outputs.LEVEL }} == 'minor' ]; then
+          elif [ "${{ steps.get-version.outputs.LEVEL }}" == "minor" ]; then
             echo "NEW_VERSION=${{ steps.sem-ver.outputs.minor }}" >> $GITHUB_OUTPUT
-          elif [ ${{ steps.get-version.outputs.LEVEL }} == 'patch' ]; then
+          elif [ "${{ steps.get-version.outputs.LEVEL }}" == "patch" ]; then
             echo "NEW_VERSION=${{ steps.sem-ver.outputs.patch }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Tag new version
+      - name: Echo Version Level (Debugging)
+        run: |
+          echo "VERSION: ${{ steps.get-version.outputs.VERSION }} (current)"
+          echo "LEVEL: ${{ steps.get-version.outputs.LEVEL }}"
+          echo "NEW_VERSION: ${{ steps.new-version.outputs.NEW_VERSION }} (next)"
+
+      - name: Git Tag the New Version
         if: ${{ steps.new-version.outputs.NEW_VERSION != '' }}
         run: |
           echo "Updating version tag from ${{ steps.get-version.outputs.VERSION }} to v${{ steps.new-version.outputs.NEW_VERSION }}"
