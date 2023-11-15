@@ -5,9 +5,9 @@ from app.routers.v1.dependencies import default_query_params, verify_program_awa
 from app.routers.v1.pagination import Page
 from app.actions.programs.awards.program_award_actions import ProgramAwardActions
 from app.models.uploads import UploadType
-from app.models.base_class import DeleteWarning
+
 from app.models.programs import ProgramAwardCreate, ProgramAwardUpdate, ProgramAwardResponse, ProgramAwardDelete
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 
 router = APIRouter(
@@ -81,7 +81,7 @@ async def update_award(
     return await ProgramAwardActions.update_award(path_params, award_updates)
 
 
-@router.delete("/awards/{program_award_9char}", response_model=ProgramAwardDelete|DeleteWarning)
+@router.delete("/awards/{program_award_9char}", response_model=ProgramAwardDelete)
 async def delete_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

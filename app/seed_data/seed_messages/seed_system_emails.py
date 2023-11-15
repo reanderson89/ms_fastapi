@@ -1,4 +1,4 @@
-from app.models.messages import MessageModelDB
+from burp.models.message import MessageModelDB
 from time import time
 
 system_emails = [

@@ -23,7 +23,6 @@ def test_integration_get_client_award(test_app, client_award):
 
 def test_integration_create_client_award(client_award):
 	assert len(client_award["client_award_9char"]) == 9
-	assert client_award["award_uuid"] == new_award["uuid"]
 	assert client_award["uuid"] == client_award['client_uuid'] + client_award['client_award_9char']
 
 

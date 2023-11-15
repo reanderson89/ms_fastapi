@@ -1,4 +1,4 @@
-from app.models.base_class import BasePydantic
+from burp.models.base_models import BasePydantic
 
 class AdminCreate(BasePydantic):
     first_name: str

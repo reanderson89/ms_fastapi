@@ -1,7 +1,7 @@
 import os
-from app.models.messages import MessageModel
+from burp.models.message import MessageModel
 from app.actions.messages.templates.template_actions import MessageTemplateActions
-from app.models.users import UserServiceModelDB
+from burp.models.user_service import UserServiceModelDB
 from twilio.rest import Client
 
 

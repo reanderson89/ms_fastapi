@@ -2,10 +2,11 @@ from typing import Union, Annotated
 from fastapi import APIRouter, Query, Depends
 from app.routers.v1.dependencies import default_query_params
 from app.routers.v1.pagination import Page
-from app.models.base_class import DeleteWarning
-from app.models.programs import AdminUpdate, AdminCreate, AdminStatus, AdminModel, AdminDelete
+
+from app.models.programs import AdminUpdate, AdminCreate, AdminStatus, AdminDelete
+from burp.models.program_admin import AdminModel
 from app.actions.programs.admins import ProgramAdminActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 router = APIRouter(prefix="/clients/{client_uuid}/programs/{program_9char}", tags=["Client Program Admins"])
 
@@ -56,7 +57,7 @@ async def update_admin(
     return await ProgramAdminActions.update_program_admin(path_params, admin_updates)
 
 
-@router.delete("/admins/{user_uuid}", response_model=AdminDelete|DeleteWarning)
+@router.delete("/admins/{user_uuid}", response_model=AdminDelete)
 async def delete_admin(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

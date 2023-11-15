@@ -1,4 +1,4 @@
-from app.routers.v1.v1CommonRouting import ExceptionHandling
+from app.exceptions import ExceptionHandling
 
 class StaticBudget:
 

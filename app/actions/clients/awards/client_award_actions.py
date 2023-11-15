@@ -1,8 +1,9 @@
 from app.exceptions import ExceptionHandling
-from app.actions.base_actions import BaseActions
+from burp.utils.base_crud import BaseCRUD
 from app.actions.upload import UploadActions
-from app.models.clients.client_award_models import ClientAwardModelDB, ClientAwardUpdate
-from app.models.programs import ProgramAwardModelDB
+from burp.models.client_award import ClientAwardModelDB
+from app.models.clients.client_award_models import ClientAwardUpdate
+from burp.models.program_award import ProgramAwardModelDB
 
 
 class ClientAwardActions:
@@ -13,7 +14,7 @@ class ClientAwardActions:
 
     @staticmethod
     async def get_client_awards(client_uuid: str, query_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ClientAwardModelDB,
             [ClientAwardModelDB.client_uuid == client_uuid],
             query_params
@@ -21,7 +22,7 @@ class ClientAwardActions:
 
     @staticmethod
     async def get_award(client_uuid: str, client_award_9char: str):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ClientAwardModelDB,
             [
                 ClientAwardModelDB.client_award_9char == client_award_9char,
@@ -38,7 +39,7 @@ class ClientAwardActions:
 
     @staticmethod
     async def check_if_award_exists_by_name(client_uuid: str, name: str, error=True):
-        award = await BaseActions.check_if_exists(
+        award = await BaseCRUD.check_if_exists(
             ClientAwardModelDB,
             [
                 ClientAwardModelDB.name == name,
@@ -64,12 +65,12 @@ class ClientAwardActions:
                 else:
                     to_create.append(await ClientAwardActions.to_award_db_model(client_uuid, award))
             if len(to_create) > 0:
-                return_list.extend(await BaseActions.create(to_create))
+                return_list.extend(await BaseCRUD.create(to_create))
             return return_list
         award = await ClientAwardActions.check_if_award_exists_by_name(client_uuid, award_obj.name, False)
         if award:
             return award
-        return await BaseActions.create(await cls.to_award_db_model(client_uuid, award_obj))
+        return await BaseCRUD.create(await cls.to_award_db_model(client_uuid, award_obj))
 
 
     @classmethod
@@ -84,7 +85,7 @@ class ClientAwardActions:
         if award_updates.hero_image:
             award_updates.hero_image, _ = await UploadActions.verify_upload_file("image", award_updates.hero_image)
             # TODO: add s3 query to check if file exists and is valid
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ClientAwardModelDB,
             [
                 ClientAwardModelDB.client_award_9char == client_award_9char,
@@ -95,19 +96,18 @@ class ClientAwardActions:
 
     @staticmethod
     async def delete_award(client_uuid: str, client_award_9char: str):
-        program = await BaseActions.get_one_where(
+        program = await BaseCRUD.get_one_where(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.client_award_9char == client_award_9char,
                 ProgramAwardModelDB.client_uuid == client_uuid
-            ],
-            False
+            ]
         )
         if program:
             return await ExceptionHandling.custom409(
                 f"Cannot delete client award {client_award_9char} is currently in use by program: {program.name}."
             )
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ClientAwardModelDB,
             [
                 ClientAwardModelDB.client_award_9char == client_award_9char,

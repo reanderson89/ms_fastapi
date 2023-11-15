@@ -1,8 +1,9 @@
 from app.exceptions import ExceptionHandling
-from app.actions.base_actions import BaseActions
+from burp.utils.base_crud import BaseCRUD
 from app.actions.upload import UploadActions
-from app.models.programs.program_award_models import ProgramAwardModelDB, ProgramAwardUpdate
-from app.models.segments import SegmentAwardModelDB
+from app.models.programs.program_award_models import ProgramAwardUpdate
+from burp.models.program_award import ProgramAwardModelDB
+from burp.models.segment_award import SegmentAwardModelDB
 
 
 
@@ -10,7 +11,7 @@ class ProgramAwardActions:
 
     @staticmethod
     async def get_program_awards(path_params: dict, query_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
@@ -21,7 +22,7 @@ class ProgramAwardActions:
 
     @staticmethod
     async def get_award(path_params: dict):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
@@ -62,7 +63,7 @@ class ProgramAwardActions:
                 else:
                     to_create.append(award)
             if to_create:
-                return_list.extend(await BaseActions.create(to_create))
+                return_list.extend(await BaseCRUD.create(to_create))
             return return_list
 
         award_model = ProgramAwardModelDB(
@@ -75,7 +76,7 @@ class ProgramAwardActions:
         if existing_award:
             return existing_award
 
-        return await BaseActions.create(award_model)
+        return await BaseCRUD.create(award_model)
 
 
     @classmethod
@@ -89,7 +90,7 @@ class ProgramAwardActions:
         if award_updates.hero_image:
             award_updates.hero_image, _ = await UploadActions.verify_upload_file("image", award_updates.hero_image)
             # TODO: add s3 query to check if file exists and is valid
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
@@ -101,20 +102,19 @@ class ProgramAwardActions:
 
     @staticmethod
     async def delete_award(path_params: dict):
-        segment =  await BaseActions.get_one_where(
+        segment =  await BaseCRUD.get_one_where(
             SegmentAwardModelDB,
             [
                 SegmentAwardModelDB.client_uuid == path_params["client_uuid"],
                 SegmentAwardModelDB.program_9char == path_params["program_9char"],
                 SegmentAwardModelDB.program_award_9char == path_params["program_award_9char"]
-            ],
-            False
+            ]
         )
         if segment:
             return await ExceptionHandling.custom409(
                 f"Cannot delete program award {path_params.program_award_9char} is currently in use by segment: {segment.name}."
             )
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.client_uuid == path_params["client_uuid"],
@@ -125,7 +125,7 @@ class ProgramAwardActions:
 
     @staticmethod
     async def check_if_award_exists_by_name(path_params, name: str, error: bool = True):
-        award = await BaseActions.check_if_exists(
+        award = await BaseCRUD.check_if_exists(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.name == name,
@@ -139,7 +139,7 @@ class ProgramAwardActions:
 
     @staticmethod
     async def check_if_award_exists(award_uuid: str):
-        award = await BaseActions.check_if_exists(
+        award = await BaseCRUD.check_if_exists(
             ProgramAwardModelDB,
             [
                 ProgramAwardModelDB.uuid == award_uuid

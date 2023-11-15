@@ -1,23 +1,26 @@
 from app.exceptions import ExceptionHandling
-from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
-from app.models.programs.program_models import ProgramModelDB
-from app.models.programs.program_rule_models import ProgramRuleModelDB
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.helper_actions import HelperActions
+from burp.models.program import ProgramModelDB
+from burp.models.program_rule import ProgramRuleModelDB
 
 
 class ProgramRuleActions:
 
     @staticmethod
-    async def get_program_uuid(program_9char: str, check: bool = True):
-        return await BaseActions.get_one_where(
+    async def get_program_uuid(program_9char: str):
+        program =  await BaseCRUD.get_one_where(
             ProgramModelDB.uuid,
-            [ProgramModelDB.program_9char == program_9char],
-            check
+            [ProgramModelDB.program_9char == program_9char]
         )
+
+        await ExceptionHandling.check404(program)
+
+        return program
 
     @staticmethod
     async def get_rule(path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
@@ -28,7 +31,7 @@ class ProgramRuleActions:
 
     @staticmethod
     async def get_all_rules(path_params, query_params):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.program_9char == path_params["program_9char"],
@@ -56,7 +59,7 @@ class ProgramRuleActions:
                 else:
                     to_create.append(rule)
             if to_create:
-                return_list.extend(await BaseActions.create(to_create))
+                return_list.extend(await BaseCRUD.create(to_create))
             return return_list
         else:
             rule_model = ProgramRuleModelDB(
@@ -69,14 +72,14 @@ class ProgramRuleActions:
             existing_rule = await cls.check_if_rule_exists(path_params, rule_model.logic)
             if existing_rule:
                 return existing_rule
-            return await BaseActions.create(rule_model)
+            return await BaseCRUD.create(rule_model)
 
     @classmethod
     async def update_rule(cls, rule_updates, path_params):
         if rule_updates.logic:
             # returns error msg if rule logic already exists
             await cls.check_if_rule_exists(path_params, rule_updates.logic, True)
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
@@ -88,7 +91,7 @@ class ProgramRuleActions:
 
     @staticmethod
     async def delete_rule(path_params):
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.rule_9char == path_params["rule_9char"],
@@ -99,7 +102,7 @@ class ProgramRuleActions:
 
     @classmethod
     async def check_if_rule_exists(cls, path_params: dict, rule_logic: dict, error: bool = False):
-        rule = await BaseActions.check_if_exists(
+        rule = await BaseCRUD.check_if_exists(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.logic == rule_logic,

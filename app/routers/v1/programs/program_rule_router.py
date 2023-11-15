@@ -3,10 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params
 from app.routers.v1.pagination import Page
-from app.models.base_class import DeleteWarning
+
 from app.models.programs import ProgramRuleCreate, ProgramRuleUpdate, ProgramRuleResponse, ProgramRuleDelete
 from app.actions.programs.rule.program_rule_actions import ProgramRuleActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 router = APIRouter(
     prefix="/clients/{client_uuid}/programs/{program_9char}",
@@ -62,7 +62,7 @@ async def update_rule(
     return await ProgramRuleActions.update_rule(rule_updates, path_params)
 
 
-@router.delete("/rules/{rule_9char}", response_model=ProgramRuleDelete|DeleteWarning)
+@router.delete("/rules/{rule_9char}", response_model=ProgramRuleDelete)
 async def delete_rule(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Response, Depends
-from app.utilities.auth.auth_handler import AdminSwap, swap_client_uuid_in_jwt, Permissions
+from burp.utils.auth_utils import AdminSwap, swap_client_uuid_in_jwt, Permissions
 from app.actions.clients.user import ClientUserActions
 from app.models.admin import AdminCreate, AdminClientSwap
 

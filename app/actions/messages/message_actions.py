@@ -1,27 +1,33 @@
 import json
+import os
+import httpx
 from app.actions.awards.awards_actions import AwardActions
 from app.routers.v1.dependencies import is_test_mode
 from app.actions.clients.client_actions import ClientActions
-from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
-from app.models.clients.client_user_models import ClientUserModelDB
-from app.models.programs import ProgramModelDB
-from app.models.messages import MessageModelDB, MessageCreate, MessageUpdate, MessageSend, MessageRecipient
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.helper_actions import HelperActions
+from burp.models.client_user import ClientUserModelDB
+from burp.models.program import ProgramModelDB
+from burp.models.message import MessageModelDB
+from burp.models.user import UserModel
+from app.models.messages import MessageCreate, MessageUpdate, MessageSend, MessageRecipient
 from app.exceptions import ExceptionHandling
 from app.actions.messages.send_message import MessageSendingHandler
-from app.actions.users.user_actions import UserActions
 from typing import Optional
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 class MessageActions:
 
     @staticmethod
     async def get_all(query_params: dict, segment_9char: Optional[str] = None, program_9char: Optional[str] = None):
-        return await BaseActions.get_all(MessageModelDB, query_params)
+        return await BaseCRUD.get_all(MessageModelDB, query_params)
 
     @staticmethod
     async def get_all_client_messages(client_uuid: str, query_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             MessageModelDB,
             [
                 MessageModelDB.client_uuid == client_uuid
@@ -31,7 +37,7 @@ class MessageActions:
 
     @staticmethod
     async def get_all_program_messages(query_params: dict, path_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             MessageModelDB,
             [
                 MessageModelDB.client_uuid == path_params['client_uuid'],
@@ -42,7 +48,7 @@ class MessageActions:
 
     @staticmethod
     async def get_all_segment_messages(query_params: dict, path_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             MessageModelDB,
             [
                 MessageModelDB.client_uuid == path_params['client_uuid'],
@@ -53,50 +59,56 @@ class MessageActions:
         )
 
     @staticmethod
-    async def get_one(message_9char: str, check: bool = True, additional_params: list = None):
+    async def get_one(message_9char: str, additional_params: list = None):
         params = [MessageModelDB.message_9char == message_9char]
         if additional_params:
             params.extend(additional_params)
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             MessageModelDB,
-            params,
-            check
+            params
         )
 
     @classmethod
     async def get_segment_message(cls, message_9char: str, path_params: str):
-        return await cls.get_one(
+        message =  await cls.get_one(
             message_9char,
-            True,
             [
                 MessageModelDB.client_uuid == path_params['client_uuid'],
                 MessageModelDB.program_9char == path_params['program_9char'],
                 MessageModelDB.segment_9char == path_params['segment_9char'],
             ]
         )
+        await ExceptionHandling.check404(message)
+
+        return message
 
     @classmethod
     async def get_program_message(cls, message_9char: str, path_params: dict):
-        return await cls.get_one(
+        message = await cls.get_one(
             message_9char,
-            True,
             [
                 MessageModelDB.client_uuid == path_params['client_uuid'],
                 MessageModelDB.program_9char == path_params['program_9char']
             ]
         )
+        await ExceptionHandling.check404(message)
+
+        return message
 
     @staticmethod
     async def get_program_uuid(program_9char: str, check404: bool = True):
-        return await BaseActions.get_one_where(
+        program = await BaseCRUD.get_one_where(
             ProgramModelDB.uuid,
-            [ProgramModelDB.program_9char == program_9char],
-            check404
+            [ProgramModelDB.program_9char == program_9char]
         )
+        if check404:
+            await ExceptionHandling.check404(program)
+
+        return program
 
     @staticmethod
     async def check_for_existing_message_by_name(message, throw_error=True):
-        existing_message = await BaseActions.check_if_exists(MessageModelDB, [MessageModelDB.name == message.name])
+        existing_message = await BaseCRUD.check_if_exists(MessageModelDB, [MessageModelDB.name == message.name])
         if existing_message and throw_error:
             await ExceptionHandling.custom405(f"A message with name '{message.name}' already exists.")
         elif existing_message and not throw_error:
@@ -130,13 +142,13 @@ class MessageActions:
                 else: #message with same name exists, appends message to list and skips a create
                     message_list.append(message)
             if len(to_create) > 0:
-                message_list.extend(await BaseActions.create(to_create))
+                message_list.extend(await BaseCRUD.create(to_create))
             return message_list
         message = await cls.to_message_model(messages)
         message = await cls.add_path_params(message, path_params)
         message = await cls.check_for_existing_message_by_name(message, False)
         if message.uuid is None:
-            return await BaseActions.create(message)
+            return await BaseCRUD.create(message)
         return message
 
     @staticmethod
@@ -162,7 +174,7 @@ class MessageActions:
         if message_updates.name:
             await cls.check_for_existing_message_by_name(message_updates, True)
 
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             MessageModelDB,
             [MessageModelDB.message_9char == message_9char],
             message_updates
@@ -170,10 +182,10 @@ class MessageActions:
 
     @staticmethod
     async def delete_message(message_9char: str):
-        message = await BaseActions.get_one_where(MessageModelDB, [MessageModelDB.message_9char == message_9char])
+        message = await BaseCRUD.get_one_where(MessageModelDB, [MessageModelDB.message_9char == message_9char])
         if message.client_uuid and message.status == 2: #status of 2 indicates "published"
             return await ExceptionHandling.custom405(f"Cannot delete client message {message.name}, status code is published.")
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             MessageModelDB, [MessageModelDB.message_9char == message_9char]
         )
 
@@ -190,7 +202,7 @@ class MessageActions:
     async def get_recipient_and_award(recipients: list[MessageRecipient]):
         recipient_list = []
 
-        recipient_client_user_models = await BaseActions.get_all_where(
+        recipient_client_user_models = await BaseCRUD.get_all_where(
             ClientUserModelDB,
             [ClientUserModelDB.uuid.in_([recipient.client_user_uuid for recipient in recipients])],
             None,
@@ -202,14 +214,19 @@ class MessageActions:
         recipients = sorted(recipients, key=lambda x: x.client_user_uuid, reverse=True) #sorts incoming recipients by client_user_uuid in reverse order
         recipient_client_user_models = sorted(recipient_client_user_models, key=lambda x: x.uuid, reverse=True) #sorts client_user_models by uuid in reverse order
 
-        for client_user_model in recipient_client_user_models:
-            recipient_list.append(
-                {
-                    "user": await UserActions.get_user(client_user_model.user_uuid, True),
-                    "award": await AwardActions.get_award(recipients[recipient_client_user_models.index(client_user_model)].award_uuid),
-                    "anniversary": recipients[recipient_client_user_models.index(client_user_model)].anniversary if recipients[recipient_client_user_models.index(client_user_model)].anniversary else None
-                }
-            )
+        YASS_URL = os.environ.get("YASS_URL")
+        async with httpx.AsyncClient(base_url=YASS_URL) as client:
+            for client_user_model in recipient_client_user_models:
+                user = await client.get(f"/users/{client_user_model.user_uuid}")
+                user = UserModel(**user)
+                await ExceptionHandling.check404(user)
+                recipient_list.append(
+                    {
+                        "user": user,
+                        "award": await AwardActions.get_award(recipients[recipient_client_user_models.index(client_user_model)].award_uuid),
+                        "anniversary": recipients[recipient_client_user_models.index(client_user_model)].anniversary if recipients[recipient_client_user_models.index(client_user_model)].anniversary else None
+                    }
+                )
 
         return recipient_list
 

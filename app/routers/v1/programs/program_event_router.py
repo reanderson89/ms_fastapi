@@ -2,9 +2,10 @@ from typing import Annotated, Callable
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params, test_mode
 from app.routers.v1.pagination import Page
-from app.models.programs import ProgramEventModelDB, ProgramEventUpdate, ProgramEventReturn
+from app.models.programs import ProgramEventUpdate, ProgramEventReturn
+from burp.models.program_event import ProgramEventModelDB
 from app.actions.programs.events.program_event_actions import ProgramEventActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 from fastapi.routing import APIRoute
 
 

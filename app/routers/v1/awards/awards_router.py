@@ -1,10 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from app.utilities.auth.auth_handler import Permissions
+from burp.utils.auth_utils import Permissions
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.models.uploads import UploadType
-from app.models.base_class import S3ResponseModel, DeleteWarning
+from burp.models.base_models import S3ResponseModel
 from app.models.award import AwardCreate, AwardUpdate, AwardResponse, AwardDelete
 from app.actions.awards import AwardActions
 
@@ -57,7 +57,7 @@ async def update_award(
 
 
 # TODO: this should only work if there is no client_awards or program_awards associated with the award
-@router.delete("/awards/{award_uuid}", response_model=AwardDelete|DeleteWarning)
+@router.delete("/awards/{award_uuid}", response_model=AwardDelete)
 async def delete_award(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     award_uuid: str

@@ -5,7 +5,7 @@ from os import getenv
 import boto3
 from datadog.api.exceptions import ClientError
 from app.exceptions import ExceptionHandling
-from app.actions.base_actions import BaseActions
+from burp.utils.base_crud import BaseCRUD
 from app.actions.clients.user import ClientUserActions
 
 
@@ -30,7 +30,7 @@ UPLOAD_TYPE_CONFIG = {
 }
 
 
-class UploadActions(BaseActions):
+class UploadActions(BaseCRUD):
 
     @staticmethod
     async def get_s3_client():

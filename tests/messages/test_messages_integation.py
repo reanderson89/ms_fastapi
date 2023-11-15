@@ -51,7 +51,7 @@ def test_integration_delete_message(test_app):
             assert response["Deleted"]["uuid"] == message["uuid"]
             assert response["Deleted"]["message_9char"] == message["message_9char"]
             if response["Deleted"]["client_uuid"] is not None:
-                assert response["Deleted"]["status"] is not 2
+                assert response["Deleted"]["status"] != 2
     except:
         raise Exception("Message Creation Failed")
     finally:

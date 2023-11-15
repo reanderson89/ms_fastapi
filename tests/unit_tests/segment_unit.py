@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from app.actions.segment_actions import SegmentActions
-from app.models.segment_model import SegmentModel
+from app.actions.segments.segment_actions import SegmentActions
+from burp.models.segment import SegmentModel
 
 @pytest.mark.asyncio
 async def test_create_segment():
@@ -22,18 +22,18 @@ async def test_create_segment():
     HelperActions = MagicMock()
     HelperActions.generate_9char = AsyncMock(return_value="123456789")
 
-    # Mock the BaseActions.create method
-    BaseActions = MagicMock()
-    BaseActions.create = AsyncMock(return_value=segments)
+    # Mock the BaseCRUD.create method
+    BaseCRUD = MagicMock()
+    BaseCRUD.create = AsyncMock(return_value=segments)
 
     # Create an instance of the SegmentActions class
-    segment_actions = SegmentActions(BaseActions, HelperActions)
+    segment_actions = SegmentActions(BaseCRUD, HelperActions)
 
     # Call the create_segment method with the mocked arguments
     result = await segment_actions.create_segment(segments, path_params)
 
-    # Assert that the BaseActions.create method was called with the correct arguments
-    BaseActions.create.assert_called_once_with([
+    # Assert that the BaseCRUD.create method was called with the correct arguments
+    BaseCRUD.create.assert_called_once_with([
         SegmentModel(
             name="Segment 1",
             client_uuid="1234",

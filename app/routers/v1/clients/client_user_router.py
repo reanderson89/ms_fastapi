@@ -3,10 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.models.base_class import DeleteWarning
 from app.models.clients import ClientUserUpdate, ClientUserResponse, ClientUserDelete
 from app.actions.clients.user import ClientUserActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Users"])
 
@@ -64,7 +63,7 @@ async def update_users(
         return await ClientUserActions.update_users(path_params, user_updates)
     return await ClientUserActions.update_user(path_params, user_updates)
 
-@router.delete("/users/{user_uuid}", response_model=ClientUserDelete|DeleteWarning)
+@router.delete("/users/{user_uuid}", response_model=ClientUserDelete)
 async def delete_user(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
         client_uuid: str,

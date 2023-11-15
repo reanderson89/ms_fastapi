@@ -24,6 +24,8 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 # copy the application and tests
 COPY ./app/ /app/app
+COPY ./burp/ /app/burp
+
 COPY ./migrations /app/migrations
 COPY alembic.ini /app
 # linter script

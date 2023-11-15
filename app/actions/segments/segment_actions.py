@@ -1,12 +1,12 @@
-from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
-from app.models.segments.segment_models import SegmentModelDB
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.helper_actions import HelperActions
+from burp.models.segment import SegmentModelDB
 
 class SegmentActions:
 
     @staticmethod
     async def get_all_segments(path_params, query_params):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             SegmentModelDB,
             [
             SegmentModelDB.client_uuid == path_params["client_uuid"],
@@ -17,7 +17,7 @@ class SegmentActions:
 
     @staticmethod
     async def get_segment(path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             SegmentModelDB,
             [
             SegmentModelDB.segment_9char == path_params["segment_9char"],
@@ -44,7 +44,7 @@ class SegmentActions:
                 else:
                     to_create.append(segment)
             if to_create:
-                return_list.extend(await BaseActions.create(to_create))
+                return_list.extend(await BaseCRUD.create(to_create))
             return return_list
         else:
             segment_model = SegmentModelDB(
@@ -56,11 +56,11 @@ class SegmentActions:
             existing_segment = await SegmentActions.check_if_segment_exists(path_params, segment_model)
             if existing_segment:
                 return existing_segment
-            return await BaseActions.create(segment_model)
+            return await BaseCRUD.create(segment_model)
 
     @staticmethod
     async def update_segment(path_params, segment_updates):
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             SegmentModelDB,
             [
             SegmentModelDB.segment_9char == path_params["segment_9char"],
@@ -72,7 +72,7 @@ class SegmentActions:
 
     @staticmethod
     async def delete_segment(path_params):
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             SegmentModelDB,
             [
             SegmentModelDB.segment_9char == path_params["segment_9char"],
@@ -83,7 +83,7 @@ class SegmentActions:
 
     @staticmethod
     async def check_if_segment_exists(path_params, segment):
-        return await BaseActions.check_if_exists(
+        return await BaseCRUD.check_if_exists(
             SegmentModelDB,
             [
                 SegmentModelDB.segment_9char == segment.name,

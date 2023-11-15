@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.models.base_class import DeleteWarning
+
 from app.models.segments import SegmentDesignUpdate, SegmentDesignResponse, SegmentDesignCreate, SegmentDesignDelete
 from app.actions.segments.design import SegmentDesignActions
 
@@ -49,7 +49,7 @@ async def update_segment_design(
     return await SegmentDesignActions.update_design(design_updates, path_params)
 
 
-@router.delete("/designs/{design_9char}", response_model=SegmentDesignDelete|DeleteWarning)
+@router.delete("/designs/{design_9char}", response_model=SegmentDesignDelete)
 async def delete_segment_design(
     path_params: dict = Depends(path_params),
 ):

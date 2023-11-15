@@ -1,5 +1,5 @@
 from collections import namedtuple
-from app.utilities import SHA224Hash
+from burp.utils.utils import SHA224Hash
 
 
 uuid_names = [

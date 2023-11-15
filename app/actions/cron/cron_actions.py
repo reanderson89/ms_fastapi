@@ -4,9 +4,9 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from app.database.config import engine
 from sqlalchemy import select
-from app.models.clients import ClientUserModelDB
-from app.models.users import UserModelDB
-from app.routers.v1.v1CommonRouting import ExceptionHandling
+from burp.models.client_user import ClientUserModelDB
+from burp.models.user import UserModelDB
+from app.exceptions import ExceptionHandling
 
 
 rule = {

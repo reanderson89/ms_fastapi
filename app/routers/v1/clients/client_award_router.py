@@ -3,11 +3,10 @@ from fastapi import APIRouter, Depends
 from fastapi.routing import APIRoute
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params, verify_client_award
-from app.models.base_class import DeleteWarning
 from app.actions.clients.awards.client_award_actions import ClientAwardActions
 from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.models.clients import ClientAwardCreate, ClientAwardUpdate, ClientAwardResponse, ClientAwardDelete
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 from app.models.uploads import UploadType
 
 class AwardEventRouter(APIRoute):
@@ -88,7 +87,7 @@ async def update_award(
 
 
 # this should only work if there is no programs or segments associated with the award
-@router.delete("/awards/{client_award_9char}", response_model=ClientAwardDelete|DeleteWarning)
+@router.delete("/awards/{client_award_9char}", response_model=ClientAwardDelete)
 async def delete_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     client_uuid: str,

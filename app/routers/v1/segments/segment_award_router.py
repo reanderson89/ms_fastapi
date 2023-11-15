@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 from app.models.uploads import UploadType
 from app.routers.v1.pagination import Page
-from app.models.base_class import DeleteWarning
+
 from app.routers.v1.dependencies import default_query_params, verify_segment_award
 from app.actions.segments.awards import SegmentAwardActions
 from app.models.segments.segment_award_models import SegmentAwardUpdate, SegmentAwardResponse, SegmentAwardCreate, SegmentAwardResponse, ProgramAwardDelete
@@ -83,7 +83,7 @@ async def update_segment_award(
     return await SegmentAwardActions.update_segment_award(path_params, segment_award_updates)
 
 
-@router.delete("/awards/{segment_award_9char}", response_model=ProgramAwardDelete|DeleteWarning)
+@router.delete("/awards/{segment_award_9char}", response_model=ProgramAwardDelete)
 async def delete_segment_award(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

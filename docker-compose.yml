@@ -20,8 +20,8 @@ services:
       MYSQL_PASSWORD: milestones
     expose:
       - 3306
-    # ports:
-    #   - 3306:3306
+    ports:
+      - 3306:3306
     networks:
       - auth_network
   milestones_api:

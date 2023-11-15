@@ -4,10 +4,9 @@ from app.actions.programs.events.program_event_actions import ProgramEventAction
 from app.models.programs.program_event_models import ProgramEventReturn
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params, test_mode
-from app.models.base_class import DeleteWarning
 from app.models.clients import ClientUpdate, ClientCreate, ClientResponse, ClientDelete
 from app.actions.clients.client_actions import ClientActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 router = APIRouter(tags=["Clients"])
 
@@ -47,7 +46,7 @@ async def update_client(
 
 
 # this should only work if there is nothing else associated with the client
-@router.delete("/clients/{client_uuid}", response_model=ClientDelete|DeleteWarning)
+@router.delete("/clients/{client_uuid}", response_model=ClientDelete)
 async def delete_client_by_uuid(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="2"))],
         client_uuid: str

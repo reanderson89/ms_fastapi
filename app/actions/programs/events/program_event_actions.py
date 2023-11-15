@@ -1,10 +1,9 @@
 import json
-from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
-from app.models.programs.program_models import ProgramModelDB
-from app.models.programs.program_event_models import ProgramEventModelDB
-from app.utilities import SHA224Hash
-from app.actions.helper_actions import HelperActions
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.helper_actions import HelperActions
+from burp.models.program import ProgramModelDB
+from burp.models.program_event import ProgramEventModelDB
+from burp.utils.utils import SHA224Hash
 from app.actions.messages.message_actions import ClientMessageEventActions
 from app.actions.clients.budgets import ClientBudgetEventActions
 from app.actions.clients.awards.client_award_actions import AwardEventActions
@@ -35,7 +34,7 @@ class ProgramEventActions:
             "response_status": response.status_code,
             "response_body": response.body.decode("utf-8")
         })
-        await BaseActions.create(new_event)
+        await BaseCRUD.create(new_event)
 
 
 
@@ -44,7 +43,7 @@ class ProgramEventActions:
     async def get_all_client_events(
         client_uuid, query_params
     ):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.client_uuid == client_uuid
@@ -57,7 +56,7 @@ class ProgramEventActions:
         path_params,
         query_params
     ):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.client_uuid == path_params["client_uuid"],
@@ -68,7 +67,7 @@ class ProgramEventActions:
 
     @staticmethod
     async def get_event(path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.event_9char == path_params["event_9char"],
@@ -79,7 +78,7 @@ class ProgramEventActions:
 
     @staticmethod
     async def get_program_uuid(program_9char: str):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ProgramModelDB.uuid,
             [ProgramModelDB.program_9char == program_9char]
         )
@@ -94,7 +93,7 @@ class ProgramEventActions:
                 program_9char = path_params["program_9char"],
                 event_9char = await HelperActions.generate_9char()
             ) for event in event_obj]
-            return await BaseActions.create(event_objs)
+            return await BaseCRUD.create(event_objs)
         event_obj = ProgramEventModelDB(
             **event_obj.dict(),
             program_uuid = program_uuid,
@@ -102,11 +101,11 @@ class ProgramEventActions:
             program_9char = path_params["program_9char"],
             event_9char = await HelperActions.generate_9char()
         )
-        return await BaseActions.create(event_obj)
+        return await BaseCRUD.create(event_obj)
 
     @staticmethod
     async def update_event(event_updates, path_params):
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.event_9char == path_params["event_9char"],
@@ -117,7 +116,7 @@ class ProgramEventActions:
 
     @staticmethod
     async def delete_event(path_params):
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.event_9char == path_params["event_9char"],

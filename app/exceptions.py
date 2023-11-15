@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 
-
 class ExceptionHandling:
 
     @staticmethod

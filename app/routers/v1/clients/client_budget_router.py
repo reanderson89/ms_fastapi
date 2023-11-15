@@ -5,9 +5,9 @@ from app.actions.programs.events.program_event_actions import ProgramEventAction
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
 from app.actions.clients.budgets import ClientBudgetActions
-from app.models.base_class import DeleteWarning
-from app.models.clients import ClientBudgetUpdate, ClientBudgetCreate, ClientBudgetModel, BudgetResponse, ClientBudgetShortExpand, ClientBudgetExpanded, DeleteResponse
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from app.models.clients import ClientBudgetUpdate, ClientBudgetCreate, BudgetResponse, ClientBudgetShortExpand, ClientBudgetExpanded, DeleteResponse
+from burp.models.client_budget import ClientBudgetModel
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 class BudgetEventRouter(APIRoute):
 
@@ -67,7 +67,7 @@ async def update_budget(
     return await ClientBudgetActions.update_budget(budget_updates, budget_9char, client_uuid)
 
 # this should only work if there are no programs associated with the budget
-@router.delete("/budgets/{budget_9char}", response_model=DeleteResponse|DeleteWarning)
+@router.delete("/budgets/{budget_9char}", response_model=DeleteResponse)
 async def delete_budget(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
         budget_9char: str,

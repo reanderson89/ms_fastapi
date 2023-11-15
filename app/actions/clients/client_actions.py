@@ -1,31 +1,32 @@
-from app.actions.base_actions import BaseActions
-from app.models.clients import ClientModelDB, ClientUpdate
-from app.models.programs.program_event_models import ProgramEventModelDB
+from burp.utils.base_crud import BaseCRUD
+from app.models.clients import ClientUpdate
+from burp.models.client import ClientModelDB
+from burp.models.program_event import ProgramEventModelDB
 from app.exceptions import ExceptionHandling
 
 class ClientActions:
 
     @staticmethod
     async def get_all_clients(query_params: dict):
-        return await BaseActions.get_all(ClientModelDB, query_params)
+        return await BaseCRUD.get_all(ClientModelDB, query_params)
 
     @staticmethod
     async def get_client(client_uuid: str):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ClientModelDB,
             [ClientModelDB.uuid == client_uuid]
         )
 
     @staticmethod
     async def get_client_name(client_uuid: str):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ClientModelDB.name,
             [ClientModelDB.uuid == client_uuid]
         )
 
     @staticmethod
     async def check_if_client_exists_by_name(client_name: str, error=True):
-        client = await BaseActions.check_if_exists(
+        client = await BaseCRUD.check_if_exists(
             ClientModelDB,
             [ClientModelDB.name == client_name]
         )
@@ -57,18 +58,18 @@ class ClientActions:
                 else:
                     to_create.append(await cls.to_client_db_model(client))
             if to_create:
-                return_list.extend(await BaseActions.create(to_create))
+                return_list.extend(await BaseCRUD.create(to_create))
             return return_list
         client = await cls.check_if_client_exists_by_name(client_data.name, False)
         if client:
             return client
-        return await BaseActions.create(await cls.to_client_db_model(client_data))
+        return await BaseCRUD.create(await cls.to_client_db_model(client_data))
 
     @classmethod
     async def update_client(cls, client_uuid: str, update_obj: ClientUpdate):
         if update_obj.name:
             await cls.check_if_client_exists_by_name(update_obj.name)
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ClientModelDB,
             [ClientModelDB.uuid ==client_uuid],
             update_obj
@@ -76,10 +77,10 @@ class ClientActions:
 
     @staticmethod
     async def delete_client(client_uuid: str):
-        client = await BaseActions.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid])
+        client = await BaseCRUD.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid])
         if client.status == 1:
             return await ExceptionHandling.custom400(f"Client '{client.name}' is currently active. Please deactivate before deleting.")
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ClientModelDB,
             [ClientModelDB.uuid == client_uuid]
         )
@@ -87,7 +88,7 @@ class ClientActions:
     # These is for postman and pytest purposes only. Only accesible in those enviornments.
     @staticmethod
     async def delete_all_client_events(client_uuid: str):
-        return await BaseActions.delete_all(
+        return await BaseCRUD.delete_all(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.client_uuid == client_uuid
@@ -98,7 +99,7 @@ class ClientActions:
     # this is only being used for postman/pytests through various checks
     @staticmethod
     async def delete_all_test_message_events(program_9char: str):
-        return await BaseActions.delete_all(
+        return await BaseCRUD.delete_all(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.program_9char == program_9char

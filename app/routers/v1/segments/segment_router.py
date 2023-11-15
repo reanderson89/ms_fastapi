@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.models.base_class import DeleteWarning
+
 from app.models.segments import SegmentUpdate, SegmentCreate, SegmentResponse, SegmentDelete
 from app.actions.segments import SegmentActions
 
@@ -61,7 +61,7 @@ async def update_segment(
     return await SegmentActions.update_segment(path_params, segment_updates)
 
 
-@router.delete("/segments/{segment_9char}", response_model=SegmentDelete|DeleteWarning)
+@router.delete("/segments/{segment_9char}", response_model=SegmentDelete)
 async def delete_segment(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

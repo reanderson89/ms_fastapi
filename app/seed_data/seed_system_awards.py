@@ -1,4 +1,4 @@
-from app.models.award import AwardModelDB
+from burp.models.award import AwardModelDB
 
 award_uuid_list = [
     "f8e53c5f0b9f46f08e5975d31d91f76a55a82be2f9c54da89b0b9f",

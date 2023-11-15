@@ -1,5 +1,5 @@
 from enum import Enum
-from app.models.base_class import BasePydantic
+from burp.models.base_models import BasePydantic
 
 
 class UploadType(Enum):

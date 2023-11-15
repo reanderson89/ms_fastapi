@@ -1,15 +1,16 @@
 from time import time
 from typing import Union
-from app.actions.base_actions import BaseActions
-from app.utilities import SHA224Hash
-from app.models.programs import AdminModelDB, AdminUpdate, AdminCreate, AdminStatus
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.utils import SHA224Hash
+from app.models.programs import AdminUpdate, AdminCreate, AdminStatus
+from burp.models.program_admin import AdminModelDB
 from app.routers.v1.dependencies import verify_client_user
 
 class ProgramAdminActions:
 
     @staticmethod
     async def get_program_admins(path_params, query_params):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             AdminModelDB,
             [
                 AdminModelDB.client_uuid == path_params["client_uuid"],
@@ -20,7 +21,7 @@ class ProgramAdminActions:
 
     @staticmethod
     async def get_program_admin(path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             AdminModelDB,
             [
                 AdminModelDB.user_uuid == path_params["user_uuid"],
@@ -45,7 +46,7 @@ class ProgramAdminActions:
             time_created=current_time,
             time_updated=current_time
         )
-        admin = await BaseActions.create(admin)
+        admin = await BaseCRUD.create(admin)
         new_admin = AdminStatus.from_orm(admin)
         new_admin.status = "admin created"
         return new_admin
@@ -63,7 +64,7 @@ class ProgramAdminActions:
 
     @staticmethod
     async def update_program_admin(path_params: dict, updates: AdminUpdate):
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             AdminModelDB,
             [
                 AdminModelDB.user_uuid == path_params["user_uuid"],
@@ -75,7 +76,7 @@ class ProgramAdminActions:
 
     @staticmethod
     async def delete_program_admin(path_params: dict):
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             AdminModelDB,
             [
                 AdminModelDB.user_uuid == path_params["user_uuid"],
@@ -86,7 +87,7 @@ class ProgramAdminActions:
 
     @classmethod
     async def get_program_admin_by_user_id(cls, user_uuid, program_9char):
-        return await BaseActions.check_if_exists(
+        return await BaseCRUD.check_if_exists(
             AdminModelDB,
             [
                 AdminModelDB.user_uuid == user_uuid,
@@ -96,7 +97,7 @@ class ProgramAdminActions:
 
     @classmethod
     async def get_program_id(cls, program_9char):
-        return await BaseActions.check_if_exists(
+        return await BaseCRUD.check_if_exists(
             AdminModelDB,
             [
                 AdminModelDB.program_9char == program_9char

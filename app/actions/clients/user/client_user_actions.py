@@ -1,12 +1,13 @@
 import os
 import httpx
-from app.actions.utils import convert_date_to_int
-from app.actions.base_actions import BaseActions
-from app.actions.helper_actions import HelperActions
-from app.models.clients import ClientUserModelDB, ClientUserExpand, ClientUserModel
-from app.models.users import UserModel
+from burp.utils.utils import convert_date_to_int
+from burp.utils.base_crud import BaseCRUD
+from burp.utils.helper_actions import HelperActions
+from app.models.clients import ClientUserExpand
+from burp.models.client_user import ClientUserModelDB, ClientUserModel
+from burp.models.user import UserModel
 from app.exceptions import ExceptionHandling
-from app.utilities import SHA224Hash
+from burp.utils.utils import SHA224Hash
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -15,7 +16,7 @@ class ClientUserActions:
 
     @staticmethod
     async def get_client_user_by_user_uuid(client_uuid: str, user_uuid: str):
-        return await BaseActions.check_if_exists(
+        return await BaseCRUD.check_if_exists(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == client_uuid,
@@ -129,7 +130,7 @@ class ClientUserActions:
                 admin=await HelperActions.get_admin(data),
             )
 
-            client_user = await BaseActions.create(client_user_obj)
+            client_user = await BaseCRUD.create(client_user_obj)
         return await cls.expand_client_user(client_user, user)
 
     @classmethod
@@ -138,7 +139,7 @@ class ClientUserActions:
 
     @staticmethod
     async def get_all_users(client_uuid: str, query_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == client_uuid
@@ -148,7 +149,7 @@ class ClientUserActions:
 
     @staticmethod
     async def get_user(path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
@@ -158,7 +159,7 @@ class ClientUserActions:
 
     @staticmethod
     async def auth_get_user(user_uuid):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ClientUserModelDB,
             [
                 ClientUserModelDB.user_uuid == user_uuid
@@ -168,7 +169,7 @@ class ClientUserActions:
 
     @staticmethod
     async def update_user(path_params: dict, user_updates):
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
@@ -185,7 +186,7 @@ class ClientUserActions:
                 uuid_list.append(user.uuid)
             else:
                 return await ExceptionHandling.custom400(f"Missing uuid in user update list for: {user}")
-        return await BaseActions.bulk_update(
+        return await BaseCRUD.bulk_update(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params.get("client_uuid"),
@@ -204,7 +205,7 @@ class ClientUserActions:
                 ClientUserModelDB.user_uuid == path_params["user_uuid"]
             ]
 
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ClientUserModelDB,
             conditions,
             user_updates
@@ -212,7 +213,7 @@ class ClientUserActions:
 
     @staticmethod
     async def delete_user(path_params):
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],

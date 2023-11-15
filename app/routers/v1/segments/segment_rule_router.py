@@ -2,8 +2,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.utilities.auth.auth_handler import Permissions
-from app.models.base_class import DeleteWarning
+from burp.utils.auth_utils import Permissions
+
 from app.actions.segments.rules import SegmentRuleActions
 from app.models.segments import SegmentRuleUpdate, SegmentRuleCreate, SegmentRuleResponse, SegmentRuleDelete
 
@@ -57,7 +57,7 @@ async def update_rule(
     return await SegmentRuleActions.update_rule(rule_updates, path_params)
 
 
-@router.delete("/rules/{rule_9char}", response_model=SegmentRuleDelete|DeleteWarning)
+@router.delete("/rules/{rule_9char}", response_model=SegmentRuleDelete)
 async def delete_rule(
     client_uuid: Annotated[str, Depends(Permissions(level="2"))],
     path_params: dict = Depends(path_params),

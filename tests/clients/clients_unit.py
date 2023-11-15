@@ -2,9 +2,9 @@ import pytest
 
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
-from app.models.clients.clients_models import ClientModelDB
+from burp.models.client import ClientModelDB
 from app.routers.v1.clients.client_router import router as clients_router
-from app.routers.v1.v1CommonRouting import CommonRoutes
+from burp.utils.base_crud import BaseCRUD
 
 @pytest.fixture
 def client():
@@ -32,8 +32,8 @@ def test_get_clients(monkeypatch, client):
                 time_ping=0,
             ),
         ]
-    # monkeypatch to replace the get_all method from CommonRoutes with the mocked out version
-    monkeypatch.setattr(CommonRoutes, "get_all", mock_get_all)
+    # monkeypatch to replace the get_all method from BaseCRUD with the mocked out version
+    monkeypatch.setattr(BaseCRUD, "get_all", mock_get_all)
     response = client.get("/clients")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
@@ -65,7 +65,7 @@ def test_get_client(monkeypatch, client):
             time_updated=0,
             time_ping=0,
         )
-    monkeypatch.setattr(CommonRoutes, "get_one", mock_get_one)
+    monkeypatch.setattr(BaseCRUD, "get_one", mock_get_one)
     client_uuid = "1234-5678-9012"
     # makes a get request to the specific url, whichever function is attacthed to that route will then run.
     response = client.get(f"/clients/{client_uuid}")
@@ -94,7 +94,7 @@ def test_create_client(monkeypatch, client):
             return items
         else:
             return response_data1
-    monkeypatch.setattr(CommonRoutes, "create_one_or_many", mock_create_one_or_many)
+    monkeypatch.setattr(BaseCRUD, "create_one_or_many", mock_create_one_or_many)
     # tests for a single client
     response = client.post("/clients", json=request_data1)
     assert response.status_code == status.HTTP_200_OK
@@ -124,7 +124,7 @@ def test_create_clients(monkeypatch, client):
             return items
         else:
             return response_data1
-    monkeypatch.setattr(CommonRoutes, "create_one_or_many", mock_create_one_or_many)
+    monkeypatch.setattr(BaseCRUD, "create_one_or_many", mock_create_one_or_many)
     # tests for a list of clients
     response = client.post("/clients", json=[request_data1, request_data2])
     assert response.status_code == status.HTTP_200_OK
@@ -158,7 +158,7 @@ def test_update_client_by_uuid(monkeypatch, client):
         else:
             return None
     # Patch the update_one function
-    monkeypatch.setattr(CommonRoutes, "update_one", mock_update_one)
+    monkeypatch.setattr(BaseCRUD, "update_one", mock_update_one)
     # Test the route
     response = client.put(f"/clients/{client_uuid}", json=update_data)
     assert response.status_code == status.HTTP_200_OK
@@ -180,7 +180,7 @@ def test_delete_client_by_uuid(monkeypatch, client):
             return {"ok": True, "Deleted": request_data}
         else:
             return {"status":"404", "Description":"Not found"}
-    monkeypatch.setattr(CommonRoutes, "delete_one", mock_delete_one)
+    monkeypatch.setattr(BaseCRUD, "delete_one", mock_delete_one)
 
     response = client.delete(f"/clients/{request_client_uuid}")
     assert response.status_code == status.HTTP_200_OK

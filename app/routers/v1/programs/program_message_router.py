@@ -4,7 +4,7 @@ from app.routers.v1.pagination import Page
 from app.models.messages import MessageCreate, MessageUpdate, MessageSend, MessageResponse
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
-from app.utilities.auth.auth_handler import Permissions
+from burp.utils.auth_utils import Permissions
 from app.routers.v1.messages.message_router import MessageEventRouter
 
 router = APIRouter(

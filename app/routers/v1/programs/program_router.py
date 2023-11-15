@@ -3,10 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.dependencies import default_query_params
 from app.routers.v1.pagination import Page
-from app.models.base_class import DeleteWarning
+
 from app.models.programs import ProgramCreate, ProgramUpdate, ProgramResponse, ProgramDelete
 from app.actions.programs.program_actions import ProgramActions
-from app.utilities.auth.auth_handler import Permissions, check_jwt_client_with_client
+from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
 router = APIRouter(prefix="/clients/{client_uuid}", tags=["Client Programs"])
 
@@ -58,7 +58,7 @@ async def update_program(
 
 
 # should only work if there are no segments or events associated with the program
-@router.delete("/programs/{program_9char}", response_model=ProgramDelete|DeleteWarning)
+@router.delete("/programs/{program_9char}", response_model=ProgramDelete)
 async def delete_program(
     client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
     path_params: dict = Depends(path_params)

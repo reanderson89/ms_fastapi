@@ -2,13 +2,13 @@ import os
 from enum import Enum
 from typing import Optional
 from fastapi import Query, HTTPException, Request
-from app.actions.base_actions import BaseActions
+from burp.utils.base_crud import BaseCRUD
 from app.exceptions import ExceptionHandling
-from app.models.clients import ClientUserModelDB
-from app.models.clients import ClientModelDB
-from app.models.clients.client_award_models import ClientAwardModelDB
-from app.models.programs import ProgramAwardModelDB
-from app.models.segments import SegmentAwardModelDB
+from burp.models.client_user import ClientUserModelDB
+from burp.models.client import ClientModelDB
+from burp.models.client_award import ClientAwardModelDB
+from burp.models.program_award import ProgramAwardModelDB
+from burp.models.segment_award import SegmentAwardModelDB
 
 class SortOrder(str, Enum):
     ASC = "ASC"
@@ -36,7 +36,7 @@ def default_query_params(
 
 
 async def verify_client_user(user_uuid: str, client_uuid: str):
-    user = await BaseActions.check_if_exists(
+    user = await BaseCRUD.check_if_exists(
         ClientUserModelDB,
         [
             ClientUserModelDB.user_uuid == user_uuid,
@@ -50,7 +50,7 @@ async def verify_client_user(user_uuid: str, client_uuid: str):
 
 
 async def verify_client_uuid(client_uuid: str):
-    response = await BaseActions.check_if_exists(
+    response = await BaseCRUD.check_if_exists(
         ClientModelDB,
         [ClientModelDB.uuid == client_uuid]
     )
@@ -59,7 +59,7 @@ async def verify_client_uuid(client_uuid: str):
 
 
 async def verify_client_award(client_uuid: str, client_award_9char: str):
-    response =  await BaseActions.check_if_exists(
+    response =  await BaseCRUD.check_if_exists(
         ClientAwardModelDB,
         [
             ClientAwardModelDB.client_uuid == client_uuid,
@@ -71,7 +71,7 @@ async def verify_client_award(client_uuid: str, client_award_9char: str):
 
 
 async def verify_program_award(client_uuid: str, program_award_9char: str):
-    response =  await BaseActions.check_if_exists(
+    response =  await BaseCRUD.check_if_exists(
         ProgramAwardModelDB,
         [
             ProgramAwardModelDB.client_uuid == client_uuid,
@@ -83,7 +83,7 @@ async def verify_program_award(client_uuid: str, program_award_9char: str):
 
 
 async def verify_segment_award(client_uuid: str, segment_award_9char: str):
-    response =  await BaseActions.check_if_exists(
+    response =  await BaseCRUD.check_if_exists(
         SegmentAwardModelDB,
         [
             SegmentAwardModelDB.client_uuid == client_uuid,

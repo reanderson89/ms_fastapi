@@ -1,11 +1,11 @@
 import os
 
-from app.models.users import UserServiceModelDB
-from app.models.messages import MessageModel
+from burp.models.user_service import UserServiceModelDB
+from burp.models.message import MessageModel
 from app.actions.messages.templates.template_actions import MessageTemplateActions
 from sparkpost import SparkPost
 
-from app.models.users.user_models import UserModel
+from burp.models.user import UserModel
 _scriptname = "ThirdParty.SparkPost"
 
 

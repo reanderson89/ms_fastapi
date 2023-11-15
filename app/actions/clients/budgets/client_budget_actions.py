@@ -1,14 +1,16 @@
 import json
 from datetime import datetime
-from app.routers.v1.v1CommonRouting import CommonRoutes, ExceptionHandling
-from app.utilities import SHA224Hash
-from app.actions.helper_actions import HelperActions
+from app.exceptions import ExceptionHandling
+from burp.utils.utils import SHA224Hash
+from burp.utils.helper_actions import HelperActions
 from app.actions.clients import ClientActions
-from app.models.clients import ClientBudgetModelDB, ClientBudgetExpanded, ClientModelDB, ClientBudgetShortExpand
-from app.models.programs import ProgramModelDB
-from app.models.segments import SegmentModelDB
-from .client_sub_budget_actions import ClientSubBudgetActions
-from app.actions.base_actions import BaseActions
+from burp.models.client_budget import ClientBudgetModelDB
+from burp.models.client import ClientModelDB
+from app.models.clients import ClientBudgetExpanded, ClientBudgetShortExpand
+from burp.models.program import ProgramModelDB
+from burp.models.segment import SegmentModelDB
+from app.actions.clients.budgets.client_sub_budget_actions import ClientSubBudgetActions
+from burp.utils.base_crud import BaseCRUD
 
 class ClientBudgetActions:
 
@@ -20,7 +22,7 @@ class ClientBudgetActions:
 
     @staticmethod
     async def check_for_existing_budget_by_name(budget, client_uuid):
-        existingBudget = await BaseActions.check_if_exists(ClientBudgetModelDB, [
+        existingBudget = await BaseCRUD.check_if_exists(ClientBudgetModelDB, [
             ClientBudgetModelDB.name == budget.name,
             ClientBudgetModelDB.client_uuid == client_uuid
             ])
@@ -32,7 +34,7 @@ class ClientBudgetActions:
 
     @staticmethod
     async def get_all_budgets(client_uuid: str, query_params: dict):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ClientBudgetModelDB,
             [
                 ClientBudgetModelDB.client_uuid == client_uuid
@@ -41,18 +43,18 @@ class ClientBudgetActions:
         )
 
     @staticmethod #this goes from child --> parent
-    async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, check404=False):
-        return await BaseActions.get_one_where(ClientBudgetModelDB, [
+    async def get_budget_by_9char_and_client_uuid(budget_9char, client_uuid):
+        return await BaseCRUD.get_one_where(ClientBudgetModelDB, [
             ClientBudgetModelDB.budget_9char == budget_9char,
             ClientBudgetModelDB.client_uuid == client_uuid
-        ], check404)
+        ])
 
     @staticmethod #this goes from parent --> children
     async def get_budgets_by_parent_9char(budget):
-        return await BaseActions.get_all_where(ClientBudgetModelDB, [
+        return await BaseCRUD.get_all_where(ClientBudgetModelDB, [
             ClientBudgetModelDB.parent_9char == budget.budget_9char,
             ClientBudgetModelDB.client_uuid == budget.client_uuid
-        ], params=None, check404=False, pagination=False)
+        ], params=None, pagination=False)
 
     @staticmethod
     async def get_all_subbudgets_value(subbudgets):
@@ -76,9 +78,9 @@ class ClientBudgetActions:
 
     @classmethod
     async def get_one_budget(cls, budget_9char: str, client_uuid: str, expanded):
-        budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid, True)
+        budget = await cls.get_budget_by_9char_and_client_uuid(budget_9char, client_uuid)
         subbudgets = await cls.get_all_subbudgets(budget)
-        client = await BaseActions.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid], False)
+        client = await BaseCRUD.get_one_where(ClientModelDB, [ClientModelDB.uuid == client_uuid])
         if expanded:
             budget = ClientBudgetExpanded.from_orm(budget)
             budget.client = client
@@ -126,7 +128,7 @@ class ClientBudgetActions:
 
             #reason why this isnt part of declaration above: https://stackoverflow.com/questions/18950054/class-method-generates-typeerror-got-multiple-values-for-keyword-argument
             budget.budget_9char = await HelperActions.generate_9char()
-            return await CommonRoutes.create_one_or_many(budget)
+            return await BaseCRUD.create(budget)
 
     @classmethod
     async def update_budget(cls, budget_updates, budget_9char: str, client_uuid: str):
@@ -157,15 +159,15 @@ class ClientBudgetActions:
         for k,v in update_budget.items():
             setattr(budget, k, v)
         if budget.budget_type != 0 and ("value" in budget_updates.dict(exclude_unset=True)):
-            budget = await BaseActions.update_without_lookup(budget)
-            parent = await BaseActions.update_without_lookup(parent)
+            budget = await BaseCRUD.update_without_lookup(budget)
+            parent = await BaseCRUD.update_without_lookup(parent)
             if not passthroughList:
                 return {"updated": budget, "static_parent": parent}
             else:
-                passthroughList = await BaseActions.update_without_lookup(passthroughList)
+                passthroughList = await BaseCRUD.update_without_lookup(passthroughList)
                 return {"updated": budget, "static_parent": parent, "passthrough_budgets_affected": passthroughList}
         else:
-            return await BaseActions.update_without_lookup(budget)
+            return await BaseCRUD.update_without_lookup(budget)
 
     @classmethod
     async def delete_budget(cls, budget_9char: str, client_uuid: str):
@@ -178,9 +180,9 @@ class ClientBudgetActions:
         elif budget.budget_type == 0 and budget.parent_9char is not None:
             parent = await cls.get_budget_by_9char_and_client_uuid(budget.parent_9char, client_uuid)
             parent.value += budget.value
-            return [await BaseActions.delete_without_lookup(budget), await BaseActions.update_without_lookup(parent)]
+            return [await BaseCRUD.delete_without_lookup(budget), await BaseCRUD.update_without_lookup(parent)]
         else:
-            return await BaseActions.delete_without_lookup(budget)
+            return await BaseCRUD.delete_without_lookup(budget)
 
     @classmethod
     async def budget_in_use(cls, budget_9char: str, client_uuid: str) -> bool:
@@ -192,17 +194,17 @@ class ClientBudgetActions:
 
     @staticmethod
     async def get_program_by_budget(budget_9char: str, client_uuid: str):
-        return await BaseActions.get_one_where(ProgramModelDB, [
+        return await BaseCRUD.get_one_where(ProgramModelDB, [
             ProgramModelDB.budget_9char == budget_9char,
             ProgramModelDB.client_uuid == client_uuid
-        ], check404=False)
+        ])
 
     @staticmethod
     async def get_segment_by_budget(budget_9char: str, client_uuid: str):
-        return await BaseActions.get_one_where(SegmentModelDB, [
+        return await BaseCRUD.get_one_where(SegmentModelDB, [
             SegmentModelDB.budget_9char == budget_9char,
             SegmentModelDB.client_uuid == client_uuid
-        ], check404=False)
+        ])
 
 
 class ClientBudgetEventActions:

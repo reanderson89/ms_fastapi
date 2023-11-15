@@ -1,8 +1,8 @@
-from app.models.programs import ProgramModelDB
-from app.actions.helper_actions import HelperActions
-from app.models.programs.program_event_models import ProgramEventModelDB
-from app.models.segments.segment_models import SegmentModelDB
-from app.actions.base_actions import BaseActions
+from burp.models.program import ProgramModelDB
+from burp.utils.helper_actions import HelperActions
+from burp.models.program_event import ProgramEventModelDB
+from burp.models.segment import SegmentModelDB
+from burp.utils.base_crud import BaseCRUD
 
 
 class ProgramActions:
@@ -22,7 +22,7 @@ class ProgramActions:
                 else:
                     to_create.append(program_model)
             if to_create:
-                to_return.extend(await BaseActions.create(to_create))
+                to_return.extend(await BaseCRUD.create(to_create))
             return to_return
         program_model = await cls.to_program_model(programs, client_uuid)
         existing = await cls.check_if_program_exists(
@@ -30,7 +30,7 @@ class ProgramActions:
         )
         if existing:
             return existing
-        return await BaseActions.create(program_model)
+        return await BaseCRUD.create(program_model)
 
     @staticmethod
     async def to_program_model(program, client_uuid):
@@ -42,7 +42,7 @@ class ProgramActions:
 
     @classmethod
     async def check_if_program_exists(cls, name, client_uuid):
-        return await BaseActions.check_if_exists(
+        return await BaseCRUD.check_if_exists(
             ProgramModelDB,
             [
                 ProgramModelDB.name == name,
@@ -52,7 +52,7 @@ class ProgramActions:
 
     @classmethod
     async def get_by_program_9char(cls, path_params):
-        return await BaseActions.get_one_where(
+        return await BaseCRUD.get_one_where(
             ProgramModelDB,
             [
                 ProgramModelDB.program_9char == path_params["program_9char"],
@@ -62,7 +62,7 @@ class ProgramActions:
 
     @classmethod
     async def get_by_client_uuid(cls, path_params, query_params):
-        return await BaseActions.get_all_where(
+        return await BaseCRUD.get_all_where(
             ProgramModelDB,
             [
                 ProgramModelDB.client_uuid == path_params["client_uuid"]
@@ -72,7 +72,7 @@ class ProgramActions:
 
     @classmethod
     async def update_program(cls, program_updates, path_params):
-        return await BaseActions.update(
+        return await BaseCRUD.update(
             ProgramModelDB,
             [
                 ProgramModelDB.program_9char == path_params["program_9char"],
@@ -83,7 +83,7 @@ class ProgramActions:
 
     @classmethod
     async def check_for_program_event(cls, path_params):
-        return await BaseActions.check_if_one_exists(
+        return await BaseCRUD.check_if_one_exists(
             ProgramEventModelDB,
             [
                 ProgramEventModelDB.client_uuid == path_params["client_uuid"],
@@ -93,7 +93,7 @@ class ProgramActions:
 
     @classmethod
     async def check_for_program_segment(cls, path_params):
-        return await BaseActions.check_if_one_exists(
+        return await BaseCRUD.check_if_one_exists(
             SegmentModelDB,
             [
                 SegmentModelDB.client_uuid == path_params["client_uuid"],
@@ -111,7 +111,7 @@ class ProgramActions:
         if event_check:
             return {"message":"An event exists for this program. It cannot be deleted at this time."}
 
-        return await BaseActions.delete_one(
+        return await BaseCRUD.delete_one(
             ProgramModelDB,
             [
                 ProgramModelDB.program_9char == path_params["program_9char"],

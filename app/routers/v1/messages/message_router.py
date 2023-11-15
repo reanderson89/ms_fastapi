@@ -3,11 +3,10 @@ from fastapi.routing import APIRoute
 from typing import Union, Annotated, Callable
 from app.actions.programs.events.program_event_actions import ProgramEventActions
 from app.routers.v1.pagination import Page
-from app.models.base_class import DeleteWarning
 from app.models.messages import MessageCreate, MessageUpdate, MessageSend, MessageResponse, MessageDelete
 from app.actions.messages.message_actions import MessageActions
 from app.routers.v1.dependencies import default_query_params
-from app.utilities.auth.auth_handler import Permissions
+from burp.utils.auth_utils import Permissions
 
 class MessageEventRouter(APIRoute):
     event_type = 3
@@ -87,7 +86,7 @@ async def update_message(
     return await MessageActions.update_message(message_9char, message_updates)
 
 
-@router.delete("/messages/{message_9char}", response_model=MessageDelete|DeleteWarning)
+@router.delete("/messages/{message_9char}", response_model=MessageDelete)
 async def delete_message(
         client_uuid: Annotated[str, Depends(Permissions(level="2"))],
         message_9char: str

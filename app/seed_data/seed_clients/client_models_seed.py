@@ -1,4 +1,4 @@
-from app.models.clients import ClientModelDB
+from burp.models.client import ClientModelDB
 from time import time
 
 
