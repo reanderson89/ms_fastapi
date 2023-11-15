@@ -157,7 +157,7 @@
               # TODO deal with single quotes
               # sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
 
-          - name: Timestamp the Docker Swarm config
+          - name: Timestamp the Docker Swarm Configuration
             uses: ./.github/actions/stamp-swarm-config
             with:
               file: ${SWARM_YAML}

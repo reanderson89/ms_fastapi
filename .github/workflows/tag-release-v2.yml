@@ -1,4 +1,4 @@
-name: Tag Release
+name: Tag Release v2
 
 #
 # Please Read This!
@@ -33,11 +33,11 @@ on:
 
 jobs:
   tag-release:
-    name: Tag Release
+    name: Tag Release v2
     runs-on: ubuntu-latest
     if: "contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch')"
     steps:
-      - name: Dump GitHub context
+      - name: Dump GitHub context (Debugging)
         run: echo '${{ toJSON(github) }}'
 
       - name: Checkout
@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false # this must be false to use the PAT in the push below
 
-      - name: Setup Git Client
+      - name: Setup Git Client with PAT for BlueboardBot
         run: |
           # user.name/user.email comes from the last commit
           git config --global user.name "$(git log -n 1 --pretty=format:%an)"
@@ -57,7 +57,7 @@ jobs:
           git remote remove origin
           git remote add origin https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git
 
-      - name: Get the Current Version and Bump Level from Commit Message or PR Subject
+      - name: Get the Current Version and Bump Level (from Commit Message or PR Subject)
         id: get-version
         env:
           MESSAGE: ${{ github.event.head_commit.message }}
