@@ -42,9 +42,10 @@ services:
       AWS_ROLE_ARN: ${AWS_ROLE_ARN}
       BASE_URL: "http://localhost:5173/"
       # No CRON
+      DEBUG: "False"
       DD_TRACE_ENABLED: "false" # Datadog is fully disabled
       ENV: local
-      JWT_ENFORCED: "True"
+      JWT_ENFORCED: "False"
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: milestones_db

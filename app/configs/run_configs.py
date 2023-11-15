@@ -27,7 +27,7 @@ class BaseConfig:
 @dataclass
 class LocalConfig(BaseConfig):
     host: str = "127.0.0.1"
-    port: int = 8310
+    port: int = 83
     log_level = logging.getLevelName(logging.DEBUG)
 
 @dataclass

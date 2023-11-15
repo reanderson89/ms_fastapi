@@ -37,5 +37,15 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' does not exist, skipping Alembic migrations..."
 fi
 
-echo "Starting Milestones app"
-uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
+echo "Debug is: ${DEBUG}"
+if [ "${DEBUG}" == "True" ]; then
+    echo "Starting Milestones app in debug mode, now lauch Debug Docker."
+    # python -Xfrozen_modules=off -m debugpy --wait-for-client --listen 0.0.0.0:5677 -m app.main &
+    # sleep 3
+    # exec uvicorn app.main:app --reload --host 0.0.0.0 --port 80
+    exec sh -c "python -Xfrozen_modules=off -m debugpy --wait-for-client --listen 0.0.0.0:5677 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 80"
+
+else
+    echo "Starting Milestones app"
+    uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
+fi
