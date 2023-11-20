@@ -65,11 +65,11 @@
 
           - name: Get and Set the Environment
             id: set-environment
+            env:
+              GITHUB_CONTEXT: ${{ toJson(github) }}
             run: |
-              # head_ref is only set when the workflow was triggered by a pull_request and it contains the value of the source branch of the PR
-              echo "The ref is: ${{ github.head_ref }}"
-              echo "The ref name is: ${{ github.ref_name }}"
-              echo "The github object is: ${{ github }}"
+              echo "$GITHUB_CONTEXT"
+
               if ${{ github.event.inputs.environment != '' }}
               then
                 echo "Using the environment from user input: ${{ github.event.inputs.environment }}"
