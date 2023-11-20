@@ -106,7 +106,7 @@
 
           - name: Echo GitHub Event (Debugging)
             run: |
-              run: echo ${{ toJson( github.event ) }}
+              run: echo ${{ github.event }}
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
