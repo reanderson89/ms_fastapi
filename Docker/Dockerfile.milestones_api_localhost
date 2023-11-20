@@ -31,6 +31,9 @@ COPY alembic.ini /app
 # linter script
 COPY linter.sh /app
 RUN chmod +x /app/linter.sh
+
+COPY app/producer.py /app
+
 # debug mode funtionality
 RUN pip install debugpy
 # tests

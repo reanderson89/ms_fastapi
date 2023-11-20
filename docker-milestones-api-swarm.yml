@@ -36,6 +36,9 @@ services:
       # No CRON env var
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
+      JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
+      JOB_QUEUE_PORT: 11300
+      JOB_QUEUE_TUBE: 'milestone_tube'
       JWT_ENFORCED: 'True' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
@@ -71,10 +74,20 @@ services:
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
-      ALGORITHM: HS256
+      ALEMBIC_INI_FILE: 'alembic.ini'
+      ALGORITHM: ${ALGORITHM}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      AWS_ROLE_ARN: 'arn:aws:iam::252606574785:role/milestones-app-user-${ENV}-role'
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      BASE_URL: 'https://milestones-dev.blueboard.app'
       CRON: 'true'
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
+      JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
+      JOB_QUEUE_PORT: 11300
+      JOB_QUEUE_TUBE: 'milestone_tube'
+      JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}

@@ -18,6 +18,7 @@ COPY app/ /app/app
 COPY burp/ /app/burp
 COPY ./migrations /app/migrations
 COPY alembic.ini /app
+COPY app/producer.py /app
 COPY Docker/crontab /crontab
 COPY Docker/entrypoint_swarm.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

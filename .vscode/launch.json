@@ -5,51 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug/Start Docker",
-            "type": "python",
-            "request": "attach",
-            "port": 5677,
-            "host": "localhost",
-            "preLaunchTask": "Wait for Debugger",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "/app"
-                }
-            ]
-        },
-        {
-            "name": "Debug Docker",
-            "type": "python",
-            "request": "attach",
-            "port": 5677,
-            "host": "localhost",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "/app"
-                }
-            ]
-        },
-        {
-            "name": "Run App",
+            "name": "Debug Local App",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/app/main.py",
             "console": "integratedTerminal", //"externalTerminal",
             "cwd": "${workspaceFolder}",
             "justMyCode": true,
-            "env": {
-                "PYDEVD_DISABLE_FILE_VALIDATION": "1"
-            }
+            "env": {"PYDEVD_DISABLE_FILE_VALIDATION": "1"},
+            "presentation": {"order": 3}
         },
         {
-            "name": "Current File",
+            "name": "Debug File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "presentation": {"order": 2}
         },
         {
             // Used by the VSCode test runner
@@ -62,6 +35,57 @@
             "cwd": "${workspaceFolder}",
             "env": {"PYTHONPATH": "${cwd}"},
             "justMyCode": true,
+            "presentation": {"hidden": true}
         },
+        {
+            "name": "Attach_Debugger",
+            "type": "python",
+            "request": "attach",
+            "port": 5677,
+            "host": "localhost",
+            "preLaunchTask": "Wait for Debugger",
+            "postDebugTask": "Close Docker Containers",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/app"
+                }
+            ],
+            "presentation": {"order": 4}
+        },
+        {
+            "name": "Start_Docker_Environment",
+            "type": "python",
+            "request": "launch",
+            "program": "-c",
+            "console": "internalConsole",
+            "internalConsoleOptions": "neverOpen",
+            "python": "${command:python.interpreterPath}",
+            "args": ["print('NOP Configuration Running')"],
+            "postDebugTask": "Start Docker",
+            "presentation": {"hidden": true}
+        },
+        {
+            "name": "Start_Logs",
+            "type": "python",
+            "request": "launch",
+            "program": "-c",
+            "console": "internalConsole",
+            "internalConsoleOptions": "neverOpen",
+            "python": "${command:python.interpreterPath}",
+            "args": ["print('NOP Configuration Running')"],
+            "preLaunchTask": "Wait for Debugger",
+            "postDebugTask": "Docker Compose Logs",
+            "presentation": {"hidden": true}
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Debug Docker",
+            "configurations": ["Start_Docker_Environment", "Attach_Debugger", "Start_Logs"],
+            "presentation": {
+                "order": 1
+            }
+        }
     ]
 }

@@ -1,14 +1,16 @@
 import os
+
 import httpx
-from burp.utils.utils import convert_date_to_int
+from dotenv import load_dotenv
+
+from app.exceptions import ExceptionHandling
+from app.models.clients import ClientUserExpand
+from burp.models.client_user import ClientUserModel, ClientUserModelDB
+from burp.models.user import UserModel
 from burp.utils.base_crud import BaseCRUD
 from burp.utils.helper_actions import HelperActions
-from app.models.clients import ClientUserExpand
-from burp.models.client_user import ClientUserModelDB, ClientUserModel
-from burp.models.user import UserModel
-from app.exceptions import ExceptionHandling
-from burp.utils.utils import SHA224Hash
-from dotenv import load_dotenv
+from burp.utils.utils import SHA224Hash, convert_date_to_int
+
 load_dotenv()
 
 
@@ -29,6 +31,14 @@ class ClientUserActions:
         client_user_expanded = ClientUserExpand.from_orm(client_user)
         client_user_expanded.user = user
         return client_user_expanded
+
+    @classmethod
+    async def handle_client_user_job(cls, job_data: dict):
+        data: dict = job_data.get("body", {})
+        user_data: dict = data.get("user", {})
+        path_params = {"client_uuid": data.get("client_uuid")}
+        client_user = await cls.create_client_user(user_data, path_params)
+        return client_user
 
     @classmethod
     async def create_client_user(cls, data: dict, path_params: dict, expand: bool = True):
@@ -64,7 +74,7 @@ class ClientUserActions:
 
     @classmethod
     async def handle_user_and_service(cls, data: dict, path_params, expand, service_id=None):
-        YASS_URL = os.environ.get("YASS_URL")
+        YASS_URL = os.environ.get("YASS_URL", "http://localhost:5173/")
         async with httpx.AsyncClient(base_url=YASS_URL) as client:
             user = None
             user_uuid = data.get("user_uuid")
@@ -84,7 +94,7 @@ class ClientUserActions:
                     "last_name": data.get("last_name"),
                     "service_user_id": service
                 }
-                user = await client.post(f"/users/alt", json=request_obj)
+                user = await client.post("/users/alt", json=request_obj)
                 user = UserModel(**user.json()) if user.json() else None
 
             if user:
@@ -99,7 +109,7 @@ class ClientUserActions:
                 admin = data.get("admin", 0)
                 if admin not in [0, 1, 2]:
                     await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
-                user = await client.post(f"/users", json=data)
+                user = await client.post("/users", json=data)
                 user = UserModel(**user.json()) if user.json().get("uuid") else None
                 # UserActions.create_user_and_service(data, service_id)
 
@@ -165,7 +175,6 @@ class ClientUserActions:
                 ClientUserModelDB.user_uuid == user_uuid
             ]
         )
-
 
     @staticmethod
     async def update_user(path_params: dict, user_updates):

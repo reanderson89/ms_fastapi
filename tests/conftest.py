@@ -3,9 +3,9 @@ import pytest
 import traceback
 from fastapi.testclient import TestClient
 import tests.testutil as util
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from unittest.mock import AsyncMock, Mock, patch
-load_dotenv()
+# load_dotenv()
 
 os.environ["TEST_MODE"] = "True"
 
@@ -108,7 +108,7 @@ def clients(test_app: TestClient):
 def client_user(test_app: TestClient, client):
 
     call_count = 0
-    
+
     # this function track how many tiems a get request is called and returns different information based on the number
     def dynamic_response(*args, **kwargs):
         nonlocal call_count
@@ -150,7 +150,7 @@ def client_user(test_app: TestClient, client):
 @pytest.fixture(scope="module")
 def client_user_with_service(test_app: TestClient, client):
     call_count = 0
-    
+
     # this function track how many tiems a get request is called and returns different information based on the number
     def dynamic_response(*args, **kwargs):
         nonlocal call_count

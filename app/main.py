@@ -1,20 +1,40 @@
-import uvicorn
+import asyncio
 import os
-from app.configs import run_config
-from app.routers import routers
-from app.middleware import LoggingMiddleware
-from app.routers import auth_routers
-from app.routers import admin_routers
-from app.routers import cron_routers
-from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError, HTTPException
 from contextlib import asynccontextmanager
+from threading import Thread
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi_pagination import add_pagination
+
+from app.configs import run_config
+from app.configs.queue_configs import QueueWorker
+from app.middleware import LoggingMiddleware
+from app.routers import admin_routers, auth_routers, cron_routers, routers
 from app.seed_data import seed_database
+
+
+async def run_worker():
+    """ start the worker coroutine """
+    queue_worker = QueueWorker()
+    await queue_worker.worker()
+
+
+def start_worker_thread():
+    """ start the worker thread """
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(run_worker())
+    loop.close()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """ start the worker thread when the app starts """
+    worker_thread = Thread(target=start_worker_thread, daemon=True)
+    worker_thread.start()
+
     bootstrap_envs = ["LOCAL", "DEV"]
     env = os.getenv("ENV", "LOCAL").upper()
     if env in bootstrap_envs:

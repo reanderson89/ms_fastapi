@@ -2,11 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run Debug Script",
+            "label": "Start Docker",
             "type": "shell",
-            "command": "./debug.sh; sleep 10",
+            "command": "./debug.sh",
             "problemMatcher": [],
-            "isBackground": true,
+            // "isBackground": true,
+            "presentation": {
+                "panel": "dedicated",
+                "close": true,
+                "reveal": "silent"
+            }
         },
         {
             "label": "Wait for Debugger",
@@ -18,13 +23,39 @@
                 "while ! nc -z localhost 5677; do",
                 "  sleep .5;",
                 "done;",
-                "sleep 1;",
+                "sleep 2;",
                 "echo 'Ready!'"
             ],
-            // "isBackground": true,
             "problemMatcher": [],
-            "dependsOn": "Run Debug Script",
-            "dependsOrder": "sequence"
+            "presentation": {
+                "panel": "shared",
+                "close": true,
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Docker Compose Logs",
+            "type": "shell",
+            "command": "docker-compose logs -f",
+            "problemMatcher": [],
+            "presentation": {
+                "panel": "dedicated",
+                "close": false,
+                "focus": true
+            }
+        },
+        {
+            "label": "Close Docker Containers",
+            "type": "shell",
+            "command": "docker-compose down",
+            "problemMatcher": [],
+            "isBackground": true,
+            "presentation": {
+                "panel": "dedicated",
+                "close": true,
+                "focus": true
+            }
         }
+
     ]
 }

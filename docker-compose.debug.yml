@@ -1,4 +1,5 @@
 version: '3'
+name: milestones_api
 services:
   milestones_db:
     extends:
@@ -9,7 +10,7 @@ services:
       file: docker-compose.yml
       service: milestones_api
     environment:
-      DEBUG: "True"
+      DEBUG: 'True'
       LOG_LEVEL: debug
     ports:
       - '80:80'
@@ -20,3 +21,4 @@ networks:
   auth_network:
       driver: bridge
       name: auth_network
+      external: true
