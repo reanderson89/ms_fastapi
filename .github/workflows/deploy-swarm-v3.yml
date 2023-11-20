@@ -104,9 +104,9 @@
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
               path: .github/actions
 
-          - name: Echo base_ref for debugging
+          - name: Echo GitHub Event (Debugging)
             run: |
-              echo "github.event.base_ref:  ${{ github.event.base_ref }}"
+              run: echo ${{ toJson( github.event ) }}
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
