@@ -104,10 +104,11 @@
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
               path: .github/actions
 
-          - name: Echo GitHub Event (Debugging)
+          - name: Echo GitHub Context (Debugging)
             env:
-              CONTEXT: ${{ toJson( github.event ) }}
-            run: echo ${CONTEXT}
+              GITHUB_CONTEXT: ${{ toJson(github) }}
+            run: |
+              echo "$GITHUB_CONTEXT"
 
           - name: Install and configure Open VPN for ${{ needs.set-variables.outputs.environment }}
             uses: ./.github/actions/setup-open-vpn
