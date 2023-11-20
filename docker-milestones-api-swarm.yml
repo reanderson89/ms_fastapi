@@ -34,8 +34,8 @@ services:
       AWS_ROLE_ARN: 'arn:aws:iam::252606574785:role/milestones-app-user-${ENV}-role'
       BASE_URL: 'https://milestones-dev.blueboard.app'
       # No CRON env var
-      ENV: '${ENV}'
-      FERNET_KEY: '${FERNET_KEY}'
+      ENV: ${ENV}
+      FERNET_KEY: ${FERNET_KEY}
       JWT_ENFORCED: 'True' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
@@ -73,7 +73,7 @@ services:
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALGORITHM: HS256
       CRON: 'true'
-      ENV: '${ENV}'
+      ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
