@@ -8,7 +8,7 @@ import greenstalk
 import numpy as np
 from faker import Faker
 
-from app.utilities.decorators import handle_reconnect
+# from app.utilities.decorators import handle_reconnect
 from app.configs.logging_format import init_logger
 logger = init_logger()
 
@@ -18,6 +18,19 @@ faker = Faker()
 QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")
 QUEUE_PORT = int(os.environ.get("JOB_QUEUE_PORT", 11300))
 QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestone_tube")
+
+
+def handle_reconnect(func):
+    def wrapper(self, *args, **kwargs):
+        retries = 3
+        for _ in range(retries):
+            try:
+                return func(self, *args, **kwargs)
+            except Exception as e:
+                print(f"Error in {func.__name__}: {e}")
+                self.reconnect()
+        print(f"Failed to execute {func.__name__} after {retries} retries.")
+    return wrapper
 
 
 class JobProducer:

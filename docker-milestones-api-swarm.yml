@@ -27,7 +27,7 @@ services:
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
-      ALGORITHM: HS256
+      ALGORITHM: ${ALGORITHM}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
@@ -38,7 +38,7 @@ services:
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: 'milestone_tube'
+      JOB_QUEUE_TUBE: "milestone_tube"
       JWT_ENFORCED: 'True' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
@@ -86,7 +86,7 @@ services:
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: 'milestone_tube'
+      JOB_QUEUE_TUBE: "milestone_tube"
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
