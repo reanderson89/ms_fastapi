@@ -70,25 +70,27 @@ jobs:
 
           VERSION=$( tail -1 tags | cut -d '-' -f 1 )
 
+          echo "The VERSION is $VERSION"
+
           # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
-          echo 'VERSION=$VERSION' >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
           # if the words 'major', 'minor' or 'patch' are in the PR subject or commit message
           # then set LEVEL to that
 
           export MAJOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(major).*$/\1/ip' )
           if [[ ! -z ${MAJOR} ]]; then
-            echo 'LEVEL=major' >> $GITHUB_OUTPUT
+            echo "LEVEL=major" >> $GITHUB_OUTPUT
           fi
 
           export MINOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(minor).*$/\1/ip' )
           if [[ ! -z ${MINOR} ]]; then
-            echo 'LEVEL=minor' >> $GITHUB_OUTPUT
+            echo "LEVEL=minor" >> $GITHUB_OUTPUT
           fi
 
           export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
           if [[ ! -z ${PATCH} ]]; then
-            echo 'LEVEL=patch' >> $GITHUB_OUTPUT
+            echo "LEVEL=patch" >> $GITHUB_OUTPUT
           fi
 
       - name: Get the Next Version
