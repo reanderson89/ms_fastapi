@@ -29,8 +29,6 @@ on:
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
   MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
-  TAG: "latest"
-  ENVIRONMENT: "dev"
 
 jobs:
   tag:
@@ -159,8 +157,8 @@ jobs:
     steps:
       - name: Debugging
         run: |
-          echo "environment:  ${{ needs.tag.outputs.environment }}"
-          echo "tag:  ${{ needs.tag.outputs.tag }}"
+          echo "Environment:  ${{ needs.tag.outputs.environment }}"
+          echo "Tag:  ${{ needs.tag.outputs.tag }}"
 
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -199,9 +197,10 @@ jobs:
     needs:
       - build
     env:
-      TAG: ${{ needs.tag.outputs.tag }}
-      ENVIRONMENT: ${{ needs.tag.outputs.environment }}
-
+      # dev/latest are simply sane defaults for these env vars, in the case of workflow_dispatch trigger,
+      # the actual values will be set in a step just below
+      TAG: ${{ needs.tag.outputs.tag != '' && needs.tag.outputs.tag || 'latest' }}
+      ENVIRONMENT: ${{ needs.tag.outputs.environment != '' && needs.tag.outputs.environment || 'dev' }}
     if: |
       always() && ( needs.build.result == 'success' || needs.build.result == 'skipped')
     steps:
@@ -271,7 +270,7 @@ jobs:
       - name: Create the Docker Swarm Configuration
         env:
           ENV: ${{ env.ENVIRONMENT }}
-          IMAGE_TAG: ${{ needs.set-variables.outputs.tag }}
+          IMAGE_TAG: ${{ env.TAG }}
           REPLICAS: ${{ vars.REPLICAS || 1 }}
         run: |
           # append the tag to form a fully qualified Docker tag
