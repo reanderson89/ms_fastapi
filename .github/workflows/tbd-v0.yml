@@ -86,8 +86,6 @@ jobs:
             echo "LEVEL=patch" >> $GITHUB_OUTPUT
           fi
 
-          echo "VERSION is $VERSION, LEVEL is $LEVEL"
-
       - name: Get the Options for the Next Version
         id: sem-ver
         uses: "WyriHaximus/github-action-next-semvers@v1"
@@ -108,7 +106,7 @@ jobs:
             echo 'NEW_VERSION=${{ steps.sem-ver.outputs.patch }}' >> $GITHUB_OUTPUT
           fi
 
-      - name: Echo Version Level (Debugging)
+      - name: Echo Versions and Bump Level (Debugging)
         if: ${{ env.DEBUG == 'true' }}
         run: |
           echo 'VERSION: ${{ steps.get-version.outputs.VERSION }} (current)'
@@ -137,6 +135,8 @@ jobs:
 
       - name: Set the Environment (Temporary)
         run: |
+          # TODO come up with the logic to determine which environment to deploy to
+          # dev is hard coded for now
           echo "Environment is dev"
           echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 
@@ -150,7 +150,7 @@ jobs:
       - tag
     runs-on: ubuntu-latest
     steps:
-      - name: Debugging
+      - name: Echo Environment and Tag (Debugging)
         if: ${{ env.DEBUG == 'true' }}
         run: |
           echo "Environment:  ${{ needs.tag.outputs.environment }}"
@@ -214,10 +214,11 @@ jobs:
           echo "Using the environment from workflow_dispatch: ${{ github.event.inputs.environment }}"
           echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
-      - name: Debugging
+      - name: Echo Environment and Tag (Debugging)
         if: ${{ env.DEBUG == 'true' }}
-        run:
-          echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
+        run: |
+          echo "Environment:  ${{ env.ENVIRONMENT }}"
+          echo "Tag:  ${{ env.TAG }}"
 
       - name: Use the Docker Swarm Template from the dev branch
         if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
