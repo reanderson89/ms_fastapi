@@ -27,8 +27,10 @@ on:
           - prod
 
 env:
-    SWARM_YAML: "docker-milestones-api-swarm.yml"
-    MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
+  SWARM_YAML: "docker-milestones-api-swarm.yml"
+  MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
+  TAG: "latest"
+  ENVIRONMENT: "dev"
 
 jobs:
   tag:
@@ -196,21 +198,109 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+    env:
+      TAG: ${{ needs.tag.outputs.tag }}
+      ENVIRONMENT: ${{ needs.tag.outputs.environment }}
+
     if: |
       always() && ( needs.build.result == 'success' || needs.build.result == 'skipped')
     steps:
       - name: Dump GitHub context (Debugging)
         run: echo '${{ toJSON(github) }}'
 
-      - name: Set tag from workflow dispatch
+      - name: Use Tag and Environment from workflow_dispatch
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          echo "Using the tag from user input: ${{ github.event.inputs.tag }}"
+          echo "Using the tag from workflow_dispatch: ${{ github.event.inputs.tag }}"
           echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
 
-          echo "Using the environment from user input: ${{ github.event.inputs.environment }}"
+          echo "Using the environment from workflow_dispatch: ${{ github.event.inputs.environment }}"
           echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       - name: Debugging
         run:
           echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
+
+      - name: Use the Docker Swarm Template from dev branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Checkout Shared GitHub Actions
+        uses: actions/checkout@v4
+        with:
+          repository: blueboard/github_actions
+          token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+          path: .github/actions
+
+      - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }}
+        uses: ./.github/actions/setup-open-vpn
+        timeout-minutes: 1
+        with:
+          vpn_ca_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CA_CRT_B64 || secrets.DEV_VPN_CA_CRT_B64 }}
+          vpn_cert_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_CRT_B64 || secrets.DEV_VPN_CERT_CRT_B64 }}
+          vpn_tls_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_TLS_KEY_B64 || secrets.DEV_VPN_TLS_KEY_B64 }}
+          username: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_USERNAME || secrets.DEV_VPN_SECRET_USERNAME }}
+          password: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_PASSWORD || secrets.DEV_VPN_SECRET_PASSWORD }}
+          vpn_cert_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_KEY_B64 || secrets.DEV_VPN_CERT_KEY_B64 }}
+          auth: ${{ env.ENVIRONMENT == 'prod' && 'SHA384' || 'SHA256' }}
+          ssh_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_SSH_KEY_B64 || secrets.DEV_SSH_KEY_B64 }}
+          config: ${{ env.ENVIRONMENT == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
+          ping_host: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+
+      - name: Export all GitHub Secrets as Environment Variables
+        env:
+          SECRETS: ${{ toJson(secrets) }}
+        run: |
+          # the purpose of this step is to export all GitHub secrets as regular
+          # env vars so that we can use envsubst in a subsequent step
+          # Note: jq adds double quotes around the value, so we must use sed to
+          # re-wrap the values with single quotes, but still allowing for double
+          # quotes in the env var itself, i.e. so that we end up with this:
+          #
+          # foo='foobar'
+          # bar='barfoo'
+          # foobar='bar"foo"foo'
+          #
+          echo $SECRETS | jq --raw-output '. | to_entries[] | .key + "=" + (.value | tojson)' | \
+            sed "s/\=\"/\=\'/" | \
+            sed "s/\"$/'/" | \
+            sed "s/\"$/'/" >> $GITHUB_ENV
+          unset SECRETS
+
+      - name: Create the Docker Swarm Configuration
+        env:
+          ENV: ${{ env.ENVIRONMENT }}
+          IMAGE_TAG: ${{ needs.set-variables.outputs.tag }}
+          REPLICAS: ${{ vars.REPLICAS || 1 }}
+        run: |
+          # append the tag to form a fully qualified Docker tag
+          export IMAGE_TAG="${{ env.MILESTONES_DOCKER_REPO }}:${IMAGE_TAG}"
+
+          # do the env substitution and fix any issues with single quotes (more details in the Rails API)
+          mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
+          # TODO deal with single quotes
+          # sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
+
+      - name: Timestamp the Docker Swarm Configuration
+        uses: ./.github/actions/stamp-swarm-config
+        with:
+          file: ${SWARM_YAML}
+
+      - name: Copy Docker Swarm Configuration & Recycle Containers ♻️
+        uses: ./.github/actions/update-docker-swarm
+        timeout-minutes: 1
+        with:
+          hosts: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_HOSTS || env.ENVIRONMENT == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
+          leader: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+          yaml_file: ${{ env.SWARM_YAML }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN_RO }}
+          app: 'milestones_api'
+
+      - name: Stop the VPN
+        if: always()
+        run: |
+          sudo chmod 444 vpn.log
+          cat vpn.log
+          sudo killall openvpn
