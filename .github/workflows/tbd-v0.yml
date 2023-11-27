@@ -9,26 +9,26 @@ on:
     # branches-ignore:
     #   - test*
     branches:
-      - gha-test*
+      - test-*
 
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Deploy existing Docker tag?'
+        description: "Deploy existing Docker tag?"
         required: true
-        default: 'latest'
+        default: "latest"
       environment:
-        description: 'To which environment?'
+        description: "To which environment?"
         type: choice
-        default: 'dev'
+        default: "dev"
         options:
           - dev
           - staging
           - prod
 
 env:
-    SWARM_YAML: 'docker-milestones-api-swarm.yml'
-    MILESTONES_DOCKER_REPO: 'blueboardinc/milestones_api'
+    SWARM_YAML: "docker-milestones-api-swarm.yml"
+    MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
 
 jobs:
   tag:
@@ -66,6 +66,8 @@ jobs:
           git tag --list --sort=creatordate > tags
 
           # the cut is to strip off the SHA, or everything past the dash
+          tail -1 tags
+
           VERSION=$( tail -1 tags | cut -d '-' -f 1 )
 
           # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
@@ -91,7 +93,7 @@ jobs:
 
       - name: Get the Next Version
         id: sem-ver
-        uses: 'WyriHaximus/github-action-next-semvers@v1'
+        uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
           version: ${{ steps.get-version.outputs.VERSION }}
 
@@ -137,81 +139,83 @@ jobs:
 
       - name: Set the Environment (Temporary)
         run: |
-          echo 'Environment is dev'
+          echo "'Environment is dev'"
           echo 'ENVIRONMENT=dev' >> $GITHUB_ENV
 
     outputs:
       environment: ${{ env.ENVIRONMENT }}
       tag: ${{ env.TAG }}
 
-  build:
-    name: Build
-    needs:
-      - tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
-          # which allows this service to checkout the submodule
-          token: ${{ secrets.BURP_PAT }}
+  # build:
+  #   name: Build
+  #   needs:
+  #     - tag
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: recursive
+  #         # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
+  #         # which allows this service to checkout the submodule
+  #         token: ${{ secrets.BURP_PAT }}
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN_RW }}
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN_RW }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: blueboardinc/milestones_api
+  #     - name: Extract metadata (tags, labels) for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@v5
+  #       with:
+  #         images: blueboardinc/milestones_api
 
-      - name: Build, tag and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Docker/Dockerfile.milestones_api_swarm
-          push: true
-          cache-from: type=registry,ref=blueboardinc/milestones_api:latest
-          cache-to: type=inline
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+  #     - name: Build, tag and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         file: Docker/Dockerfile.milestones_api_swarm
+  #         push: true
+  #         cache-from: type=registry,ref=blueboardinc/milestones_api:latest
+  #         cache-to: type=inline
+  #         tags: ${{ steps.meta.outputs.tags }}
+  #         labels: ${{ steps.meta.outputs.labels }}
 
-  pre-deploy:
-    name: Pre-Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get and Set the Tag from User Input
-        id: set-tag
-        run: |
-          if ${{ needs.tag.outputs.tag == '' }}
-          then
-            echo 'Using the tag from user input: ${{ github.event.inputs.tag }}'
-            echo 'TAG=${{ github.event.inputs.tag }}' >> $GITHUB_ENV
-          fi
+  # pre-deploy:
+  #   name: Pre-Deploy
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - build
+  #   steps:
+  #     - name: Get and Set the Tag from User Input
+  #       id: set-tag
+  #       run: |
+  #         if ${{ needs.tag.outputs.tag == '' }}
+  #         then
+  #           echo 'Using the tag from user input: ${{ github.event.inputs.tag }}'
+  #           echo 'TAG=${{ github.event.inputs.tag }}' >> $GITHUB_ENV
+  #         fi
 
-      - name: Get and Set the Environment from User Input
-        id: set-environment
-        run: |
-          if ${{ needs.tag.outputs.tag == '' }}
-          then
-            echo 'Using the environment from user input: ${{ github.event.inputs.environment }}'
-            echo 'ENVIRONMENT=${{ github.event.inputs.environment }}' >> $GITHUB_ENV
-          fi
+  #     - name: Get and Set the Environment from User Input
+  #       id: set-environment
+  #       run: |
+  #         if ${{ needs.tag.outputs.tag == '' }}
+  #         then
+  #           echo 'Using the environment from user input: ${{ github.event.inputs.environment }}'
+  #           echo 'ENVIRONMENT=${{ github.event.inputs.environment }}' >> $GITHUB_ENV
+  #         fi
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs:
-      - pre-deploy
-    steps:
-      - name: Dump GitHub context (Debugging)
-        run: echo '${{ toJSON(github) }}'
+  # deploy:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - pre-deploy
+  #   steps:
+  #     - name: Dump GitHub context (Debugging)
+  #       run: echo '${{ toJSON(github) }}'
 
-      - name: Debugging
-        run:
-          echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
+  #     - name: Debugging
+  #       run:
+  #         echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
