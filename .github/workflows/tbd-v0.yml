@@ -1,0 +1,217 @@
+name: Tag-Build-Deploy v0
+
+#
+# This is experimental
+#
+
+on:
+  push:
+    # branches-ignore:
+    #   - test*
+    branches:
+      - gha-test*
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Deploy existing Docker tag?'
+        required: true
+        default: 'latest'
+      environment:
+        description: 'To which environment?'
+        type: choice
+        default: 'dev'
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+    SWARM_YAML: 'docker-milestones-api-swarm.yml'
+    MILESTONES_DOCKER_REPO: 'blueboardinc/milestones_api'
+
+jobs:
+  tag:
+    name: Tag
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          persist-credentials: false # this must be false to use the PAT in the push below
+
+      - name: Dump GitHub context (Debugging)
+        run: echo '${{ toJSON(github) }}'
+
+      - name: Setup Git Client with PAT for BlueboardBot
+        run: |
+          # user.name/user.email comes from the last commit
+          git config --global user.name '$(git log -n 1 --pretty=format:%an)'
+          git config --global user.email  '$(git log -n 1 --pretty=format:%ae)'
+
+          # reconfigure Git client to use the PAT
+          git remote remove origin
+          git remote add origin https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git
+
+      - name: Get the Current Version and Bump Level (from Commit Message or PR Subject)
+        id: get-version
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          # fetch the most recent tag
+          git fetch origin --tags
+          git tag --list --sort=creatordate > tags
+
+          # the cut is to strip off the SHA, or everything past the dash
+          VERSION=$( tail -1 tags | cut -d '-' -f 1 )
+
+          # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
+          echo 'VERSION=$VERSION' >> $GITHUB_OUTPUT
+
+          # if the words 'major', 'minor' or 'patch' are in the PR subject or commit message
+          # then set LEVEL to that
+
+          export MAJOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(major).*$/\1/ip' )
+          if [[ ! -z ${MAJOR} ]]; then
+            echo 'LEVEL=major' >> $GITHUB_OUTPUT
+          fi
+
+          export MINOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(minor).*$/\1/ip' )
+          if [[ ! -z ${MINOR} ]]; then
+            echo 'LEVEL=minor' >> $GITHUB_OUTPUT
+          fi
+
+          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
+          if [[ ! -z ${PATCH} ]]; then
+            echo 'LEVEL=patch' >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get the Next Version
+        id: sem-ver
+        uses: 'WyriHaximus/github-action-next-semvers@v1'
+        with:
+          version: ${{ steps.get-version.outputs.VERSION }}
+
+      - name: Select the Next Version to Use
+        id: new-version
+        if: ${{ steps.sem-ver.outputs.major != '' }}
+        run: |
+          # github-action-next-semvers actually calculates all of the various next semver permutations, so we
+          # have to decide which one to use based on the commit message in the step above
+          if [ '${{ steps.get-version.outputs.LEVEL }}' == 'major' ]; then
+            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.major }}' >> $GITHUB_OUTPUT
+          elif [ '${{ steps.get-version.outputs.LEVEL }}' == 'minor' ]; then
+            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.minor }}' >> $GITHUB_OUTPUT
+          elif [ '${{ steps.get-version.outputs.LEVEL }}' == 'patch' ]; then
+            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.patch }}' >> $GITHUB_OUTPUT
+          fi
+
+      - name: Echo Version Level (Debugging)
+        run: |
+          echo 'VERSION: ${{ steps.get-version.outputs.VERSION }} (current)'
+          echo 'LEVEL: ${{ steps.get-version.outputs.LEVEL }}'
+          echo 'NEW_VERSION: ${{ steps.new-version.outputs.NEW_VERSION }} (next)'
+
+      - name: Git Tag the New Version
+        if: ${{ steps.new-version.outputs.NEW_VERSION != '' }}
+        run: |
+          echo 'Updating version tag from ${{ steps.get-version.outputs.VERSION }} to v${{ steps.new-version.outputs.NEW_VERSION }}'
+
+          # reconstruct the full tag, e.g. v5.5.3-39a1b0b
+          export SHA=$(git rev-parse --short HEAD)
+
+          # adds 'v' prefix
+          export FULL_TAG='v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}'
+
+          # BLUEBOARD_BOT_PAT is an organization secret for the BlueboardBot account on GitHub
+          # The default token that is automatically made available to GitHub actions does not
+          # have permission to push tags -- so we have to use a PAT here
+          git tag ${FULL_TAG}
+          git push https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
+
+          # Store the tag in the Git environment for use in the deploy step later
+          echo 'TAG=$FULL_TAG' >> $GITHUB_ENV
+
+      - name: Set the Environment (Temporary)
+        run: |
+          echo 'Environment is dev'
+          echo 'ENVIRONMENT=dev' >> $GITHUB_ENV
+
+    outputs:
+      environment: ${{ env.ENVIRONMENT }}
+      tag: ${{ env.TAG }}
+
+  build:
+    name: Build
+    needs:
+      - tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
+          # which allows this service to checkout the submodule
+          token: ${{ secrets.BURP_PAT }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_RW }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: blueboardinc/milestones_api
+
+      - name: Build, tag and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Docker/Dockerfile.milestones_api_swarm
+          push: true
+          cache-from: type=registry,ref=blueboardinc/milestones_api:latest
+          cache-to: type=inline
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  pre-deploy:
+    name: Pre-Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get and Set the Tag from User Input
+        id: set-tag
+        run: |
+          if ${{ needs.tag.outputs.tag == '' }}
+          then
+            echo 'Using the tag from user input: ${{ github.event.inputs.tag }}'
+            echo 'TAG=${{ github.event.inputs.tag }}' >> $GITHUB_ENV
+          fi
+
+      - name: Get and Set the Environment from User Input
+        id: set-environment
+        run: |
+          if ${{ needs.tag.outputs.tag == '' }}
+          then
+            echo 'Using the environment from user input: ${{ github.event.inputs.environment }}'
+            echo 'ENVIRONMENT=${{ github.event.inputs.environment }}' >> $GITHUB_ENV
+          fi
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs:
+      - pre-deploy
+    steps:
+      - name: Dump GitHub context (Debugging)
+        run: echo '${{ toJSON(github) }}'
+
+      - name: Debugging
+        run:
+          echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
