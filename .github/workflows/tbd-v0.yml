@@ -198,7 +198,7 @@ jobs:
       TAG: ${{ needs.tag.outputs.tag != '' && needs.tag.outputs.tag || 'latest' }}
       ENVIRONMENT: ${{ needs.tag.outputs.environment != '' && needs.tag.outputs.environment || 'dev' }}
     if: |
-      always() && ( needs.build.result == 'success' || needs.build.result == 'skipped')
+      always() && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     steps:
       - name: Dump GitHub context (Debugging)
         if: ${{ env.DEBUG == 'true' }}
@@ -220,11 +220,13 @@ jobs:
           echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
 
       - name: Use the Docker Swarm Template from the dev branch
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: actions/checkout@v4
         with:
           ref: dev
 
       - name: Checkout Shared GitHub Actions
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: actions/checkout@v4
         with:
           repository: blueboard/github_actions
@@ -232,6 +234,7 @@ jobs:
           path: .github/actions
 
       - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }}
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: ./.github/actions/setup-open-vpn
         timeout-minutes: 1
         with:
@@ -247,6 +250,7 @@ jobs:
           ping_host: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
 
       - name: Export all GitHub Secrets as Environment Variables
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         env:
           SECRETS: ${{ toJson(secrets) }}
         run: |
@@ -267,6 +271,7 @@ jobs:
           unset SECRETS
 
       - name: Create the Docker Swarm Configuration
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         env:
           ENV: ${{ env.ENVIRONMENT }}
           IMAGE_TAG: ${{ env.TAG }}
@@ -279,11 +284,13 @@ jobs:
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
 
       - name: Timestamp the Docker Swarm Configuration
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: ./.github/actions/stamp-swarm-config
         with:
           file: ${SWARM_YAML}
 
       - name: Copy Docker Swarm Configuration & Recycle Containers ♻️
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: ./.github/actions/update-docker-swarm
         timeout-minutes: 1
         with:
