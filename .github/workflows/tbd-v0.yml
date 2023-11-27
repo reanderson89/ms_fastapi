@@ -6,10 +6,8 @@ name: Tag-Build-Deploy v0
 
 on:
   push:
-    # branches-ignore:
-    #   - test*
-    branches:
-      - test-*
+    branches-ignore:
+      - test*
 
   workflow_dispatch:
     inputs:
@@ -278,6 +276,7 @@ jobs:
 
           # do the env substitution and fix any issues with single quotes (more details in the Rails API)
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
+
           # TODO deal with single quotes
           # sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
 
