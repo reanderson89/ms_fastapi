@@ -1,8 +1,4 @@
-name: Tag-Build-Deploy v0
-
-#
-# This is experimental
-#
+name: Tag, Build & Deploy v0
 
 on:
   push:
@@ -27,12 +23,13 @@ on:
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
   MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
+  DEBUG: "false" # set to true for a little more output
 
 jobs:
   tag:
     name: Tag
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'foo') ) }}
+    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,7 +39,9 @@ jobs:
           persist-credentials: false # this must be false to use the PAT in the push below
 
       - name: Dump GitHub context (Debugging)
-        run: echo '${{ toJSON(github) }}'
+        if: ${{ env.DEBUG == 'true' }}
+        run: |
+          echo '${{ toJSON(github) }}'
 
       - name: Setup Git Client with PAT for BlueboardBot
         run: |
@@ -64,11 +63,7 @@ jobs:
           git tag --list --sort=creatordate > tags
 
           # the cut is to strip off the SHA, or everything past the dash
-          tail -1 tags
-
           VERSION=$( tail -1 tags | cut -d '-' -f 1 )
-
-          echo "The VERSION is $VERSION"
 
           # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
@@ -86,13 +81,14 @@ jobs:
             echo "LEVEL=minor" >> $GITHUB_OUTPUT
           fi
 
-          # TODO replce foo with patch here!!!
-          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(foo).*$/\1/ip' )
+          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
           if [[ ! -z ${PATCH} ]]; then
             echo "LEVEL=patch" >> $GITHUB_OUTPUT
           fi
 
-      - name: Get the Next Version
+          echo "VERSION is $VERSION, LEVEL is $LEVEL"
+
+      - name: Get the Options for the Next Version
         id: sem-ver
         uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
@@ -102,7 +98,7 @@ jobs:
         id: new-version
         if: ${{ steps.sem-ver.outputs.major != '' }}
         run: |
-          # github-action-next-semvers actually calculates all of the various next semver permutations, so we
+          # github-action-next-semvers calculates all of the various next semver permutations, so we
           # have to decide which one to use based on the commit message in the step above
           if [ '${{ steps.get-version.outputs.LEVEL }}' == 'major' ]; then
             echo 'NEW_VERSION=${{ steps.sem-ver.outputs.major }}' >> $GITHUB_OUTPUT
@@ -113,6 +109,7 @@ jobs:
           fi
 
       - name: Echo Version Level (Debugging)
+        if: ${{ env.DEBUG == 'true' }}
         run: |
           echo 'VERSION: ${{ steps.get-version.outputs.VERSION }} (current)'
           echo 'LEVEL: ${{ steps.get-version.outputs.LEVEL }}'
@@ -154,6 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Debugging
+        if: ${{ env.DEBUG == 'true' }}
         run: |
           echo "Environment:  ${{ needs.tag.outputs.environment }}"
           echo "Tag:  ${{ needs.tag.outputs.tag }}"
@@ -203,7 +201,9 @@ jobs:
       always() && ( needs.build.result == 'success' || needs.build.result == 'skipped')
     steps:
       - name: Dump GitHub context (Debugging)
-        run: echo '${{ toJSON(github) }}'
+        if: ${{ env.DEBUG == 'true' }}
+        run: |
+          echo '${{ toJSON(github) }}'
 
       - name: Use Tag and Environment from workflow_dispatch
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -215,10 +215,11 @@ jobs:
           echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       - name: Debugging
+        if: ${{ env.DEBUG == 'true' }}
         run:
           echo 'Deploy ${{ env.TAG }} to ${{ env.ENVIRONMENT }}'
 
-      - name: Use the Docker Swarm Template from dev branch
+      - name: Use the Docker Swarm Template from the dev branch
         uses: actions/checkout@v4
         with:
           ref: dev
@@ -277,9 +278,6 @@ jobs:
           # do the env substitution and fix any issues with single quotes (more details in the Rails API)
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
 
-          # TODO deal with single quotes
-          # sed -i "s/''\([^\s]*\)''/'\1\'/g" ${SWARM_YAML}
-
       - name: Timestamp the Docker Swarm Configuration
         uses: ./.github/actions/stamp-swarm-config
         with:
@@ -294,7 +292,7 @@ jobs:
           yaml_file: ${{ env.SWARM_YAML }}
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN_RO }}
-          app: 'milestones_api'
+          app: "milestones_api"
 
       - name: Stop the VPN
         if: always()
