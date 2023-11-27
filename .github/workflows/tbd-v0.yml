@@ -34,7 +34,7 @@ jobs:
   tag:
     name: Tag
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
+    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'foo') ) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,7 +88,8 @@ jobs:
             echo "LEVEL=minor" >> $GITHUB_OUTPUT
           fi
 
-          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
+          # TODO replce foo with patch here!!!
+          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(foo).*$/\1/ip' )
           if [[ ! -z ${PATCH} ]]; then
             echo "LEVEL=patch" >> $GITHUB_OUTPUT
           fi
@@ -128,7 +129,7 @@ jobs:
           export SHA=$(git rev-parse --short HEAD)
 
           # adds 'v' prefix
-          export FULL_TAG='v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}'
+          export FULL_TAG="v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}"
 
           # BLUEBOARD_BOT_PAT is an organization secret for the BlueboardBot account on GitHub
           # The default token that is automatically made available to GitHub actions does not
@@ -137,23 +138,27 @@ jobs:
           git push https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
 
           # Store the tag in the Git environment for use in the deploy step later
-          echo 'TAG=$FULL_TAG' >> $GITHUB_ENV
+          echo "TAG=$FULL_TAG" >> $GITHUB_ENV
 
       - name: Set the Environment (Temporary)
         run: |
-          echo "'Environment is dev'"
-          echo 'ENVIRONMENT=dev' >> $GITHUB_ENV
+          echo "Environment is dev"
+          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 
     outputs:
       environment: ${{ env.ENVIRONMENT }}
-      tag: ${{ env.TAG }}
+      tag: ${{ env.FULL_TAG }}
 
-  # build:
-  #   name: Build
-  #   needs:
-  #     - tag
-  #   runs-on: ubuntu-latest
-  #   steps:
+  build:
+    name: Build
+    needs:
+      - tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debugging
+        run: |
+          echo "environment:  ${{needs.tag.outputs.environment}}"
+          echo "tag:  ${{needs.tag.outputs.tag}}"
   #     - name: Check out the repo
   #       uses: actions/checkout@v4
   #       with:
