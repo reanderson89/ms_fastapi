@@ -302,7 +302,7 @@ jobs:
           app: "milestones_api"
 
       - name: Stop the VPN
-        if: always()
+        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         run: |
           sudo chmod 444 vpn.log
           cat vpn.log
