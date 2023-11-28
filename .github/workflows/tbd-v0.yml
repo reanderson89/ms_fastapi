@@ -4,8 +4,9 @@ on:
   push:
     tags-ignore:
       - '**'
-    branches-ignore:
-      - test*
+    branches:
+      - dev
+      - main
 
   workflow_dispatch:
     inputs:
@@ -52,7 +53,8 @@ jobs:
         uses: ./.github/actions/get-versions
         with:
           message: ${{ github.event.head_commit.message }}
-          pat: ${{ secrets.BLUEBOARD_BOT_PAT }}
+          token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+          branch: ${{ github.ref_name }}
 
       - name: Dump GitHub context (Debugging)
         if: ${{ env.DEBUG == 'true' }}
