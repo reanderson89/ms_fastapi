@@ -1,6 +1,7 @@
 import os
 from faker import Faker
 from faker.providers import job
+from app.models.clients import CreateClientUser
 from app.actions.clients.user import ClientUserActions
 import httpx
 from dotenv import load_dotenv
@@ -123,8 +124,9 @@ async def generate_client_users(clients: list):
         await client.post(f"{YASS_URL}/users", json=admins["clark"])
 
     for admin in new_admins:
+        admin_client_user = CreateClientUser(**admin)
         await ClientUserActions.create_client_user(
-            admin,
+            admin_client_user,
             {"client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34"}
         )
 

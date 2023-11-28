@@ -6,11 +6,13 @@ from burp.models.client import ClientModelDB
 from app.routers.v1.clients.client_router import router as clients_router
 from burp.utils.base_crud import BaseCRUD
 
+
 @pytest.fixture
 def client():
     app = FastAPI()
     app.include_router(clients_router)
     return TestClient(app)
+
 
 def test_get_clients(monkeypatch, client):
     async def mock_get_all(model):
@@ -55,6 +57,7 @@ def test_get_clients(monkeypatch, client):
         },
     ]
 
+
 def test_get_client(monkeypatch, client):
     async def mock_get_one(model, search_by):
         return ClientModelDB(
@@ -79,6 +82,7 @@ def test_get_client(monkeypatch, client):
         "time_ping": 0,
     }
 
+
 def test_create_client(monkeypatch, client):
     request_data1 = {
         "uuid": "5678-9012-3456",
@@ -89,6 +93,7 @@ def test_create_client(monkeypatch, client):
         "time_ping": 1,
     }
     response_data1 = request_data1
+
     async def mock_create_one_or_many(items: (list[ClientModelDB] | ClientModelDB)):
         if isinstance(items, list):
             return items
@@ -99,6 +104,7 @@ def test_create_client(monkeypatch, client):
     response = client.post("/clients", json=request_data1)
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == response_data1
+
 
 def test_create_clients(monkeypatch, client):
     request_data1 = {
@@ -119,6 +125,7 @@ def test_create_clients(monkeypatch, client):
     }
     response_data1 = request_data1
     response_data2 = request_data2
+
     async def mock_create_one_or_many(items: (list[ClientModelDB] | ClientModelDB)):
         if isinstance(items, list):
             return items
@@ -129,6 +136,7 @@ def test_create_clients(monkeypatch, client):
     response = client.post("/clients", json=[request_data1, request_data2])
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [response_data1, response_data2]
+
 
 def test_update_client_by_uuid(monkeypatch, client):
     # Test data
@@ -150,6 +158,7 @@ def test_update_client_by_uuid(monkeypatch, client):
         **request_data,
         **update_data,
     }
+
     # Mock function
     async def mock_update_one(search_by, original_model, update_model):
         if search_by == client_uuid:
@@ -164,6 +173,7 @@ def test_update_client_by_uuid(monkeypatch, client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == response_data
 
+
 def test_delete_client_by_uuid(monkeypatch, client):
     # Test data
     request_client_uuid = "5678-9012-3456"
@@ -175,11 +185,12 @@ def test_delete_client_by_uuid(monkeypatch, client):
         "time_updated": 1,
         "time_ping": 1,
     }
+
     async def mock_delete_one(client_uuid, model):
         if client_uuid == request_client_uuid:
             return {"ok": True, "Deleted": request_data}
         else:
-            return {"status":"404", "Description":"Not found"}
+            return {"status": "404", "Description": "Not found"}
     monkeypatch.setattr(BaseCRUD, "delete_one", mock_delete_one)
 
     response = client.delete(f"/clients/{request_client_uuid}")

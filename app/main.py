@@ -9,7 +9,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi_pagination import add_pagination
 
 from app.configs import run_config
-from app.configs.queue_configs import QueueWorker
+from app.worker.queue_worker import QueueWorker
 from app.middleware import LoggingMiddleware
 from app.routers import admin_routers, auth_routers, cron_routers, routers
 from app.seed_data import seed_database

@@ -117,7 +117,7 @@ hardcoded_user_from_yass = {
     'time_updated': 1698865409,
     'time_ping': 1698865409,
     'time_birthday': 0,
-    'admin': 'system_admin'
+    'admin': 2
 }
 
 update_client_user = {

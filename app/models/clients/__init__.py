@@ -17,12 +17,13 @@ from .client_budget_models import (
     ClientBudgetExpanded,
     ClientBudgetShortExpand,
     BudgetResponse,
-    DeleteResponse
+    DeleteResponse,
 
 )
 from .client_user_models import (
     ClientUserResponse,
     ClientUserCreate,
+    CreateClientUser,
     ClientUserUpdate,
     ClientUserExpand,
     ClientUserDelete,

@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.routers.v1.pagination import Page
 from app.routers.v1.dependencies import default_query_params
-from app.models.clients import ClientUserUpdate, ClientUserResponse, ClientUserDelete
+from app.models.clients import ClientUserUpdate, ClientUserResponse, ClientUserDelete, CreateClientUser
 from app.actions.clients.user import ClientUserActions
 from burp.utils.auth_utils import Permissions, check_jwt_client_with_client
 
@@ -40,7 +40,7 @@ async def get_user(
 @router.post("/users", response_model=(list[ClientUserResponse] | ClientUserResponse))
 async def create_user(
         client_uuid_jwt: Annotated[str, Depends(Permissions(level="1"))],
-        users: (list[dict] | dict),
+        users: (CreateClientUser | list[CreateClientUser]),
         path_params: dict = Depends(path_params)
 ):
     await check_jwt_client_with_client(client_uuid_jwt, path_params.get("client_uuid"))
