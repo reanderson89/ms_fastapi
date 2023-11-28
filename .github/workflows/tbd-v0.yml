@@ -27,122 +27,39 @@ env:
 
 jobs:
   tag:
-    name: Tag
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-          persist-credentials: false # this must be false to use the PAT in the push below
+  name: Tag
+  runs-on: ubuntu-latest
+  if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
+        persist-credentials: false # this must be false to use the PAT in the push below
 
-      - name: Dump GitHub context (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
-        run: |
-          echo '${{ toJSON(github) }}'
+    - name: Checkout Blueboard's Shared GitHub Actions 🔧
+      uses: actions/checkout@v4
+      with:
+        repository: blueboard/github_actions
+        token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+        path: .github/actions
 
-      - name: Setup Git Client with PAT for BlueboardBot
-        run: |
-          # user.name/user.email comes from the last commit
-          git config --global user.name '$(git log -n 1 --pretty=format:%an)'
-          git config --global user.email  '$(git log -n 1 --pretty=format:%ae)'
+    - name: Get Next Version
+      id: get-next-version
+      uses: ./.github/actions/get-versions
+      with:
+        message: ${{ github.event.head_commit.message }}
+        pat: ${{ secrets.BLUEBOARD_BOT_PAT }}
 
-          # reconfigure Git client to use the PAT
-          git remote remove origin
-          git remote add origin https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git
+    - name: Dump GitHub context (Debugging)
+      if: ${{ env.DEBUG == 'true' }}
+      run: |
+        echo '${{ toJSON(github) }}'
 
-      - name: Get the Current Version and Bump Level (from Commit Message or PR Subject)
-        id: get-version
-        env:
-          MESSAGE: ${{ github.event.head_commit.message }}
-        run: |
-          # fetch the most recent tag
-          git fetch origin --tags
-          git tag --list --sort=creatordate > tags
-
-          # the cut is to strip off the SHA, or everything past the dash
-          VERSION=$( tail -1 tags | cut -d '-' -f 1 )
-
-          # We started with v0.8.2-21c4777, now VERSION is just 0.8.2
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-          # if the words 'major', 'minor' or 'patch' are in the PR subject or commit message
-          # then set LEVEL to that
-
-          export MAJOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(major).*$/\1/ip' )
-          if [[ ! -z ${MAJOR} ]]; then
-            echo "LEVEL=major" >> $GITHUB_OUTPUT
-          fi
-
-          export MINOR=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(minor).*$/\1/ip' )
-          if [[ ! -z ${MINOR} ]]; then
-            echo "LEVEL=minor" >> $GITHUB_OUTPUT
-          fi
-
-          export PATCH=$( echo $MESSAGE | tr '\n' ' ' | sed -n -E 's/^.*(patch).*$/\1/ip' )
-          if [[ ! -z ${PATCH} ]]; then
-            echo "LEVEL=patch" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Get the Options for the Next Version
-        id: sem-ver
-        uses: "WyriHaximus/github-action-next-semvers@v1"
-        with:
-          version: ${{ steps.get-version.outputs.VERSION }}
-
-      - name: Select the Next Version to Use
-        id: new-version
-        if: ${{ steps.sem-ver.outputs.major != '' }}
-        run: |
-          # github-action-next-semvers calculates all of the various next semver permutations, so we
-          # have to decide which one to use based on the commit message in the step above
-          if [ '${{ steps.get-version.outputs.LEVEL }}' == 'major' ]; then
-            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.major }}' >> $GITHUB_OUTPUT
-          elif [ '${{ steps.get-version.outputs.LEVEL }}' == 'minor' ]; then
-            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.minor }}' >> $GITHUB_OUTPUT
-          elif [ '${{ steps.get-version.outputs.LEVEL }}' == 'patch' ]; then
-            echo 'NEW_VERSION=${{ steps.sem-ver.outputs.patch }}' >> $GITHUB_OUTPUT
-          fi
-
-      - name: Echo Versions and Bump Level (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
-        run: |
-          echo 'VERSION: ${{ steps.get-version.outputs.VERSION }} (current)'
-          echo 'LEVEL: ${{ steps.get-version.outputs.LEVEL }}'
-          echo 'NEW_VERSION: ${{ steps.new-version.outputs.NEW_VERSION }} (next)'
-
-      - name: Git Tag the New Version
-        if: ${{ steps.new-version.outputs.NEW_VERSION != '' }}
-        run: |
-          echo 'Updating version tag from ${{ steps.get-version.outputs.VERSION }} to v${{ steps.new-version.outputs.NEW_VERSION }}'
-
-          # reconstruct the full tag, e.g. v5.5.3-39a1b0b
-          export SHA=$(git rev-parse --short HEAD)
-
-          # adds 'v' prefix
-          export FULL_TAG="v${{ steps.new-version.outputs.NEW_VERSION }}-${SHA}"
-
-          # BLUEBOARD_BOT_PAT is an organization secret for the BlueboardBot account on GitHub
-          # The default token that is automatically made available to GitHub actions does not
-          # have permission to push tags -- so we have to use a PAT here
-          git tag ${FULL_TAG}
-          git push https://${{ secrets.BLUEBOARD_BOT_PAT }}@github.com/blueboard/${{ github.event.repository.name }}.git --tags
-
-          # Store the tag in the Git environment for use in the deploy step later
-          echo "TAG=$FULL_TAG" >> $GITHUB_OUTPUT
-
-      - name: Set the Environment (Temporary)
-        run: |
-          # TODO come up with the logic to determine which environment to deploy to
-          # dev is hard coded for now
-          echo "Environment is dev"
-          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-
-    outputs:
-      environment: ${{ env.ENVIRONMENT }}
-      tag: ${{ env.FULL_TAG }}
+  outputs:
+    environment: ${{ steps.get-next-version.outputs.environment }}
+    tag: ${{ steps.get-next-version.outputs.tag }}
 
   build:
     name: Build
@@ -187,6 +104,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # the purpose of this pre-deploy job is simply to setup any variables needed for the deploy
+  # job, as variables like environment and tag come from two different sources if this was involed
+  # via a commit or a workflow_dispatch event
   pre-deploy:
     name: Pre-Deploy
     runs-on: ubuntu-latest
