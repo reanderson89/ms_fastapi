@@ -1,7 +1,15 @@
 # Running Locally
-From root run:
-```
+From the root of the project run:
+```bash
 uvicorn app.main:app
+```
+Or to run with watchfiles:
+```bash
+uvicorn app.main:app --reload
+```
+To include env file (get a copy of the .env file from another developer via 1password):
+```bash
+uvicorn app.main:app --env-file .env
 ```
 
 # Docker
