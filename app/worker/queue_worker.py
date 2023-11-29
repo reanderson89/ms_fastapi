@@ -7,6 +7,8 @@ import greenstalk
 from app.actions.clients.user import ClientUserActions
 from app.configs.logging_format import init_logger
 from app.utilities.decorators import handle_reconnect
+from burp.models.user import UserModel
+from app.models.clients import ClientUserExpand
 
 logger = init_logger()
 
@@ -71,7 +73,10 @@ class QueueWorker:
                     return True, "Processed"
                 case "CREATE_CLIENT_USER":
                     new_user = await ClientUserActions.handle_client_user_job(job_data)
-                    logger.milestone(f"Client User created for client #{new_user.client_uuid}")
+                    if type(new_user) is UserModel:
+                        logger.milestone(f"User created for {new_user.first_name} {new_user.last_name}")
+                    elif type(new_user) is ClientUserExpand:
+                        logger.milestone(f"Client User created for {new_user.user.first_name} {new_user.user.last_name}")
                     return True, "Processed"
                 case _:
                     return False, "No matching event type found"

@@ -8,7 +8,6 @@ import greenstalk
 import numpy as np
 from faker import Faker
 
-# from app.utilities.decorators import handle_reconnect
 from app.configs.logging_format import init_logger
 logger = init_logger()
 
@@ -18,6 +17,8 @@ faker = Faker()
 QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")
 QUEUE_PORT = int(os.environ.get("JOB_QUEUE_PORT", 11300))
 QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestone_tube")
+ya_tube = "yass_tube"
+ms_tube = "milestone_tube"
 
 
 def handle_reconnect(func):
@@ -129,7 +130,11 @@ class JobProducer:
                 self.put_job(job)
 
     @handle_reconnect
-    def put_job(self, job):
+    def put_job(self, job, tube=None):
+        if tube:
+            self.conn.use(tube)
+        else:
+            self.conn.use(QUEUE_TUBE)
         self.conn.put(json.dumps(job))
 
     def not_looped(self, batches):
@@ -201,45 +206,51 @@ class JobProducer:
                 if not job_type:
                     job_type = input(
                         "Select the type of job to add to the queue:\n"
-                        "  1: CREATE_CLIENT_USER\n"
-                        "  2: MOCK_REWARD_SCHEDULED\n"
-                        "  3: MOCK_GET_SURVEY_RESPONSE\n"
-                        "  4: Misnamed Job -> Dead Letter Queue\n"
-                        "  5: Start Looped Job Producer\n"
-                        "  6: Add 1k jobs\n"
-                        "  7: Exit\n"
+                        "  1: CREATE_USER\n"
+                        "  2: CREATE_CLIENT_USER\n"
+                        "  3: MOCK_REWARD_SCHEDULED\n"
+                        "  4: MOCK_GET_SURVEY_RESPONSE\n"
+                        "  5: Misnamed Job -> Dead Letter Queue\n"
+                        "  6: Start Looped Job Producer\n"
+                        "  7: Add 1k jobs\n"
+                        "  8: Exit\n"
                         "----------------\n"
                         "Your choice: "
                     )
 
                 match job_type:
                     case "1":
-                        job = self.client_user_job()
-                        status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
-                        self.put_job(job)
+                        job = self.user_job()
+                        status = self.conn.stats_tube(ms_tube)["current-jobs-ready"]
+                        self.put_job(job, ya_tube)
                         print(f"{QUEUE_TUBE} Jobs: {status}\n")
                     case "2":
+                        job = self.client_user_job()
+                        status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
+                        self.put_job(job, ms_tube)
+                        print(f"{QUEUE_TUBE} Jobs: {status}\n")
+                    case "3":
                         job = self.reward_job()
                         status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
                         self.put_job(job)
                         print(f"{QUEUE_TUBE} Jobs: {status}\n")
-                    case "3":
+                    case "4":
                         job = self.survey_job()
                         status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
                         self.put_job(job)
                         print(f"{QUEUE_TUBE} Jobs: {status}\n")
-                    case "4":
+                    case "5":
                         job = self.wrong_job()
                         self.put_job(job)
                         time.sleep(.1)
                         status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
                         dlq_status = self.conn.stats_tube("milestone_dlq")["current-jobs-ready"]
                         print(f"{QUEUE_TUBE} Jobs: {status}\nmilestone_dlq Jobs: {dlq_status}\n")
-                    case"5":
+                    case"6":
                         self.loop_jobs()
-                    case "6":
-                        self.not_looped(50)
                     case "7":
+                        self.not_looped(50)
+                    case "8":
                         break
                     case _:
                         print("Invalid selection.")
