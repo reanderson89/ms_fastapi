@@ -105,15 +105,17 @@ jobs:
           context: .
           file: Docker/Dockerfile.milestones_api_swarm
           push: true
-          cache-from: type=registry,ref=blueboardinc/milestones_api:latest
-          cache-to: type=inline
+          # cache-from: type=registry,ref=blueboardinc/milestones_api:latest
+          # cache-to: type=inline
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ env.MILESTONES_DOCKER_REPO }}:latest
             ${{ env.MILESTONES_DOCKER_REPO }}:${{ needs.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
 
   # the purpose of this pre-deploy job is simply to setup any variables needed for the deploy
-  # job, as variables like environment and tag come from two different sources if this was involed
+  # job, as variables like environment and tag come from two different sources if this was invoked
   # via a commit or a workflow_dispatch event
   # the if always() here allows the GHA to run this job regardless of how the GHA was initially triggered
   pre-deploy:
@@ -126,7 +128,7 @@ jobs:
       always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     steps:
       - name: Use Environment and Tag from the tag job
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name != 'workflow_dispatch' && needs.tag.outputs.tag != '' }}
         run: |
           echo "tag job environment: ${{ needs.tag.outputs.environment }}"
           echo "tag job tag: ${{ needs.tag.outputs.tag }}"
