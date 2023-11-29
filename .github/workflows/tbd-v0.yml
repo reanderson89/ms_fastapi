@@ -124,11 +124,11 @@ jobs:
   pre-deploy:
     name: Pre-Deploy
     runs-on: ubuntu-latest
+    if: |
+      always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     needs:
       - tag
       - build
-    if: |
-      always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     steps:
       - name: Use Environment and Tag from the tag job
         if: ${{ github.event_name != 'workflow_dispatch' && needs.tag.outputs.tag != '' }}
@@ -149,7 +149,8 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: always() && ( needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.environment != '' )
+    if: |
+      always() && ( needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.environment != '' )
     needs:
       - build
       - pre-deploy
