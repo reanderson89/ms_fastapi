@@ -149,6 +149,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: always() && ( needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.environment != '' )
     needs:
       - build
       - pre-deploy
@@ -156,8 +157,6 @@ jobs:
     env:
       TAG: ${{ needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.tag || 'latest' }}
       ENVIRONMENT: ${{ needs.pre-deploy.outputs.environment != '' && needs.pre-deploy.outputs.environment || 'dev' }}
-    if: |
-      always() && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     steps:
       - name: Dump GitHub context (Debugging)
         if: ${{ env.DEBUG == 'true' }}
