@@ -45,7 +45,8 @@ class TempWorker:
                 self.conn.delete(job_response)
                 return job_data
             else:
-                self.conn.release(job_response, delay=5)
+                self.conn.delete(job_response)
+                # self.conn.release(job_response, delay=5)
 
     async def create_user_job(self, user_data: dict):
         job = {
@@ -75,9 +76,7 @@ class TempWorker:
 
     async def alt_get_user_job(
         self,
-        service_user_id: str,
-        first_name: str,
-        last_name: str
+        service_user_id: str
     ):
         job = {
             "eventType": "ALT_GET_USER",
@@ -86,9 +85,7 @@ class TempWorker:
             "job_id": None,
             "respond_to": QUEUE_TUBE,
             "body": {
-                "service_user_id": service_user_id,
-                "first_name": first_name,
-                "last_name": last_name,
+                "service_user_id": service_user_id
             }
         }
         response = await self.temp_worker(job, "yass_tube", QUEUE_TUBE)

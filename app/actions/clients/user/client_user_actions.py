@@ -89,11 +89,7 @@ class ClientUserActions:
                 user_response = await worker.get_user_job(user_uuid)
                 user = UserModel(**user_response) if user_response else None
             elif service:
-                request_obj = {
-                    "first_name": getattr(data, "first_name", None),
-                    "last_name": getattr(data, "last_name", None),
-                    "service_user_id": service
-                }
+                request_obj = {"service_user_id": service}
                 user_response = await worker.alt_get_user_job(**request_obj)
                 user = UserModel(**user_response) if user_response else None
         except Exception as e:
@@ -114,7 +110,7 @@ class ClientUserActions:
             if admin not in [0, 1, 2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
 
-            user_response = await worker.create_user_job(**data.dict())
+            user_response = await worker.create_user_job(data.dict())
             user = UserModel(**user_response) if user_response else None
             # UserActions.create_user_and_service(data, service_id)
             return user
