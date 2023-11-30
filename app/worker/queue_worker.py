@@ -30,6 +30,14 @@ class QueueWorker:
         self.conn.close()
         self.conn = self.connect_to_greenstalk()
 
+    def put_in_dlq(self, job, reason):
+        job_data = json.loads(job.body)
+        job_data["issue"] = reason
+        self.conn.use("milestones_dlq")
+        self.conn.put(json.dumps(job_data))
+        self.conn.use(QUEUE_TUBE)
+        self.conn.delete(job)
+
     @handle_reconnect
     async def worker(self):
         logger.milestone("Starting Survey Consumer...")
@@ -44,15 +52,11 @@ class QueueWorker:
                 if should_delete:
                     self.conn.delete(job)
                 else:
-                    job_data["issue"] = reason
-                    self.conn.use("milestone_dlq")
-                    self.conn.put(json.dumps(job_data))
-                    self.conn.use(QUEUE_TUBE)
-                    self.conn.delete(job)
+                    self.put_in_dlq(job, reason)
 
             except Exception as e:
-                logger.milestone(f"Error processing job: {e}")
-                self.conn.release(job)
+                logger.milestone(f"Worker error processing job: {str(e)}")
+                self.put_in_dlq(job, str(e))
 
             end_time = time.time()
             duration = end_time - start_time
@@ -81,5 +85,5 @@ class QueueWorker:
                 case _:
                     return False, "No matching event type found"
         except Exception as e:
-            logger.milestone(f"Error processing job: {e}")
+            logger.milestone(f"Consumer error processing job: {str(e)}")
             return False, "Error processing job"

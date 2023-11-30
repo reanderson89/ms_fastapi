@@ -11,7 +11,7 @@ from faker import Faker
 from app.configs.logging_format import init_logger
 logger = init_logger()
 
-Faker.seed(0)
+
 faker = Faker()
 
 QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")

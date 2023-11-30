@@ -105,9 +105,9 @@ class ClientUserActions:
             else:
                 return user
         elif service:
-            admin = getattr(data, "admin", 0)
-            admin = 0 if admin is None else admin
-            if admin not in [0, 1, 2]:
+            if getattr(data, "admin", 0) is None:
+                data.admin = 0
+            if data.admin not in [0, 1, 2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
 
             user_response = await worker.create_user_job(data.dict())
