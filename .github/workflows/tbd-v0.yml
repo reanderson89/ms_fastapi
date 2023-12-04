@@ -147,7 +147,7 @@ jobs:
       tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || needs.tag.outputs.tag }}
 
   deploy:
-    name: Deploy
+    name: Deploy ${{ needs.pre-deploy.outputs.tag}} to ${{ needs.pre-deploy.outputs.environment }}
     runs-on: ubuntu-latest
     if: |
       always() && ( needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.environment != '' )
