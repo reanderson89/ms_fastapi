@@ -16,9 +16,9 @@ faker = Faker()
 
 QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")
 QUEUE_PORT = int(os.environ.get("JOB_QUEUE_PORT", 11300))
-QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestone_tube")
+QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestones_tube")
 ya_tube = "yass_tube"
-ms_tube = "milestone_tube"
+ms_tube = "milestones_tube"
 
 
 def handle_reconnect(func):
@@ -112,11 +112,41 @@ class JobProducer:
             "version": 0,
             "body": {
                 "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+                "user_uuid": "9ae67bd3bac022ceb63c364973f7b1c3bd6a14eedae0ab9f62a28790",
                 "user": {
                     "first_name": first_name,
                     "last_name": last_name,
                     "work_email": email
                 }
+            }
+        }
+    
+    def user_account_job(self):
+        return {
+            "eventType": "CREATE_USER_ACCOUNT",
+            "source": "GSD",
+            "version": 0,
+            "body": {
+                "account_id": 2,
+                "first_name": "Billy",
+                "last_name": "Bob",
+                "email_address": "test@blueboard.com",
+                "phone_number": "+1234567890",
+                "company_id": 10
+            }
+        }
+    
+    def migrate_user_job(self, auth_code):
+        return {
+            "eventType": "MIGRATE_USER",
+            "source": "GSD",
+            "version": 0,
+            "body": {
+                "user_uuid": "06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf",
+                "service_uuid": "email",
+                "service_user_id": "owen.plambeck@blueboard.com",
+                "auth_code": auth_code,
+                "is_personal": False
             }
         }
 
@@ -204,7 +234,7 @@ class JobProducer:
         try:
             while True:
                 if not job_type:
-                    job_type = input(
+                    selection = input(
                         "Select the type of job to add to the queue:\n"
                         "  1: CREATE_USER\n"
                         "  2: CREATE_CLIENT_USER\n"
@@ -213,10 +243,18 @@ class JobProducer:
                         "  5: Misnamed Job -> Dead Letter Queue\n"
                         "  6: Start Looped Job Producer\n"
                         "  7: Add 1k jobs\n"
-                        "  8: Exit\n"
+                        "YASS Jobs:\n"
+                        "  8: CREATE_USER_ACCOUNT\n"
+                        "  9: MIGRATE_USER\n"
+                        "  10: Exit\n"
                         "----------------\n"
                         "Your choice: "
                     )
+
+                parts = selection.split()
+                job_type = str(parts[0])
+                if len(parts) > 1:
+                    auth_code = int(parts[1])
 
                 match job_type:
                     case "1":
@@ -251,6 +289,14 @@ class JobProducer:
                     case "7":
                         self.not_looped(50)
                     case "8":
+                        job = self.user_account_job()
+                        status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
+                        self.put_job(job, ya_tube)
+                    case "9":
+                        job = self.migrate_user_job(auth_code)
+                        status = self.conn.stats_tube(QUEUE_TUBE)["current-jobs-ready"]
+                        self.put_job(job, ya_tube)
+                    case "10":
                         break
                     case _:
                         print("Invalid selection.")

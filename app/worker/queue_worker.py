@@ -14,7 +14,7 @@ logger = init_logger()
 
 QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")
 QUEUE_PORT = int(os.environ.get("JOB_QUEUE_PORT", 11300))
-QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestone_tube")
+QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestones_tube")
 
 
 class QueueWorker:
@@ -37,6 +37,22 @@ class QueueWorker:
         self.conn.put(json.dumps(job_data))
         self.conn.use(QUEUE_TUBE)
         self.conn.delete(job)
+
+    async def send_response(self, job_data: dict, response_body: dict):
+        job = self.response_job(response_body, job_data.get("job_id"))
+        self.conn.use(job_data["respond_to"])
+        self.conn.put(json.dumps(job))
+        self.conn.use(QUEUE_TUBE)
+        return True
+    
+    def response_job(self, response_body: dict, job_id: str):
+        return {
+            "eventType": "USER_RESPONSE",
+            "source": "YASS",
+            "version": 0,
+            "job_id": job_id,
+            "body": response_body
+        }
 
     @handle_reconnect
     async def worker(self):
@@ -82,8 +98,23 @@ class QueueWorker:
                     elif type(new_user) is ClientUserExpand:
                         logger.milestone(f"Client User created for {new_user.user.first_name} {new_user.user.last_name}")
                     return True, "Processed"
+                case "MIGRATE_USER":
+                    response = await self.migrate_user(job_data)
+                    return response, "Processed"
                 case _:
                     return False, "No matching event type found"
         except Exception as e:
             logger.milestone(f"Consumer error processing job: {str(e)}")
             return False, "Error processing job"
+        
+
+    async def migrate_user(self, job_data: dict):
+        body = job_data.get("body")
+        migrated_user = await ClientUserActions.migrate_user(body["current_user_uuid"], body["old_user_uuid"])
+        if migrated_user:
+            logger.milestone(f"Milestones migration of user info successful.")
+            response = await self.send_response(job_data, {"migration_completed":True})
+        else:
+            logger.milestone(f"Milestone migration of user info was not successful.")
+            response = await self.send_response(job_data, {"migration_completed":True})
+        return response

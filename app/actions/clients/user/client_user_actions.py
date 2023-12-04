@@ -1,15 +1,13 @@
-from dotenv import load_dotenv
-
 from app.exceptions import ExceptionHandling
-from app.models.clients import ClientUserExpand, CreateClientUser
+from app.models.clients import ClientUserExpand, CreateClientUser, ClientUserMigrate
 from app.worker.temp_worker import TempWorker
 from burp.models.client_user import ClientUserModel, ClientUserModelDB
 from burp.models.user import UserModel
 from burp.utils.base_crud import BaseCRUD
 from burp.utils.helper_actions import HelperActions
 from burp.utils.utils import SHA224Hash, convert_date_to_int
+from burp.models.program import ProgramModelDB
 
-load_dotenv()
 
 
 class ClientUserActions:
@@ -34,7 +32,7 @@ class ClientUserActions:
     async def handle_client_user_job(cls, job_data: dict):
         data: dict = job_data.get("body", {})
         user_data = CreateClientUser(**data.get("user", {}))
-        path_params: dict = {"client_uuid": data.get("client_uuid")}
+        path_params: dict = {"client_uuid": data.get("client_uuid"), "user_uuid": data.get("user_uuid")}
         client_user = await cls.create_client_user(user_data, path_params)
         return client_user
 
@@ -109,7 +107,9 @@ class ClientUserActions:
                 data.admin = 0
             if data.admin not in [0, 1, 2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
-
+            
+            data.client_uuid = data.client_uuid or path_params.get("client_uuid")
+            data.user_uuid = data.user_uuid or path_params.get("user_uuid")
             user_response = await worker.create_user_job(data.dict())
             user = UserModel(**user_response) if user_response else None
             # UserActions.create_user_and_service(data, service_id)
@@ -128,7 +128,7 @@ class ClientUserActions:
         expand: bool = False
     ):
         # Check if client user already exists
-        client_user = await cls.get_client_user_by_user_uuid(user.uuid, user.uuid)
+        client_user = await cls.get_client_user_by_user_uuid(data.client_uuid, user.uuid)
 
         if not client_user:
             client_user_obj = ClientUserModelDB(
@@ -173,12 +173,14 @@ class ClientUserActions:
         )
 
     @staticmethod
-    async def auth_get_user(user_uuid):
-        return await BaseCRUD.get_one_where(
+    async def get_all_client_users_by_user_uuid(user_uuid, query_params, paginate = False):
+        return await BaseCRUD.get_all_where(
             ClientUserModelDB,
             [
                 ClientUserModelDB.user_uuid == user_uuid
-            ]
+            ],
+            query_params,
+            paginate
         )
 
     @staticmethod
@@ -224,6 +226,17 @@ class ClientUserActions:
             conditions,
             user_updates
         )
+    
+    @staticmethod
+    async def migrate_user(current_user_uuid, old_user_uuid):
+        for user_uuid in [current_user_uuid, old_user_uuid]:
+            if not await BaseCRUD.check_if_one_exists( ClientUserModelDB, [ClientUserModelDB.user_uuid == user_uuid]):
+                return f"client_user not found with user_uuid: {user_uuid}"
+        models_to_update = [ClientUserModelDB, ProgramModelDB]
+        conditions = [[ClientUserModelDB.user_uuid == old_user_uuid],[ProgramModelDB.user_uuid == old_user_uuid]]
+        session = await BaseCRUD.migrate(models_to_update, conditions, ClientUserMigrate(user_uuid=current_user_uuid))
+        session.commit()
+        return True
 
     @staticmethod
     async def delete_user(path_params):

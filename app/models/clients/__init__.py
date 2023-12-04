@@ -25,6 +25,7 @@ from .client_user_models import (
     ClientUserCreate,
     CreateClientUser,
     ClientUserUpdate,
+    ClientUserMigrate,
     ClientUserExpand,
     ClientUserDelete,
 )

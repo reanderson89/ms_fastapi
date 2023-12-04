@@ -88,6 +88,35 @@ new_client_user_with_user_uuid = {
     "admin": 1
 }
 
+
+create_client_user_job = {
+    "eventType": "CREATE_CLIENT_USER",
+    "source": "GSD",
+    "version": 0,
+    "body": {
+        "client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34",
+        "user_uuid": "9ae67bd3bac022ceb63c364973f7b1c3bd6a14eedae0ab9f62a28790",
+        "user": {
+            "first_name": "Test",
+            "last_name": "User",
+            "work_email": "test.user.job@email.com"
+        }
+    }
+}
+
+response_create_user_job = {
+    'uuid': '9ae67bd3bac022ceb63c364973f7b1c3bd6a14eedae0ab9f62a28790',
+    'first_name': 'Test_mock',
+    'last_name': 'User',
+    'latitude': None,
+    'longitude': None,
+    'time_created': 1698865409,
+    'time_updated': 1698865409,
+    'time_ping': 1698865409,
+    'time_birthday': 0,
+    'admin': 0
+}
+
 new_client_user_with_service = {
     "email_address": "test.user@blueboard.com",
     "first_name": "Test",

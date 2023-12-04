@@ -1,9 +1,8 @@
 import os
 import traceback
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
-
-
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 
 import tests.testutil as util
@@ -67,7 +66,7 @@ def test_app():
         is_deleted(response)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def user(test_app: TestClient):
     try:
         user = test_app.post("/v1/users?expand_services=true", json=util.new_user).json()
@@ -79,13 +78,13 @@ def user(test_app: TestClient):
             delete_user(test_app, user["uuid"], user["services"]["email"][0]["uuid"])
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def service(user):
     yield user["services"]["email"][0]
 
 
 # FOR TESTING CLIENT ROUTES
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def client(test_app: TestClient):
     try:
         client = test_app.post("/v1/clients", json=util.single_client).json()
@@ -97,7 +96,7 @@ def client(test_app: TestClient):
             test_app.delete(f"/v1/clients/{client['uuid']}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def clients(test_app: TestClient):
     try:
         clients = test_app.post("/v1/clients", json=util.list_of_clients).json()
@@ -110,7 +109,7 @@ def clients(test_app: TestClient):
                 test_app.delete(f"/v1/clients/{client['uuid']}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def client_user(test_app: TestClient, client):
     call_count = 0
 
@@ -146,7 +145,7 @@ def client_user(test_app: TestClient, client):
                 test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def client_user_with_service(test_app: TestClient, client):
     call_count = 0
 
@@ -181,7 +180,7 @@ def client_user_with_service(test_app: TestClient, client):
                 test_app.delete(f"/v1/clients/{client['uuid']}/users/{client_user['uuid']}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def program(test_app: TestClient, client_user):
     try:
         util.new_program["user_uuid"] = client_user["user_uuid"]
@@ -201,7 +200,7 @@ def program(test_app: TestClient, client_user):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def program_admin(test_app: TestClient, program):
     try:
         util.new_program_admin["user_uuid"] = program["user_uuid"]
@@ -219,7 +218,7 @@ def program_admin(test_app: TestClient, program):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def sub_event(test_app: TestClient, program_event):
     try:
         util.new_program_event["parent_9char"] = program_event["event_9char"]
@@ -237,7 +236,7 @@ def sub_event(test_app: TestClient, program_event):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def program_rule(test_app: TestClient, program):
     try:
         program_rule = test_app.post(
@@ -254,7 +253,7 @@ def program_rule(test_app: TestClient, program):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def segment(test_app: TestClient, program):
     try:
         program_segment = test_app.post(
@@ -271,7 +270,7 @@ def segment(test_app: TestClient, program):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def segment_rule(test_app: TestClient, segment):
     try:
         segment_rule = test_app.post(
@@ -288,7 +287,7 @@ def segment_rule(test_app: TestClient, segment):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def segment_design(test_app: TestClient, segment):
     try:
         segment_design = test_app.post(
@@ -305,7 +304,7 @@ def segment_design(test_app: TestClient, segment):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def award(test_app: TestClient):
     try:
         award = test_app.post("/v1/awards", json=util.new_award).json()
@@ -317,7 +316,7 @@ def award(test_app: TestClient):
             test_app.delete(f"/v1/awards/{award['uuid']}")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def client_award(test_app: TestClient, client):
     try:
         client_award = test_app.post(
@@ -334,7 +333,7 @@ def client_award(test_app: TestClient, client):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def program_award(test_app: TestClient, program, client_award):
     try:
         program_award = test_app.post(
@@ -351,7 +350,7 @@ def program_award(test_app: TestClient, program, client_award):
             )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def segment_award(test_app: TestClient, segment, program_award):
     try:
         util.new_segment_award["client_award_9char"] = program_award["client_award_9char"]

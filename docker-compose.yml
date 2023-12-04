@@ -47,7 +47,7 @@ services:
       ENV: local
       JOB_QUEUE_HOST: 'bean_queue'
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: 'milestone_tube'
+      JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False'
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones

@@ -38,7 +38,7 @@ services:
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: "milestone_tube"
+      JOB_QUEUE_TUBE: "milestones_tube"
       JWT_ENFORCED: 'True' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
@@ -86,7 +86,7 @@ services:
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: "milestone_tube"
+      JOB_QUEUE_TUBE: "milestones_tube"
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
