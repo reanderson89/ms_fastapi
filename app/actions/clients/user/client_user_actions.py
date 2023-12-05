@@ -153,7 +153,7 @@ class ClientUserActions:
         pass
 
     @staticmethod
-    async def get_all_users(client_uuid: str, query_params: dict):
+    async def get_all_client_users(client_uuid: str, query_params: dict):
         return await BaseCRUD.get_all_where(
             ClientUserModelDB,
             [
@@ -163,12 +163,12 @@ class ClientUserActions:
         )
 
     @staticmethod
-    async def get_user(path_params):
+    async def get_client_user(path_params):
         return await BaseCRUD.get_one_where(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
-                ClientUserModelDB.user_uuid == path_params["user_uuid"]
+                ClientUserModelDB.uuid == path_params["client_user_uuid"]
             ]
         )
 
@@ -184,18 +184,18 @@ class ClientUserActions:
         )
 
     @staticmethod
-    async def update_user(path_params: dict, user_updates):
+    async def update_client_user(path_params: dict, user_updates):
         return await BaseCRUD.update(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
-                ClientUserModelDB.uuid == path_params["user_uuid"]
+                ClientUserModelDB.uuid == path_params["client_user_uuid"]
             ],
             user_updates
         )
 
     @staticmethod
-    async def update_users(path_params, user_updates):
+    async def update_client_users(path_params, user_updates):
         uuid_list = []
         for user in user_updates:
             if user.uuid:
@@ -214,11 +214,11 @@ class ClientUserActions:
     @staticmethod
     async def update_admin_client_user(path_params: dict, user_updates):
         if path_params.get("client_uuid") is None:
-            conditions = [ClientUserModelDB.user_uuid == path_params["user_uuid"]]
+            conditions = [ClientUserModelDB.uuid == path_params["client_user_uuid"]]
         else:
             conditions = [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
-                ClientUserModelDB.user_uuid == path_params["user_uuid"]
+                ClientUserModelDB.uuid == path_params["client_user_uuid"]
             ]
 
         return await BaseCRUD.update(
@@ -227,6 +227,7 @@ class ClientUserActions:
             user_updates
         )
     
+    # These are refering to the actual user_uuid and not the client_user_uui
     @staticmethod
     async def migrate_user(current_user_uuid, old_user_uuid):
         for user_uuid in [current_user_uuid, old_user_uuid]:
@@ -239,11 +240,11 @@ class ClientUserActions:
         return True
 
     @staticmethod
-    async def delete_user(path_params):
+    async def delete_client_user(path_params):
         return await BaseCRUD.delete_one(
             ClientUserModelDB,
             [
                 ClientUserModelDB.client_uuid == path_params["client_uuid"],
-                ClientUserModelDB.uuid == path_params["user_uuid"]
+                ClientUserModelDB.uuid == path_params["client_user_uuid"]
             ]
         )

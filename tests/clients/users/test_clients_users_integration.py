@@ -57,7 +57,7 @@ def test_integration_get_client_users(test_app, client_user):
 
 
 def test_integration_get_client_user(test_app, client_user):
-    response = test_app.get(f"/v1/clients/{client_user['client_uuid']}/users/{client_user['user_uuid']}")
+    response = test_app.get(f"/v1/clients/{client_user['client_uuid']}/users/{client_user['uuid']}")
     assert response.status_code == 200
     response = response.json()
     assert "uuid" in response

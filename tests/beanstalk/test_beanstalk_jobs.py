@@ -40,5 +40,5 @@ async def test_migrate_user_job(test_app, client_user, program):
             for client_user in updated_client_users:
                 assert client_user.user_uuid == new_client_user.user_uuid
     finally:
-        await ClientUserActions.delete_user({"client_uuid":new_client_user.client_uuid, "user_uuid":new_client_user.user_uuid})
+        await ClientUserActions.delete_client_user({"client_uuid":new_client_user.client_uuid, "client_user_uuid":new_client_user.uuid})
         
