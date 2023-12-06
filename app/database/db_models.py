@@ -2,7 +2,8 @@
 # from burp.models.base_models import Base
 # from app.configs.database_configs import db_config
 
-
+from burp.models.reward import RewardModelDB # noqa: F401
+from burp.models.award import AwardModelDB # noqa: F401
 from burp.models.client import ClientModelDB # noqa: F401
 from burp.models.client_user import ClientUserModelDB # noqa: F401
 from burp.models.client_award import ClientAwardModelDB # noqa: F401
