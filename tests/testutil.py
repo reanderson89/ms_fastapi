@@ -428,3 +428,103 @@ new_client_message = {
     "message_type": 2,
     "status": 1
 }
+
+new_reward = {
+    "company_id": 1,
+    "client_admin_id": 2,
+    "rule": {
+        "program_cadence": "yearly",
+        "user_birthdate": 1234,
+        "anniversary": 2,
+        "employment_date": 2,
+        "manager_ID": 3,
+        "department": "pytest",
+        "city" : "city",
+        "state" : "state",
+        "country" : "country",
+        "region": "region"
+    },
+    "users": [
+        {
+        "user_birthdate": 1234,
+        "anniversary": 2,
+        "employment_date": 2,
+        "manager_ID": 3,
+        "department": "pytest",
+        "city" : "city",
+        "state" : "state",
+        "country" : "country",
+        "region": "region",
+        "account_ID": 4
+        },
+        {
+        "user_birthdate": 1234,
+        "anniversary": 2,
+        "employment_date": 2,
+        "manager_ID": 3,
+        "department": "pytest",
+        "city" : "city",
+        "state" : "state",
+        "country" : "country",
+        "region": "region",
+        "account_ID": 5
+        }
+    ],
+    "reward_info": {
+        "award_type" : "award_type",
+        "sending_managers_account_id": 6,
+        "sending_managers_program_id": 7,
+        "bucket_customization": 1234,
+        "subject": "subject"
+    }
+}
+
+update_reward = {
+    "company_id": 1,
+    "client_admin_id": 2,
+    "rule": {
+        "program_cadence": "UPDATED",
+        "user_birthdate": 1,
+        "anniversary": 1,
+        "employment_date": 1,
+        "manager_ID": 3,
+        "department": "UPDATED",
+        "city" : "UPDATED",
+        "state" : "UPDATED",
+        "country" : "UPDATED",
+        "region": "UPDATED"
+    },
+    "users": [
+        {
+        "user_birthdate": 1234,
+        "anniversary": 1,
+        "employment_date": 1,
+        "manager_ID": 3,
+        "department": "UPDATED",
+        "city" : "UPDATED",
+        "state" : "UPDATED",
+        "country" : "UPDATED",
+        "region": "UPDATED",
+        "account_ID": 4
+        },
+        {
+        "user_birthdate": 1234,
+        "anniversary": 1,
+        "employment_date": 1,
+        "manager_ID": 3,
+        "department": "UPDATED",
+        "city" : "UPDATED",
+        "state" : "UPDATED",
+        "country" : "UPDATED",
+        "region": "UPDATED",
+        "account_ID": 5
+        }
+    ],
+    "reward_info": {
+        "award_type" : "UPDATED",
+        "sending_managers_account_id": 6,
+        "sending_managers_program_id": 7,
+        "bucket_customization": 1,
+        "subject": "UPDATED"
+    }
+}

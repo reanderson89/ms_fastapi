@@ -541,3 +541,15 @@ def program_with_updated_budget(test_app: TestClient, client_user, static_budget
         if program_with_updated_budget is not None:
             deleted_program = test_app.delete(f"/v1/clients/{program_with_updated_budget['client_uuid']}/programs/{program_with_updated_budget['program_9char']}")
             is_deleted(deleted_program)
+
+
+@pytest.fixture(scope="function")
+def reward(test_app: TestClient):
+    try:
+        reward = test_app.post("/v1/rewards", json=util.new_reward).json()
+        yield reward
+    except Exception as e:
+        raise Exception(f"reward creation failed, Exception: {e}")
+    finally:
+        if reward is not None:
+            test_app.delete(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}")
