@@ -1,5 +1,6 @@
 import json
 import os
+import signal
 import statistics
 import sys
 import time
@@ -8,7 +9,8 @@ import greenstalk
 import numpy as np
 from faker import Faker
 
-from app.configs.logging_format import init_logger
+from app.worker.logging_format import init_logger
+
 logger = init_logger()
 
 
@@ -37,6 +39,7 @@ def handle_reconnect(func):
 class JobProducer:
     def __init__(self):
         self.conn = self.connect_to_greenstalk()
+        self.stopped = False
 
     def connect_to_greenstalk(self):
         return greenstalk.Client((QUEUE_HOST, QUEUE_PORT), use=QUEUE_TUBE)
@@ -120,7 +123,7 @@ class JobProducer:
                 }
             }
         }
-    
+
     def user_account_job(self):
         return {
             "eventType": "CREATE_USER_ACCOUNT",
@@ -135,7 +138,7 @@ class JobProducer:
                 "company_id": 10
             }
         }
-    
+
     def migrate_user_job(self, auth_code):
         return {
             "eventType": "MIGRATE_USER",
@@ -175,6 +178,15 @@ class JobProducer:
                 print(f"Jobs produced: {i*20}")
         print("-" * 20)
 
+    def stop_loop_jobs(self, signal, frame):
+        print("Stopping Looped Job Producer...")
+        self.stopped = True
+
+    def stop_it(self, signal, frame):
+        print("\nStopping it...")
+        self.stopped = True
+        raise KeyboardInterrupt
+
     @handle_reconnect
     def loop_jobs(self):
         logger.gsd_producer("Starting Looped Job Producer...")
@@ -183,51 +195,50 @@ class JobProducer:
         batch_averages = []
         beginning_start_time = time.time()
         start_time = time.time()
+        self.stopped = False
 
-        try:
-            while True:
-                job_total = int(self.conn.stats_tube("yass_tube")["current-jobs-ready"])
+        while not self.stopped:
+            job_total = int(self.conn.stats_tube("yass_tube")["current-jobs-ready"])
 
-                if job_total != last_job_count or job_total == 0:
-                    if job_total <= 20:
-                        end_time = time.time()
-                        times.append(end_time - start_time)
-                        avg_time = sum(times) / len(times)
-                        batch_averages.append(avg_time)
-                        logger.gsd_producer(f"Average time for this batch of jobs: {avg_time:.5f} sec")
-                        start_time = time.time()  # reset start_time
-                        times = []  # reset times
-                        self.produce_jobs()
-                    else:
-                        pass
-
-                    last_job_count = job_total
-        except KeyboardInterrupt:
-            if batch_averages:
-                batch_averages.remove(min(batch_averages))
-            if batch_averages:
-                total_avg = sum(batch_averages) / len(batch_averages)
-                rolling_avg = sum(batch_averages[-5:]) / min(5, len(batch_averages))
-                total_time = time.time() - beginning_start_time
-                min_time = min(batch_averages)
-                max_time = max(batch_averages)
-                if len(batch_averages) >= 2:
-                    std_dev = statistics.stdev(batch_averages)
+            if job_total != last_job_count or job_total == 0:
+                if job_total <= 20:
+                    end_time = time.time()
+                    times.append(end_time - start_time)
+                    avg_time = sum(times) / len(times)
+                    batch_averages.append(avg_time)
+                    logger.gsd_producer(f"Average time for this batch of jobs: {avg_time:.5f} sec")
+                    start_time = time.time()  # reset start_time
+                    times = []  # reset times
+                    self.produce_jobs()
                 else:
-                    std_dev = 0
-                percentile_95 = np.percentile(batch_averages, 95)
-                print("\nResults:")
-                print(f"Total average time: {total_avg:.5f} sec")
-                print(f"Rolling average time for the last 5 batches: {rolling_avg:.5f} sec")
-                print(f"Min time: {min_time:.5f} sec")
-                print(f"Max time: {max_time:.5f} sec")
-                print(f"Standard deviation: {std_dev:.5f} sec")
-                print(f"95th percentile time: {percentile_95:.5f} sec")
-                print(f"Total batches: {len(batch_averages)}")
-                print(f"Total jobs created: {len(batch_averages) * 20}")
-                print(f"Total elapsed time: {total_time:.5f} sec")
+                    pass
 
-                print("-" * 20)
+                last_job_count = job_total
+
+        if batch_averages:
+            batch_averages.remove(min(batch_averages))
+        if batch_averages:
+            total_avg = sum(batch_averages) / len(batch_averages)
+            rolling_avg = sum(batch_averages[-5:]) / min(5, len(batch_averages))
+            total_time = time.time() - beginning_start_time
+            min_time = min(batch_averages)
+            max_time = max(batch_averages)
+            if len(batch_averages) >= 2:
+                std_dev = statistics.stdev(batch_averages)
+            else:
+                std_dev = 0
+            percentile_95 = np.percentile(batch_averages, 95)
+            print("\nResults:")
+            print(f"Total average time: {total_avg:.5f} sec")
+            print(f"Rolling average time for the last 5 batches: {rolling_avg:.5f} sec")
+            print(f"Min time: {min_time:.5f} sec")
+            print(f"Max time: {max_time:.5f} sec")
+            print(f"Standard deviation: {std_dev:.5f} sec")
+            print(f"95th percentile time: {percentile_95:.5f} sec")
+            print(f"Total batches: {len(batch_averages)}")
+            print(f"Total jobs created: {len(batch_averages) * 20}")
+            print(f"Total elapsed time: {total_time:.5f} sec")
+            print("-" * 20)
 
     @handle_reconnect
     def add_job_interactively(self, job_type=None):
@@ -285,7 +296,11 @@ class JobProducer:
                         dlq_status = self.conn.stats_tube("milestone_dlq")["current-jobs-ready"]
                         print(f"{QUEUE_TUBE} Jobs: {status}\nmilestone_dlq Jobs: {dlq_status}\n")
                     case"6":
+                        # Set signal handlers
+                        signal.signal(signal.SIGINT, self.stop_loop_jobs)
                         self.loop_jobs()
+                        # Reset signal handlers to default
+                        signal.signal(signal.SIGINT, self.stop_it)
                     case "7":
                         self.not_looped(50)
                     case "8":
@@ -302,7 +317,7 @@ class JobProducer:
                         print("Invalid selection.")
                 job_type = None
         except KeyboardInterrupt:
-            print("\nInterrupted by user. Exiting...")
+            print("Interrupted by user. Exiting...")
             sys.exit(0)
 
 

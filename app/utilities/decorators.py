@@ -1,4 +1,7 @@
 from app.exceptions import ExceptionHandling
+from app.worker.logging_format import init_logger
+
+logger = init_logger()
 
 
 def handle_reconnect(func):
@@ -10,7 +13,7 @@ def handle_reconnect(func):
             except Exception as e:
                 print(f"Error in {func.__name__}: {e}")
                 self.reconnect()
-        print(f"Failed to execute {func.__name__} after {retries} retries.")
+        logger.milestone(f"Failed to execute {func.__name__} after {retries} retries.")
     return wrapper
 
 

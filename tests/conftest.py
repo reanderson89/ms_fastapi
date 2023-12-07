@@ -1,8 +1,8 @@
 import os
 import traceback
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-import pytest_asyncio
 from fastapi.testclient import TestClient
 
 import tests.testutil as util
@@ -127,7 +127,6 @@ def client_user(test_app: TestClient, client):
         instance = MockTempWorker.return_value
         instance.get_user_job.side_effect = AsyncMock(side_effect=dynamic_response)
         instance.create_user_job = AsyncMock(return_value=util.hardcoded_user_from_yass)
-
 
         client_user = None
         try:
@@ -500,7 +499,7 @@ def client_message(test_app: TestClient):
 @pytest.fixture(scope="function")
 def program_message(test_app: TestClient, program):
     try:
-        program_message = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/messages",  json=util.new_program_message).json()
+        program_message = test_app.post(f"/v1/clients/{program['client_uuid']}/programs/{program['program_9char']}/messages", json=util.new_program_message).json()
         yield program_message
     except Exception as e:
         raise Exception(f"program_message Creation Failed, Exception: {e}")

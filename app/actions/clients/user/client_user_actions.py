@@ -9,7 +9,6 @@ from burp.utils.utils import SHA224Hash, convert_date_to_int
 from burp.models.program import ProgramModelDB
 
 
-
 class ClientUserActions:
 
     @staticmethod
@@ -69,10 +68,16 @@ class ClientUserActions:
         return client_user
 
     @classmethod
-    async def handle_user_and_service(cls, data: CreateClientUser, path_params, expand, service_id=None):
+    async def handle_user_and_service(
+        cls,
+        data: CreateClientUser,
+        path_params: dict,
+        expand,
+        service_id=None
+    ):
         worker = TempWorker()
         user = None
-        user_uuid = getattr(data, "user_uuid", None)
+        user_uuid = path_params.get("user_uuid") or data.user_uuid
         service = getattr(data, service_id, None)
 
         # raise error if both user_uuid and service are None
@@ -81,17 +86,13 @@ class ClientUserActions:
                 "Not enough information to create a new Client User. Please include either an email address or user_uuid."
             )
 
-        try:
-            if user_uuid:
-                # check if user exists
-                user_response = await worker.get_user_job(user_uuid)
-                user = UserModel(**user_response) if user_response else None
-            elif service:
-                request_obj = {"service_user_id": service}
-                user_response = await worker.alt_get_user_job(**request_obj)
-                user = UserModel(**user_response) if user_response else None
-        except Exception as e:
-            return await ExceptionHandling.custom404(f"User not found with error: {e}")
+        if user_uuid:
+            user_response = await worker.get_user_job(user_uuid)
+            user = UserModel(**user_response) if user_response else None
+        elif service:
+            request_obj = {"service_user_id": service}
+            user_response = await worker.alt_get_user_job(**request_obj)
+            user = UserModel(**user_response) if user_response else None
 
         if user:
             uuid = user.uuid
@@ -107,12 +108,11 @@ class ClientUserActions:
                 data.admin = 0
             if data.admin not in [0, 1, 2]:
                 await ExceptionHandling.custom409("Invalid value for admin field, must be 0 or 1.")
-            
+
             data.client_uuid = data.client_uuid or path_params.get("client_uuid")
             data.user_uuid = data.user_uuid or path_params.get("user_uuid")
             user_response = await worker.create_user_job(data.dict())
             user = UserModel(**user_response) if user_response else None
-            # UserActions.create_user_and_service(data, service_id)
             return user
         else:
             return await ExceptionHandling.custom409(
@@ -226,12 +226,12 @@ class ClientUserActions:
             conditions,
             user_updates
         )
-    
+
     # These are refering to the actual user_uuid and not the client_user_uui
     @staticmethod
     async def migrate_user(current_user_uuid, old_user_uuid):
         for user_uuid in [current_user_uuid, old_user_uuid]:
-            if not await BaseCRUD.check_if_one_exists( ClientUserModelDB, [ClientUserModelDB.user_uuid == user_uuid]):
+            if not await BaseCRUD.check_if_one_exists(ClientUserModelDB, [ClientUserModelDB.user_uuid == user_uuid]):
                 return f"client_user not found with user_uuid: {user_uuid}"
         models_to_update = [ClientUserModelDB, ProgramModelDB]
         conditions = [[ClientUserModelDB.user_uuid == old_user_uuid],[ProgramModelDB.user_uuid == old_user_uuid]]

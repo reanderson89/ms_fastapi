@@ -73,7 +73,7 @@ class ClientUserUpdate(BasePydantic):
     @validator("admin", pre=False)
     def validate_award_type(cls, v, field):
         return field.type_[v].value
-    
+
 class ClientUserMigrate(BasePydantic):
     user_uuid: str
 
