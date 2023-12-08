@@ -181,7 +181,7 @@ jobs:
       - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }} 🔒
         if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: ./.github/actions/setup-open-vpn
-        timeout-minutes: 1
+        timeout-minutes: 2
         with:
           vpn_ca_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CA_CRT_B64 || secrets.DEV_VPN_CA_CRT_B64 }}
           vpn_cert_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_CRT_B64 || secrets.DEV_VPN_CERT_CRT_B64 }}
