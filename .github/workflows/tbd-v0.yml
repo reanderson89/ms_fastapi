@@ -68,7 +68,7 @@ jobs:
       tag: ${{ steps.get-next-version.outputs.tag }}
 
   test:
-    name: Run Pytest Tests
+    name: Tests
     needs:
       - tag
     runs-on: ubuntu-latest
@@ -142,7 +142,6 @@ jobs:
         if: ${{ env.DEBUG == 'true' }}
         run: |
           echo "Test job status is ${{ job.status }}"
-          echo "Pytest step status is ${{ steps.pytest.exit_code }}" # this is a guess
 
       - name: Update Github with job status
         if: always()
