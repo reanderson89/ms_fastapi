@@ -88,29 +88,40 @@ jobs:
       SPARKPOST_KEY: "foobar"
       TWILIO_FROM: "+16193299600"
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
+          # which allows this service to checkout the submodule
+          token: ${{ secrets.BURP_PAT }}
 
-      - name: Start Docker containers
+      - name: Start Docker Containers
         # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
         # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
         # above
         run: |
           # auth_network is used to make it easier to developer locally with YASS
           docker network create -d bridge auth_network
-          docker-compose up --build --detach
 
-      - name: Pause to let app to fully start
+          # this is a little non-sequitor, start beanstalk in its own separate Docker container
+          if ! docker-compose --file docker-compose-queue.yml ps | grep -q Up; then
+            docker-compose -f docker-compose-queue.yml up -detatch
+          fi
+
+          docker-compose up --build --detatch
+
+      - name: Pause to Let App Fully Start
         # this may be problematic in the future
         run: |
           sleep 30
 
-      - name: Run Pytest tests
+      - name: Run Pytest Tests
         id: pytest
         run: |
           docker exec --tty milestones_api pytest -v /app/tests/
 
-      - name: Stop Docker containers
+      - name: Stop Docker Containers
         if: always()
         run: |
           docker-compose down
@@ -131,7 +142,7 @@ jobs:
   build:
     name: Build
     needs:
-      - test
+      - tag
     runs-on: ubuntu-latest
     steps:
       - name: Echo Environment and Tag (Debugging)
@@ -144,8 +155,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
-          # which allows this service to checkout the submodule
           token: ${{ secrets.BURP_PAT }}
 
       - name: Setup Docker buildx
@@ -189,6 +198,7 @@ jobs:
       always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     needs:
       - tag
+      - test
       - build
     steps:
       - name: Use Environment and Tag from the tag job
