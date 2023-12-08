@@ -12,6 +12,9 @@ To include env file (get a copy of the .env file from another developer via 1pas
 uvicorn app.main:app --env-file .env
 ```
 
+# Reference Documentation
+- Milestones uses `burp` as a submodule. [Here is documentation for common workflows](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2781315095/BURP+as+a+Git+Submodule).
+
 # Docker
 
 ## TL;DR
