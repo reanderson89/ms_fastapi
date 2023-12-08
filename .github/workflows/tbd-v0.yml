@@ -106,10 +106,11 @@ jobs:
 
           # this is a little non-sequitor, start beanstalk in its own separate Docker container
           if ! docker-compose --file docker-compose-queue.yml ps | grep -q Up; then
-            docker-compose -f docker-compose-queue.yml up --detach
+            docker compose --file docker-compose-queue.yml build
+            docker compose --file docker-compose-queue.yml up --detach
           fi
 
-          docker compose --build
+          docker compose build
           docker compose up --detach
 
       - name: Pause to Let App Fully Start
