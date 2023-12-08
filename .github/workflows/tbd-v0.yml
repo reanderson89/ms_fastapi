@@ -143,7 +143,7 @@ jobs:
   build:
     name: Build
     needs:
-      - tag
+      - test
     runs-on: ubuntu-latest
     steps:
       - name: Echo Environment and Tag (Debugging)
@@ -199,7 +199,6 @@ jobs:
       always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
     needs:
       - tag
-      - test
       - build
     steps:
       - name: Use Environment and Tag from the tag job
