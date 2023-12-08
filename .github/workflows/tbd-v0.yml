@@ -96,6 +96,16 @@ jobs:
           # which allows this service to checkout the submodule
           token: ${{ secrets.BURP_PAT }}
 
+      - name: Cache Milestones Docker Container
+        uses: ScribeMD/docker-cache@0.3.6
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
+
+      - name: Cache Beanstalk Docker Container
+        uses: ScribeMD/docker-cache@0.3.6
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
+
       - name: Start Docker Containers
         # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
         # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
@@ -144,6 +154,7 @@ jobs:
   build:
     name: Build
     needs:
+      - tag
       - test
     runs-on: ubuntu-latest
     steps:
