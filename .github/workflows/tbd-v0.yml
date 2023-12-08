@@ -97,14 +97,30 @@ jobs:
           token: ${{ secrets.BURP_PAT }}
 
       - name: Cache Milestones Docker Container
+        id: milestones-cache
         uses: ScribeMD/docker-cache@0.3.6
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
 
       - name: Cache Beanstalk Docker Container
+        id: beanstalk-cache
         uses: ScribeMD/docker-cache@0.3.6
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
+
+      - name: Echo Cache Hit Status (Debugging)
+        if: ${{ env.DEBUG == 'true' }}
+        run: |
+          echo "milestones-cache: ${{ steps.milestones-cache.outputs.cache-hit }}"
+          echo "beanstalk-cache: ${{ steps.beanstalk-cache.outputs.cache-hit }}"
+
+      - name: Build Beanstalk Docker Container
+        if: "${{ steps.beanstalk-cache.outputs.cache-hit != 'true' }}"
+        docker compose --file docker-compose-queue.yml build
+
+      - name: Build Milestones Docker Container
+        if: "${{ steps.milestones-cache.outputs.cache-hit != 'true' }}"
+        docker compose build
 
       - name: Start Docker Containers
         # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
@@ -113,14 +129,7 @@ jobs:
         run: |
           # auth_network is used to make it easier for developers to work locally with YASS
           docker network create -d bridge auth_network
-
-          # this is a little non-sequitor, start beanstalk in its own separate Docker container
-          if ! docker-compose --file docker-compose-queue.yml ps | grep -q Up; then
-            docker compose --file docker-compose-queue.yml build
-            docker compose --file docker-compose-queue.yml up --detach
-          fi
-
-          docker compose build
+          docker compose --file docker-compose-queue.yml up --detach
           docker compose up --detach
 
       - name: Pause to Let App Fully Start
