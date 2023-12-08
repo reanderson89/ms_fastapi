@@ -1,3 +1,5 @@
+---
+
 name: Tag, Build & Deploy v0
 
 on:
@@ -116,11 +118,13 @@ jobs:
 
       - name: Build Beanstalk Docker Container
         if: "${{ steps.beanstalk-cache.outputs.cache-hit != 'true' }}"
-        docker compose --file docker-compose-queue.yml build
+        run: |
+          docker compose --file docker-compose-queue.yml build
 
       - name: Build Milestones Docker Container
         if: "${{ steps.milestones-cache.outputs.cache-hit != 'true' }}"
-        docker compose build
+        run: |
+          docker compose build
 
       - name: Start Docker Containers
         # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
