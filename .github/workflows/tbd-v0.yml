@@ -155,6 +155,10 @@ jobs:
         if: always()
         run: |
           docker-compose down
+          # this is weird, there are <none>:<none> tagged images which
+          # trip up the cache action
+          # batch cleanup type command below to delete all <none> tag images
+          docker rmi $(docker images -f "dangling=true" -q)
 
       - name: Echo Test Job Status (Debugging)
         if: ${{ env.DEBUG == 'true' }}
