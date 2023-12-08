@@ -73,13 +73,15 @@ jobs:
       - tag
     runs-on: ubuntu-latest
     env:
-      DD_API_KEY: "foobar"
-      DD_APP_KEY: "foobar"
       ACCOUNT_SID: "foobar"
       ACCOUNT_TOKEN: "foobar"
       ALGORITHM: "HS256"
       AWS_ACCESS_KEY_ID: "foobar"
+      AWS_BUCKET_NAME: "foobar"
+      AWS_ROLE_ARN: "arn:foobar"
       AWS_SECRET_ACCESS_KEY: "foobar"
+      DD_API_KEY: "foobar"
+      DD_APP_KEY: "foobar"
       ENV: "local"
       FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
       SECRET_KEY: "foobar"
@@ -94,6 +96,8 @@ jobs:
         # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
         # above
         run: |
+          # auth_network is used to make it easier to developer locally with YASS
+          docker network create -d bridge auth_network
           docker-compose up --build --detach
 
       - name: Pause to let app to fully start
