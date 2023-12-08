@@ -98,16 +98,21 @@ jobs:
           # which allows this service to checkout the submodule
           token: ${{ secrets.BURP_PAT }}
 
+      # Note: It is unclear how effective this caching strategy is
+      #  - https://github.com/ScribeMD/docker-cache
       - name: Cache Milestones Docker Container
         id: milestones-cache
         uses: ScribeMD/docker-cache@0.3.6
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
+          # This does not seem like it would work as expected
+          # key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('src/**') }}
 
       - name: Cache Beanstalk Docker Container
         id: beanstalk-cache
         uses: ScribeMD/docker-cache@0.3.6
         with:
+          # This is probably correct, since it's a 3rd party image
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
 
       - name: Echo Cache Hit Status (Debugging)
