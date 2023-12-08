@@ -26,7 +26,7 @@ on:
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
   MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
-  DEBUG: "false" # set to true for a little more output
+  DEBUG: "true" # set to true for a little more output
 
 jobs:
   tag:
@@ -67,10 +67,67 @@ jobs:
       environment: ${{ steps.get-next-version.outputs.environment }}
       tag: ${{ steps.get-next-version.outputs.tag }}
 
+  test:
+    name: Run Pytest Tests
+    needs:
+      - tag
+    runs-on: ubuntu-latest
+    env:
+      DD_API_KEY: "foobar"
+      DD_APP_KEY: "foobar"
+      ACCOUNT_SID: "foobar"
+      ACCOUNT_TOKEN: "foobar"
+      ALGORITHM: "HS256"
+      AWS_ACCESS_KEY_ID: "foobar"
+      AWS_SECRET_ACCESS_KEY: "foobar"
+      ENV: "local"
+      FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
+      SECRET_KEY: "foobar"
+      SPARKPOST_KEY: "foobar"
+      TWILIO_FROM: "+16193299600"
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Start Docker containers
+        # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
+        # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
+        # above
+        run: |
+          docker-compose up --build --detach
+
+      - name: Pause to let app to fully start
+        # this may be problematic in the future
+        run: |
+          sleep 30
+
+      - name: Run Pytest tests
+        id: pytest
+        run: |
+          docker exec --tty milestones_api pytest -v /app/tests/
+
+      - name: Stop Docker containers
+        if: always()
+        run: |
+          docker-compose down
+
+      - name: Echo Test Job Status (Debugging)
+        if: ${{ env.DEBUG == 'true' }}
+        run: |
+          echo "Test job status is ${{ job.status }}"
+          echo "Pytest step status is ${{ steps.pytest.exit_code }}" # this is a guess
+
+      - name: Update Github with job status
+        if: always()
+        uses: ouzi-dev/commit-status-updater@v2
+        with:
+          name: "Pytest test results"
+          status: ${{ job.status }}
+
   build:
     name: Build
     needs:
-      - tag
+      - test
     runs-on: ubuntu-latest
     steps:
       - name: Echo Environment and Tag (Debugging)
