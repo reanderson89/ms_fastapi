@@ -158,12 +158,11 @@ jobs:
           # this is weird, there are multiple <none>:<none> tagged images which
           # trips up the cache action... I think?
           # try to batch cleanup all <none> tagged images
-
-          docker images -f "dangling=true" -q > danglers
-          echo "Danglers:"
-          cat danglers
-          # only do this if there are containers to delete
-          [ -s danglers ] && docker rmi $(docker images -f "dangling=true" -q) --force
+          # docker images -f "dangling=true" -q > danglers
+          # echo "Danglers:"
+          # cat danglers
+          # # only do this if there are containers to delete
+          # [ -s danglers ] && docker rmi $(docker images -f "dangling=true" -q) --force
 
       - name: Echo Test Job Status (Debugging)
         if: ${{ env.DEBUG == 'true' }}
