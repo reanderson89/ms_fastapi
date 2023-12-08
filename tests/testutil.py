@@ -80,7 +80,7 @@ list_of_clients = [
 
 new_client_user_with_user_uuid = {
     "uuid": test_uuids.client_user_uuid,
-    "user_uuid": '06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf',
+    "user_uuid": '611ba464851f724ea9000817d6cebb943860bda26234419bcd7357d2',
     "client_uuid": test_uuids.first_client_uuid,
     "email_address": "clark.ritchie@blueboard.com",
     "first_name": "Clark",
@@ -137,7 +137,7 @@ user_with_service_from_yass = {
 }
 
 hardcoded_user_from_yass = {
-    'uuid': '06ad1e1f05a61ab1ac423d5a6fb969193305145100c888a069eaacbf',
+    'uuid': '611ba464851f724ea9000817d6cebb943860bda26234419bcd7357d2',
     'first_name': 'Clark',
     'last_name': 'Ritchie',
     'latitude': None,
