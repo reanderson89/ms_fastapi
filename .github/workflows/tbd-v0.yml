@@ -101,15 +101,16 @@ jobs:
         # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
         # above
         run: |
-          # auth_network is used to make it easier to developer locally with YASS
+          # auth_network is used to make it easier for developers to work locally with YASS
           docker network create -d bridge auth_network
 
           # this is a little non-sequitor, start beanstalk in its own separate Docker container
           if ! docker-compose --file docker-compose-queue.yml ps | grep -q Up; then
-            docker-compose -f docker-compose-queue.yml up -detatch
+            docker-compose -f docker-compose-queue.yml up --detach
           fi
 
-          docker-compose up --build --detatch
+          docker compose --build
+          docker compose up --detach
 
       - name: Pause to Let App Fully Start
         # this may be problematic in the future
