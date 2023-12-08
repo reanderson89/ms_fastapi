@@ -8,6 +8,9 @@ from burp.models.client_user import ClientUserModelDB
 from burp.models.user import UserModelDB
 from app.exceptions import ExceptionHandling
 
+import os
+import requests
+
 
 rule = {
   "conditions": [
@@ -84,3 +87,15 @@ class CronActions:
         year_string = today.strftime("%Y")
         df = df[df["check_year"] == int(year_string)]
         return df
+
+    @classmethod
+    async def create_rewards(cls):
+        # TODO: logic to check if rules match users
+
+        # if it matches:
+        reward_create = {}
+
+        rails_api = os.environ["RAILS_API"]
+        url = f'{rails_api}/rewards/<name_pending>'
+        r = requests.post(url=url, json=reward_create)
+        return r.json()
