@@ -61,7 +61,7 @@ jobs:
         id: get-next-version
         uses: ./.github/actions/get-versions
         with:
-          message: ${{ github.event.head_commit.message }}
+          message: $( echo ${{ github.event.head_commit.message }} | tr -d '()\n#' )
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           branch: ${{ github.ref_name }}
 
