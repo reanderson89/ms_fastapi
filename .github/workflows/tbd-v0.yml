@@ -301,6 +301,7 @@ jobs:
           ssh_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_SSH_KEY_B64 || secrets.DEV_SSH_KEY_B64 }}
           config: ${{ env.ENVIRONMENT == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
           ping_host: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
+          default_openvpn: true
 
       - name: Export all GitHub Secrets as Environment Variables
         if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
@@ -345,7 +346,7 @@ jobs:
       - name: Copy Docker Swarm Configuration & Recycle Containers ♻️
         if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
         uses: ./.github/actions/update-docker-swarm
-        timeout-minutes: 1
+        timeout-minutes: 2
         with:
           hosts: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_HOSTS || env.ENVIRONMENT == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
           leader: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
