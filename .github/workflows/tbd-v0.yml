@@ -50,6 +50,13 @@ jobs:
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           path: .github/actions
 
+      - name: Dump GitHub context (Debugging)
+        if: ${{ env.DEBUG == 'true' }}
+        run: |
+          echo '${{ toJSON(github) }}'
+          echo "get-next-version.outputs:"
+          echo '${{ toJSON(steps.get-next-version.outputs) }}'
+
       - name: Get Next Version
         id: get-next-version
         uses: ./.github/actions/get-versions
