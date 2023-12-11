@@ -33,19 +33,21 @@ class RewardInfo(BasePydantic):
     bucket_customization: Optional[int]
     subject: Optional[str]
 
+# ver. 1a reward create
 class RewardCreate(BasePydantic):
-    company_id: int
-    client_admin_id: int
-    rule: Rule
-    users: List[User]
-    reward_info: RewardInfo 
+    sending_managers_account_id: int
+    sending_managers_program_id: int
+    bucket_customization: int
+    subject: str
 
+# ver. 1b reward create
 # class RewardCreate(BasePydantic):
-#     account_id: int
-#     sender_id: int
-#     program_id: int
-#     bucket_customization_id: int
-#     subject: str
+#     company_id: int
+#     client_admin_id: int
+#     rule: Rule
+#     users: List[User]
+#     reward_info: RewardInfo 
+
 
 class RewardResponse(RewardModel):
     pass
