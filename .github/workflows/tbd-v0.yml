@@ -54,28 +54,23 @@ jobs:
         if: ${{ env.DEBUG == 'true' }}
         run: |
           echo '${{ toJSON(github) }}'
-          echo "get-next-version.outputs:"
-          echo '${{ toJSON(steps.get-next-version.outputs) }}'
 
-      - name: Check for Patch
+      - name: Check for Patch Keyword
         id: patch
         if: contains(github.event.head_commit.message, 'patch')
         run: |
-          echo "Patch version"
           echo "level=patch" >> $GITHUB_OUTPUT
 
-      - name: Check for Minor
+      - name: Check for Minor Keyword
         id: minor
         if: contains(github.event.head_commit.message, 'minor')
         run: |
-          echo "Minor version"
           echo "level=minor" >> $GITHUB_OUTPUT
 
-      - name: Check for Major
+      - name: Check for Major Keyword
         id: major
         if: contains(github.event.head_commit.message, 'major')
         run: |
-          echo "Major version"
           echo "level=major" >> $GITHUB_OUTPUT
 
       - name: Get Next Version
@@ -86,11 +81,9 @@ jobs:
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           branch: ${{ github.ref_name }}
 
-      - name: Dump GitHub context (Debugging)
+      - name: Dump get-next-version.outputs (Debugging)
         if: ${{ env.DEBUG == 'true' }}
         run: |
-          echo '${{ toJSON(github) }}'
-          echo "get-next-version.outputs:"
           echo '${{ toJSON(steps.get-next-version.outputs) }}'
 
     outputs:
@@ -183,14 +176,6 @@ jobs:
         if: always()
         run: |
           docker-compose down --remove-orphans
-          # this is weird, there are multiple <none>:<none> tagged images which
-          # trips up the cache action... I think?
-          # try to batch cleanup all <none> tagged images
-          # docker images -f "dangling=true" -q > danglers
-          # echo "Danglers:"
-          # cat danglers
-          # # only do this if there are containers to delete
-          # [ -s danglers ] && docker rmi $(docker images -f "dangling=true" -q) --force
 
       - name: Echo Test Job Status (Debugging)
         if: ${{ env.DEBUG == 'true' }}
@@ -244,8 +229,6 @@ jobs:
           context: .
           file: Docker/Dockerfile.milestones_api_swarm
           push: true
-          # cache-from: type=registry,ref=blueboardinc/milestones_api:latest
-          # cache-to: type=inline
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
