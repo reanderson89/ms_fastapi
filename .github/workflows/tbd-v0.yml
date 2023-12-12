@@ -57,24 +57,32 @@ jobs:
           echo "get-next-version.outputs:"
           echo '${{ toJSON(steps.get-next-version.outputs) }}'
 
-      - name: Sanitize Message
-        id: sanitize-message
+      - name: Check for Patch
+        id: patch
+        if: contains(github.event.head_commit.message, 'patch')
         run: |
-          echo "before:"
-          echo \'${{ github.event.head_commit.message }}\' jq -r '.event.head_commit.message | "\(.)=\(. | @sh)"' | tr '()\n\r#*' '_' > message
-          # echo ${{ github.event.head_commit.message }} | jq '.event.head_commit.message' | tr '()\\n\\r#*' ' ' > message
-          echo "middle:"
-          cat message
-          export m=$(cat message)
-          echo "after:"
-          echo $m
-          echo "message=${m}" >> $GITHUB_OUTPUT
+          echo "Patch version"
+          echo "level=patch" >> $GITHUB_OUTPUT
+
+      - name: Check for Minor
+        id: minor
+        if: contains(github.event.head_commit.message, 'minor')
+        run: |
+          echo "Minor version"
+          echo "level=minor" >> $GITHUB_OUTPUT
+
+      - name: Check for Major
+        id: major
+        if: contains(github.event.head_commit.message, 'major')
+        run: |
+          echo "Major version"
+          echo "level=major" >> $GITHUB_OUTPUT
 
       - name: Get Next Version
         id: get-next-version
         uses: ./.github/actions/get-versions
         with:
-          message: ${{ steps.sanitize-message.outputs.message }}
+          level: ${{ steps.major.outputs.level || steps.minor.outputs.level || steps.patch.outputs.level }}
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           branch: ${{ github.ref_name }}
 
