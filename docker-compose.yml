@@ -45,6 +45,7 @@ services:
       DEBUG: 'False'
       DD_TRACE_ENABLED: 'false' # Datadog is fully disabled
       ENV: local
+      FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: 'bean_queue'
       JOB_QUEUE_PORT: 11300
       JOB_QUEUE_TUBE: 'milestones_tube'
@@ -56,10 +57,10 @@ services:
       MYSQL_PORT: 3306
       MQSQL_LOCAL_PORT: 3306
       MYSQL_USER: milestones
+      RAILS_API: ${RAILS_API}
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
-      FERNET_KEY: ${FERNET_KEY}
       YASS_URL: 'http://yass_api:83/v1'
     volumes:
       - ./app:/app/app
