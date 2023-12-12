@@ -57,11 +57,24 @@ jobs:
           echo "get-next-version.outputs:"
           echo '${{ toJSON(steps.get-next-version.outputs) }}'
 
+      - name: Sanitize Message
+        id: sanitize-message
+        run: |
+          echo "before:"
+          echo ${{ github.event.head_commit.message }}
+          echo ${{ github.event.head_commit.message }} | jq '.event.head_commit.message' | tr '()\\n\\r#*' ' ' > message
+          echo "middle:"
+          cat message
+          export m=$(cat message)
+          echo "after:"
+          echo $m
+          echo "message=${m}" >> $GITHUB_OUTPUT
+
       - name: Get Next Version
         id: get-next-version
         uses: ./.github/actions/get-versions
         with:
-          message: $( echo ${{ github.event.head_commit.message }} | tr -d '()\n#' )
+          message: ${{ steps.sanitize-message.outputs.message }}
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           branch: ${{ github.ref_name }}
 
