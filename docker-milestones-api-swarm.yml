@@ -39,13 +39,14 @@ services:
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
       JOB_QUEUE_TUBE: "milestones_tube"
-      JWT_ENFORCED: 'True' # TODO this is temporary
+      JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_PORT: 3306
       MYSQL_USER: milestones
+      RAILS_API: ${RAILS_API}
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
