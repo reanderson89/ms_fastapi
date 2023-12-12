@@ -16,7 +16,6 @@ class Rule(BasePydantic):
 
 class User(BasePydantic):
     user_birthdate :  Optional[int] 
-    anniversary: Optional[int]
     employment_date : Optional[int]
     manager_ID : Optional[int]
     department : Optional[str]

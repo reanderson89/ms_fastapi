@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path, Body
+from fastapi import APIRouter, Path, Body, Request
 from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
 from app.actions.rewards.reward_actions import RewardActions
 from app.routers.v1.pagination import Page
@@ -24,9 +24,10 @@ async def get_reward(
 
 @router.post("/rewards", response_model=RewardResponse)
 async def create_reward(
+    request: Request,
     reward_create: RewardCreate = Body(...)
 ):
-    return await RewardActions.create_reward(reward_create)
+    return await RewardActions.create_reward(request, reward_create)
 
 
 @router.put("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse)
