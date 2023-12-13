@@ -44,7 +44,7 @@ def test_update_reward(test_app, reward):
 
 
 def test_fail_update_reward_missing_fields(test_app, reward):
-    response = test_app.put(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}", json={"company_id":5, "client_admin_id": 10})
+    response = test_app.put(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}", json={"client_admin_id": 10})
     assert response.status_code == 422
 
 

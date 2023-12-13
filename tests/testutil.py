@@ -444,32 +444,6 @@ new_reward = {
         "country" : "country",
         "region": "region"
     },
-    "users": [
-        {
-        "user_birthdate": 1234,
-        "anniversary": 2,
-        "employment_date": 2,
-        "manager_ID": 3,
-        "department": "pytest",
-        "city" : "city",
-        "state" : "state",
-        "country" : "country",
-        "region": "region",
-        "account_ID": 4
-        },
-        {
-        "user_birthdate": 1234,
-        "anniversary": 2,
-        "employment_date": 2,
-        "manager_ID": 3,
-        "department": "pytest",
-        "city" : "city",
-        "state" : "state",
-        "country" : "country",
-        "region": "region",
-        "account_ID": 5
-        }
-    ],
     "reward_info": {
         "award_type" : "award_type",
         "sending_managers_account_id": 6,
@@ -494,32 +468,6 @@ update_reward = {
         "country" : "UPDATED",
         "region": "UPDATED"
     },
-    "users": [
-        {
-        "user_birthdate": 1234,
-        "anniversary": 1,
-        "employment_date": 1,
-        "manager_ID": 3,
-        "department": "UPDATED",
-        "city" : "UPDATED",
-        "state" : "UPDATED",
-        "country" : "UPDATED",
-        "region": "UPDATED",
-        "account_ID": 4
-        },
-        {
-        "user_birthdate": 1234,
-        "anniversary": 1,
-        "employment_date": 1,
-        "manager_ID": 3,
-        "department": "UPDATED",
-        "city" : "UPDATED",
-        "state" : "UPDATED",
-        "country" : "UPDATED",
-        "region": "UPDATED",
-        "account_ID": 5
-        }
-    ],
     "reward_info": {
         "award_type" : "UPDATED",
         "sending_managers_account_id": 6,
@@ -527,4 +475,34 @@ update_reward = {
         "bucket_customization": 1,
         "subject": "UPDATED"
     }
+}
+
+users_from_rails = {
+    "company_id": 1,
+    "users": [
+        {
+        "user_birthdate": 1234,
+        "anniversary": 2,
+        "employment_date": 2,
+        "manager_ID": 3,
+        "department": "pytest",
+        "city" : "city",
+        "state" : "state",
+        "country" : "country",
+        "region": "region",
+        "account_ID": 4
+        },
+        {
+        "user_birthdate": 1234,
+        "anniversary": 2,
+        "employment_date": 2,
+        "manager_ID": 3,
+        "department": "pytest",
+        "city" : "city",
+        "state" : "state",
+        "country" : "country",
+        "region": "region",
+        "account_ID": 5
+        }
+    ]
 }

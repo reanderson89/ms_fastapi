@@ -14,7 +14,7 @@ class Rule(BasePydantic):
     country : Optional[str]
     region: Optional[str]
 
-class User(BasePydantic):
+class RewardUser(BasePydantic):
     user_birthdate :  Optional[int] 
     employment_date : Optional[int]
     manager_ID : Optional[int]
@@ -53,10 +53,14 @@ class RewardResponse(RewardModel):
 
 class RewardUpdate(BasePydantic):
     company_id: int
-    client_admin_id: int
-    rule: Rule
-    users: List[User]
-    reward_info: RewardInfo
+    client_admin_id: Optional[int]
+    rule: Optional[Rule]
+    users: Optional[List[RewardUser]]
+    reward_info: Optional[RewardInfo]
+
+class RewardUsersUpdate(BasePydantic):
+    company_id: int
+    users: List[RewardUser]
 
 class RewardDelete(BasePydantic):
     ok: bool

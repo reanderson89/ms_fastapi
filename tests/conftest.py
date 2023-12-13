@@ -544,11 +544,15 @@ def program_with_updated_budget(test_app: TestClient, client_user, static_budget
 
 @pytest.fixture(scope="function")
 def reward(test_app: TestClient):
-    try:
-        reward = test_app.post("/v1/rewards", json=util.new_reward).json()
-        yield reward
-    except Exception as e:
-        raise Exception(f"reward creation failed, Exception: {e}")
-    finally:
-        if reward is not None:
-            test_app.delete(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}")
+    with patch("app.actions.rewards.reward_actions.requests.get", new_callable=MagicMock) as MockRequest:
+        mock_rails_response = MagicMock()
+        mock_rails_response.json.return_value = util.users_from_rails
+        MockRequest.return_value = mock_rails_response
+        try:
+            reward = test_app.post("/v1/rewards", json=util.new_reward).json()
+            yield reward
+        except Exception as e:
+            raise Exception(f"reward creation failed, Exception: {e}")
+        finally:
+            if reward is not None:
+                test_app.delete(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}")

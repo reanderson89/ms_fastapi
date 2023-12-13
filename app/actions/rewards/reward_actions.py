@@ -1,5 +1,7 @@
-from fastapi import Request
+import os
+import requests
 from app.models.reward.reward_models import RewardCreate
+from fastapi import Request
 from burp.utils.base_crud import BaseCRUD
 from burp.models.reward import RewardModelDB
 
@@ -27,11 +29,21 @@ class RewardActions:
             **reward_create.dict()
         )
 
-    # ver. 1b create_reward, adds reward to db
+    # ver. 1b create_reward, adds reward to db, fetches users from rails and updates reward in db.
     # @classmethod
     # async def create_reward(cls, reward_create: RewardCreate):
-    #     reward_db = await cls.to_reward_db_model(reward_create)
-    #     return await BaseCRUD.create(reward_db)
+    #     rails_api = os.environ["RAILS_API"]
+    #     db_model_reward = await cls.to_reward_db_model(reward_create)
+    #     reward = await BaseCRUD.create(db_model_reward)
+    #     rails_response = requests.get(f"{rails_api}/accounts?company={reward_create.company_id}").json()
+    #     if reward and not rails_response:
+    #         return {"message":"Reward created, error fetching user from rails."}
+    #     user_list = [RewardUser(**user) for user in rails_response['users']]
+    #     updated_reward = await cls.update_reward(reward.company_id, reward.uuid, RewardUsersUpdate(company_id=reward.company_id, users=user_list))
+    #     if not updated_reward:
+    #         return {"message": "Reward created, error updating reward with users from rails."}
+    #     return updated_reward
+
     
     @classmethod
     async def get_rewards_by_company(cls, company_id):
