@@ -13,7 +13,7 @@ class RewardActions:
     @classmethod
     async def create_reward(cls, request: Request, reward_create: RewardCreate):
         rails_api = os.environ["RAILS_API"]
-        url = f'{rails_api}/v4/rewards/send_experience'
+        url = f'{rails_api}/api/v4/rewards/send_experience'
         r = requests.post(url=url, headers=request.headers, json={
             'subject': reward_create.subject,
             'bucket_customization': reward_create.bucket_customization,
