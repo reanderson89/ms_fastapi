@@ -1,23 +1,95 @@
-# Running Locally
-From the root of the project run:
+# Milestones API
+
+<div align="center">
+  <!-- <a href="https://github.com/blueboard/milestones_api/actions/workflows/tbd-v0.yml"><img src="https://github.com/blueboard/milestones_api/actions/workflows/tbd-v0.yml/badge.svg?branch=dev" /></a> -->
+
+  [![Tag, Build & Deploy v0](https://github.com/blueboard/milestones_api/actions/workflows/tbd-v0.yml/badge.svg)](https://github.com/blueboard/milestones_api/actions/workflows/tbd-v0.yml)
+  [![Lint Code](https://github.com/blueboard/milestones_api/actions/workflows/linting.yml/badge.svg)](https://github.com/blueboard/milestones_api/actions/workflows/linting.yml)
+
+</div>
+
+## Reference Documents
+- [Alembic DB Migrations](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2774237209/Alembic+DB+Migrations)
+- [Alembic Initial Setup](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2782101618/Alembic+Initial+Setup)
+- [BURP: a Git Submodule](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2781315095/BURP+as+a+Git+Submodule) - Milestones uses `burp` as a submodule.
+- [Login Sequence with Bearer Token](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2679570827/Login+Sequence+with+Bearer+Tokens)
+- [Misc Docker Items](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2641559779/Misc+milestones-api+Docker+Items)
+- [UUID and Nchar Reference](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2647457829/Canonical+UUID+Nchar+Reference)
+
+## Requirements
+
+- Python 3.11 or higher
+- Docker Desktop
+
+## Running Locally
+After the repo has been cloned, either of the following methods can be used to build the project locally. Both methods will start the app and database docker containers. On startup, db migrations are run and the db is seeded with mock data. The app will be started with the `--reload` flag, which will watch for changes to the code and restart the app when changes are detected.
+
+### 1. Using `run.sh`
+Script will build the docker containers and start the app. From the root of the project run:
 ```bash
-uvicorn app.main:app
-```
-Or to run with watchfiles:
-```bash
-uvicorn app.main:app --reload
-```
-To include env file (get a copy of the .env file from another developer via 1password):
-```bash
-uvicorn app.main:app --env-file .env
+./run.sh
 ```
 
-# Reference Documentation
-- Milestones uses `burp` as a submodule. [Here is documentation for common workflows](https://blueboard.atlassian.net/wiki/spaces/PROD/pages/2781315095/BURP+as+a+Git+Submodule).
+### 2. Using `debug.sh`
+Script will build the docker containers and start the app in debug mode. From the root of the project run:
+```bash
+./debug.sh
+```
+In VSCode, you can then attach to the running app by selecting the `Attach_Debugger` debug configuration.
 
-# Docker
+### 3. Using `Debug Docker` launch configuration (VSCode Only)
+In VSCode, select the `Debug Docker` launch configuration and start the debugger. This will build the docker containers and attaches debugger to the app container.
 
-## TL;DR
+> [!NOTE]
+> Detaching the debugger will stop and remove the containers.
+
+
+# Running Tests
+### pytest
+To run the unit and integration tests in the containers:
+```bash
+./run-pytests.sh
+```
+
+### Postman
+To run the Postman tests in the containers:
+```bash
+./run-postman.sh
+```
+
+### Job Queue
+To test various job queue scenarios:
+```bash
+python app/producer.py
+```
+The jobs will be added to the queue and processed by the app worker, logging the results of the jobs to the console.
+> [!NOTE]
+> - Some jobs require the `milestones_api` and/or `yass_api` containers to be running for the jobs to be processed.
+> - In `producer.py`, use ctrl+c to stop the script or any long running tasks.
+
+## Migrations
+On startup the app will check for any pending migrations and run them. If you need to create a new migration, run the following command:
+```bash
+./migration.sh --make "<migration_name>"
+```
+### Additional `migrate.sh` options:
+- `--up` - Run all pending migrations
+- `--down` - Rollback the last migration
+- `--down <number>` - Rollback the last `<number>` of migrations
+
+> [!NOTE]
+> - The app must be running for migrations to be run.
+> - After using --make, inspect generated migration files to confirm accurate changes.
+
+## Deploying to dev environment
+To deploy to the dev environment, add one of the following keywords to the commit message:
+- `patch` - patch version bump
+- `minor` - minor version bump
+- `major` - major version bump
+
+## Docker
+
+### TL;DR...
 
 [Docker](https://docs.docker.com/get-started/overview/) is a software tool for building and running applications based on containers.  Containers are small, lightweight execution environments that make shared use of the operating system's kernel but otherwise run in isolation from one another.
 
@@ -30,12 +102,12 @@ The application is likely running in a Linux continaer, using Docker, on a compu
 There are literally thousands of tutorials, YouTube videos, blogs, and so on, on how to use Docker.
 - https://www.docker.com/101-tutorial/
 
-## Links
+## Docker Links
 
 - [uvicorn-gunicorn-fastapi-docker](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker)
 - [Hot Reloading with Local Docker Development](https://olshansky.medium.com/hot-reloading-with-local-docker-development-1ec5dbaa4a65)
 
-## Prereququisites
+## Docker Prerequisites
 
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), licensing is TBD
 
@@ -52,7 +124,7 @@ There are literally thousands of tutorials, YouTube videos, blogs, and so on, on
 
 This README is not a Docker tutorial, and there are probably hundreds of useful command line commands.  [docker exec](https://docs.docker.com/engine/reference/commandline/exec/) is one that is very useful to get familar with.
 
-## Examples
+## Docker Examples
 
 ### Example 1 -- What is running?
 
@@ -146,7 +218,7 @@ Docker build .  0.22s user 0.32s system 1% cpu 27.401 total
 Docker build .  0.09s user 0.13s system 22% cpu 1.010 total
 ```
 
-## Errata
+## Docker Errata
 
 ### Dockerfile Expose vs. Ports
 
