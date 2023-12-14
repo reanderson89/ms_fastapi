@@ -30,7 +30,7 @@ class RewardActions:
                 'last_name': EMPLOYEE['last_name']
             },
             'bucket_customization': {
-                'id': reward_create.bucket_customization
+                'id': reward_create.bucket_customization_id
             },
             'program': {
                 'id': reward_create.sending_managers_program_id
