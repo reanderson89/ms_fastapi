@@ -23,7 +23,9 @@ class RewardActions:
     async def create_reward(cls, request: Request, reward_create: RewardCreate):
         rails_api = os.environ["RAILS_API"]
         url = f'{rails_api}/api/v4/company/rewards'
-        r = requests.post(url=url, headers=request.headers, json={
+        response = requests.post(url=url, headers={
+            'cookie': request.headers['cookie']
+        }, json={
             'employee': {
                 'email': EMPLOYEE['email'],
                 'first_name': EMPLOYEE['first_name'],
@@ -40,11 +42,17 @@ class RewardActions:
             'company_values': reward_create.company_values,
             'share_achievement_data': {
                 'recipients_emails': reward_create.recipient_emails,
-                "note": reward_create.recipient_note
+                'note': reward_create.recipient_note
             }
         })
-        return r.json()
-    
+        return {
+            'reward_info': response.json()
+        }
+
+
+
+
+
     @staticmethod
     async def to_reward_db_model(reward_create: RewardCreate):
         return RewardModelDB(

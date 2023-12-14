@@ -52,8 +52,8 @@ class RewardCreate(BasePydantic):
 #     reward_info: RewardInfo 
 
 
-class RewardResponse(RewardModel):
-    pass
+class RewardResponse(BasePydantic):
+    reward_info: dict
 
 class RewardUpdate(BasePydantic):
     company_id: int
