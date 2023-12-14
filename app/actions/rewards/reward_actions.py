@@ -1,18 +1,16 @@
 import os
+
 import requests
-from app.models.reward.reward_models import RewardCreate
 from fastapi import Request
-from burp.utils.base_crud import BaseCRUD
+
+from app.models.reward.reward_models import RewardCreate
 from burp.models.reward import RewardModelDB
-
-import os
-import requests
-
+from burp.utils.base_crud import BaseCRUD
 
 EMPLOYEE = {
-    'email': 'katie.cunningham@blueboard.com',
-    'first_name': 'Katie',
-    'last_name': 'Cunningham'
+    "email": "katie.cunningham@blueboard.com",
+    "first_name": "Katie",
+    "last_name": "Cunningham"
 }
 
 
@@ -22,36 +20,32 @@ class RewardActions:
     @classmethod
     async def create_reward(cls, request: Request, reward_create: RewardCreate):
         rails_api = os.environ["RAILS_API"]
-        url = f'{rails_api}/api/v4/company/rewards'
+        url = f"{rails_api}/api/v4/company/rewards"
         response = requests.post(url=url, headers={
-            'cookie': request.headers['cookie']
+            "cookie": request.headers["cookie"]
         }, json={
-            'employee': {
-                'email': EMPLOYEE['email'],
-                'first_name': EMPLOYEE['first_name'],
-                'last_name': EMPLOYEE['last_name']
+            "employee": {
+                "email": EMPLOYEE["email"],
+                "first_name": EMPLOYEE["first_name"],
+                "last_name": EMPLOYEE["last_name"]
             },
-            'bucket_customization': {
-                'id': reward_create.bucket_customization_id
+            "bucket_customization": {
+                "id": reward_create.bucket_customization_id
             },
-            'program': {
-                'id': reward_create.sending_managers_program_id
+            "program": {
+                "id": reward_create.sending_managers_program_id
             },
-            'subject': reward_create.subject,
-            'memo': reward_create.memo,
-            'company_values': reward_create.company_values,
-            'share_achievement_data': {
-                'recipients_emails': reward_create.recipient_emails,
-                'note': reward_create.recipient_note
+            "subject": reward_create.subject,
+            "memo": reward_create.memo,
+            "company_values": reward_create.company_values,
+            "share_achievement_data": {
+                "recipients_emails": reward_create.recipient_emails,
+                "note": reward_create.recipient_note
             }
         })
         return {
-            'reward_info': response.json()
+            "reward_info": response.json()
         }
-
-
-
-
 
     @staticmethod
     async def to_reward_db_model(reward_create: RewardCreate):
@@ -74,15 +68,24 @@ class RewardActions:
     #         return {"message": "Reward created, error updating reward with users from rails."}
     #     return updated_reward
 
-    
     @classmethod
-    async def get_rewards_by_company(cls, company_id):
+    async def get_rewards_by_company(cls, company_id, fitler_params: dict = None):
         return await BaseCRUD.get_all_where(
             RewardModelDB,
-            [
-                RewardModelDB.company_id == company_id
-            ]
+            [RewardModelDB.company_id == company_id],
+            params=fitler_params,
+            pagination=False
         )
+
+    @classmethod
+    async def get_distinct_company_ids(cls):
+        response = await BaseCRUD.get_all_where(
+            RewardModelDB,
+            [RewardModelDB.company_id],
+            pagination=False,
+            distinct_column=RewardModelDB.company_id
+        )
+        return response
 
     @classmethod
     async def get_reward(cls, company_id, reward_uuid):

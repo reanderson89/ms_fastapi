@@ -1,4 +1,5 @@
 version: '3'
+name: bean_queue
 services:
   bean_queue:
     container_name: bean_queue

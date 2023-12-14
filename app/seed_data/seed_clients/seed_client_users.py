@@ -4,6 +4,7 @@ from faker.providers import job
 from app.models.clients import CreateClientUser
 from app.actions.clients.user import ClientUserActions
 import httpx
+from httpx import ConnectError
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -121,14 +122,21 @@ new_admins = list(admins.values())
 async def generate_client_users(clients: list):
     # create clarks user first
     async with httpx.AsyncClient() as client:
-        await client.post(f"{YASS_URL}/users", json=admins["clark"])
+        try:
+            await client.post(f"{YASS_URL}/users", json=admins["clark"])
+        except ConnectError:
+            print("Could not connect to YASS API. Adding 'Clark' admin skipped during debugging.")
 
     for admin in new_admins:
         admin_client_user = CreateClientUser(**admin)
-        await ClientUserActions.create_client_user(
-            admin_client_user,
-            {"client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34"}
-        )
+        try:
+            await ClientUserActions.create_client_user(
+                admin_client_user,
+                {"client_uuid": "ca723b34b08e4e319c8d2e6770815679c69aaf4a8e574f518b1e34"}
+            )
+        except Exception as e:
+            print(e)
+            print("Could not create admin user. Skipping during debugging.")
 
     # Uncomment if you want the full list of client_users, users, and user_services to be created
     # import pandas as pd

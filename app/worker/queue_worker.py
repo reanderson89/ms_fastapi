@@ -6,6 +6,7 @@ import greenstalk
 from fastapi import HTTPException
 
 from app.actions.clients.user import ClientUserActions
+from app.actions.cron.cron_actions import CronActions
 from app.models.clients import ClientUserExpand
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
@@ -115,6 +116,9 @@ class QueueWorker:
             case "MIGRATE_USER":
                 response = await self.migrate_user(job_data)
                 return response, "Processed"
+            case "CRON_JOB":
+                response = await self.cron_job()
+                return response, "Processed"
             case _:
                 return False, "No matching event type found"
 
@@ -127,4 +131,9 @@ class QueueWorker:
         else:
             logger.milestone("Milestone migration of user info was not successful.")
             response = await self.send_response(job_data, {"migration_completed":True})
+        return response
+
+    async def cron_job(self):
+        logger.milestone("Cron job received.")
+        response = await CronActions.send_rewards()
         return response
