@@ -9,17 +9,39 @@ import os
 import requests
 
 
+EMPLOYEE = {
+    'email': 'katie.cunningham@blueboard.com',
+    'first_name': 'Katie',
+    'last_name': 'Cunningham'
+}
+
+
 class RewardActions:
 
     # ver. 1a create_reward, does not add reward to db
     @classmethod
     async def create_reward(cls, request: Request, reward_create: RewardCreate):
         rails_api = os.environ["RAILS_API"]
-        url = f'{rails_api}/api/v4/rewards/send_experience'
+        url = f'{rails_api}/api/v4/company/rewards'
         r = requests.post(url=url, headers=request.headers, json={
+            'employee': {
+                'email': EMPLOYEE['email'],
+                'first_name': EMPLOYEE['first_name'],
+                'last_name': EMPLOYEE['last_name']
+            },
+            'bucket_customization': {
+                'id': reward_create.bucket_customization
+            },
+            'program': {
+                'id': reward_create.sending_managers_program_id
+            },
             'subject': reward_create.subject,
-            'bucket_customization': reward_create.bucket_customization,
-            'program_id': reward_create.sending_managers_program_id
+            'memo': reward_create.memo,
+            'company_values': reward_create.company_values,
+            'share_achievement_data': {
+                'recipients_emails': reward_create.recipient_emails,
+                "note": reward_create.recipient_note
+            }
         })
         return r.json()
     

@@ -36,8 +36,12 @@ class RewardInfo(BasePydantic):
 class RewardCreate(BasePydantic):
     sending_managers_account_id: int
     sending_managers_program_id: int
-    bucket_customization: int
+    bucket_customization_id: int
     subject: str
+    memo: str
+    company_values: List[str]
+    recipient_emails: List[str]
+    recipient_note: str
 
 # ver. 1b reward create
 # class RewardCreate(BasePydantic):
