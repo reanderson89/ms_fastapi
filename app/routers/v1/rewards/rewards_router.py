@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Path, Body, Request
+from typing import Annotated
+from fastapi import APIRouter, Path, Body, Request, Depends
 from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
 from app.actions.rewards.reward_actions import RewardActions
 from app.routers.v1.pagination import Page
+from burp.utils.auth_utils import Permissions
 
 
 router = APIRouter(tags=["Rewards"])
@@ -24,6 +26,7 @@ async def get_reward(
 
 @router.post("/rewards", response_model=RewardResponse)
 async def create_reward(
+    jwt: Annotated[str, Depends(Permissions(level="rails"))],
     request: Request,
     reward_create: RewardCreate = Body(...)
 ):
