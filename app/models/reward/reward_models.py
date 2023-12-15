@@ -67,6 +67,9 @@ class BaseRewardModel(BasePydantic):
 class RewardResponse(BasePydantic):
     reward_info: dict
 
+class RewardResponse(BasePydantic):
+    reward_info: dict
+
 
 class RewardUpdate(BasePydantic):
     company_id: int

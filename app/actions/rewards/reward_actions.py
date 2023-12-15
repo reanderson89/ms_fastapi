@@ -8,9 +8,9 @@ from burp.models.reward import RewardModelDB
 from burp.utils.base_crud import BaseCRUD
 
 EMPLOYEE = {
-    "email": "katie.cunningham@blueboard.com",
-    "first_name": "Katie",
-    "last_name": "Cunningham"
+    'email': 'robby.ketchell@gmail.com',
+    'first_name': 'Robby',
+    'last_name': 'Ketchell'
 }
 
 
@@ -20,6 +20,7 @@ class RewardActions:
     @classmethod
     async def create_reward(cls, request: Request, reward_create: RewardCreate):
         rails_api = os.environ["RAILS_API"]
+
         url = f"{rails_api}/api/v4/company/rewards"
         response = requests.post(url=url, headers={
             "cookie": request.headers["cookie"]
