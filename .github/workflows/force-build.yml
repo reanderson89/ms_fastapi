@@ -1,42 +1,40 @@
 ---
 
-    name: Tag, Build & Deploy v0
+    name: Force Build
 
     on:
       workflow_dispatch:
         inputs:
-          tag:
-            description: "Deploy existing Docker tag?"
-            required: true
-            default: "latest"
-          branch:
-            description: "From branch?"
-        #     type: choice
-        #     default: "dev"
-        #     options:
-        #       - dev
-        #       - staging
-        #       - prod
+          ref:
+            description: "From which branch?"
+            default: "dev"
+          level:
+            description: "What build level?"
+            type: choice
+            default: "patch"
+            options:
+                - patch
+                - minor
+                - major
           environment:
+            description: "Which environment?"
             type: environment
-
-    env:
-      SWARM_YAML: "docker-milestones-api-swarm.yml"
-      MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
-      DEBUG: "true" # set to true for a little more output
 
     jobs:
       tag:
         name: Tag
         runs-on: ubuntu-latest
-        if: ${{ github.event_name != 'workflow_dispatch' && ( contains(github.event.head_commit.message, 'major') || contains(github.event.head_commit.message, 'minor') || contains(github.event.head_commit.message, 'patch') ) }}
         steps:
-          - name: Checkout
-            uses: actions/checkout@v4
-            with:
-              ref: ${{ github.head_ref }}
-              fetch-depth: 0
-              persist-credentials: false # this must be false to use the PAT in the push below
+        #   - name: Checkout
+        #     uses: actions/checkout@v4
+        #     with:
+        #       ref: ${{ github.head_ref }}
+        #       fetch-depth: 0
+        #       persist-credentials: false # this must be false to use the PAT in the push below
+
+          - name: Debugging
+            run: |
+              echo ${{ toJson(inputs) }}
 
           - name: Checkout Blueboard's Shared GitHub Actions 🔧
             uses: actions/checkout@v4
@@ -44,328 +42,9 @@
               repository: blueboard/github_actions
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
               path: .github/actions
-
-          - name: Dump GitHub context (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo '${{ toJSON(github) }}'
-
-          - name: Check for Patch Keyword
-            id: patch
-            if: contains(github.event.head_commit.message, 'patch')
-            run: |
-              echo "level=patch" >> $GITHUB_OUTPUT
-
-          - name: Check for Minor Keyword
-            id: minor
-            if: contains(github.event.head_commit.message, 'minor')
-            run: |
-              echo "level=minor" >> $GITHUB_OUTPUT
-
-          - name: Check for Major Keyword
-            id: major
-            if: contains(github.event.head_commit.message, 'major')
-            run: |
-              echo "level=major" >> $GITHUB_OUTPUT
-
-          - name: Get Next Version
-            id: get-next-version
-            uses: ./.github/actions/get-versions
+          - name:
+            uses: ./.github/actions/trigger-build
             with:
-              level: ${{ steps.major.outputs.level || steps.minor.outputs.level || steps.patch.outputs.level }}
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
-              branch: ${{ github.ref_name }}
-
-          - name: Dump get-next-version.outputs (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo '${{ toJSON(steps.get-next-version.outputs) }}'
-
-        outputs:
-          environment: ${{ steps.get-next-version.outputs.environment }}
-          tag: ${{ steps.get-next-version.outputs.tag }}
-
-      test:
-        name: Tests
-        needs:
-          - tag
-        runs-on: ubuntu-latest
-        env:
-          ACCOUNT_SID: "foobar"
-          ACCOUNT_TOKEN: "foobar"
-          ALGORITHM: "HS256"
-          AWS_ACCESS_KEY_ID: "foobar"
-          AWS_BUCKET_NAME: "foobar"
-          AWS_ROLE_ARN: "arn:foobar"
-          AWS_SECRET_ACCESS_KEY: "foobar"
-          DD_API_KEY: "foobar"
-          DD_APP_KEY: "foobar"
-          ENV: "local"
-          FERNET_KEY: "foooooooooooooooooobarrrrrrrrrrrrrrrrrrrrrr="
-          SECRET_KEY: "foobar"
-          SPARKPOST_KEY: "foobar"
-          TWILIO_FROM: "+16193299600"
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v4
-            with:
-              submodules: recursive
-              # BURP_PAT is a Personal Access Token for the BlueboardBot user that has permissions to read from the BURP repoistory
-              # which allows this service to checkout the submodule
-              token: ${{ secrets.BURP_PAT }}
-
-          # Note: It is unclear how effective this caching strategy is
-          #  - https://github.com/ScribeMD/docker-cache
-          - name: Cache Milestones Docker Container
-            id: milestones-cache
-            uses: ScribeMD/docker-cache@0.3.6
-            with:
-              # This does not seem like it would work as expected
-              # key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
-              key: docker-${{ runner.os }}-${{ hashFiles('src/**') }}
-
-          - name: Cache Beanstalk Docker Container
-            id: beanstalk-cache
-            uses: ScribeMD/docker-cache@0.3.6
-            with:
-              # This is probably correct, since it's a 3rd party image
-              key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
-
-          - name: Echo Cache Hit Status (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo "milestones-cache: ${{ steps.milestones-cache.outputs.cache-hit }}"
-              echo "beanstalk-cache: ${{ steps.beanstalk-cache.outputs.cache-hit }}"
-
-          - name: Build Beanstalk Docker Container
-            if: "${{ steps.beanstalk-cache.outputs.cache-hit != 'true' }}"
-            run: |
-              docker compose --file docker-compose-queue.yml build
-
-          - name: Build Milestones Docker Container
-            if: "${{ steps.milestones-cache.outputs.cache-hit != 'true' }}"
-            run: |
-              docker compose build
-
-          - name: Start Docker Containers
-            # because this is detached, if the app crashes on startup (due to, for example, a missing env var)
-            # the failure is not apparant on Github -- validate this on localhost using a .env file with the vars
-            # above
-            run: |
-              # auth_network is used to make it easier for developers to work locally with YASS
-              docker network create -d bridge auth_network
-              docker compose --file docker-compose-queue.yml up --detach
-              docker compose up --detach
-
-          - name: Pause to Let App Fully Start
-            # this may be problematic in the future
-            run: |
-              sleep 30
-
-          - name: Run Pytest Tests
-            id: pytest
-            run: |
-              docker exec --tty milestones_api pytest -v /app/tests/
-
-          - name: Stop Docker Containers
-            if: always()
-            run: |
-              docker-compose down --remove-orphans
-
-          - name: Echo Test Job Status (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo "Test job status is ${{ job.status }}"
-
-          - name: Update Github with job status
-            if: always()
-            uses: ouzi-dev/commit-status-updater@v2
-            with:
-              name: "Pytest test results"
-              status: ${{ job.status }}
-
-      build:
-        name: Build
-        needs:
-          - tag
-          - test
-        runs-on: ubuntu-latest
-        steps:
-          - name: Echo Environment and Tag (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo "Environment:  ${{ needs.tag.outputs.environment }}"
-              echo "Tag:  ${{ needs.tag.outputs.tag }}"
-
-          - name: Check out the repo
-            uses: actions/checkout@v4
-            with:
-              submodules: recursive
-              token: ${{ secrets.BURP_PAT }}
-
-          - name: Setup Docker buildx
-            uses: docker/setup-buildx-action@v2
-
-          - name: Log in to Docker Hub
-            uses: docker/login-action@v2
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN_RW }}
-
-          - name: Extract metadata (tags, labels) for Docker
-            id: meta
-            uses: docker/metadata-action@v5
-            with:
-              images: ${{ env.MILESTONES_DOCKER_REPO }}
-
-          - name: Build, tag and push Docker image
-            uses: docker/build-push-action@v4
-            with:
-              context: .
-              file: Docker/Dockerfile.milestones_api_swarm
-              push: true
-              cache-from: type=gha
-              cache-to: type=gha,mode=max
-              tags: |
-                ${{ env.MILESTONES_DOCKER_REPO }}:latest
-                ${{ env.MILESTONES_DOCKER_REPO }}:${{ needs.tag.outputs.tag }}
-              labels: ${{ steps.meta.outputs.labels }}
-
-      # the purpose of this pre-deploy job is simply to setup any variables needed for the deploy
-      # job, as variables like environment and tag come from two different sources if this was invoked
-      # via a commit or a workflow_dispatch event
-      # the if always() here allows the GHA to run this job regardless of how the GHA was initially triggered
-      pre-deploy:
-        name: Pre-Deploy
-        runs-on: ubuntu-latest
-        if: |
-          always() && ( needs.tag.result == 'success' || needs.tag.result == 'skipped' ) && ( needs.build.result == 'success' || needs.build.result == 'skipped' )
-        needs:
-          - tag
-          - build
-        steps:
-          - name: Use Environment and Tag from the tag job
-            if: ${{ github.event_name != 'workflow_dispatch' && needs.tag.outputs.tag != '' }}
-            run: |
-              echo "tag job environment: ${{ needs.tag.outputs.environment }}"
-              echo "tag job tag: ${{ needs.tag.outputs.tag }}"
-
-          - name: Use Environment and Tag from workflow_dispatch
-            if: ${{ github.event_name == 'workflow_dispatch' }}
-            run: |
-              echo "workflow_dispatch environment: ${{ github.event.inputs.environment }}"
-              echo "workflow_dispatch tag: ${{ github.event.inputs.tag }}"
-
-        outputs:
-          environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || needs.tag.outputs.environment }}
-          tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || needs.tag.outputs.tag }}
-
-      deploy:
-        name: Deploy ${{ needs.pre-deploy.outputs.tag}} to ${{ needs.pre-deploy.outputs.environment }}
-        runs-on: ubuntu-latest
-        if: |
-          always() && ( needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.environment != '' )
-        needs:
-          - build
-          - pre-deploy
-        environment: ${{ needs.pre-deploy.outputs.environment }}
-        env:
-          TAG: ${{ needs.pre-deploy.outputs.tag != '' && needs.pre-deploy.outputs.tag || 'latest' }}
-          ENVIRONMENT: ${{ needs.pre-deploy.outputs.environment != '' && needs.pre-deploy.outputs.environment || 'dev' }}
-        steps:
-          - name: Dump GitHub context (Debugging)
-            if: env.DEBUG == 'true'
-            run: |
-              echo '${{ toJSON(github) }}'
-
-          - name: Use the Docker Swarm Template (always from the dev branch 🎗️)
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            uses: actions/checkout@v4
-            with:
-              ref: dev
-
-          - name: Checkout Blueboard's Shared GitHub Actions 🔧
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            uses: actions/checkout@v4
-            with:
-              repository: blueboard/github_actions
-              token: ${{ secrets.BLUEBOARD_BOT_PAT }}
-              path: .github/actions
-
-          - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }} 🔒
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            uses: ./.github/actions/setup-open-vpn
-            timeout-minutes: 2
-            with:
-              vpn_ca_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CA_CRT_B64 || secrets.DEV_VPN_CA_CRT_B64 }}
-              vpn_cert_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_CRT_B64 || secrets.DEV_VPN_CERT_CRT_B64 }}
-              vpn_tls_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_TLS_KEY_B64 || secrets.DEV_VPN_TLS_KEY_B64 }}
-              username: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_USERNAME || secrets.DEV_VPN_SECRET_USERNAME }}
-              password: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_PASSWORD || secrets.DEV_VPN_SECRET_PASSWORD }}
-              vpn_cert_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_KEY_B64 || secrets.DEV_VPN_CERT_KEY_B64 }}
-              auth: ${{ env.ENVIRONMENT == 'prod' && 'SHA384' || 'SHA256' }}
-              ssh_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_SSH_KEY_B64 || secrets.DEV_SSH_KEY_B64 }}
-              config: ${{ env.ENVIRONMENT == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
-              ping_host: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
-              default_openvpn: true
-
-          - name: Export all GitHub Secrets as Environment Variables
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            env:
-              SECRETS: ${{ toJson(secrets) }}
-            run: |
-              # the purpose of this step is to export all GitHub secrets as regular
-              # env vars so that we can use envsubst in a subsequent step
-              # Note: jq adds double quotes around the value, so we must use sed to
-              # re-wrap the values with single quotes, but still allowing for double
-              # quotes in the env var itself, i.e. so that we end up with this:
-              #
-              # foo='foobar'
-              # bar='barfoo'
-              # foobar='bar"foo"foo'
-              #
-              echo $SECRETS | jq --raw-output '. | to_entries[] | .key + "=" + (.value | tojson)' | \
-                sed "s/\=\"/\=\'/" | \
-                sed "s/\"$/'/" | \
-                sed "s/\"$/'/" >> $GITHUB_ENV
-              unset SECRETS
-
-          - name: Create the Docker Swarm Configuration to Deploy ${{ env.TAG }}
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            env:
-              ENV: ${{ env.ENVIRONMENT }}
-              IMAGE_TAG: ${{ env.TAG }}
-              REPLICAS: ${{ vars.REPLICAS || 1 }}
-            run: |
-              # append the tag to form a fully qualified Docker tag
-              export IMAGE_TAG="${{ env.MILESTONES_DOCKER_REPO }}:${IMAGE_TAG}"
-
-              # do the env substitution and fix any issues with single quotes (more details in the Rails API)
-              mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
-
-          - name: Timestamp the Docker Swarm Configuration
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            uses: ./.github/actions/stamp-swarm-config
-            with:
-              file: ${SWARM_YAML}
-
-          - name: Copy Docker Swarm Configuration & Recycle Containers ♻️
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            uses: ./.github/actions/update-docker-swarm
-            timeout-minutes: 2
-            with:
-              hosts: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_HOSTS || env.ENVIRONMENT == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
-              leader: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
-              yaml_file: ${{ env.SWARM_YAML }}
-              dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-              dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN_RO }}
-              app: "milestones_api"
-
-          - name: Stop the VPN
-            if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-            run: |
-              sudo chmod 444 vpn.log
-              cat vpn.log
-              sudo killall openvpn444 vpn.log
-              cat vpn.log
-              sudo killall openvpn
+              level: ${{ inputs.level }}
+              ref: ${{ inputs.ref }}
