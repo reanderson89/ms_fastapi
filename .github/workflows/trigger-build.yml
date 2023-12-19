@@ -44,7 +44,7 @@
               git config --global user.name '$(git log -n 1 --pretty=format:%an)'
               git config --global user.email  '$(git log -n 1 --pretty=format:%ae)'
               git commit --allow-empty -m "no-op ${{ inputs.level }}"
-              git push
+              git push --force-with-lease
 
           # - name: Make Empty Commit to Trigger Build
           #   uses: ./.github/actions/trigger-build
