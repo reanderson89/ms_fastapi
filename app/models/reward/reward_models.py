@@ -26,6 +26,21 @@ class RewardUser(BasePydantic):
     country : Optional[str]
     region: Optional[str]
     account_ID: Optional[int]
+    # These are all of the fields that come back for each account from the /api/v4/accounts?company=X endpoint
+    id: Optional[int]
+    gid: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    latest_login: Optional[str]
+    deactivated_at: Optional[str]
+    email: Optional[str]
+    vip: Optional[bool]
+    active_role: Optional[str]
+    account_company_id: Optional[int]
+    account_company_name: Optional[str]
+    employee_id: Optional[int]
+    programs: Optional[list[dict]]
+    active_managers: Optional[list[dict]]
 
 
 class RewardInfo(BasePydantic):
@@ -37,23 +52,22 @@ class RewardInfo(BasePydantic):
 
 
 # ver. 1a reward create
-class RewardCreate(BasePydantic):
-    sending_managers_account_id: int
-    sending_managers_program_id: int
-    bucket_customization_id: int
-    subject: str
-    memo: str
-    company_values: list[str]
-    recipient_emails: list[str]
-    recipient_note: str
+# class RewardCreate(BasePydantic):
+#     sending_managers_account_id: int
+#     sending_managers_program_id: int
+#     bucket_customization_id: int
+#     subject: str
+#     memo: str
+#     company_values: list[str]
+#     recipient_emails: list[str]
+#     recipient_note: str
 
 # ver. 1b reward create
-# class RewardCreate(BasePydantic):
-#     company_id: int
-#     client_admin_id: int
-#     rule: Rule
-#     users: list[User]
-#     reward_info: RewardInfo
+class RewardCreate(BasePydantic):
+    company_id: int
+    client_admin_id: int
+    rule: Rule
+    reward_info: RewardInfo
 
 
 class BaseRewardModel(BasePydantic):
@@ -64,11 +78,12 @@ class BaseRewardModel(BasePydantic):
     reward_info: RewardInfo
 
 
-class RewardResponse(BasePydantic):
-    reward_info: dict
+class RewardResponse(RewardModel):
+    users: Optional[list[RewardUser]]
 
-class RewardResponse(BasePydantic):
-    reward_info: dict
+    
+# class RewardResponse(BasePydantic):
+#     reward_info: dict
 
 
 class RewardUpdate(BasePydantic):
@@ -86,4 +101,4 @@ class RewardUsersUpdate(BasePydantic):
 
 class RewardDelete(BasePydantic):
     ok: bool
-    Deleted: RewardModel
+    Deleted: Optional[RewardModel]

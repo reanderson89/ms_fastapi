@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import APIRouter, Path, Body, Request, Depends
+from typing import Annotated, List
+from fastapi import APIRouter, Path, Body, Depends
 from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
 from app.actions.rewards.reward_actions import RewardActions
 from app.routers.v1.pagination import Page
@@ -9,14 +9,14 @@ from burp.utils.auth_utils import Permissions
 router = APIRouter(tags=["Rewards"])
 
 
-@router.get("/rewards/{company_id}", response_model=Page[RewardResponse])
+@router.get("/rewards/{company_id}", response_model=List[RewardResponse])
 async def get_rewards_by_company(
     company_id: int = Path(...)
 ):
     return await RewardActions.get_rewards_by_company(company_id)
 
 
-@router.get("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse)
+@router.get("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse|None)
 async def get_reward(
     company_id: int = Path(...),
     reward_uuid: str = Path(...)
@@ -27,13 +27,13 @@ async def get_reward(
 @router.post("/rewards", response_model=RewardResponse)
 async def create_reward(
     jwt: Annotated[str, Depends(Permissions(level="rails"))],
-    request: Request,
+    # request: Request,
     reward_create: RewardCreate = Body(...)
 ):
-    return await RewardActions.create_reward(request, reward_create)
+    return await RewardActions.create_reward(reward_create)
 
 
-@router.put("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse)
+@router.put("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse|None)
 async def update_reward(
     company_id: int = Path(...),
     reward_uuid: str = Path(...),

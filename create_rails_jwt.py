@@ -34,13 +34,11 @@ def access_token_creation(redeem, cron_job: bool = False):
     return {"access_token": access_token, "token_type": "Bearer"}
 
 data = {
-  "exp": 1702755196,
-  "company_gid": "04daa65d-3a89-4242-b38a-e4d6273019c1",
-  "sub": "a837d688-fb9a-4622-af07-d37c9b64bb02",
+  "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
+  "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
   "scp": "account",
   "aud": None,
-  "iat": 1702495996,
-  "jti": "b7778065-625e-4b75-a5d7-33a0aa53147b"
+  "jti": "6f3d0081-0f73-473c-b1ad-c6165661d969"
 }
 
 token = access_token_creation(data, True)
