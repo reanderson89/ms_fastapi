@@ -37,7 +37,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         if "authorization" in headers:
             del headers["authorization"]
         if isinstance(exc,RequestValidationError):
-            return {"errors": exc.errors(), "method": request.method, "port": request.url.port, "url": request.url.path, "headers":headers, "client": request.client, "query_params": request.query_params._dict, "cookies": request.cookies}
+            return {"exceptions": exc.errors(), "method": request.method, "port": request.url.port, "url": request.url.path, "headers":headers, "client": request.client, "query_params": request.query_params._dict, "cookies": request.cookies}
         return {"method": request.method, "port": request.url.port, "url": request.url.path, "headers":headers, "client": request.client, "query_params": request.query_params._dict, "cookies": request.cookies}
 
     @classmethod
@@ -56,10 +56,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 body = [str(item) for item in body]
                 body = "".join(body)
                 body = body.replace("\n", "").replace("\t","").replace('"', "'")
-            if "ctx" in detail["errors"][0]:
-                detail["errors"][0]["ctx"]["doc"] = body
+            if "ctx" in detail["exceptions"][0]:
+                detail["exceptions"][0]["ctx"]["doc"] = body
             else:
-                detail["errors"][0]["ctx"] = {"doc": body}
+                detail["exceptions"][0]["ctx"] = {"doc": body}
         cls.logger.error(detail)
         return await _request_validation_exception_handler(request, exc)
 

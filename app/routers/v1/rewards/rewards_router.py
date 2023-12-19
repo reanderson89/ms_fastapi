@@ -2,7 +2,6 @@ from typing import Annotated, List
 from fastapi import APIRouter, Path, Body, Depends
 from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
 from app.actions.rewards.reward_actions import RewardActions
-from app.routers.v1.pagination import Page
 from burp.utils.auth_utils import Permissions
 
 
