@@ -51,3 +51,4 @@
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
               level: ${{ inputs.level }}
               ref: ${{ inputs.ref }}
+              repository: ${{ github.event.repository.name }}
