@@ -51,7 +51,7 @@ jobs:
           path: .github/actions
 
       - name: Dump GitHub context (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo '${{ toJSON(github) }}'
 
@@ -82,7 +82,7 @@ jobs:
           branch: ${{ github.ref_name }}
 
       - name: Dump get-next-version.outputs (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo '${{ toJSON(steps.get-next-version.outputs) }}'
 
@@ -137,7 +137,7 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
 
       - name: Echo Cache Hit Status (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo "milestones-cache: ${{ steps.milestones-cache.outputs.cache-hit }}"
           echo "beanstalk-cache: ${{ steps.beanstalk-cache.outputs.cache-hit }}"
@@ -178,7 +178,7 @@ jobs:
           docker-compose down --remove-orphans
 
       - name: Echo Test Job Status (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo "Test job status is ${{ job.status }}"
 
@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo Environment and Tag (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo "Environment:  ${{ needs.tag.outputs.environment }}"
           echo "Tag:  ${{ needs.tag.outputs.tag }}"
@@ -279,18 +279,18 @@ jobs:
       ENVIRONMENT: ${{ needs.pre-deploy.outputs.environment != '' && needs.pre-deploy.outputs.environment || 'dev' }}
     steps:
       - name: Dump GitHub context (Debugging)
-        if: ${{ env.DEBUG == 'true' }}
+        if: env.DEBUG == 'true'
         run: |
           echo '${{ toJSON(github) }}'
 
       - name: Use the Docker Swarm Template (always from the dev branch 🎗️)
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         uses: actions/checkout@v4
         with:
           ref: dev
 
       - name: Checkout Blueboard's Shared GitHub Actions 🔧
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         uses: actions/checkout@v4
         with:
           repository: blueboard/github_actions
@@ -298,7 +298,7 @@ jobs:
           path: .github/actions
 
       - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }} 🔒
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         uses: ./.github/actions/setup-open-vpn
         timeout-minutes: 2
         with:
@@ -315,7 +315,7 @@ jobs:
           default_openvpn: true
 
       - name: Export all GitHub Secrets as Environment Variables
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         env:
           SECRETS: ${{ toJson(secrets) }}
         run: |
@@ -336,7 +336,7 @@ jobs:
           unset SECRETS
 
       - name: Create the Docker Swarm Configuration to Deploy ${{ env.TAG }}
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         env:
           ENV: ${{ env.ENVIRONMENT }}
           IMAGE_TAG: ${{ env.TAG }}
@@ -349,13 +349,13 @@ jobs:
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
 
       - name: Timestamp the Docker Swarm Configuration
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         uses: ./.github/actions/stamp-swarm-config
         with:
           file: ${SWARM_YAML}
 
       - name: Copy Docker Swarm Configuration & Recycle Containers ♻️
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         uses: ./.github/actions/update-docker-swarm
         timeout-minutes: 2
         with:
@@ -367,7 +367,7 @@ jobs:
           app: "milestones_api"
 
       - name: Stop the VPN
-        if: ${{ github.event_name == 'workflow_dispatch' || needs.build.result == 'success' }}
+        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         run: |
           sudo chmod 444 vpn.log
           cat vpn.log
