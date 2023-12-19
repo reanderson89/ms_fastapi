@@ -1,5 +1,8 @@
+import os
 import asyncio
 # from burp.models import user
+from fastapi import Request, HTTPException
+from starlette import status
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
@@ -111,6 +114,22 @@ class CronActions:
             db_query = session.scalars(query).all()
             await ExceptionHandling.check404(db_query)
             return db_query
+        
+    @staticmethod
+    async def authenticate(request: Request):
+        if request.headers.get("authorization"):
+            token = request.headers.get("authorization").split(" ")[1]
+        else:
+            token = None
+            
+        user_agent = request.headers.get("user-agent")
+        if token == os.environ.get("CRON_TOKEN") and user_agent == "milestones-cron-send-rewards":
+            return True
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token and/or user-agent"
+            )
 
     @classmethod
     async def run_rule(cls, df, rul):

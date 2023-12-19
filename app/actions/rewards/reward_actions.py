@@ -1,11 +1,11 @@
-from fastapi import Request
+import os
+import requests
 
 from app.models.reward.reward_models import RewardCreate, RewardUpdate, RewardUser, RewardUsersUpdate
 from burp.models.reward import RewardModelDB
 from burp.utils.base_crud import BaseCRUD
 from burp.utils.auth_utils import access_token_creation
 
-from ..http.rails_api_requests import HttpRequests as RailsRequests
 
 EMPLOYEE = {
     'email': 'robby.ketchell@gmail.com',
@@ -25,28 +25,28 @@ TOKEN_DATA = {
 class RewardActions:
 
     # ver. 1a create_reward, does not add reward to db
-    @classmethod
-    async def create_reward(cls, request: Request, reward_create: RewardCreate):
-        return await RailsRequests.post(path='/api/v4/company/rewards', body={
-            "employee": {
-                "email": EMPLOYEE["email"],
-                "first_name": EMPLOYEE["first_name"],
-                "last_name": EMPLOYEE["last_name"]
-            },
-            "bucket_customization": {
-                "id": reward_create.bucket_customization_id
-            },
-            "program": {
-                "id": reward_create.sending_managers_program_id
-            },
-            "subject": reward_create.subject,
-            "memo": reward_create.memo,
-            "company_values": reward_create.company_values,
-            "share_achievement_data": {
-                "recipients_emails": reward_create.recipient_emails,
-                "note": reward_create.recipient_note
-            }
-        })
+    # @classmethod
+    # async def create_reward(cls, request: Request, reward_create: RewardCreate):
+    #     return await RailsRequests.post(path='/api/v4/company/rewards', body={
+    #         "employee": {
+    #             "email": EMPLOYEE["email"],
+    #             "first_name": EMPLOYEE["first_name"],
+    #             "last_name": EMPLOYEE["last_name"]
+    #         },
+    #         "bucket_customization": {
+    #             "id": reward_create.bucket_customization_id
+    #         },
+    #         "program": {
+    #             "id": reward_create.sending_managers_program_id
+    #         },
+    #         "subject": reward_create.subject,
+    #         "memo": reward_create.memo,
+    #         "company_values": reward_create.company_values,
+    #         "share_achievement_data": {
+    #             "recipients_emails": reward_create.recipient_emails,
+    #             "note": reward_create.recipient_note
+    #         }
+    #     })
 
     @staticmethod
     async def to_reward_db_model(reward_create: RewardCreate):

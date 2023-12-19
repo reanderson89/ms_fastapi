@@ -84,6 +84,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       BASE_URL: 'https://milestones-dev.blueboard.app'
       CRON: 'true'
+      CRON_TOKEN: ${CRON_TOKEN}
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}

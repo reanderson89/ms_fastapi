@@ -2,7 +2,7 @@ FROM python:3.11.4-slim-bullseye
 WORKDIR /app
 
 RUN apt-get update \
-  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic curl npm \
+  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic curl cron npm \
   && apt-get clean
 
 RUN npm cache clean -f
@@ -37,6 +37,7 @@ RUN chmod +x /app/linter.sh
 # debug mode funtionality
 RUN pip install debugpy
 # tests
+COPY Docker/crontab /crontab
 COPY ./tests/ /app/tests
 COPY Docker/entrypoint_localhost.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
