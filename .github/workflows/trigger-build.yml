@@ -32,16 +32,18 @@
         #       fetch-depth: 0
         #       persist-credentials: false # this must be false to use the PAT in the push below
 
-        #   - name: Debugging
-        #     run: |
-        #       echo ${{ toJson(inputs) }}
-
           - name: Checkout Blueboard's Shared GitHub Actions 🔧
             uses: actions/checkout@v4
             with:
               repository: blueboard/github_actions
               token: ${{ secrets.BLUEBOARD_BOT_PAT }}
               path: .github/actions
+
+          - name: Debugging
+            run: |
+              pwd
+              ls
+              find .
 
           - name: Make Empty Commit to Trigger Build
             uses: ./.github/actions/trigger-build
