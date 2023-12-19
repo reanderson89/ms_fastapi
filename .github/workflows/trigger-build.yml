@@ -25,30 +25,31 @@
         name: Push Empty Commit
         runs-on: ubuntu-latest
         steps:
-        #   - name: Checkout
-        #     uses: actions/checkout@v4
-        #     with:
-        #       ref: ${{ github.head_ref }}
-        #       fetch-depth: 0
-        #       persist-credentials: false # this must be false to use the PAT in the push below
-
-          - name: Checkout Blueboard's Shared GitHub Actions 🔧
+          - name: Checkout
             uses: actions/checkout@v4
             with:
-              repository: blueboard/github_actions
-              token: ${{ secrets.BLUEBOARD_BOT_PAT }}
-              path: .github/actions
+              ref: ${{ github.head_ref }}
+              fetch-depth: 0
+              # persist-credentials: false # this must be false to use the PAT in the push below
 
-          - name: Debugging
-            run: |
-              pwd
-              ls
-              find .
+          # - name: Checkout Blueboard's Shared GitHub Actions 🔧
+          #   uses: actions/checkout@v4
+          #   with:
+          #     repository: blueboard/github_actions
+          #     token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+          #     path: .github/actions
 
           - name: Make Empty Commit to Trigger Build
-            uses: ./.github/actions/trigger-build
-            with:
-              token: ${{ secrets.BLUEBOARD_BOT_PAT }}
-              level: ${{ inputs.level }}
-              ref: ${{ inputs.ref }}
-              repository: ${{ github.event.repository.name }}
+            run: |
+              git config --global user.name '$(git log -n 1 --pretty=format:%an)'
+              git config --global user.email  '$(git log -n 1 --pretty=format:%ae)'
+              git commit --allow-empty -m "no-op ${{ inputs.level }}"
+              git push
+
+          # - name: Make Empty Commit to Trigger Build
+          #   uses: ./.github/actions/trigger-build
+          #   with:
+          #     token: ${{ secrets.BLUEBOARD_BOT_PAT }}
+          #     level: ${{ inputs.level }}
+          #     ref: ${{ inputs.ref }}
+          #     repository: ${{ github.event.repository.name }}
