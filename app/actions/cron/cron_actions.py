@@ -117,10 +117,13 @@ class CronActions:
         
     @staticmethod
     async def authenticate(request: Request):
-        if request.headers.get("authorization"):
+        if request.headers.get("authorization").split(" ")[1]:
             token = request.headers.get("authorization").split(" ")[1]
         else:
-            token = None
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token and/or user-agent"
+            )
             
         user_agent = request.headers.get("user-agent")
         if token == os.environ.get("CRON_TOKEN") and user_agent == "milestones-cron-send-rewards":
