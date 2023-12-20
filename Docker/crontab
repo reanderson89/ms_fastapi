@@ -1,4 +1,4 @@
 # Milestones cron jobs go here
-* * * * * root /usr/bin/curl -A "${SEND_REWARDS}" --header "Authorization: Bearer ${CRON_TOKEN}" --location http://127.0.0.1/blue/cron/rewards/send > /app/cron_log.txt 2>&1
+* * * * * root /usr/bin/curl -A "milestones-cron-send-rewards" --header "Authorization: Bearer ${CRON_TOKEN}" --location http://127.0.0.1/blue/cron/rewards/send > /app/cron_log.txt 2>&1
 # * * * * * root /usr/bin/curl -A "milestones-cron" --location http://127.0.0.1/blue/cron > /dev/null 2>&1
 # This file must end with a newline
