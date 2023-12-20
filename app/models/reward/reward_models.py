@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 from burp.models.base_models import BasePydantic
 from burp.models.reward import RewardModel
+from pydantic import validator
 
 
 class AnniversaryType(Enum):
@@ -20,6 +21,11 @@ class Rule(BasePydantic):
     state: Optional[str]
     country: Optional[str]
     region: Optional[str]
+
+    @validator('anniversary_type', pre=False)
+    def validate_award_type(cls, v, field):
+        if isinstance(v, Enum):
+            return v.value
 
 
 class RewardUser(BasePydantic):

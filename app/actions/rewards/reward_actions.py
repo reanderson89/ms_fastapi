@@ -85,11 +85,11 @@ class RewardActions:
         return updated_reward
 
     @classmethod
-    async def get_rewards_by_company(cls, company_id, fitler_params: dict = None):
+    async def get_rewards_by_company(cls, company_id, filter_params: dict = None):
         return await BaseCRUD.get_all_where(
             RewardModelDB,
             [RewardModelDB.company_id == company_id],
-            params=fitler_params,
+            params=filter_params,
             pagination=False
         )
 
@@ -115,6 +115,7 @@ class RewardActions:
 
     @classmethod
     async def update_reward(cls, company_id, reward_uuid, reward_update: RewardUpdate):
+        # reward_update.rule.anniversary_type = reward_update.rule.anniversary_type.value
         return await BaseCRUD.update(
             RewardModelDB,
             [
