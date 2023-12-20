@@ -1,13 +1,19 @@
+from enum import Enum
 from typing import Optional
 from burp.models.base_models import BasePydantic
 from burp.models.reward import RewardModel
 
 
+class AnniversaryType(Enum):
+    BIRTHDAY = 1
+    HIRE_DATE = 2
+    ONBOARDING_DATE = 3
+
+
 class Rule(BasePydantic):
+    anniversary_type: AnniversaryType
     program_cadence: Optional[str]
-    user_birthdate: Optional[int]
     anniversary: Optional[int]
-    employment_date: Optional[int]
     manager_ID: Optional[int]
     department: Optional[str]
     city: Optional[str]
@@ -49,6 +55,8 @@ class RewardInfo(BasePydantic):
     sending_managers_program_id: Optional[int]
     bucket_customization: Optional[int]
     subject: Optional[str]
+    memo: Optional[str]
+    recipient_note: Optional[str]
 
 
 # ver. 1a reward create
@@ -81,7 +89,7 @@ class BaseRewardModel(BasePydantic):
 class RewardResponse(RewardModel):
     users: Optional[list[RewardUser]]
 
-    
+
 # class RewardResponse(BasePydantic):
 #     reward_info: dict
 

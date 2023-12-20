@@ -9,7 +9,7 @@ HEADERS = {
     "Cookie": ""
 }
 
-RAILS_API = os.environ["RAILS_API"]
+RAILS_API = os.environ.get("RAILS_API")
 
 
 class HttpRequests:
