@@ -1,5 +1,4 @@
 import asyncio
-import os
 from contextlib import asynccontextmanager
 from threading import Thread
 
@@ -12,7 +11,7 @@ from app.configs import run_config
 from app.worker.queue_worker import QueueWorker
 from app.middleware import LoggingMiddleware
 from app.routers import admin_routers, auth_routers, cron_routers, routers
-from app.seed_data import seed_database
+from fastapi.middleware.cors import CORSMiddleware
 
 
 async def run_worker():
@@ -34,24 +33,33 @@ async def lifespan(app: FastAPI):
     """ start the worker thread when the app starts """
     worker_thread = Thread(target=start_worker_thread, daemon=True)
     worker_thread.start()
-
-    bootstrap_envs = ["LOCAL", "DEV"]
-    env = os.getenv("ENV", "LOCAL").upper()
-    if env in bootstrap_envs:
-        """
-        try/except was added because when the container would reload when a change was made,
-        it would error out on the fact that the users already existed.
-        """
-        try:
-            await seed_database()
-            yield
-        except:
-            yield
-    else:
-        yield
+    
+    yield
+    # bootstrap_envs = ["LOCAL", "DEV"]
+    # env = os.getenv("ENV", "LOCAL").upper()
+    # if env in bootstrap_envs:
+    #     """
+    #     try/except was added because when the container would reload when a change was made,
+    #     it would error out on the fact that the users already existed.
+    #     """
+    #     try:
+    #         # await seed_database()
+    #         yield
+    #     except:
+    #         yield
+    # else:
+    #     yield
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
+# This allows for FE local development to make requests to the BE
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(routers, prefix="/v1")
