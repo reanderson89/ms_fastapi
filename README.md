@@ -231,3 +231,35 @@ The ports section also exposes specified ports from containers. Unlike the previ
 
 - [Docker Compose Network](https://medium.com/@caysever/docker-compose-network-b86e424fad82)
 - `network_mode: "host"` [Host networking](https://docs.docker.com/network/host/)
+
+## Run Cron Jobs
+#### Local Configuration
+- Make sure CRON is set to "true" in the `docker-compose.yml`
+- - If you would like to turn CRON off you can set it to "false"
+- Create an environment variable in `.env` for `CRON_TOKEN`
+- - Any token will work for local setup. e.g. `CRON_TOKEN=321`
+
+#### Usage
+After you have milestones running, you can verify the cron job is running two different ways:
+
+1. You can check output the code for the cron job and verify that it is passing the right information to the correct url.
+```bash
+docker ps
+```
+
+Select the `CONTAINER ID` for the milestones_api and run:
+```bash
+docker exec -it <CONTAINER_ID> bash
+```
+
+Finally, run:
+```bash
+crontab -l
+```
+You should see a list of cron jobs. Any cron job starting with `#` is a job that is currently un-active.
+
+2. You can check the logs from the container and you should see something like this:
+- `milestones_api  | INFO:     127.0.0.1:47190 - "GET /blue/cron/rewards/send HTTP/1.1" 200 OK`
+
+If you see a 401 Unauthorized it means you probably did not set the `CRON_TOKEN` in your `.env`, or you have not re-built the container since you did.
+- `milestones_api  | INFO:     127.0.0.1:47914 - "GET /blue/cron/rewards/send HTTP/1.1" 401 Unauthorized`
