@@ -40,6 +40,8 @@ fi
 # Append our cron to the system crontab and start crond
 if [ ! -z ${CRON} ]; then
     echo "Configuring cron..."
+    # printenv added for demo purposes with the cron job
+    printenv > /etc/environment
     # envsubst is used here to put a bearer token into the crontab
     envsubst < /crontab >> /etc/crontab
     crontab /etc/crontab
