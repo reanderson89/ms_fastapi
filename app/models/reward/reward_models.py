@@ -22,8 +22,8 @@ class Rule(BasePydantic):
     country: Optional[str]
     region: Optional[str]
 
-    @validator('anniversary_type', pre=False)
-    def validate_award_type(cls, v, field):
+    @validator("anniversary_type", pre=False)
+    def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
 
@@ -63,6 +63,7 @@ class RewardInfo(BasePydantic):
     subject: Optional[str]
     memo: Optional[str]
     recipient_note: Optional[str]
+    company_values: Optional[list[str]]
 
 
 # ver. 1a reward create
@@ -93,7 +94,7 @@ class BaseRewardModel(BasePydantic):
 
 
 class RewardResponse(RewardModel):
-    users: Optional[list[RewardUser]]
+    users: Optional[dict]
 
 
 # class RewardResponse(BasePydantic):
@@ -104,13 +105,13 @@ class RewardUpdate(BasePydantic):
     company_id: int
     client_admin_id: Optional[int]
     rule: Optional[Rule]
-    users: Optional[list[RewardUser]]
+    users: Optional[dict]
     reward_info: Optional[RewardInfo]
 
 
 class RewardUsersUpdate(BasePydantic):
     company_id: int
-    users: list[RewardUser]
+    users: dict
 
 
 class RewardDelete(BasePydantic):
