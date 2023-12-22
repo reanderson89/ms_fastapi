@@ -37,7 +37,7 @@ class CronActions:
                 rewards_by_date = reward.users
 
                 # Check if there are any users with a reward for today
-                if today in rewards_by_date:
+                if rewards_by_date and today in rewards_by_date:
                     users = rewards_by_date[today]
                      
                     # Loops through the users and checks their reward_id against the reward_id's from the sendable_awards.
