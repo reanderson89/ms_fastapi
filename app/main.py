@@ -11,7 +11,6 @@ from app.configs import run_config
 from app.worker.queue_worker import QueueWorker
 from app.middleware import LoggingMiddleware
 from app.routers import admin_routers, auth_routers, cron_routers, routers
-from fastapi.middleware.cors import CORSMiddleware
 
 
 async def run_worker():
@@ -52,14 +51,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
-# This allows for FE local development to make requests to the BE
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(routers, prefix="/v1")
