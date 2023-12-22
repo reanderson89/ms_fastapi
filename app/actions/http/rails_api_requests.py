@@ -11,7 +11,7 @@ class HttpRequests:
     def get_url(path: str):
         return f"{RAILS_API}{path}"
 
-    @rails_auth
+    # @rails_auth
     # @handle_response
     @classmethod
     async def get(cls, path: str, headers: RequestHeaders = None):

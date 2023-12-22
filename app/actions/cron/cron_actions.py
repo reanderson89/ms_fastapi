@@ -22,6 +22,9 @@ class CronActions:
 
     @classmethod
     async def send_rewards(cls):
+        sendable_awards = (await RailsRequests.get("/api/v4/sendables/requested", await RewardActions.get_headers())).json()['approved']
+        # reward["id"] in this loop is actually the sendable_id
+        sendable_lookup = {sendable['rewardable_id']: sendable['id'] for sendable in sendable_awards}
         company_ids: list = await RewardActions.get_distinct_company_ids()
 
         for company_id in company_ids:
@@ -36,9 +39,18 @@ class CronActions:
                 # Check if there are any users with a reward for today
                 if today in rewards_by_date:
                     users = rewards_by_date[today]
+                     
+                    # Loops through the users and checks their reward_id against the reward_id's from the sendable_awards.
+                    sendable_users = []
+                    # Iterate through users to update 'sendable_id'
+                    for user in users:
+                        reward_id = user['reward']['id']
+                        if reward_id in sendable_lookup:
+                            user['reward']['sendable_id'] = sendable_lookup[reward_id]
+                            sendable_users.append(user)
                     # Send rewards to users
-                    responses = await asyncio.gather(*(cls.rails_send_rewards(user, reward, company_id) for user in users))
-                    return responses
+                    responses = await asyncio.gather(*(cls.rails_send_rewards(user, reward, company_id) for user in sendable_users))
+                    # return responses
 
     @classmethod
     async def rails_send_rewards(cls, user: dict, reward: RewardModelDB, company_id: int):
@@ -47,7 +59,8 @@ class CronActions:
 
         print(f"Sending {type} reward to {name} from company {company_id}")
 
-        return await RailsRequests.put(path=f"/api/v4/requests/{user['reward']['id']}/send", headers=await RewardActions.get_headers())
+        # return await RailsRequests.put(path=f"/api/v4/requests/22436/send", headers=await RewardActions.get_headers())
+        return await RailsRequests.put(path=f"/api/v4/requests/{user['reward']['sendable_id']}/send", headers=await RewardActions.get_headers())
 
     @staticmethod
     async def authenticate(request: Request):

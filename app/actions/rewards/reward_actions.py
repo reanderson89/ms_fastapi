@@ -1,6 +1,6 @@
 import calendar
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
 from app.models.reward.reward_models import (
@@ -132,7 +132,7 @@ class RewardActions:
             hired_on_date = datetime.fromisoformat(account["hired_on"])
             onboard_date = hired_on_date + timedelta(days=90)
 
-            today = datetime.now().date()
+            today = datetime.now(timezone(timedelta(hours=-8))).date()
             if anniversary_type.BIRTHDAY:
                 next_anniversary = cls.calculate_next_anniversary(birthday, today)
             elif anniversary_type.HIRE_DATE:
