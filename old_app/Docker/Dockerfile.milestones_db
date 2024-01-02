@@ -1,5 +1,0 @@
-FROM mariadb:latest
-
-RUN apt-get update \
-  && apt -y install iputils-ping \
-  && apt-get clean
