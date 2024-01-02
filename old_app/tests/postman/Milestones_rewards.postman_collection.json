@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "0a5b76a4-5dea-43a7-990b-e911daac9745",
+		"name": "Milestones_rewards",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13402166"
+	},
+	"item": [
+		{
+			"name": "Create Reward",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.collectionVariables.set(\"reward_uuid\", jsonData.uuid);",
+							"    pm.collectionVariables.set(\"company_id\", jsonData.company_id);",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company_id\": 1,\n    \"client_admin_id\": 2,\n    \"rule\": {\n        \"program_cadence\": \"yearly\",\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\"\n    },\n    \"users\": [\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\",\n        \"account_ID\": 4\n        },\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\",\n        \"account_ID\": 5\n        }\n    ],\n    \"reward_info\": {\n        \"award_type\" : \"award_type\",\n        \"sending_managers_account_id\": 6,\n        \"sending_managers_program_id\": 7,\n        \"bucket_customization\": 1234,\n        \"subject\": \"subject\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}/v1/rewards",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"rewards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Rewards by Company",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/rewards/{{company_id}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"rewards",
+						"{{company_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reward",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/rewards/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"rewards",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Reward",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company_id\": 1,\n    \"client_admin_id\": 2,\n    \"rule\": {\n        \"program_cadence\": \"UPDATED\",\n        \"user_birthdate\": 1,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\"\n    },\n    \"users\": [\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\",\n        \"account_ID\": 4\n        },\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\",\n        \"account_ID\": 5\n        }\n    ],\n    \"reward_info\": {\n        \"award_type\" : \"UPDATED\",\n        \"sending_managers_account_id\": 6,\n        \"sending_managers_program_id\": 7,\n        \"bucket_customization\": 1,\n        \"subject\": \"UPDATED\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}/v1/rewards/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"rewards",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Reward",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/rewards/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"rewards",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "reward_uuid",
+			"value": ""
+		},
+		{
+			"key": "company_id",
+			"value": ""
+		}
+	]
+}

@@ -5,13 +5,13 @@ import time
 import greenstalk
 from fastapi import HTTPException
 
-from app.actions.clients.user import ClientUserActions
+# from app.actions.clients.user import ClientUserActions
 from app.actions.cron.cron_actions import CronActions
-from app.models.clients import ClientUserExpand
+# from app.models.clients import ClientUserExpand
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
 from app.worker.utils import build_job_payload
-from burp.models.user import UserModel
+# from burp.models.user import UserModel
 
 logger = init_logger()
 
@@ -106,32 +106,32 @@ class QueueWorker:
             case "MOCK_REWARD_SCHEDULED":
                 logger.milestone(f"Reward scheduled for {job_data['body']['recipient']['name']}")
                 return True, "Processed"
-            case "CREATE_CLIENT_USER":
-                new_user = await ClientUserActions.handle_client_user_job(job_data)
-                if type(new_user) is UserModel:
-                    logger.milestone(f"User created for {new_user.first_name} {new_user.last_name}")
-                elif type(new_user) is ClientUserExpand:
-                    logger.milestone(f"Client User created for {new_user.user.first_name} {new_user.user.last_name}")
-                return True, "Processed"
-            case "MIGRATE_USER":
-                response = await self.migrate_user(job_data)
-                return response, "Processed"
+            # case "CREATE_CLIENT_USER":
+            #     new_user = await ClientUserActions.handle_client_user_job(job_data)
+            #     if type(new_user) is UserModel:
+            #         logger.milestone(f"User created for {new_user.first_name} {new_user.last_name}")
+            #     elif type(new_user) is ClientUserExpand:
+            #         logger.milestone(f"Client User created for {new_user.user.first_name} {new_user.user.last_name}")
+            #     return True, "Processed"
+            # case "MIGRATE_USER":
+            #     response = await self.migrate_user(job_data)
+            #     return response, "Processed"
             case "CRON_JOB":
                 response = await self.cron_job()
                 return response, "Processed"
             case _:
                 return False, "No matching event type found"
 
-    async def migrate_user(self, job_data: dict):
-        body = job_data.get("body")
-        migrated_user = await ClientUserActions.migrate_user(body["current_user_uuid"], body["old_user_uuid"])
-        if migrated_user:
-            logger.milestone("Milestones migration of user info successful.")
-            response = await self.send_response(job_data, {"migration_completed":True})
-        else:
-            logger.milestone("Milestone migration of user info was not successful.")
-            response = await self.send_response(job_data, {"migration_completed":True})
-        return response
+    # async def migrate_user(self, job_data: dict):
+    #     body = job_data.get("body")
+    #     migrated_user = await ClientUserActions.migrate_user(body["current_user_uuid"], body["old_user_uuid"])
+    #     if migrated_user:
+    #         logger.milestone("Milestones migration of user info successful.")
+    #         response = await self.send_response(job_data, {"migration_completed":True})
+    #     else:
+    #         logger.milestone("Milestone migration of user info was not successful.")
+    #         response = await self.send_response(job_data, {"migration_completed":True})
+    #     return response
 
     async def cron_job(self):
         logger.milestone("Cron job received.")

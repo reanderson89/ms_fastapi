@@ -1,0 +1,6 @@
+# Milestones cron jobs go here
+# this will send a request every minute
+# * * * * * root /usr/bin/curl -A "milestones-cron-send-rewards" --header "Authorization: Bearer ${CRON_TOKEN}" --location http://127.0.0.1/blue/cron/rewards/send > /app/cron_log.txt 2>&1
+# this will run a script after a minute that then sends a request every 10 seconds
+* * * * * . /etc/environment; python /app/app/actions/cron/cron_script.py > /app/cron_log.txt 2>&1
+# This file must end with a newline
