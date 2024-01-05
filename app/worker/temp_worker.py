@@ -112,3 +112,19 @@ class TempWorker:
         if response["response_status"] == "error":
             raise Exception(f"Yass ran into an issue. {user['error']}")
         return user
+
+    async def get_users_by_company_id(
+        self,
+        company_id
+    ):
+        job = build_job_payload(
+            "GET_USERS_BY_COMPANY_ID",
+            "MILESTONES",
+            {"company_id": company_id},
+            QUEUE_TUBE
+        )
+        response = await self.temp_worker(job, "yass_tube", QUEUE_TUBE)
+        users = response.get("body") if response else None
+        if response["response_status"] == "error":
+            raise Exception(f"Yass ran into an issue. {users['error']}")
+        return users

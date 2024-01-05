@@ -1,7 +1,7 @@
 import calendar
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
-
+from app.worker.temp_worker import TempWorker
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
 from app.models.reward.reward_models import (
     RewardCreate,
@@ -24,11 +24,13 @@ from app.actions.rewards.mock_responses import mock_user_accounts
 from burp.utils.auth_utils import access_token_creation
 
 TOKEN_DATA = {
-    "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
-    "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
-    "scp": "account",
-    "aud": None,
-    "jti": "6f3d0081-0f73-473c-b1ad-c6165661d969"
+  "exp": 1704734963,
+  "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
+  "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
+  "scp": "account",
+  "aud": None,
+  "iat": 1704475763,
+  "jti": "6273b5ae-c2f8-4390-b694-c484362e4ce8"
 }
 
 
@@ -48,9 +50,11 @@ class RewardActions:
 
         # TODO: Get Users
         # users = await RailsRequests.get(path=f"/accounts?company={reward_create.company_id}")
-        users: dict = mock_user_accounts
+        # users: dict = mock_user_accounts
+        worker = TempWorker()
+        users = await worker.get_users_by_company_id(reward_create.company_id)
 
-        user_rails_rewards = await cls.create_rails_reward(users["accounts"], reward)
+        user_rails_rewards = await cls.create_rails_reward(users, reward)
 
         updated_reward = await cls.update_reward(
             reward.company_id,
@@ -128,8 +132,8 @@ class RewardActions:
 
         for account in user_accounts:
             # Parse datetime strings coming from rails
-            birthday = datetime.fromisoformat(account["birthday"])
-            hired_on_date = datetime.fromisoformat(account["hired_on"])
+            birthday = datetime.fromtimestamp(account["time_birthday"])
+            hired_on_date = datetime.fromtimestamp(account["hired_on"])
             onboard_date = hired_on_date + timedelta(days=90)
 
             today = datetime.now(timezone(timedelta(hours=-8))).date()
