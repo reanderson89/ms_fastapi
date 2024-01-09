@@ -22,8 +22,8 @@ else:
 cron_routers = APIRouter()
 cron_routers.include_router(cron_router)
 
-api_router.include_router(cron_router, tags=["Cron"])
-api_router.include_router(rewards_router, tags=["Rewards"])
+api_router.include_router(cron_router)
+api_router.include_router(rewards_router)
 
 
 @api_router.get("/health", status_code=418)

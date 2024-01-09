@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from fastapi import APIRouter, Path, Body, Depends
 from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
 from app.actions.rewards.reward_actions import RewardActions
@@ -8,7 +8,7 @@ from burp.utils.auth_utils import Permissions
 router = APIRouter(tags=["Rewards"])
 
 
-@router.get("/rewards/{company_id}", response_model=List[RewardResponse])
+@router.get("/rewards/{company_id}", response_model=list[RewardResponse])
 async def get_rewards_by_company(
     company_id: int = Path(...)
 ):

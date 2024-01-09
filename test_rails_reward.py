@@ -33,9 +33,8 @@ user_accounts = [
 
 reward = RewardCreate(
     company_id=1,
-    client_admin_id=1,
     rule={
-        "anniversary_type": 1
+        "rule_type": 1
     },
     reward_info={
         "sending_managers_account_id": 1,

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "0a5b76a4-5dea-43a7-990b-e911daac9745",
+		"_postman_id": "24e6e428-10b0-4c16-ab70-3dc4833cf46b",
 		"name": "Milestones_rewards",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13402166"
+		"_exporter_id": "25650478"
 	},
 	"item": [
 		{
@@ -32,7 +32,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"company_id\": 1,\n    \"client_admin_id\": 2,\n    \"rule\": {\n        \"program_cadence\": \"yearly\",\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\"\n    },\n    \"users\": [\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\",\n        \"account_ID\": 4\n        },\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 2,\n        \"employment_date\": 2,\n        \"manager_ID\": 3,\n        \"department\": \"department\",\n        \"city\" : \"city\",\n        \"state\" : \"state\",\n        \"country\" : \"country\",\n        \"region\": \"region\",\n        \"account_ID\": 5\n        }\n    ],\n    \"reward_info\": {\n        \"award_type\" : \"award_type\",\n        \"sending_managers_account_id\": 6,\n        \"sending_managers_program_id\": 7,\n        \"bucket_customization\": 1234,\n        \"subject\": \"subject\"\n    }\n}",
+					"raw": "{\n    \"company_id\": 18,\n    \"rule\": {\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": 2,\n        \"cadence\": 1,\n        \"cadence_type\": 1,\n        \"cadence_value\": [1,5,10],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": 1,\n        \"sending_time\": \"9:00 AM\"\n    },\n    \"reward_info\": {\n        \"manager_ID\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\"these\", \"are\", \"values\"]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -98,7 +98,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"company_id\": 1,\n    \"client_admin_id\": 2,\n    \"rule\": {\n        \"program_cadence\": \"UPDATED\",\n        \"user_birthdate\": 1,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\"\n    },\n    \"users\": [\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\",\n        \"account_ID\": 4\n        },\n        {\n        \"user_birthdate\": 1234,\n        \"anniversary\": 1,\n        \"employment_date\": 1,\n        \"manager_ID\": 3,\n        \"department\": \"UPDATED\",\n        \"city\" : \"UPDATED\",\n        \"state\" : \"UPDATED\",\n        \"country\" : \"UPDATED\",\n        \"region\": \"UPDATED\",\n        \"account_ID\": 5\n        }\n    ],\n    \"reward_info\": {\n        \"award_type\" : \"UPDATED\",\n        \"sending_managers_account_id\": 6,\n        \"sending_managers_program_id\": 7,\n        \"bucket_customization\": 1,\n        \"subject\": \"UPDATED\"\n    }\n}",
+					"raw": "{\n    \"rule\": {\n        \"rule_name\": \"UPDATED rule name\"\n    },\n    \"reward_info\": {\n        \"subject\": \"UPDATED reward subject\",\n        \"memo\": \"UPDATED memo\",\n        \"recipient_note\": \"UPDATED note\",\n        \"company_values\": [\"these\", \"are\", \"UPDATED\", \"values\"]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -171,6 +171,11 @@
 		{
 			"key": "company_id",
 			"value": ""
+		},
+		{
+			"key": "SERVER",
+			"value": "http://0.0.0.0:80",
+			"type": "string"
 		}
 	]
 }

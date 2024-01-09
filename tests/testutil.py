@@ -431,49 +431,49 @@ new_client_message = {
 
 new_reward = {
     "company_id": 1,
-    "client_admin_id": 2,
     "rule": {
-        "program_cadence": "yearly",
-        "user_birthdate": 1234,
-        "anniversary": 2,
-        "employment_date": 2,
-        "manager_ID": 3,
-        "department": "pytest",
-        "city" : "city",
-        "state" : "state",
-        "country" : "country",
-        "region": "region"
+        "rule_name": "test reward rule",
+        "rule_type": 1,
+        "cadence": 1,
+        "cadence_type": 1,
+        "cadence_value": [1,5,10],
+        "trigger_field": "promoted_on",
+        "timing_type": 1,
+        "sending_time": "9:00 AM",
     },
     "reward_info": {
-        "award_type" : "award_type",
-        "sending_managers_account_id": 6,
-        "sending_managers_program_id": 7,
+        "manager_ID": 3,
+        "sending_managers_account_id": 12,
+        "sending_managers_program_id": 68,
         "bucket_customization": 1234,
-        "subject": "subject"
+        "subject": "test subject",
+        "memo": "test memo",
+        "recipient_note": "test note",
+        "company_values": ["these", "are", "values"]
     }
 }
 
 update_reward = {
     "company_id": 1,
-    "client_admin_id": 2,
     "rule": {
-        "program_cadence": "UPDATED",
-        "user_birthdate": 1,
-        "anniversary": 1,
-        "employment_date": 1,
-        "manager_ID": 3,
-        "department": "UPDATED",
-        "city" : "UPDATED",
-        "state" : "UPDATED",
-        "country" : "UPDATED",
-        "region": "UPDATED"
+        "rule_name": "updated test reward rule",
+        "rule_type": 1,
+        "cadence": 1,
+        "cadence_type": 1,
+        "cadence_value": [1,5,10],
+        "trigger_field": "promoted_on",
+        "timing_type": 1,
+        "sending_time": "9:00 AM",
     },
     "reward_info": {
-        "award_type" : "UPDATED",
-        "sending_managers_account_id": 6,
-        "sending_managers_program_id": 7,
-        "bucket_customization": 1,
-        "subject": "UPDATED"
+        "manager_ID": 3,
+        "sending_managers_account_id": 12,
+        "sending_managers_program_id": 68,
+        "bucket_customization": 1234,
+        "subject": "updated test subject",
+        "memo": "updated test memo",
+        "recipient_note": "updated test note",
+        "company_values": ["these", "are", "updated", "values"]
     }
 }
 

@@ -53,6 +53,7 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'false'
       LOG_LEVEL: debug
+      MOCK: ${MOCK}
       MYSQL_DATABASE: blueboard_milestones
       MYSQL_HOSTNAME: milestones_db
       MYSQL_PASSWORD: milestones

@@ -39,7 +39,7 @@ class CronActions:
                 # Check if there are any users with a reward for today
                 if rewards_by_date and today in rewards_by_date:
                     users = rewards_by_date[today]
-                     
+
                     # Loops through the users and checks their reward_id against the reward_id's from the sendable_awards.
                     sendable_users = []
                     # Iterate through users to update 'sendable_id'
@@ -54,7 +54,7 @@ class CronActions:
 
     @classmethod
     async def rails_send_rewards(cls, user: dict, reward: RewardModelDB, company_id: int):
-        type = reward.rule["anniversary_type"]
+        type = reward.rule["rule_type"]
         name = f"{user['first_name']} {user['last_name']}"
 
         print(f"Sending {type} reward to {name} from company {company_id}")

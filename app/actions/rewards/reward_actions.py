@@ -7,7 +7,7 @@ from app.models.reward.reward_models import (
     RewardCreate,
     RewardUpdate,
     RewardUsersUpdate,
-    AnniversaryType,
+    RuleType,
     # RewardUser,
 )
 from burp.models.reward import RewardModelDB
@@ -95,7 +95,7 @@ class RewardActions:
 
     @classmethod
     async def update_reward(cls, company_id, reward_uuid, reward_update: RewardUpdate):
-        # reward_update.rule.anniversary_type = reward_update.rule.anniversary_type.value
+        # reward_update.rule.rule_type = reward_update.rule.rule_type.value
         return await BaseCRUD.update(
             RewardModelDB,
             [
@@ -114,7 +114,7 @@ class RewardActions:
                 RewardModelDB.uuid == reward_uuid
             ]
         )
-    
+
     @staticmethod
     async def get_headers():
         jwt = await access_token_creation(TOKEN_DATA, True)
@@ -126,7 +126,7 @@ class RewardActions:
 
     @classmethod
     async def create_rails_reward(cls, user_accounts: list, reward: RewardModelDB):
-        anniversary_type = AnniversaryType(reward.rule["anniversary_type"])
+        rule_type = RuleType(reward.rule["rule_type"])
 
         users_by_anniversary = defaultdict(list)
 
@@ -137,11 +137,11 @@ class RewardActions:
             onboard_date = hired_on_date + timedelta(days=90)
 
             today = datetime.now(timezone(timedelta(hours=-8))).date()
-            if anniversary_type.BIRTHDAY:
+            if rule_type.BIRTHDAY:
                 next_anniversary = cls.calculate_next_anniversary(birthday, today)
-            elif anniversary_type.HIRE_DATE:
+            elif rule_type.HIRE_DATE:
                 next_anniversary = cls.calculate_next_anniversary(hired_on_date, today)
-            elif anniversary_type.ONBOARDING_DATE:
+            elif rule_type.ONBOARDING_DATE:
                 next_anniversary = cls.calculate_next_anniversary(onboard_date, today)
 
             users_by_anniversary[next_anniversary.strftime("%m-%d-%y")].append(account)
@@ -164,40 +164,47 @@ class RewardActions:
 
     @classmethod
     async def rails_reward_request(cls, user: dict, reward: RewardModelDB, company_id: int = None):
-        # # For temp testing purposes only. Remove when rails post is fully implemented
-        # mock = True
-        # if mock:
-        #     return mock_create_reward_response(company_id)
-        # else:
-        # header = RequestHeaders(Cookie="stagingJwtToken=")
+        # For temp FE testing purposes
+        import os
+        import json
+        from requests.models import Response
+        from app.actions.rewards.mock_responses import mock_create_reward_response
 
-        employee = RailsEmployee(
-            email=user["email"],
-            first_name=user["first_name"],
-            last_name=user["last_name"]
-        )
-        bucket_customization = RailsBucketCustomization(
-            id=reward.reward_info["bucket_customization"]
-        )
-        program = RailsProgram(
-            id=reward.reward_info["sending_managers_program_id"]
-        )
-        share_achievement_data = RailsAchievementData(
-            recipients_emails=[user["email"]],
-            note=reward.reward_info["recipient_note"]
-        )
-        create_reward = CreateRewardRequest(
-            employee=employee,
-            bucket_customization=bucket_customization,
-            program=program,
-            subject=reward.reward_info["subject"],
-            memo=reward.reward_info["memo"],
-            share_achievement_data=share_achievement_data,
-            company_values=reward.reward_info["company_values"]
-        )
+        MOCK = os.environ.get("MOCK", "True").lower() == "true"
+        if MOCK:
+            # put in to json format
+            response = mock_create_reward_response(company_id)
+            response_obj = Response()
+            response_obj._content = json.dumps(response).encode("utf-8")
+            return response_obj
+        else:
+            employee = RailsEmployee(
+                email=user["email"],
+                first_name=user["first_name"],
+                last_name=user["last_name"]
+            )
+            bucket_customization = RailsBucketCustomization(
+                id=reward.reward_info["bucket_customization"]
+            )
+            program = RailsProgram(
+                id=reward.reward_info["sending_managers_program_id"]
+            )
+            share_achievement_data = RailsAchievementData(
+                recipients_emails=[user["email"]],
+                note=reward.reward_info["recipient_note"]
+            )
+            create_reward = CreateRewardRequest(
+                employee=employee,
+                bucket_customization=bucket_customization,
+                program=program,
+                subject=reward.reward_info["subject"],
+                memo=reward.reward_info["memo"],
+                share_achievement_data=share_achievement_data,
+                company_values=reward.reward_info["company_values"]
+            )
 
-        return await RailsRequests.post(
-            path="/api/v4/company/rewards",
-            headers=await cls.get_headers(),
-            body=create_reward.dict()
-        )
+            return await RailsRequests.post(
+                path="/api/v4/company/rewards",
+                headers=await cls.get_headers(),
+                body=create_reward.dict()
+            )
