@@ -27,7 +27,7 @@ on:
 
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
-  MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
+  DOCKER_REPO: "blueboardinc/milestones_api"
   DEBUG: "false" # set to true for a little more output
 
 jobs:
@@ -123,7 +123,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.YASS_DOCKER_REPO }}
+          images: ${{ env.DOCKER_REPO }}
 
       - name: Build, tag and push Docker image
         uses: docker/build-push-action@v4
@@ -136,8 +136,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ env.YASS_DOCKER_REPO }}:latest
-            ${{ env.YASS_DOCKER_REPO }}:${{ needs.tag.outputs.tag }}
+            ${{ env.DOCKER_REPO }}:latest
+            ${{ env.DOCKER_REPO }}:${{ needs.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
 
   # the purpose of this pre-deploy job is simply to setup any variables needed for the deploy
@@ -246,7 +246,7 @@ jobs:
           REPLICAS: ${{ vars.REPLICAS || 1 }}
         run: |
           # append the tag to form a fully qualified Docker tag
-          export IMAGE_TAG="${{ env.YASS_DOCKER_REPO }}:${IMAGE_TAG}"
+          export IMAGE_TAG="${{ env.DOCKER_REPO }}:${IMAGE_TAG}"
 
           # do the env substitution and fix any issues with single quotes (more details in the Rails API)
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
