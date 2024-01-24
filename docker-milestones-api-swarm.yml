@@ -6,39 +6,27 @@ services:
   api:
     image: ${IMAGE_TAG}
     deploy:
-      mode: replicated
-      replicas: ${REPLICAS}
+      # mode: replicated
+      # replicas: ${REPLICAS}
+      mode: global
       restart_policy:
         condition: on-failure
       update_config:
         parallelism: 2
         delay: 15s
         order: start-first
-      placement:
-        constraints:
-          # Always launch on dev-2 or staging-2
-          - node.hostname != bb-dev-1
-          - node.hostname != bb-dev-3
-          - node.hostname != bb-staging-1
-          - node.hostname != bb-staging-3
-          - node.hostname != bb-prod-5
-          - node.hostname != bb-prod-6
     environment:
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-      AWS_ROLE_ARN: 'arn:aws:iam::252606574785:role/milestones-app-user-${ENV}-role'
-      BASE_URL: 'https://milestones-dev.blueboard.app'
+      BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       # No CRON env var
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: "milestones_tube"
+      JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
@@ -68,28 +56,20 @@ services:
         parallelism: 1
         delay: 15s
         order: start-first
-      placement:
-        constraints:
-          - node.hostname != bb-prod-5
-          - node.hostname != bb-prod-6
     environment:
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-      AWS_ROLE_ARN: 'arn:aws:iam::252606574785:role/milestones-app-user-${ENV}-role'
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      BASE_URL: 'https://milestones-dev.blueboard.app'
+      BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       CRON: 'true'
       CRON_TOKEN: ${CRON_TOKEN}
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
       JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: "milestones_tube"
+      JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
       MYSQL_DATABASE: blueboard_milestones
