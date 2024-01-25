@@ -4,10 +4,11 @@ on:
   push:
     tags-ignore:
       - '**'
-    # paths-ignore:
-    #   - '.github/**'
+    paths-ignore:
+      - '.github/**'
     branches:
       - dev-aws
+      - main
 
   workflow_dispatch:
     inputs:
@@ -21,9 +22,7 @@ on:
         default: "chaos"
         options:
           - chaos
-          # - dev
-          # - staging
-          # - prod
+          - staging
 
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
@@ -260,9 +259,6 @@ jobs:
         uses: ./.github/actions/update-docker-swarm-aws
         timeout-minutes: 2
         with:
-          # TODO hosts
-          # hosts: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_HOSTS || env.ENVIRONMENT == 'staging' && secrets.STAGING_HOSTS || secrets.DEV_HOSTS }}
-          # leader: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
           access_key_id: ${{ secrets.FE_AWS_ACCESS_KEY_ID }}
           bucket: "docker-swarm-${{ env.ENVIRONMENT }}"
           secret_access_key: ${{ secrets.FE_AWS_SECRET_ACCESS_KEY }} # TODO rename this variable

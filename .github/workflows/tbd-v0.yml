@@ -1,6 +1,6 @@
 ---
 
-name: Tag, Build & Deploy v0
+name: Tag, Build & Deploy v0 (Bend)
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
       - '**'
     branches:
       - dev
-      - main
 
   workflow_dispatch:
     inputs:
@@ -22,13 +21,11 @@ on:
         default: "dev"
         options:
           - dev
-          - staging
-          - prod
 
 env:
   SWARM_YAML: "docker-milestones-api-swarm.yml"
   MILESTONES_DOCKER_REPO: "blueboardinc/milestones_api"
-  DEBUG: "true" # set to true for a little more output
+  DEBUG: "false" # set to true for a little more output
 
 jobs:
   tag:
