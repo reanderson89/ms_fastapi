@@ -1,3 +1,4 @@
+import os
 import asyncio
 from contextlib import asynccontextmanager
 from threading import Thread
@@ -32,12 +33,23 @@ async def lifespan(app: FastAPI):
     """ start the worker thread when the app starts """
     worker_thread = Thread(target=start_worker_thread, daemon=True)
     worker_thread.start()
-    
+
     yield
 
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(LoggingMiddleware)
+# added for local devlopment for mario
+if os.environ.get("ENV") == "local":
+    from fastapi.middleware.cors import CORSMiddleware
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Allows all origins
+        allow_credentials=True,
+        allow_methods=["*"],  # Allows all methods
+        allow_headers=["*"],  # Allows all headers
+    )
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(api_router, prefix="/v1")
