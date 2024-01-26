@@ -33,16 +33,16 @@ def test_app():
 
 
 @pytest.fixture(scope="function")
-def reward(test_app: TestClient):
+def program_rule(test_app: TestClient):
     with patch("app.actions.rewards.reward_actions.requests.get", new_callable=MagicMock) as MockRequest:
         mock_rails_response = MagicMock()
-        mock_rails_response.json.return_value = util.users_from_rails
+        mock_rails_response.json.return_value = util.users_from_rails # TODO: still needs to be fixed
         MockRequest.return_value = mock_rails_response
         try:
-            reward = test_app.post("/v1/rewards", json=util.new_reward).json()
-            yield reward
+            program_rule = test_app.post("/v1/program_rule", json=util.new_program_rule).json()
+            yield program_rule
         except Exception as e:
-            raise Exception(f"reward creation failed, Exception: {e}")
+            raise Exception(f"program_rule creation failed, Exception: {e}")
         finally:
-            if reward is not None:
-                test_app.delete(f"/v1/rewards/{reward['company_id']}/{reward['uuid']}")
+            if program_rule is not None:
+                test_app.delete(f"/v1/program_rule/{program_rule['company_id']}/{program_rule['uuid']}")

@@ -136,4 +136,8 @@ class QueueWorker:
     async def cron_job(self):
         logger.milestone("Cron job received.")
         response = await CronActions.send_rewards()
+        if type(response) is int:
+            logger.milestone(f"Done, MOCK Cron job sent {response} mock rewards.")
+        elif response is True:
+            logger.milestone("Cron job completed. Rewards Send.")
         return response

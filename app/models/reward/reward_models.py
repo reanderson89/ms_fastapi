@@ -1,43 +1,59 @@
 from enum import Enum
 from typing import Optional
 from burp.models.base_models import BasePydantic
-from burp.models.reward import RewardModel
+from burp.models.reward import ProgramRuleModel
 from pydantic import validator
 
 
 class RuleType(Enum):
-    BIRTHDAY = 1
-    HIRE_DATE = 2
-    ONBOARDING_DATE = 3
+    BIRTHDAY = "BIRTHDAY"
+    HIRE_DATE = "HIRE_DATE"
+    ONBOARDING_DATE = "ONBOARDING_DATE"
 
 
 class Cadence(Enum):
-    RECURRING = 1
-    NON_RECURRING = 2
+    RECURRING = "RECURRING"
+    NON_RECURRING = "NON_RECURRING"
 
 
 class CadenceType(Enum):
-    YEAR = 1
-    MONTH = 2
-    WEEK = 3
-    DAY = 4
+    NA = "NA"
+    YEAR = "YEAR"
+    MONTH = "MONTH"
+    WEEK = "WEEK"
+    DAY = "DAY"
 
 
 class TimingType(Enum):
-    DAY_OF = 1
-    DAY_BEFORE = 2
-    DAY_AFTER = 3
+    DAY_OF = "DAY_OF"
+    WEEKDAY_MONTH = "WEEKDAY_MONTH"  # first weekday of the month of the milestone
+    WEEKDAY_WEEK = "WEEKDAY_WEEK"  # first weekday of the week of the milestone
+    DAYS_PRIOR = "DAYS_PRIOR"  # x days prior to the milestone TODO: requires an extra field to handle this
 
 
-class Rule(BasePydantic):
+# TODO: Review optional fields. What are the minimum req fields to create a program rule?
+class ProgramRuleCreate(BasePydantic):
+    company_id: int
     rule_name: str
     rule_type: RuleType
-    cadence: Optional[Cadence] # eventually needs to be required
-    cadence_type: Optional[CadenceType] # eventually needs to be required
-    cadence_value: Optional[list[int]] # eventually needs to be required
-    trigger_field: Optional[str] # eventually needs to be required
-    timing_type: Optional[TimingType] # eventually needs to be required
-    sending_time: Optional[str] # eventually needs to be required
+    cadence: Optional[Cadence]
+    cadence_type: Optional[CadenceType]
+    cadence_value: Optional[list[int]]
+    trigger_field: Optional[str]
+    timing_type: Optional[TimingType]
+    sending_time: Optional[str]
+    timezone: Optional[str]
+    manager_id: Optional[int]
+    sending_managers_account_id: Optional[int]
+    sending_managers_program_id: Optional[int]
+    bucket_customization_id: Optional[int]
+    subject: Optional[str]
+    memo: Optional[str]
+    recipient_note: Optional[str]
+    company_values: Optional[list[str]]
+    created_by: Optional[int]
+    updated_by: Optional[int]
+    segment_by: Optional[list[dict]]
 
     @validator("rule_type", "cadence", "cadence_type", "timing_type", pre=False)
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
@@ -45,82 +61,81 @@ class Rule(BasePydantic):
             return v.value
 
 
-class RewardInfo(BasePydantic):
-    manager_ID: Optional[int]
+class ProgramRuleResponse(ProgramRuleModel):
+    pass
+
+
+class ProgramRuleUpdate(BasePydantic):
+    company_id: Optional[int]
+    rule_name: Optional[str]
+    rule_type: Optional[RuleType]
+    cadence: Optional[Cadence]
+    cadence_type: Optional[CadenceType]
+    cadence_value: Optional[list[int]]
+    trigger_field: Optional[str]
+    timing_type: Optional[TimingType]
+    sending_time: Optional[str]
+    timezone: Optional[str]
+    manager_id: Optional[int]
     sending_managers_account_id: Optional[int]
     sending_managers_program_id: Optional[int]
-    bucket_customization: Optional[int]
+    bucket_customization_id: Optional[int]
     subject: Optional[str]
     memo: Optional[str]
     recipient_note: Optional[str]
     company_values: Optional[list[str]]
+    updated_by: Optional[int]
+
+    @validator("rule_type", "cadence", "cadence_type", "timing_type", pre=False)
+    def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
+        if isinstance(v, Enum):
+            return v.value
 
 
-class RewardUser(BasePydantic):
-    user_birthdate: Optional[int]
-    employment_date: Optional[int]
-    manager_ID: Optional[int]
-    department: Optional[str]
-    city: Optional[str]
-    state: Optional[str]
-    country: Optional[str]
-    region: Optional[str]
-    account_ID: Optional[int]
-    # These are all of the fields that come back for each account from the /api/v4/accounts?company=X endpoint
-    id: Optional[int]
-    gid: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    latest_login: Optional[str]
-    deactivated_at: Optional[str]
-    email: Optional[str]
-    vip: Optional[bool]
-    active_role: Optional[str]
-    account_company_id: Optional[int]
-    account_company_name: Optional[str]
-    employee_id: Optional[int]
-    programs: Optional[list[dict]]
-    active_managers: Optional[list[dict]]
-
-
-class RewardCreate(BasePydantic):
-    company_id: int
-    rule: Rule
-    reward_info: RewardInfo
-
-
-class BaseRewardModel(BasePydantic):
-    uuid: str
-    company_id: int
-    rule: Rule
-    reward_info: RewardInfo
-
-
-class RewardResponse(RewardModel):
-    users: Optional[dict]
-
-
-class RuleUpdate(BasePydantic):
-    rule_name: str
-
-
-class RewardInfoUpdate(BasePydantic):
-    subject: Optional[str]
-    memo: Optional[str]
-    recipient_note: Optional[str]
-    company_values: Optional[list[str]]
-
-
-class RewardUpdate(BasePydantic):
-    rule: Optional[RuleUpdate]
-    reward_info: Optional[RewardInfoUpdate]
-
-
-class RewardUsersUpdate(BasePydantic):
-    company_id: int
-    users: dict
-
-
-class RewardDelete(BasePydantic):
+class ProgramRuleDelete(BasePydantic):
     ok: bool
-    Deleted: Optional[RewardModel]
+    Deleted: Optional[ProgramRuleModel]
+
+
+class State(Enum):
+    APPROVING = "APPROVING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    SENT = "SENT"
+    REMOVED = "REMOVED"
+    HARD_DELETED = "HARD_DELETED"
+    # --Please Note--
+    # The 'state' column in the Rails 'rewards' table includes the following
+    # additional states not represented in this enum class: 'scheduling',
+    # 'redeemed', 'rejected_notification', 'completed', and 'scheduled'.
+    # Ensure synchronization if these states are utilized.
+
+
+class StagedRewardCreate(BasePydantic):
+    reward_id: int
+    user_account_uuid: str
+    rule_uuid: str
+    send_on: str
+    employee_id: int
+    company_values_showcased: list[str]
+    company_id: int
+    state: State
+    approved_at: str
+    program_id: int
+    employee_account_id: int
+    gid: str
+
+    @validator("state", pre=True)
+    def validate_case(cls, v):  # pylint: disable=no-self-argument,no-self-use
+        return v.upper()
+
+    @validator("state", pre=False)
+    def validate_value(cls, v):  # pylint: disable=no-self-argument,no-self-use
+        if isinstance(v, Enum):
+            return v.value
+
+
+class SegmentRuleCreate(BasePydantic):
+    parent_rule: str
+    segmented_by: dict[str, str]
+    bucket_customization_id: int

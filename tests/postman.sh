@@ -27,6 +27,7 @@ EOF
 
 SOURCE_DIR=/app/tests/postman
 tests=(
+   "$SOURCE_DIR"/Milestones_program_rule.postman_collection.json
    # "$SOURCE_DIR"/Milestones_rewards.postman_collection.json
    # "$SOURCE_DIR"/Milestones_admins.postman_collection.json
    # "$SOURCE_DIR"/Milestones_awards.postman_collection.json

@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends
 from burp.utils.auth_utils import get_token, UnAuthedMessage
 from starlette import status
 from app.routers.v1.cron.cron_router import router as cron_router
-from app.routers.v1.rewards.rewards_router import router as rewards_router
-
+from app.routers.v1.rewards.rewards_router import router as program_rule_router
 
 
 ENV: str = os.environ.get("ENV", "local")
@@ -14,16 +13,15 @@ if JWT_ENFORCED == "false":
     api_router = APIRouter()
 else:
     api_router = APIRouter(
-            dependencies=[Depends(get_token)],
-            responses={status.HTTP_401_UNAUTHORIZED: dict(model=UnAuthedMessage)}
-        )
-
+        dependencies=[Depends(get_token)],
+        responses={status.HTTP_401_UNAUTHORIZED: dict(model=UnAuthedMessage)}
+    )
 
 cron_routers = APIRouter()
 cron_routers.include_router(cron_router)
 
 api_router.include_router(cron_router)
-api_router.include_router(rewards_router)
+api_router.include_router(program_rule_router)
 
 
 @api_router.get("/health", status_code=418)

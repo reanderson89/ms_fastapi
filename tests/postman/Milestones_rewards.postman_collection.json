@@ -32,7 +32,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"company_id\": 18,\n    \"rule\": {\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": 2,\n        \"cadence\": 1,\n        \"cadence_type\": 1,\n        \"cadence_value\": [1,5,10],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": 1,\n        \"sending_time\": \"9:00 AM\"\n    },\n    \"reward_info\": {\n        \"manager_ID\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\"these\", \"are\", \"values\"]\n    }\n}",
+					"raw": "{\n    \"company_id\": 18,\n    \"rule\": {\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": 2,\n        \"cadence\": 1,\n        \"cadence_type\": 1,\n        \"cadence_value\": [1,5,10],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": 1,\n        \"sending_time\": \"9:00 AM\"\n    },\n    \"reward_info\": {\n        \"manager_ID\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\"these\", \"are\", \"values\"]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -1,6 +1,6 @@
 import asyncio
-from app.actions.rewards.reward_actions import RewardActions
-from app.models.reward.reward_models import RewardCreate
+from app.actions.rewards.reward_actions import RuleActions
+from app.models.reward.reward_models import ProgramRuleCreate
 
 import pprint
 from faker import Faker
@@ -31,24 +31,20 @@ user_accounts = [
     generate_user_account("2003-01-01T00:00:00", "2025-12-31T00:00:00"),
 ]
 
-reward = RewardCreate(
+program_rule = ProgramRuleCreate(
     company_id=1,
-    rule={
-        "rule_type": 1
-    },
-    reward_info={
-        "sending_managers_account_id": 1,
-        "sending_managers_program_id": 1,
-        "bucket_customization_id": 1,
-        "subject": "Test Subject"
-    }
+    rule_type="BIRTHDAY",
+    sending_managers_account_id=1,
+    sending_managers_program_id=1,
+    bucket_customization_id=1,
+    subject="Test Subject"
 )
 
 
 async def main():
-    reward_db_model = await RewardActions.to_reward_db_model(reward)
+    program_rule_db_model = await RuleActions.to_program_rule_db_model(program_rule)
 
-    responses = await RewardActions.create_rails_reward(user_accounts, reward_db_model)
+    responses = await RuleActions.create_rails_reward(user_accounts, program_rule_db_model)
 
     pprint.pprint(responses)
     # print(responses)

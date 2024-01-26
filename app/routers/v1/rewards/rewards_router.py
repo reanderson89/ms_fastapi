@@ -1,49 +1,54 @@
 from typing import Annotated
-from fastapi import APIRouter, Path, Body, Depends
-from app.models.reward.reward_models import RewardCreate, RewardResponse, RewardUpdate, RewardDelete
-from app.actions.rewards.reward_actions import RewardActions
+from fastapi import APIRouter, Body, Depends, Path
+from app.actions.rewards.reward_actions import RuleActions
+from app.models.reward.reward_models import (
+    ProgramRuleCreate,
+    ProgramRuleDelete,
+    ProgramRuleResponse,
+    ProgramRuleUpdate,
+)
 from burp.utils.auth_utils import Permissions
 
 
-router = APIRouter(tags=["Rewards"])
+router = APIRouter(tags=["Program Rule"])
 
 
-@router.get("/rewards/{company_id}", response_model=list[RewardResponse])
-async def get_rewards_by_company(
+@router.get("/program_rule/{company_id}", response_model=list[ProgramRuleResponse])
+async def get_program_rules_by_company(
     company_id: int = Path(...)
 ):
-    return await RewardActions.get_rewards_by_company(company_id)
+    return await RuleActions.get_program_rules_by_company(company_id)
 
 
-@router.get("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse|None)
-async def get_reward(
+@router.get("/program_rule/{company_id}/{rule_uuid}", response_model=ProgramRuleResponse|None)
+async def get_program_rule(
     company_id: int = Path(...),
-    reward_uuid: str = Path(...)
+    rule_uuid: str = Path(...)
 ):
-    return await RewardActions.get_reward(company_id, reward_uuid)
+    return await RuleActions.get_program_rule(company_id, rule_uuid)
 
 
-@router.post("/rewards", response_model=RewardResponse)
-async def create_reward(
+@router.post("/program_rule", response_model=ProgramRuleResponse)
+async def create_program_rule(
     jwt: Annotated[str, Depends(Permissions(level="rails"))],
     # request: Request,
-    reward_create: RewardCreate = Body(...)
+    rule_create: ProgramRuleCreate = Body(...)
 ):
-    return await RewardActions.create_reward(reward_create)
+    return await RuleActions.create_rule(rule_create)
 
 
-@router.put("/rewards/{company_id}/{reward_uuid}", response_model=RewardResponse|None)
-async def update_reward(
+@router.put("/program_rule/{company_id}/{rule_uuid}", response_model=ProgramRuleResponse|None)
+async def update_program_rule(
     company_id: int = Path(...),
-    reward_uuid: str = Path(...),
-    reward_update: RewardUpdate = Body(...)
+    rule_uuid: str = Path(...),
+    rule_update: ProgramRuleUpdate = Body(...)
 ):
-    return await RewardActions.update_reward(company_id, reward_uuid, reward_update)
+    return await RuleActions.update_program_rule(company_id, rule_uuid, rule_update)
 
 
-@router.delete("/rewards/{company_id}/{reward_uuid}", response_model=RewardDelete)
-async def delete_reward(
+@router.delete("/program_rule/{company_id}/{rule_uuid}", response_model=ProgramRuleDelete)
+async def delete_program_rule(
     company_id: int = Path(...),
-    reward_uuid: str = Path(...)
+    rule_uuid: str = Path(...)
 ):
-    return await RewardActions.delete_reward(company_id, reward_uuid)
+    return await RuleActions.delete_program_rule(company_id, rule_uuid)

@@ -324,58 +324,58 @@ new_sub_budget_cap = {
     "budget_type": 2
 }
 
-new_program_rule = {
-    "rule_type": 1,
-    "status": 2,
-    "logic": {
-        "conditions": [
-            {
-            "var": "hire_anniversary",
-            "operator": "=",
-            "value": "today"
-            }
-        ],
-        "details": {
-            "award_type": "1",
-            "client_award": "client_award_uuid",
-            "program_award": "program_award_uuid",
-            "message": "message_uuid"
-        }
-    }
-}
+# new_program_rule = {
+#     "rule_type": 1,
+#     "status": 2,
+#     "logic": {
+#         "conditions": [
+#             {
+#             "var": "hire_anniversary",
+#             "operator": "=",
+#             "value": "today"
+#             }
+#         ],
+#         "details": {
+#             "award_type": "1",
+#             "client_award": "client_award_uuid",
+#             "program_award": "program_award_uuid",
+#             "message": "message_uuid"
+#         }
+#     }
+# }
 
-update_program_rule = {
-    "rule_type": 2,
-    "status": 1,
-    "logic": {"condition": "UPDATED logic"}
-}
+# update_program_rule = {
+#     "rule_type": 2,
+#     "status": 1,
+#     "logic": {"condition": "UPDATED logic"}
+# }
 
-new_segment_rule = {
-    "rule_type": 1,
-    "status": 1,
-    "logic": {
-        "conditions": [
-            {
-            "var": "hire_anniversary",
-            "operator": "=",
-            "value": "today"
-            }
-        ],
-        "details": {
-            "award_type": "1",
-            "client_award": "client_award_uuid",
-            "program_award": "program_award_uuid",
-            "segment_award": "segment_award_uuid",
-            "message": "message_uuid"
-        }
-    }
-}
+# new_segment_rule = {
+#     "rule_type": 1,
+#     "status": 1,
+#     "logic": {
+#         "conditions": [
+#             {
+#             "var": "hire_anniversary",
+#             "operator": "=",
+#             "value": "today"
+#             }
+#         ],
+#         "details": {
+#             "award_type": "1",
+#             "client_award": "client_award_uuid",
+#             "program_award": "program_award_uuid",
+#             "segment_award": "segment_award_uuid",
+#             "message": "message_uuid"
+#         }
+#     }
+# }
 
-update_segment_rule = {
-    "rule_type": 2,
-    "status": 3,
-    "logic": {"condition": "UPDATED logic"}
-}
+# update_segment_rule = {
+#     "rule_type": 2,
+#     "status": 3,
+#     "logic": {"condition": "UPDATED logic"}
+# }
 
 new_segment_design = {
     "channel": 1,
@@ -429,52 +429,44 @@ new_client_message = {
     "status": 1
 }
 
-new_reward = {
+new_program_rule = {
     "company_id": 1,
-    "rule": {
-        "rule_name": "test reward rule",
-        "rule_type": 1,
-        "cadence": 1,
-        "cadence_type": 1,
-        "cadence_value": [1,5,10],
-        "trigger_field": "promoted_on",
-        "timing_type": 1,
-        "sending_time": "9:00 AM",
-    },
-    "reward_info": {
-        "manager_ID": 3,
-        "sending_managers_account_id": 12,
-        "sending_managers_program_id": 68,
-        "bucket_customization": 1234,
-        "subject": "test subject",
-        "memo": "test memo",
-        "recipient_note": "test note",
-        "company_values": ["these", "are", "values"]
-    }
+    "rule_name": "test program rule",
+    "rule_type": "BIRTHDAY",
+    "cadence": "RECURRING",
+    "cadence_type": "YEAR",
+    "cadence_value": [1, 5, 10],
+    "trigger_field": "promoted_on",
+    "timing_type": "DAY_OF",
+    "sending_time": "9:00 AM",
+    "manager_ID": 3,
+    "sending_managers_account_id": 12,
+    "sending_managers_program_id": 68,
+    "bucket_customization_id": 1234,
+    "subject": "test subject",
+    "memo": "test memo",
+    "recipient_note": "test note",
+    "company_values": ["these", "are", "values"]
 }
 
-update_reward = {
-    "company_id": 1,
-    "rule": {
-        "rule_name": "updated test reward rule",
-        "rule_type": 1,
-        "cadence": 1,
-        "cadence_type": 1,
-        "cadence_value": [1,5,10],
-        "trigger_field": "promoted_on",
-        "timing_type": 1,
-        "sending_time": "9:00 AM",
-    },
-    "reward_info": {
-        "manager_ID": 3,
-        "sending_managers_account_id": 12,
-        "sending_managers_program_id": 68,
-        "bucket_customization": 1234,
-        "subject": "updated test subject",
-        "memo": "updated test memo",
-        "recipient_note": "updated test note",
-        "company_values": ["these", "are", "updated", "values"]
-    }
+update_program_rule = {
+    # "company_id": 1,
+    "rule_name": "updated test program rule",
+    "rule_type": "BIRTHDAY",
+    "cadence": "RECURRING",
+    "cadence_type": "YEAR",
+    "cadence_value": [1, 5, 10],
+    "trigger_field": "promoted_on",
+    "timing_type": "DAY_OF",
+    "sending_time": "9:00 AM",
+    "manager_ID": 3,
+    "sending_managers_account_id": 12,
+    "sending_managers_program_id": 68,
+    "bucket_customization_id": 1234,
+    "subject": "updated test subject",
+    "memo": "updated test memo",
+    "recipient_note": "updated test note",
+    "company_values": ["these", "are", "updated", "values"]
 }
 
 users_from_rails = {

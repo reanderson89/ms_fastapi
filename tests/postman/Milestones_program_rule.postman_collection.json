@@ -1,0 +1,411 @@
+{
+	"info": {
+		"_postman_id": "e34327f2-e870-45ef-9467-71a82f1bb458",
+		"name": "Milestones_program_rule",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25650478"
+	},
+	"item": [
+		{
+			"name": "Create Program Rule",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.collectionVariables.set(\"reward_uuid\", jsonData.uuid);",
+							"    pm.collectionVariables.set(\"company_id\", jsonData.company_id);",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company_id\": 18,\n    \"rule_name\": \"Eng Team for Life!!!\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [1,5,10],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"PST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"a reward subject\",\n    \"memo\": \"this is a memo\",\n    \"recipient_note\": \"Test create Note\",\n    \"company_values\": [\"these\", \"are\", \"values\"],\n    \"created_by\": 12345,\n    \"segment_by\": [\n        {\n        \"field\": \"department\",\n        \"operator\": \"=\",\n        \"values\": [\"eng\", \"sales\"]\n        },\n        {\n        \"field\": \"location\",\n        \"operator\": \"!=\",\n        \"values\": [\"New York\", \"San Diego\"]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}/v1/program_rule",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"program_rule"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company_id\": 18,\n    \"rule_name\": \"Eng Team for Life!!!\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [1,5,10],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"PST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"a reward subject\",\n    \"memo\": \"this is a memo\",\n    \"recipient_note\": \"Test create Note\",\n    \"company_values\": [\"these\", \"are\", \"values\"],\n    \"created_by\": 12345,\n    \"segment_by\": [\n        {\n        \"field\": \"department\",\n        \"operator\": \"=\",\n        \"values\": [\"eng\", \"sales\"]\n        },\n        {\n        \"field\": \"location\",\n        \"operator\": \"!=\",\n        \"values\": [\"New York\", \"San Diego\"]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/v1/program_rule",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"v1",
+								"program_rule"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 25 Jan 2024 23:46:51 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "647"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"uuid\": \"ae691dd613cfe73fde72430e9cf1f651d53bd88f8793f2f80dd13903\",\n    \"company_id\": 18,\n    \"rule_name\": \"Eng Team for Life!!!\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [\n        \"1\",\n        \"5\",\n        \"10\"\n    ],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"PST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"a reward subject\",\n    \"memo\": \"this is a memo\",\n    \"recipient_note\": \"Test create Note\",\n    \"company_values\": [\n        \"these\",\n        \"are\",\n        \"values\"\n    ],\n    \"created_by\": 12345,\n    \"updated_by\": null,\n    \"time_created\": 1706226411,\n    \"time_updated\": 1706226411\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Program Rule by Company",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/program_rule/{{company_id}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"program_rule",
+						"{{company_id}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/v1/program_rule/{{company_id}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"v1",
+								"program_rule",
+								"{{company_id}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 25 Jan 2024 23:16:43 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "3246"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"uuid\": \"3051281996b3139947bca0b18e34a9e74dddf539bab909d9f5ee1970\",\n        \"company_id\": 18,\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"PST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 12345,\n        \"time_created\": 1706224141,\n        \"time_updated\": 1706224141\n    },\n    {\n        \"uuid\": \"318cd90eba68ba3fae902ac623657ffa96fd76ba191cf08c7a8965e9\",\n        \"company_id\": 18,\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"PST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 12345,\n        \"time_created\": 1706223946,\n        \"time_updated\": 1706223946\n    },\n    {\n        \"uuid\": \"7afeaea4f16b65bc691d144aa52d69b8fc9aa5b4c4d7dba1f5ad5141\",\n        \"company_id\": 18,\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"PST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 12345,\n        \"time_created\": 1706224264,\n        \"time_updated\": 1706224264\n    },\n    {\n        \"uuid\": \"84ec64360b781250ad52b88b9d8f0a1b7bf0c7ddaad67e7ba7d253b8\",\n        \"company_id\": 18,\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"PST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 12345,\n        \"time_created\": 1706224574,\n        \"time_updated\": 1706224574\n    },\n    {\n        \"uuid\": \"c4bd397d1eee088042e15fb0a5cc8c8e8a80f424451d1113a6eaa9cb\",\n        \"company_id\": 18,\n        \"rule_name\": \"Eng Team for Life!!!\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"PST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"a reward subject\",\n        \"memo\": \"this is a memo\",\n        \"recipient_note\": \"Test create Note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 12345,\n        \"time_created\": 1706224255,\n        \"time_updated\": 1706224255\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get Program Rule",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"program_rule",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"v1",
+								"program_rule",
+								"{{company_id}}",
+								"{{reward_uuid}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 25 Jan 2024 23:16:59 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "648"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"uuid\": \"84ec64360b781250ad52b88b9d8f0a1b7bf0c7ddaad67e7ba7d253b8\",\n    \"company_id\": 18,\n    \"rule_name\": \"Eng Team for Life!!!\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [\n        \"1\",\n        \"5\",\n        \"10\"\n    ],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"PST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"a reward subject\",\n    \"memo\": \"this is a memo\",\n    \"recipient_note\": \"Test create Note\",\n    \"company_values\": [\n        \"these\",\n        \"are\",\n        \"values\"\n    ],\n    \"created_by\": 12345,\n    \"updated_by\": 12345,\n    \"time_created\": 1706224574,\n    \"time_updated\": 1706224574\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Program Rule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"company_id\": 18,\n    \"rule_name\": \"UPDATED rule name\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [1,5,10],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"EST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"UPDATED reward subject\",\n    \"memo\": \"UPDATED memo\",\n    \"recipient_note\": \"UPDATED note\",\n    \"company_values\": [\"these\", \"are\", \"UPDATED\", \"values\"],\n    \"updated_by\": 54321\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"program_rule",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 Response",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company_id\": 18,\n    \"rule_name\": \"UPDATED rule name\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [1,5,10],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"EST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"UPDATED reward subject\",\n    \"memo\": \"UPDATED memo\",\n    \"recipient_note\": \"UPDATED note\",\n    \"company_values\": [\"these\", \"are\", \"UPDATED\", \"values\"],\n    \"updated_by\": 54321\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"v1",
+								"program_rule",
+								"{{company_id}}",
+								"{{reward_uuid}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 25 Jan 2024 23:18:56 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "655"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"uuid\": \"84ec64360b781250ad52b88b9d8f0a1b7bf0c7ddaad67e7ba7d253b8\",\n    \"company_id\": 18,\n    \"rule_name\": \"UPDATED rule name\",\n    \"rule_type\": \"BIRTHDAY\",\n    \"cadence\": \"RECURRING\",\n    \"cadence_type\": \"YEAR\",\n    \"cadence_value\": [\n        \"1\",\n        \"5\",\n        \"10\"\n    ],\n    \"trigger_field\": \"promoted_on\",\n    \"timing_type\": \"DAY_OF\",\n    \"sending_time\": \"9:00 AM\",\n    \"timezone\": \"EST\",\n    \"manager_id\": 12345,\n    \"sending_managers_account_id\": 12,\n    \"sending_managers_program_id\": 68,\n    \"bucket_customization_id\": 5233,\n    \"subject\": \"UPDATED reward subject\",\n    \"memo\": \"UPDATED memo\",\n    \"recipient_note\": \"UPDATED note\",\n    \"company_values\": [\n        \"these\",\n        \"are\",\n        \"UPDATED\",\n        \"values\"\n    ],\n    \"created_by\": 12345,\n    \"updated_by\": 54321,\n    \"time_created\": 1706224574,\n    \"time_updated\": 1706224737\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete Program Rule",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+					"host": [
+						"{{SERVER}}"
+					],
+					"path": [
+						"v1",
+						"program_rule",
+						"{{company_id}}",
+						"{{reward_uuid}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 Response",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}/v1/program_rule/{{company_id}}/{{reward_uuid}}",
+							"host": [
+								"{{SERVER}}"
+							],
+							"path": [
+								"v1",
+								"program_rule",
+								"{{company_id}}",
+								"{{reward_uuid}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 25 Jan 2024 23:19:17 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "677"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"ok\": true,\n    \"Deleted\": {\n        \"uuid\": \"84ec64360b781250ad52b88b9d8f0a1b7bf0c7ddaad67e7ba7d253b8\",\n        \"company_id\": 18,\n        \"rule_name\": \"UPDATED rule name\",\n        \"rule_type\": \"BIRTHDAY\",\n        \"cadence\": \"RECURRING\",\n        \"cadence_type\": \"YEAR\",\n        \"cadence_value\": [\n            \"1\",\n            \"5\",\n            \"10\"\n        ],\n        \"trigger_field\": \"promoted_on\",\n        \"timing_type\": \"DAY_OF\",\n        \"sending_time\": \"9:00 AM\",\n        \"timezone\": \"EST\",\n        \"manager_id\": 12345,\n        \"sending_managers_account_id\": 12,\n        \"sending_managers_program_id\": 68,\n        \"bucket_customization_id\": 5233,\n        \"subject\": \"UPDATED reward subject\",\n        \"memo\": \"UPDATED memo\",\n        \"recipient_note\": \"UPDATED note\",\n        \"company_values\": [\n            \"these\",\n            \"are\",\n            \"UPDATED\",\n            \"values\"\n        ],\n        \"created_by\": 12345,\n        \"updated_by\": 54321,\n        \"time_created\": 1706224574,\n        \"time_updated\": 1706224737\n    }\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "reward_uuid",
+			"value": ""
+		},
+		{
+			"key": "company_id",
+			"value": ""
+		},
+		{
+			"key": "SERVER",
+			"value": "http://0.0.0.0:80",
+			"type": "string"
+		}
+	]
+}
