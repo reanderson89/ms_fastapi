@@ -6,9 +6,8 @@ services:
   api:
     image: ${IMAGE_TAG}
     deploy:
-      # mode: replicated
-      # replicas: ${REPLICAS}
-      mode: global
+      mode: replicated
+      replicas: ${REPLICAS}
       restart_policy:
         condition: on-failure
       update_config:
@@ -21,7 +20,7 @@ services:
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
-      # No CRON env var
+      # No CRON
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
@@ -29,22 +28,26 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_PORT: 3306
       MYSQL_USER: ${MYSQL_USER}
+      POSTGRES_DB: blueboard_milestones
+      POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
       RAILS_API: ${RAILS_API}
       RAILS_JWT_SECRET_KEY: ${RAILS_JWT_SECRET_KEY}
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
       YASS_URL: 'http://yass_api/v1'
+      YASS_URL: 'http://yass_api/v1'
     networks:
       - blueboard_${ENV}
     ports:
       - 8080:80
-    entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
+    entrypoint: /entrypoint.sh # this  is renamed from the swarm entrpoint script
   worker:
     image: ${IMAGE_TAG}
     deploy:
@@ -63,8 +66,7 @@ services:
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
-      CRON: 'true'
-      CRON_TOKEN: ${CRON_TOKEN}
+      CRON: true
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JOB_QUEUE_HOST: ${JOB_QUEUE_HOST}
@@ -72,11 +74,14 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_PORT: 3306
-      MYSQL_USER: milestones
+      MYSQL_USER: ${MYSQL_USER}
+      POSTGRES_DB: blueboard_milestones
+      POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
       RAILS_API: ${RAILS_API}
       RAILS_JWT_SECRET_KEY: ${RAILS_JWT_SECRET_KEY}
       SECRET_KEY: ${SECRET_KEY}
