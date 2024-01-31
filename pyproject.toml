@@ -2,9 +2,10 @@
 requires-python = ">=3.11"         # Support Python 3.11+.
 
 [tool.ruff]
-ignore = ["E501"]                  # E501 is to avoid checking for line-length violations
-ignore = ["UP007"]                 # UP007 is to avoid checking for `X | Y` type annotations
-ignore = ["Q000"]                  # Q000 is to avoid checking for quotes
+# E501 is to avoid checking for line-length violations
+# UP007 is to avoid checking for `X | Y` type annotations
+# Q000 is to avoid checking for quotes
+ignore = ["E501", "UP007", "Q000"]
 
 select = [
   "E",                             # pycodestyle

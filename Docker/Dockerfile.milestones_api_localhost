@@ -2,7 +2,7 @@ FROM python:3.11.4-slim-bullseye
 WORKDIR /app
 
 RUN apt-get update \
-  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic curl cron npm \
+  && apt -y install gettext-base iputils-ping vim postgresql-client alembic curl cron npm \
   && apt-get clean
 
 RUN npm cache clean -f

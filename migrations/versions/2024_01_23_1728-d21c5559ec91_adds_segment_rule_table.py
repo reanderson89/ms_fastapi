@@ -7,7 +7,6 @@ Create Date: 2024-01-23 17:28:44.153678-08:00
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision = 'd21c5559ec91'
@@ -22,11 +21,11 @@ def upgrade() -> None:
     sa.Column('uuid', sa.String(length=56), nullable=False),
     sa.Column('parent_rule', sa.String(length=56), nullable=False),
     sa.Column('segmented_by', sa.JSON(), nullable=False),
-    sa.Column('bucket_customization_id', mysql.INTEGER(), nullable=False),
-    sa.Column('created_by', mysql.INTEGER(), nullable=False),
-    sa.Column('updated_by', mysql.INTEGER(), nullable=False),
-    sa.Column('time_created', mysql.INTEGER(display_width=11), nullable=True),
-    sa.Column('time_updated', mysql.INTEGER(display_width=11), nullable=True),
+    sa.Column('bucket_customization_id', sa.Integer(), nullable=False),
+    sa.Column('created_by', sa.Integer(), nullable=False),
+    sa.Column('updated_by', sa.Integer(), nullable=False),
+    sa.Column('time_created', sa.Integer(), nullable=True),
+    sa.Column('time_updated', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('uuid')
     )
     op.create_index(op.f('ix_segment_rule_bucket_customization_id'), 'segment_rule', ['bucket_customization_id'], unique=False)

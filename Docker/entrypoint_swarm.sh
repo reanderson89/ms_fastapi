@@ -5,17 +5,17 @@
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-echo "Sleeping for 10 seconds to allow Maria DB to start..."
+echo "Sleeping for 10 seconds to allow Postgres DB to start..."
 sleep 10;
 
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
-alias bb-mysql="mysql -v -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
+alias bb-psql="psql -U ${POSTGRES_USER} -h ${POSTGRES_HOSTNAME} -d ${POSTGRES_DB}"
 EOF
 
 if [ -f "${ALEMBIC_INI_FILE}" ]; then
     echo "Alembic config file '${ALEMBIC_INI_FILE}' exists, getting Alembic ready..."
-    export CONN="sqlalchemy.url = mysql+pymysql\:\/\/${MYSQL_USER}\:${MYSQL_PASSWORD}\@${MYSQL_HOSTNAME}\:${MYSQL_PORT}\/${MYSQL_DATABASE}"
+    export CONN="sqlalchemy.url = postgresql\:\/\/${POSTGRES_USER}\:${POSTGRES_PASSWORD}\@${POSTGRES_HOSTNAME}\:${POSTGRES_PORT}\/${POSTGRES_DB}"
 
     # back up original ini file for good measure
     cp ${ALEMBIC_INI_FILE} "${ALEMBIC_INI_FILE}.bak"

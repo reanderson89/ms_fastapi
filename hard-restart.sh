@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# delete 'mariadb-data' folder from root directory
-echo "Deleting 'mariadb-data' folder from root directory..."
-rm -rf mariadb-data
+# delete 'postgresDB-data' folder from root directory
+echo "Deleting 'postgresDB-data' folder from root directory..."
+rm -rf postgresDB-data
 
 # bring down and delete containers
 echo "Bringing down and deleting containers..."

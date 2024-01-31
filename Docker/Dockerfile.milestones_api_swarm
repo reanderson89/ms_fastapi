@@ -3,7 +3,7 @@ WORKDIR /app
 
 # gettext-base is to get envsubst
 RUN apt-get update \
-  && apt -y install gettext-base iputils-ping vim default-mysql-client python3-pymysql alembic cron curl \
+  && apt -y install gettext-base iputils-ping vim postgresql-client alembic cron curl \
   && apt-get clean
 
 # DataDog

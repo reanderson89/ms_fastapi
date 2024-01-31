@@ -115,7 +115,7 @@ There are literally thousands of tutorials, YouTube videos, blogs, and so on, on
 ## Docker files used in milestones_api
 
 - `docker-compose.yml` orchistrates two containers:
-  - The first container is named `milestones_db` -- it is simply runs an instance of `mariadb:latest`.  Note the use of environment variables.
+  - The first container is named `milestones_db` -- it is simply runs an instance of `postgres:latest`.  Note the use of environment variables.
   - The second container is named `milestones_server` -- it has its own `Dockerfile` that specifies how it works.
 - `Dockerfile` specifies how the application server itself is built.  It defines the dependencies that are needed by the application, and a sequential order of execution.  Note the use of `FROM` at the top -- this specifies that this container is based on a pre-built image named [tiangolo/uvicorn-gunicorn-fastapi](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker), which incudes numerous pre-bundled dependencies (unicorn, uvicorn, etc.) that are part of the "base container".  The sequential steps in the `Dockerfile` tell Docker how the application is to be assembled.
 - `./run.sh` starts Docker Compose in a non-detached state (which is easier for debugging) -- this is a simple wrapper for `docker-compose up` command.  This brings up the containers that are defined in `docker-compose.yml`.

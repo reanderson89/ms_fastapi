@@ -8,6 +8,4 @@
 # +--------------------------+
 
 # this is a hack https://stackoverflow.com/questions/1916392/how-can-i-get-rid-of-these-comments-in-a-mysql-dump
-mysqldump -uroot -ppassword \
-    --no-data  \
-    blueboard_milestones > schema.sql # | grep -v '^\/\*![0-9]\{5\}.*\/;$' > schema.sql
+pg_dump -U milestones -W -Fp --no-owner --no-acl --schema-only -d blueboard_milestones > schema.sql

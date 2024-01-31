@@ -147,6 +147,6 @@ dmypy.json
 # VS Code workspaces
 *.code-workspace
 
-# Local Maria DB data dir
-mariadb-data/**
+# Local PostgreSQL DB data dir
+postgresDB-data/**
 .idea

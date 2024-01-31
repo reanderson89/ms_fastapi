@@ -7,22 +7,21 @@ set -e
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-# this is to allow Maria DB to fully start
-while ! mariadb-admin ping -h'milestones_db' -P3306 -u${MYSQL_USER} -p${MYSQL_PASSWORD} 2>/dev/null; do
-    echo "MariaDB not yet ready, sleeping..."
+# this is to allow PostgreSQL to fully start
+while ! pg_isready -h 'milestones_db' -p 5432 -U ${POSTGRES_USER}; do
+    echo "Postgres DB not yet ready, sleeping..."
     sleep 0.5
 done
 
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
-alias bb-mysql="mysql -u$MYSQL_USER -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} ${MYSQL_DATABASE}"
-alias bb-clean-db="bb-mysql < migrations/milestones_nodata_v1.9.3.sql"
+alias bb-psql="psql -U ${POSTGRES_USER} -h ${POSTGRES_HOSTNAME} -d ${POSTGRES_DB}"
 EOF
 
 if [ -f "${ALEMBIC_INI_FILE}" ]; then
     echo "Alembic config file '${ALEMBIC_INI_FILE}' exists, getting alembic ready..."
 
-    export CONN="sqlalchemy.url = mysql+pymysql\:\/\/${MYSQL_USER}\:${MYSQL_PASSWORD}\@${MYSQL_HOSTNAME}\:${MYSQL_PORT}\/${MYSQL_DATABASE}"
+    export CONN="sqlalchemy.url = postgresql\:\/\/${POSTGRES_USER}\:${POSTGRES_PASSWORD}\@${POSTGRES_HOSTNAME}\:${POSTGRES_PORT}\/${POSTGRES_DB}"
 
     # back up original ini file for good measure
     cp ${ALEMBIC_INI_FILE} "${ALEMBIC_INI_FILE}.bak"

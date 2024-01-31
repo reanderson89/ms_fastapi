@@ -6,22 +6,21 @@ version: '3'
 services:
   milestones_db:
     container_name: milestones_db
+    # image: postgres:latest
     build:
       context: .
       dockerfile: Docker/Dockerfile.milestones_db
     volumes:
-      - './mariadb-data/:/var/lib/mysql'
+      - './postgresDB-data/:/var/lib/postgresql/data'
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_LOG_CONSOLE: 'true'
-      MYSQL_DATABASE: blueboard_milestones
-      MYSQL_USER: milestones
-      MYSQL_PASSWORD: milestones
+      POSTGRES_DB: blueboard_milestones
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      PGPASSWORD: password
     expose:
-      - 3306
+      - 5432
     ports:
-      - 3306:3306
+      - 5433:5432
     networks:
       - auth_network
   milestones_api:
@@ -50,12 +49,11 @@ services:
       JWT_ENFORCED: 'false'
       LOG_LEVEL: debug
       MOCK: ${MOCK}
-      MYSQL_DATABASE: blueboard_milestones
-      MYSQL_HOSTNAME: milestones_db
-      MYSQL_PASSWORD: milestones
-      MYSQL_PORT: 3306
-      MQSQL_LOCAL_PORT: 3306
-      MYSQL_USER: milestones
+      POSTGRES_DB: blueboard_milestones
+      POSTGRES_HOSTNAME: milestones_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_PORT: 5432
       RAILS_API: ${RAILS_API}
       RAILS_JWT_SECRET_KEY: ${RAILS_JWT_SECRET_KEY}
       SECRET_KEY: ${SECRET_KEY}
