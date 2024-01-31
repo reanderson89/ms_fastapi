@@ -28,9 +28,6 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
       POSTGRES_DB: blueboard_milestones
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -41,7 +38,6 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
-      YASS_URL: 'http://yass_api/v1'
       YASS_URL: 'http://yass_api/v1'
     networks:
       - blueboard_${ENV}
@@ -74,9 +70,6 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
       POSTGRES_DB: blueboard_milestones
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
