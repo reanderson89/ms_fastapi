@@ -198,22 +198,6 @@ jobs:
           token: ${{ secrets.BLUEBOARD_BOT_PAT }}
           path: .github/actions
 
-      - name: Install and configure Open VPN for ${{ env.ENVIRONMENT }} 🔒
-        if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
-        uses: ./.github/actions/setup-open-vpn
-        timeout-minutes: 2
-        with:
-          vpn_ca_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CA_CRT_B64 || secrets.DEV_VPN_CA_CRT_B64 }}
-          vpn_cert_crt_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_CRT_B64 || secrets.DEV_VPN_CERT_CRT_B64 }}
-          vpn_tls_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_TLS_KEY_B64 || secrets.DEV_VPN_TLS_KEY_B64 }}
-          username: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_USERNAME || secrets.DEV_VPN_SECRET_USERNAME }}
-          password: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_SECRET_PASSWORD || secrets.DEV_VPN_SECRET_PASSWORD }}
-          vpn_cert_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_VPN_CERT_KEY_B64 || secrets.DEV_VPN_CERT_KEY_B64 }}
-          auth: ${{ env.ENVIRONMENT == 'prod' && 'SHA384' || 'SHA256' }}
-          ssh_key_b64: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_SSH_KEY_B64 || secrets.DEV_SSH_KEY_B64 }}
-          config: ${{ env.ENVIRONMENT == 'prod' && '.github/vpn/config-prod.ovpn' || '.github/vpn/config.ovpn' }}
-          ping_host: ${{ env.ENVIRONMENT == 'prod' && secrets.PROD_LEADER || env.ENVIRONMENT == 'staging' && secrets.STAGING_LEADER || secrets.DEV_LEADER }}
-
       - name: Export all GitHub Secrets as Environment Variables
         if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
         env:
