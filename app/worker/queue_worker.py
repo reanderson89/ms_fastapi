@@ -7,6 +7,8 @@ from fastapi import HTTPException
 
 # from app.actions.clients.user import ClientUserActions
 from app.actions.cron.cron_actions import CronActions
+from app.actions.rewards.reward_actions import RuleActions
+from burp.models.reward import ProgramRuleModel
 # from app.models.clients import ClientUserExpand
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
@@ -42,6 +44,7 @@ class QueueWorker:
     def put_in_dlq(self, job, reason):
         job_data = json.loads(job.body)
         job_data["issue"] = reason
+        logger.milestone(f"[Worker] adding job with id: {job.id} to milestones_dlq. Reason: {reason}")
         self.put_job(job_data, "milestones_dlq")
         self.conn.delete(job)
 
@@ -119,6 +122,11 @@ class QueueWorker:
             case "CRON_JOB":
                 response = await self.cron_job()
                 return response, "Processed"
+            case "CREATE_REWARD_FOR_USER":
+                response = await self.create_reward_for_user(job_data['body'])
+                if not response.ok:
+                    return response.ok, response.text
+                return response, "Processed"
             case _:
                 return False, "No matching event type found"
 
@@ -141,3 +149,12 @@ class QueueWorker:
         elif response is True:
             logger.milestone("Cron job completed. Rewards Send.")
         return response
+
+    async def create_reward_for_user(self, body: dict):
+        rule_model = body['rule_data']
+        user = body['user']
+        try:
+            response = await RuleActions.create_rails_reward(user, ProgramRuleModel(**rule_model))
+            return response
+        except Exception as e:
+            return e.args[0]

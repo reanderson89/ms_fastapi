@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from burp.utils.auth_utils import get_token, UnAuthedMessage
 from starlette import status
 from app.routers.v1.cron.cron_router import router as cron_router
-from app.routers.v1.rewards.rewards_router import router as program_rule_router
+from app.routers.v1.rewards.rules_router import router as program_rule_router
 
 
 ENV: str = os.environ.get("ENV", "local")

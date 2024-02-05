@@ -9,6 +9,7 @@ from fastapi import HTTPException
 from app.worker.logging_format import init_logger
 from app.utilities.decorators import handle_reconnect
 from app.worker.utils import build_job_payload
+from burp.models.reward import ProgramRuleModelDB
 
 logger = init_logger()
 
@@ -113,18 +114,16 @@ class TempWorker:
             raise Exception(f"Yass ran into an issue. {user['error']}")
         return user
 
-    async def get_users_by_company_id(
+    def get_users_for_reward_creation(
         self,
-        company_id
+        rule: ProgramRuleModelDB
     ):
         job = build_job_payload(
-            "GET_USERS_BY_COMPANY_ID",
+            "GET_USERS_FOR_REWARD_CREATION",
             "MILESTONES",
-            {"company_id": company_id},
-            QUEUE_TUBE
+            rule.to_dict()
         )
-        response = await self.temp_worker(job, "yass_tube", QUEUE_TUBE)
-        users = response.get("body") if response else None
-        if response["response_status"] == "error":
-            raise Exception(f"Yass ran into an issue. {users['error']}")
-        return users
+        self.put_job(job, "yass_tube")
+
+
+

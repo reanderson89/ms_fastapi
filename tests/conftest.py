@@ -38,7 +38,7 @@ def test_app():
 @pytest.fixture
 def mock_worker():
     worker = TempWorker()
-    worker.get_users_by_company_id = AsyncMock()
+    worker.get_users_for_reward_creation = AsyncMock()
 
 
 @pytest.fixture(scope="function")

@@ -6,9 +6,9 @@ from pydantic import validator
 
 
 class RuleType(Enum):
+    ANNIVERSARY = "ANNIVERSARY"
+    ONBOARDING = "ONBOARDING"
     BIRTHDAY = "BIRTHDAY"
-    HIRE_DATE = "HIRE_DATE"
-    ONBOARDING_DATE = "ONBOARDING_DATE"
 
 
 class Cadence(Enum):
@@ -36,26 +36,46 @@ class ProgramRuleCreate(BasePydantic):
     company_id: int
     rule_name: str
     rule_type: RuleType
-    cadence: Optional[Cadence]
-    cadence_type: Optional[CadenceType]
-    cadence_value: Optional[list[int]]
     trigger_field: Optional[str]
     timing_type: Optional[TimingType]
+    days_prior: Optional[int]
     sending_time: Optional[str]
     timezone: Optional[str]
     manager_id: Optional[int]
     sending_managers_account_id: Optional[int]
     sending_managers_program_id: Optional[int]
     bucket_customization_id: Optional[int]
+    bucket_customization_price: Optional[int]
     subject: Optional[str]
     memo: Optional[str]
     recipient_note: Optional[str]
     company_values: Optional[list[str]]
+    segmented_by: Optional[list[dict]]
     created_by: Optional[int]
     updated_by: Optional[int]
-    segment_by: Optional[list[dict]]
+    anniversary_years: Optional[list[int]] = None
+    onboarding_period: Optional[int] = None
 
-    @validator("rule_type", "cadence", "cadence_type", "timing_type", pre=False)
+      # Validators to ensure `anniversary_years` and `onboarding_period` are provided when required
+    @validator('anniversary_years', always=True)
+    def check_anniversary_years(cls, v, values):
+        if values.get('rule_type') == RuleType.ANNIVERSARY.value and not v:
+            raise ValueError('anniversary_years is required when rule_type is ANNIVERSARY')
+        return v
+
+    @validator('onboarding_period', always=True)
+    def check_onboarding_period(cls, v, values):
+        if values.get('rule_type') == RuleType.ONBOARDING.value and not v:
+            raise ValueError('onboarding_period is required when rule_type is ONBOARDING')
+        return v
+
+    @validator('days_prior', always=True)
+    def check_days_prior(cls, v, values):
+        if values.get('timing_type') == TimingType.DAYS_PRIOR.value and not v:
+            raise ValueError('days_prior is required when timing_type is DAYS_PRIOR')
+        return v
+
+    @validator("rule_type", "timing_type", pre=False)
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
@@ -69,9 +89,6 @@ class ProgramRuleUpdate(BasePydantic):
     company_id: Optional[int]
     rule_name: Optional[str]
     rule_type: Optional[RuleType]
-    cadence: Optional[Cadence]
-    cadence_type: Optional[CadenceType]
-    cadence_value: Optional[list[int]]
     trigger_field: Optional[str]
     timing_type: Optional[TimingType]
     sending_time: Optional[str]
@@ -86,11 +103,16 @@ class ProgramRuleUpdate(BasePydantic):
     company_values: Optional[list[str]]
     updated_by: Optional[int]
 
-    @validator("rule_type", "cadence", "cadence_type", "timing_type", pre=False)
+    @validator("rule_type", "timing_type", pre=False)
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
 
+
+class ProgramRuleRewardCountResponse(BasePydantic):
+    staged_rewards: int
+    company_id: int
+    rule_uuid: str
 
 class ProgramRuleDelete(BasePydantic):
     ok: bool
