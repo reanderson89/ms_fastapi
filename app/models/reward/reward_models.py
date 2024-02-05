@@ -79,34 +79,14 @@ class ProgramRuleCreate(BasePydantic):
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
-
+        
 
 class ProgramRuleResponse(ProgramRuleModel):
     pass
 
 
-class ProgramRuleUpdate(BasePydantic):
-    company_id: Optional[int]
-    rule_name: Optional[str]
-    rule_type: Optional[RuleType]
-    trigger_field: Optional[str]
-    timing_type: Optional[TimingType]
-    sending_time: Optional[str]
-    timezone: Optional[str]
-    manager_id: Optional[int]
-    sending_managers_account_id: Optional[int]
-    sending_managers_program_id: Optional[int]
-    bucket_customization_id: Optional[int]
-    subject: Optional[str]
-    memo: Optional[str]
-    recipient_note: Optional[str]
-    company_values: Optional[list[str]]
-    updated_by: Optional[int]
-
-    @validator("rule_type", "timing_type", pre=False)
-    def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
-        if isinstance(v, Enum):
-            return v.value
+class ProgramRuleUpdate(ProgramRuleCreate):
+    pass
 
 
 class ProgramRuleRewardCountResponse(BasePydantic):
@@ -146,6 +126,9 @@ class StagedRewardCreate(BasePydantic):
     program_id: int
     employee_account_id: int
     gid: str
+    bucket_customization_id: int
+    bucket_customization_price: int
+
 
     @validator("state", pre=True)
     def validate_case(cls, v):  # pylint: disable=no-self-argument,no-self-use

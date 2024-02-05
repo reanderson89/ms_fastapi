@@ -34,13 +34,13 @@ MOCK = os.environ.get("MOCK", "True").lower() == "true"
 
 
 TOKEN_DATA = {
-  "exp": 1707160158,
-  "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
-  "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
-  "scp": "account",
-  "aud": None,
-  "iat": 1706900958,
-  "jti": "235a312a-be28-4bdd-81ef-a047213ef24c"
+    "exp": 1707430772,
+    "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
+    "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
+    "scp": "account",
+    "aud": None,
+    "iat": 1707171572,
+    "jti": "de9829d5-cf97-4ad0-aa46-278bcc3fd27c"
 }
 
 
@@ -57,7 +57,7 @@ class RuleActions:
         rule = await cls.to_program_rule_db_model(rule_create)
         rule = await BaseCRUD.create(rule)
         if not rule:
-            raise ExceptionHandling.custom400("Rule was not created.")
+            return await ExceptionHandling.custom400("Rule was not created.")
         worker = TempWorker()
         worker.get_users_for_reward_creation(rule)
         return rule
@@ -106,8 +106,19 @@ class RuleActions:
         )
 
     @staticmethod
-    async def update_program_rule(company_id, rule_uuid, rule_update: ProgramRuleUpdate):
-        return await BaseCRUD.update(
+    async def handle_update_rails_rewards():
+        # staged_rewards = await 
+        pass
+
+    @staticmethod
+    async def handle_update_staged_rewards():
+        # check if state is "SENT", if so don't update the buckeet_customization_id or price, for historical purposes
+        pass
+
+    @classmethod
+    async def update_program_rule(cls, company_id, rule_uuid, rule_update: ProgramRuleUpdate):
+        current_rule = await RuleActions.get_program_rule(company_id, rule_uuid)
+        updated_rule = await BaseCRUD.update(
             ProgramRuleModelDB,
             [
                 ProgramRuleModelDB.company_id == company_id,
@@ -115,6 +126,17 @@ class RuleActions:
             ],
             rule_update
         )
+        if not updated_rule:
+            return await ExceptionHandling.custom400("Rule was not updated")
+             
+        trigger_fields = ["recipient_note", "bucket_customization_id", "bucket_customization_price", "subject", "memo", "company_values"]
+        for field in trigger_fields:
+            if getattr(updated_rule, field, "") != getattr(current_rule, field, ""):
+                await cls.handle_update_rails_rewards()
+
+        updated_rewards = cls.handle_update_staged_rewards()
+
+        return updated_rule
 
     @staticmethod
     async def delete_program_rule(company_id, rule_uuid):
@@ -237,3 +259,7 @@ class RuleActions:
             ],
             pagination=False
         )
+    
+    @staticmethod 
+    async def get_staged_reward_by_rule():
+        pass

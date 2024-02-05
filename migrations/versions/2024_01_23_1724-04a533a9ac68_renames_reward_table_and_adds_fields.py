@@ -57,6 +57,9 @@ def upgrade() -> None:
     op.drop_index('ix_reward_company_id', table_name='reward')
     op.drop_index('ix_reward_uuid', table_name='reward')
     op.drop_table('reward')
+    op.add_column('staged_reward', sa.Column('bucket_customization_id', sa.Integer(), nullable=False))
+    op.add_column('staged_reward', sa.Column('bucket_customization_price', sa.Integer(), nullable=False))
+
     # ### end Alembic commands ###
 
 
@@ -86,4 +89,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_rule_cadence_type'), table_name='rule')
     op.drop_index(op.f('ix_rule_cadence'), table_name='rule')
     op.drop_table('rule')
+    op.drop_column('staged_reward', 'bucket_customization_id')
+    op.drop_column('staged_reward', 'bucket_customization_price')
+
     # ### end Alembic commands ###
