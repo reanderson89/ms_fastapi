@@ -28,6 +28,9 @@ import os
 import json
 from requests.models import Response
 from app.actions.rewards.mock_responses import mock_create_reward_response
+from app.worker.logging_format import init_logger
+
+logger = init_logger()
 
 # used for local development and testing
 MOCK = os.environ.get("MOCK", "True").lower() == "true"
@@ -159,7 +162,7 @@ class RuleActions:
 
     @classmethod
     async def create_rails_reward(cls, user: dict, program_rule: ProgramRuleModel):
-        print("IN THE CREATE_RAILS_REWARD METHOD")
+        logger.milestones("IN THE CREATE_RAILS_REWARD METHOD")
         rule_type = RuleType(program_rule.rule_type)
 
         # Parse datetime strings coming from rails
@@ -176,10 +179,10 @@ class RuleActions:
             next_anniversary = cls.calculate_next_anniversary(onboard_date, today)
 
         rails_reward_response = await cls.rails_reward_request(user, program_rule)
-        print(f"Rails Response Status Code: {rails_reward_response.status_code}")
-        print(f"Rails Reward Response JSON: {rails_reward_response.json()}")
+        logger.milestones(f"Rails Response Status Code: {rails_reward_response.status_code}")
+        logger.milestones(f"Rails Reward Response JSON: {rails_reward_response.json()}")
         if not rails_reward_response.status_code == 200:
-            print("I HAVE FAILED!!!")
+            logger.milestones("I HAVE FAILED!!!")
             raise Exception(rails_reward_response)
         
         rails_reward = rails_reward_response.json()
