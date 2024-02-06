@@ -1,5 +1,6 @@
 import calendar
 import asyncio
+from starlette.responses import Response
 from app.exceptions import ExceptionHandling
 from datetime import datetime, timedelta, timezone
 from app.worker.temp_worker import TempWorker
@@ -162,7 +163,7 @@ class RuleActions:
 
     @classmethod
     async def create_rails_reward(cls, user: dict, program_rule: ProgramRuleModel):
-        logger.milestones("IN THE CREATE_RAILS_REWARD METHOD")
+        logger.milestone("IN THE CREATE_RAILS_REWARD METHOD")
         rule_type = RuleType(program_rule.rule_type)
 
         # Parse datetime strings coming from rails
@@ -179,15 +180,17 @@ class RuleActions:
             next_anniversary = cls.calculate_next_anniversary(onboard_date, today)
 
         rails_reward_response = await cls.rails_reward_request(user, program_rule)
-        logger.milestones(f"Rails Response Status Code: {rails_reward_response.status_code}")
-        logger.milestones(f"Rails Reward Response JSON: {rails_reward_response.json()}")
+        logger.milestone(f"Rails Response Status Code: {rails_reward_response.status_code}")
+        logger.milestone(f"Rails Reward Response JSON: {rails_reward_response.json()}")
         if not rails_reward_response.status_code == 200:
-            logger.milestones("I HAVE FAILED!!!")
+            logger.milestone("I HAVE FAILED!!!")
             raise Exception(rails_reward_response)
         
         rails_reward = rails_reward_response.json()
         user_reward = {
             "send_on": next_anniversary.strftime("%m-%d-%y"),
+            "bucket_customization_id": program_rule.bucket_customization_id,
+            "bucket_customization_price": program_rule.bucket_customization_price,
             **user,
             **rails_reward["reward"]
         }

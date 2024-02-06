@@ -4,7 +4,7 @@ import time
 
 import greenstalk
 from fastapi import HTTPException
-
+from starlette.responses import Response
 # from app.actions.clients.user import ClientUserActions
 from app.actions.cron.cron_actions import CronActions
 from app.actions.rewards.reward_actions import RuleActions
@@ -124,8 +124,9 @@ class QueueWorker:
                 return response, "Processed"
             case "CREATE_REWARD_FOR_USER":
                 response = await self.create_reward_for_user(job_data['body'])
-                if not response.ok:
-                    return response.ok, response.text
+                if isinstance(response, Response):
+                    if not response.ok:
+                        return response.ok, response.text
                 return response, "Processed"
             case _:
                 return False, "No matching event type found"
