@@ -8,6 +8,10 @@ services:
     deploy:
       mode: replicated
       replicas: ${REPLICAS}
+      placement:
+        constraints:
+          - node.hostname != bb-dev-1
+          - node.hostname != bb-dev-3
       restart_policy:
         condition: on-failure
       update_config:
@@ -49,7 +53,11 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-      restart_policy:
+      placement:
+        constraints:
+          - node.hostname != bb-dev-1
+          - node.hostname != bb-dev-3
+        restart_policy:
         condition: on-failure
       update_config:
         parallelism: 1
