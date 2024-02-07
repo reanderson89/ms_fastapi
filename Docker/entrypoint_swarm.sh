@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-#
-# This is the Docker entrypoint script for running the Milestones app in a hosted environment
-#
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
@@ -30,18 +27,15 @@ else
     echo "Alembic config file '${ALEMBIC_INI_FILE}' is not set or does not exist, skipping Alembic migrations..."
 fi
 
-# Append our cron to the system crontab and start crond
-if [ ! -z ${CRON} ]; then
-    echo "Configuring cron..."
-    # printenv > /etc/environment
-    # envsubst is used here to put a bearer token into the crontab
-    envsubst < /crontab >> /etc/crontab
-    # crontab /etc/crontab
-    service cron start
-    service cron status
-else
-    echo "Skipping cron..."
+if [ "${ENV}" == "dev" ]; then
+  service cron start
+  crontab - <<EOF
+# This script adds the IP of the Docker container that is running
+# Localstack to this container's DNS resolver
+* * * * * /localstack_ip.sh > /localstack_ip.log 2>&1
+EOF
 fi
+service cron status
 
 # TODO decide if we want to use Datadog, e.g.
 # ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
