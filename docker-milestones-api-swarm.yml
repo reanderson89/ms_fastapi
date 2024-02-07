@@ -57,7 +57,7 @@ services:
         constraints:
           - node.hostname != bb-dev-1
           - node.hostname != bb-dev-3
-        restart_policy:
+      restart_policy:
         condition: on-failure
       update_config:
         parallelism: 1

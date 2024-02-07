@@ -120,7 +120,7 @@ jobs:
       #  - https://github.com/ScribeMD/docker-cache
       - name: Cache Milestones Docker Container
         id: milestones-cache
-        uses: ScribeMD/docker-cache@0.3.6
+        uses: ScribeMD/docker-cache@0.3.7
         with:
           # This does not seem like it would work as expected
           # key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
