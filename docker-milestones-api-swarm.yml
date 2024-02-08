@@ -32,6 +32,7 @@ services:
       JOB_QUEUE_TUBE: 'milestones_tube'
       JWT_ENFORCED: 'False' # TODO this is temporary
       LOG_LEVEL: debug
+      MOCK: 'False'
       POSTGRES_DB: milestones_${ENV}
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
