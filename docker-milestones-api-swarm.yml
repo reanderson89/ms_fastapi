@@ -44,6 +44,14 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
       YASS_URL: 'http://yass_api/v1'
+      # this is a guess
+      AWS_ACCESS_KEY_ID: 'foo'
+      AWS_SECRET_ACCESS_KEY: 'bar'
+      QUEUE_ENDPOINT: 'http://sqs.us-east-1.localhost.localstack.cloud:4566'
+      ACCOUNTS_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-accounts'
+      SEGMENT_QUERY_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query'
+      SEGMENT_RESPONSE_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response'
+      QUEUE_REGION: 'us-east-1'
     networks:
       - blueboard_${ENV}
     ports:
@@ -90,6 +98,14 @@ services:
       SPARKPOST_KEY: ${SPARKPOST_KEY}
       TWILIO_FROM: '+16193299600'
       YASS_URL: 'http://yass_api/v1'
+      # this is a guess
+      AWS_ACCESS_KEY_ID: 'foo'
+      AWS_SECRET_ACCESS_KEY: 'bar'
+      QUEUE_ENDPOINT: 'http://sqs.us-east-1.localhost.localstack.cloud:4566'
+      ACCOUNTS_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-accounts'
+      SEGMENT_QUERY_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query'
+      SEGMENT_RESPONSE_QUEUE_URL: 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response'
+      QUEUE_REGION: 'us-east-1'
     networks:
       - blueboard_${ENV}
     entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script

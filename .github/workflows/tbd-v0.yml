@@ -128,7 +128,7 @@ jobs:
 
       - name: Cache Beanstalk Docker Container
         id: beanstalk-cache
-        uses: ScribeMD/docker-cache@0.3.6
+        uses: ScribeMD/docker-cache@0.3.7
         with:
           # This is probably correct, since it's a 3rd party image
           key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}

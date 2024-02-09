@@ -2,7 +2,7 @@ FROM python:3.11.4-slim-bullseye
 WORKDIR /app
 
 RUN apt-get update \
-  && apt -y install iputils-ping vim postgresql-client alembic cron curl \
+  && apt -y install iputils-ping vim postgresql-client alembic cron curl dnsutils \
   && apt-get clean
 
 # DataDog

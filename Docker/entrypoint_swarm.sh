@@ -2,9 +2,6 @@
 echo "Cleaning up Python..."
 find /app -name "*.pyc" -exec rm -f {} \;
 
-echo "Sleeping for 10 seconds to allow Postgres DB to start..."
-sleep 10;
-
 cat << EOF >> /etc/bash.bashrc
 alias ls='ls -la'
 alias bb-psql="psql -U ${POSTGRES_USER} -h ${POSTGRES_HOSTNAME} -d ${POSTGRES_DB}"
