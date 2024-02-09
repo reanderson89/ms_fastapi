@@ -93,7 +93,7 @@ class RuleActions:
                 ProgramRuleModelDB.uuid == rule_uuid
             ]
         )
-    
+
     @staticmethod
     async def get_reward_count_for_rule(company_id, rule_uuid):
         count = await BaseCRUD.get_row_count(
@@ -111,7 +111,7 @@ class RuleActions:
 
     @staticmethod
     async def handle_update_rails_rewards():
-        # staged_rewards = await 
+        # staged_rewards = await
         pass
 
     @staticmethod
@@ -132,7 +132,7 @@ class RuleActions:
         )
         if not updated_rule:
             return await ExceptionHandling.custom400("Rule was not updated")
-             
+
         trigger_fields = ["recipient_note", "bucket_customization_id", "bucket_customization_price", "subject", "memo", "company_values"]
         for field in trigger_fields:
             if getattr(updated_rule, field, "") != getattr(current_rule, field, ""):
@@ -185,7 +185,7 @@ class RuleActions:
         if not rails_reward_response.status_code == 200:
             logger.milestone("I HAVE FAILED!!!")
             raise Exception(rails_reward_response)
-        
+
         rails_reward = rails_reward_response.json()
         user_reward = {
             "send_on": next_anniversary.strftime("%m-%d-%y"),
@@ -269,7 +269,7 @@ class RuleActions:
             ],
             pagination=False
         )
-    
-    @staticmethod 
+
+    @staticmethod
     async def get_staged_reward_by_rule():
         pass

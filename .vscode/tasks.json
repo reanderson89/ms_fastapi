@@ -8,6 +8,7 @@
             "problemMatcher": [],
             // "isBackground": true,
             "presentation": {
+                "group": "build",
                 "panel": "dedicated",
                 "close": true,
                 "reveal": "silent"
@@ -28,17 +29,41 @@
             ],
             "problemMatcher": [],
             "presentation": {
-                "panel": "shared",
+                "group": "build",
+                "panel": "dedicated",
                 "close": true,
                 "reveal": "silent"
             }
         },
         {
-            "label": "Docker Compose Logs",
+            "label": "Start Logs",
             "type": "shell",
-            "command": "docker-compose logs -f",
+            "dependsOn": ["Start App & DB Logs", "Start SQS Logs"],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start App & DB Logs",
+            "type": "shell",
+            "command": "./.vscode/logs_app-db_and_down.sh",
             "problemMatcher": [],
             "presentation": {
+                "group": "logs",
+                "panel": "dedicated",
+                "close": false,
+                "focus": true
+            }
+        },
+        {
+            "label": "Start SQS Logs",
+            "type": "shell",
+            "command": "./.vscode/logs_sqs_and_down.sh",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "logs",
                 "panel": "dedicated",
                 "close": false,
                 "focus": true
@@ -51,9 +76,10 @@
             "problemMatcher": [],
             "isBackground": true,
             "presentation": {
+                "group": "logs",
                 "panel": "dedicated",
                 "close": true,
-                "focus": true
+                "focus": false
             }
         }
 

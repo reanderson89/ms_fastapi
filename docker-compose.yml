@@ -27,14 +27,15 @@ services:
     build:
       context: .
       dockerfile: Docker/Dockerfile.milestones_api_localhost
-    # You can also use existing image like this:
-    # image: blueboardinc/milestones_api:0.0.2
     container_name: milestones_api
     environment:
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
+      AWS_ACCESS_KEY_ID: "foo"
+      AWS_SECRET_ACCESS_KEY: "bar"
+      AWS_REGION: "us-east-1"
       BASE_URL: 'http://localhost:5173/'
       # No CRON
       CRON: "true"
@@ -43,9 +44,13 @@ services:
       DD_TRACE_ENABLED: 'false' # Datadog is fully disabled
       ENV: local
       FERNET_KEY: ${FERNET_KEY}
-      JOB_QUEUE_HOST: 'bean_queue'
-      JOB_QUEUE_PORT: 11300
-      JOB_QUEUE_TUBE: 'milestones_tube'
+      QUEUE_ENDPOINT: "http://localstack:4566"
+      # ACCOUNTS_QUEUE_URL is what the Rails app will use to publish account data to, this becomes a user in YASS
+      ACCOUNTS_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-accounts"
+      # SEGMENT_QUERY_QUEUE_URL is what Milestones uses to publish user queries to (give me all users that are x and y)
+      SEGMENT_QUERY_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query"
+      # SEGMENT_RESPONSE_QUEUE_URL is where YASS publishes the responses
+      SEGMENT_RESPONSE_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response"
       JWT_ENFORCED: 'false'
       LOG_LEVEL: debug
       MOCK: ${MOCK}

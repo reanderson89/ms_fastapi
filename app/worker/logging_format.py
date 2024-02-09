@@ -1,4 +1,4 @@
-# This is a custom logging format for the Beanstalkd queue consumers and producers.
+# This is a custom logging format for the SQS queue consumers and producers.
 
 import logging
 from colorlog import ColoredFormatter
@@ -17,11 +17,9 @@ class CustomLogger(logging.Logger):
         """Log 'message % args' with severity 'GSDPROD'."""
         self._log(GSDPROD_LEVEL, message, args, **kws)
 
-
     def yass(self, message, *args, **kws):
         """Log 'message % args' with severity 'YASS'."""
         self._log(YASS_LEVEL, message, args, **kws)
-
 
     def milestone(self, message, *args, **kws):
         """Log 'message % args' with severity 'MILESTONE'."""
@@ -43,9 +41,9 @@ class CustomLogger(logging.Logger):
 # logging.Logger.milestone = milestone
 
 
-def init_logger():
+def init_logger(worker_name: str = None):
     """Initialize logger with custom logging format."""
-    # logger = logging.getLogger()
+
     logger = CustomLogger(__name__)
     if logger.hasHandlers():
         return logger
@@ -55,8 +53,9 @@ def init_logger():
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
 
+    worker_id = worker_name if worker_name else "worker %(process)d"
     formatter = ColoredFormatter(
-        "%(log_color)s[%(levelname)s- worker %(process)d]%(reset)s %(message)s",
+        f"%(log_color)s[%(levelname)s- {worker_id}]%(reset)s %(message)s",
         datefmt=None,
         reset=True,
         log_colors={
@@ -73,4 +72,5 @@ def init_logger():
 
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+
     return logger

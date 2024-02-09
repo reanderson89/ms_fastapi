@@ -52,9 +52,9 @@ fi
 
 echo "Debug is: ${DEBUG}"
 if [ "${DEBUG}" == "True" ]; then
-    echo "Starting Milestones app in debug mode, now lauch Debug Docker."
+    echo "Starting Milestones in debug mode, now lauch debug Docker."
     exec sh -c "python -Xfrozen_modules=off -m debugpy --wait-for-client --listen 0.0.0.0:5677 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 80"
 else
-    echo "Starting Milestones app"
+    echo "Starting Milestones"
     uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload --use-colors
 fi

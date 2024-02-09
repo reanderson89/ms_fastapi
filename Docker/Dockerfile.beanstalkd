@@ -1,6 +1,0 @@
-FROM ubuntu:latest
-RUN apt-get update \
-  && apt -y install apt-utils beanstalkd \
-  && apt-get clean
-COPY Docker/entrypoint_beanstalkd.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh

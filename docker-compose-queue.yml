@@ -1,14 +1,19 @@
 version: '3'
-name: bean_queue
+name: yass
 services:
-  bean_queue:
-    container_name: bean_queue
+  localstack:
+    container_name: localstack
     build:
       context: .
-      dockerfile: Docker/Dockerfile.beanstalkd
+      dockerfile: Docker/Dockerfile.localstack_localhost
     ports:
-      - '11300:11300'
-    entrypoint: /entrypoint.sh
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - auth_network
 

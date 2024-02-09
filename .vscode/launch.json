@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Debug Local App",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/app/main.py",
             "console": "integratedTerminal", //"externalTerminal",
@@ -17,7 +17,7 @@
         },
         {
             "name": "Debug File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -27,7 +27,7 @@
         {
             // Used by the VSCode test runner
             "name": "PyTest",
-            "type": "python",
+            "type": "debugpy",
             "purpose": ["debug-test"],
             "request": "launch",
             "program": "${file}",
@@ -39,10 +39,12 @@
         },
         {
             "name": "Attach_Debugger",
-            "type": "python",
+            "type": "debugpy",
             "request": "attach",
-            "port": 5677,
-            "host": "localhost",
+            "connect": {
+                "host": "localhost",
+                "port": 5677
+            },
             "preLaunchTask": "Wait for Debugger",
             "postDebugTask": "Close Docker Containers",
             "pathMappings": [
@@ -55,7 +57,7 @@
         },
         {
             "name": "Start_Docker_Environment",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "-c",
             "console": "internalConsole",
@@ -67,7 +69,7 @@
         },
         {
             "name": "Start_Logs",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "-c",
             "console": "internalConsole",
@@ -75,7 +77,7 @@
             "python": "${command:python.interpreterPath}",
             "args": ["print('NOP Configuration Running')"],
             "preLaunchTask": "Wait for Debugger",
-            "postDebugTask": "Docker Compose Logs",
+            "postDebugTask": "Start Logs",
             "presentation": {"hidden": true}
         },
     ],

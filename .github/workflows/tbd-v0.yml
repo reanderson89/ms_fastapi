@@ -338,6 +338,7 @@ jobs:
           ENV: ${{ env.ENVIRONMENT }}
           IMAGE_TAG: ${{ env.TAG }}
           REPLICAS: ${{ vars.REPLICAS || 1 }}
+          LOCALSTACK_REPLICAS: ${{ env.ENVIRONMENT == 'dev' && 1 || 0 }}
         run: |
           # append the tag to form a fully qualified Docker tag
           export IMAGE_TAG="${{ env.MILESTONES_DOCKER_REPO }}:${IMAGE_TAG}"

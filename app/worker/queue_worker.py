@@ -1,61 +1,64 @@
-import json
+import ast
+import asyncio
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 
-import greenstalk
+from botocore.exceptions import EndpointConnectionError
 from fastapi import HTTPException
+from mypy_boto3_sqs import SQSClient
 from starlette.responses import Response
-# from app.actions.clients.user import ClientUserActions
+
 from app.actions.cron.cron_actions import CronActions
 from app.actions.rewards.reward_actions import RuleActions
-from burp.models.reward import ProgramRuleModel
-# from app.models.clients import ClientUserExpand
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
+from app.worker.sqs_client_config import SQSClientSingleton
 from app.worker.utils import build_job_payload
-# from burp.models.user import UserModel
+from burp.models.reward import ProgramRuleModel
 
-logger = init_logger()
+logger = init_logger("Response Worker")
 
-QUEUE_HOST = os.environ.get("JOB_QUEUE_HOST", "localhost")
-QUEUE_PORT = int(os.environ.get("JOB_QUEUE_PORT", 11300))
-QUEUE_TUBE = os.environ.get("JOB_QUEUE_TUBE", "milestones_tube")
+RETRY_DELAY = .5  # Delay between retries in seconds
+MAX_RETRIES = 3  # Maximum number of retries
+
+QUEUE_ENDPOINT = os.environ.get("QUEUE_ENDPOINT", "http://localstack:4566")
+QUEUE_REGION = os.environ.get("QUEUE_REGION", "us-east-1")
+SEGMENT_QUEUE = os.environ.get("SEGMENT_QUERY_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query")
+RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-responses")
 
 
 class QueueWorker:
 
     def __init__(self):
-        self.conn = self.connect_to_greenstalk()
-
-    def connect_to_greenstalk(self):
-        return greenstalk.Client((QUEUE_HOST, QUEUE_PORT), watch=QUEUE_TUBE)
+        self.conn: SQSClient = SQSClientSingleton.get_instance(QUEUE_REGION, QUEUE_ENDPOINT)
+        self.loop = asyncio.get_event_loop()
+        self.executor = ThreadPoolExecutor(max_workers=1)
 
     def reconnect(self):
-        logger.milestone("[Worker] Reconnecting to queue...")
-        self.conn.close()
-        self.conn = self.connect_to_greenstalk()
+        logger.milestone("Reconnecting to queue...")
+        self.conn = SQSClientSingleton.reconnect(QUEUE_REGION, QUEUE_ENDPOINT)
 
     @handle_reconnect
-    def put_job(self, job_data: dict, tube: str = None):
-        tube = tube or QUEUE_TUBE
-        self.conn.use(tube)
-        self.conn.put(json.dumps(job_data))
+    def send_message(self, message: dict, queue_url: str):
+        response = self.conn.send_message(
+            QueueUrl=queue_url,
+            DelaySeconds=1,
+            MessageBody=str(message),
+        )
+        logger.milestone(response)
 
-    def put_in_dlq(self, job, reason):
-        job_data = json.loads(job.body)
-        job_data["issue"] = reason
-        logger.milestone(f"[Worker] adding job with id: {job.id} to milestones_dlq. Reason: {reason}")
-        self.put_job(job_data, "milestones_dlq")
-        self.conn.delete(job)
-
-    async def error_response(self, job, job_data: dict, error_message: str):
-        if job_data.get("response_tube"):
-            await self.send_response(job_data, {error_message}, status="error")
-        self.put_in_dlq(job, error_message)
+    def update_message_visibility(self, receipt_handle, queue):
+        logger.milestone("Unable to process job. Putting job back in queue.")
+        self.conn.change_message_visibility(
+            QueueUrl=queue,
+            ReceiptHandle=receipt_handle,
+            VisibilityTimeout=0
+        )
 
     async def send_response(self, job_data: dict, response_body: dict, status: str = None):
         job = self.response_job(job_data, response_body, status)
-        self.put_job(job, tube=job_data["response_tube"])
+        self.send_message(job, queue_url=job_data["response_tube"])
         return True
 
     def response_job(self, job_data: dict, response_body: dict, status: str = None):
@@ -69,83 +72,110 @@ class QueueWorker:
         )
         return response_payload
 
-    @handle_reconnect
     async def worker(self):
         logger.milestone("Worker is watching...")
         while True:
-            job = self.conn.reserve()
-            job_data = json.loads(job.body)
+            for _ in range(MAX_RETRIES):
+                try:
+                    # runs in a separate thread to avoid blocking the event loop
+                    messages_received = await self.loop.run_in_executor(
+                        self.executor,
+                        lambda: self.conn.receive_message(
+                            QueueUrl=RESPONSE_QUEUE,
+                            AttributeNames=["SentTimestamp"],
+                            MaxNumberOfMessages=1,  # TODO: only will get a single message right now
+                            MessageAttributeNames=["string",],
+                            VisibilityTimeout=30,
+                            WaitTimeSeconds=20
+                        )
+                    )
+                    break
+                except self.conn.exceptions.QueueDoesNotExist:
+                    logger.milestone("Queue does not exist.")
+                    await asyncio.sleep(RETRY_DELAY)
+                except EndpointConnectionError:
+                    logger.milestone("Endpoint connection error.")
+                    self.reconnect()
+                    continue
+                except asyncio.CancelledError:
+                    logger.milestone("Worker cancelled.")
+                    return
+                except Exception as e:
+                    error_name = e.__class__.__name__
+                    logger.milestone(f"Error receiving messages: {error_name}-{e}")
+                    raise e
+
+            else:
+                # If we've exhausted all retries and still failed, reconnect
+                self.reconnect()
+                continue
+
+            if "Messages" not in messages_received.keys():
+                continue
 
             start_time = time.time()
+            logger.milestone(messages_received)
+            # TODO: picking off the top message (only getting one anyway)
+            msg_data = messages_received["Messages"][0]
+            msg_body_dict: dict = ast.literal_eval(msg_data.get("Body") or "")
+            receipt_handle = msg_data.get("ReceiptHandle")
+
             try:
-                should_delete, reason = await self.consume_job(job_data)
+                should_delete = await self.consume_job(msg_body_dict)
 
                 if should_delete:
-                    self.conn.delete(job)
+                    self.conn.delete_message(
+                        QueueUrl=RESPONSE_QUEUE,
+                        ReceiptHandle=receipt_handle
+                    )
                 else:
-                    self.put_in_dlq(job, reason)
+                    self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
 
             except HTTPException as e:
-                event_type = job_data.get("eventType")
-                job_error = f"HTTP error processing {event_type} job: {e.detail}"
-                logger.milestone(f"[Worker] HTTP error processing {event_type} job: {e.detail}")
-                await self.error_response(job, job_data, {"error": f"{job_error}"})
+                event_type = msg_body_dict.get("eventType")
+                msg_error = f"HTTP error processing {event_type} job: {e.detail}"
+                logger.milestone(f"[Worker] {msg_error}")
+                self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
+
             except Exception as e:
-                event_type = job_data.get("eventType")
-                job_error = f"Error processing job . {e.__class__.__name__}: {e}"
-                logger.milestone(f"[Worker] Job error: {str(e)}")
-                await self.error_response(job, job_data, {"error": f"{job_error}"})
+                error_name = e.__class__.__name__
+                if error_name == "ReceiptHandleIsInvalid":
+                    logger.milestone("Receipt handle is invalid.")
+                    continue
+                event_type = msg_body_dict.get("eventType")
+                msg_error = f"Error processing job . {e.__class__.__name__}: {e}"
+                logger.milestone(f"[Worker] {msg_error}")
+                self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
 
             end_time = time.time()
             duration = end_time - start_time
-            logger.milestone(f"{job_data['eventType']} job processed in {format(duration, '.5f')} seconds!")
+            logger.milestone(f"{msg_body_dict['eventType']} Message processed in {format(duration, '.5f')} seconds!")
 
-    async def consume_job(self, job_data: dict):
-        event_type = job_data.get("eventType")
+    async def consume_job(self, msg_data: dict):
+        response = False
+        event_type = msg_data.get("eventType")
         logger.milestone(f"Starting {event_type} job...")
 
-        # try:
         match event_type:
             case "MOCK_REWARD_SCHEDULED":
-                logger.milestone(f"Reward scheduled for {job_data['body']['recipient']['name']}")
-                return True, "Processed"
-            # case "CREATE_CLIENT_USER":
-            #     new_user = await ClientUserActions.handle_client_user_job(job_data)
-            #     if type(new_user) is UserModel:
-            #         logger.milestone(f"User created for {new_user.first_name} {new_user.last_name}")
-            #     elif type(new_user) is ClientUserExpand:
-            #         logger.milestone(f"Client User created for {new_user.user.first_name} {new_user.user.last_name}")
-            #     return True, "Processed"
-            # case "MIGRATE_USER":
-            #     response = await self.migrate_user(job_data)
-            #     return response, "Processed"
+                logger.milestone(f"Reward scheduled for {msg_data['body']['recipient']['name']}")
+                response = True
             case "CRON_JOB":
                 response = await self.cron_job()
-                return response, "Processed"
             case "CREATE_REWARD_FOR_USER":
-                response = await self.create_reward_for_user(job_data['body'])
+                response = await self.create_reward_for_user(msg_data['body'])
                 if isinstance(response, Response):
                     if not response.ok:
-                        return response.ok, response.text
-                return response, "Processed"
+                        response = response.ok
             case _:
-                return False, "No matching event type found"
-
-    # async def migrate_user(self, job_data: dict):
-    #     body = job_data.get("body")
-    #     migrated_user = await ClientUserActions.migrate_user(body["current_user_uuid"], body["old_user_uuid"])
-    #     if migrated_user:
-    #         logger.milestone("Milestones migration of user info successful.")
-    #         response = await self.send_response(job_data, {"migration_completed":True})
-    #     else:
-    #         logger.milestone("Milestone migration of user info was not successful.")
-    #         response = await self.send_response(job_data, {"migration_completed":True})
-    #     return response
+                # No matching event type found
+                response = False
+        return response
 
     async def cron_job(self):
         logger.milestone("Cron job received.")
         response = await CronActions.send_rewards()
-        if type(response) is int:
+        if isinstance(response, int):
             logger.milestone(f"Done, MOCK Cron job sent {response} mock rewards.")
         elif response is True:
             logger.milestone("Cron job completed. Rewards Send.")
