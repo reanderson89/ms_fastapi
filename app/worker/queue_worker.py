@@ -14,30 +14,30 @@ from app.actions.rewards.reward_actions import RuleActions
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
 from app.worker.sqs_client_config import SQSClientSingleton
-from app.worker.utils import build_job_payload
+from app.worker.utils import WorkerUtils
 from burp.models.reward import ProgramRuleModel
 
 logger = init_logger("Response Worker")
 
-RETRY_DELAY = .5  # Delay between retries in seconds
+RETRY_DELAY = 1  # Delay between retries in seconds
 MAX_RETRIES = 3  # Maximum number of retries
 
-QUEUE_ENDPOINT = os.environ.get("QUEUE_ENDPOINT", "http://localstack:4566")
-QUEUE_REGION = os.environ.get("QUEUE_REGION", "us-east-1")
 SEGMENT_QUEUE = os.environ.get("SEGMENT_QUERY_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query")
-RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-responses")
+RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response")
 
 
 class QueueWorker:
 
     def __init__(self):
-        self.conn: SQSClient = SQSClientSingleton.get_instance(QUEUE_REGION, QUEUE_ENDPOINT)
+        self.default_queue = RESPONSE_QUEUE
+        self.queue_name = WorkerUtils.get_queue_name(self.default_queue)
+        self.conn: SQSClient = SQSClientSingleton.get_instance(self.default_queue)
         self.loop = asyncio.get_event_loop()
         self.executor = ThreadPoolExecutor(max_workers=1)
 
     def reconnect(self):
         logger.milestone("Reconnecting to queue...")
-        self.conn = SQSClientSingleton.reconnect(QUEUE_REGION, QUEUE_ENDPOINT)
+        self.conn = SQSClientSingleton.reconnect(self.default_queue)
 
     @handle_reconnect
     def send_message(self, message: dict, queue_url: str):
@@ -62,7 +62,7 @@ class QueueWorker:
         return True
 
     def response_job(self, job_data: dict, response_body: dict, status: str = None):
-        response_payload = build_job_payload(
+        response_payload = WorkerUtils.build_job_payload(
             event_type=f"{job_data['eventType']}_RESPONSE",
             source="MILESTONES",
             response_body=response_body,
@@ -73,7 +73,7 @@ class QueueWorker:
         return response_payload
 
     async def worker(self):
-        logger.milestone("Worker is watching...")
+        logger.milestone(f"Watching \033[92m{self.queue_name}\033[0m queue...")
         while True:
             for _ in range(MAX_RETRIES):
                 try:
@@ -81,7 +81,7 @@ class QueueWorker:
                     messages_received = await self.loop.run_in_executor(
                         self.executor,
                         lambda: self.conn.receive_message(
-                            QueueUrl=RESPONSE_QUEUE,
+                            QueueUrl=self.default_queue,
                             AttributeNames=["SentTimestamp"],
                             MaxNumberOfMessages=1,  # TODO: only will get a single message right now
                             MessageAttributeNames=["string",],
@@ -93,6 +93,8 @@ class QueueWorker:
                 except self.conn.exceptions.QueueDoesNotExist:
                     logger.milestone("Queue does not exist.")
                     await asyncio.sleep(RETRY_DELAY)
+                    logger.milestone("Retrying to receive messages...")
+                    continue
                 except EndpointConnectionError:
                     logger.milestone("Endpoint connection error.")
                     self.reconnect()
@@ -114,7 +116,7 @@ class QueueWorker:
                 continue
 
             start_time = time.time()
-            logger.milestone(messages_received)
+            # logger.milestone(messages_received)
             # TODO: picking off the top message (only getting one anyway)
             msg_data = messages_received["Messages"][0]
             msg_body_dict: dict = ast.literal_eval(msg_data.get("Body") or "")
@@ -125,17 +127,17 @@ class QueueWorker:
 
                 if should_delete:
                     self.conn.delete_message(
-                        QueueUrl=RESPONSE_QUEUE,
+                        QueueUrl=self.default_queue,
                         ReceiptHandle=receipt_handle
                     )
                 else:
-                    self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
+                    self.update_message_visibility(receipt_handle, self.default_queue)
 
             except HTTPException as e:
                 event_type = msg_body_dict.get("eventType")
                 msg_error = f"HTTP error processing {event_type} job: {e.detail}"
                 logger.milestone(f"[Worker] {msg_error}")
-                self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
+                self.update_message_visibility(receipt_handle, self.default_queue)
 
             except Exception as e:
                 error_name = e.__class__.__name__
@@ -145,7 +147,7 @@ class QueueWorker:
                 event_type = msg_body_dict.get("eventType")
                 msg_error = f"Error processing job . {e.__class__.__name__}: {e}"
                 logger.milestone(f"[Worker] {msg_error}")
-                self.update_message_visibility(receipt_handle, RESPONSE_QUEUE)
+                self.update_message_visibility(receipt_handle, self.default_queue)
 
             end_time = time.time()
             duration = end_time - start_time
@@ -157,8 +159,8 @@ class QueueWorker:
         logger.milestone(f"Starting {event_type} job...")
 
         match event_type:
-            case "MOCK_REWARD_SCHEDULED":
-                logger.milestone(f"Reward scheduled for {msg_data['body']['recipient']['name']}")
+            case "TEST MILESTONES RESPONSE QUEUE":
+                logger.milestone(f"Test message received: {msg_data['body']}")
                 response = True
             case "CRON_JOB":
                 response = await self.cron_job()
@@ -169,6 +171,7 @@ class QueueWorker:
                         response = response.ok
             case _:
                 # No matching event type found
+                logger.milestone(f"No matching event type found for {event_type}.")
                 response = False
         return response
 

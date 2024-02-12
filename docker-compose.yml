@@ -44,7 +44,6 @@ services:
       DD_TRACE_ENABLED: 'false' # Datadog is fully disabled
       ENV: local
       FERNET_KEY: ${FERNET_KEY}
-      QUEUE_ENDPOINT: "http://localstack:4566"
       # ACCOUNTS_QUEUE_URL is what the Rails app will use to publish account data to, this becomes a user in YASS
       ACCOUNTS_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-accounts"
       # SEGMENT_QUERY_QUEUE_URL is what Milestones uses to publish user queries to (give me all users that are x and y)

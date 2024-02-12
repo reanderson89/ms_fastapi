@@ -13,14 +13,14 @@ from faker import Faker
 from mypy_boto3_sqs import SQSClient
 
 from app.worker.logging_format import init_logger
-from app.worker.utils import build_job_payload
+from app.worker.utils import WorkerUtils
 
 logger = init_logger()
 faker = Faker()
 
 YASS_ACCOUNT_QUEUE = os.environ.get("ACCOUNTS_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-accounts")
 YASS_SEGMENT_QUEUE = os.environ.get("SEGMENT_QUERY_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query")
-MILESTONES_RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-responses")
+MILESTONES_RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response")
 
 metadata = {
     "department": "engineering",
@@ -203,7 +203,7 @@ class JobProducer:
         last_name = faker.last_name()
         email = f"{first_name.lower()}.{last_name.lower()}@testmail.com"
 
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "CREATE_CLIENT_USER",
             "GSD",
             {
@@ -214,7 +214,7 @@ class JobProducer:
         )
 
     def reward_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "MOCK_REWARD_SCHEDULED",
             "GSD",
             {
@@ -225,14 +225,14 @@ class JobProducer:
         )
 
     def survey_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "MOCK_GET_SURVEY_RESPONSE",
             "GSD",
             {"surveyId": "aebQTOSw"}
         )
 
     def wrong_job(self):
-        job = build_job_payload(
+        job = WorkerUtils.build_job_payload(
             "WRONG_EVENT_TYPE",
             "GSD",
             {"dogs_name": "Spot"}
@@ -250,7 +250,7 @@ class JobProducer:
         phone_number = f"+{faker.random_number(digits=10)}"
         company_id = faker.random_number(digits=1)
 
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "CREATE_USER",
             "GSD",
             {
@@ -266,7 +266,7 @@ class JobProducer:
 
     def user_account_job(self, hard_coded_user=False):
         if hard_coded_user:
-            return build_job_payload(
+            return WorkerUtils.build_job_payload(
                 "CREATE_USER_ACCOUNT",
                 "GSD",
                 {
@@ -296,7 +296,7 @@ class JobProducer:
         manager_id_1 = faker.random_number(digits=5)
         manager_id_2 = faker.random_number(digits=5)
 
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "CREATE_USER_ACCOUNT",
             "GSD",
             {
@@ -324,7 +324,7 @@ class JobProducer:
         )
 
     def update_user_account_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "UPDATE_USER_ACCOUNT",
             "GSD",
             {
@@ -347,7 +347,7 @@ class JobProducer:
         )
 
     def send_auth_code_migrate_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "SEND_AUTH_CODE",
             "GSD",
             {
@@ -358,7 +358,7 @@ class JobProducer:
         )
 
     def send_auth_code_add_service_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "SEND_AUTH_CODE",
             "GSD",
             {
@@ -369,7 +369,7 @@ class JobProducer:
         )
 
     def migrate_user_job(self, auth_code):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "MIGRATE_USER",
             "GSD",
             {
@@ -382,7 +382,7 @@ class JobProducer:
         )
 
     def add_new_service(self, auth_code):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "ADD_NEW_SERVICE",
             "GSD",
             {
@@ -410,7 +410,7 @@ class JobProducer:
                 }
             }
 
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             "GET_USERS_FOR_REWARD_CREATION",
             "MILESTONES",
             body

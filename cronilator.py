@@ -5,7 +5,7 @@ import greenstalk
 from faker import Faker
 
 from app.worker.logging_format import init_logger
-from app.worker.utils import build_job_payload
+from app.worker.utils import WorkerUtils
 
 logger = init_logger()
 faker = Faker()
@@ -49,7 +49,7 @@ class CronJobs:
         self.conn.put(json.dumps(job))
 
     def reward_cron_job(self):
-        return build_job_payload(
+        return WorkerUtils.build_job_payload(
             event_type="CRON_JOB",
             source="CRON",
             response_body={

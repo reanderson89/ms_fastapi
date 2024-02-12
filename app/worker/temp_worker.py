@@ -1,38 +1,31 @@
-import os
 import ast
+import os
 from time import time
 from uuid import uuid4
 
-import boto3
-from mypy_boto3_sqs import SQSClient
 from fastapi import HTTPException
+from mypy_boto3_sqs import SQSClient
 
-from app.worker.logging_format import init_logger
 from app.utilities.decorators import handle_reconnect
-from app.worker.utils import build_job_payload
+from app.worker.logging_format import init_logger
+from app.worker.sqs_client_config import SQSClientSingleton
+from app.worker.utils import WorkerUtils
 from burp.models.reward import ProgramRuleModelDB
 
 logger = init_logger("Temp Worker")
 
-QUEUE_ENDPOINT = os.environ.get("QUEUE_ENDPOINT", "http://localstack:4566")
-QUEUE_REGION = os.environ.get("QUEUE_REGION", "us-east-1")
 SEGMENT_QUEUE = os.environ.get("SEGMENT_QUERY_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query")
-RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-responses")
+RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response")
 
 
 class TempWorker:
 
     def __init__(self):
-        self.conn: SQSClient = self.connect_to_sqs()
-
-    def connect_to_sqs(self):
-        client: SQSClient = boto3.client("sqs", region_name=QUEUE_REGION, endpoint_url=QUEUE_ENDPOINT)
-        return client
+        self.conn: SQSClient = SQSClientSingleton.get_instance(RESPONSE_QUEUE)
 
     def reconnect(self):
         logger.milestone("Reconnecting to queue...")
-        self.conn.close()
-        self.conn = self.connect_to_sqs()
+        self.conn = SQSClientSingleton.reconnect(RESPONSE_QUEUE)
 
     @handle_reconnect
     def send_message(self, message: dict, queue_url: str):
@@ -65,14 +58,10 @@ class TempWorker:
 
                 msg_response = self.conn.receive_message(
                     QueueUrl=response_queue,
-                    AttributeNames=[
-                        "SentTimestamp"
-                    ],
+                    AttributeNames=["SentTimestamp"],
                     # TODO: only will get a single message right now
                     MaxNumberOfMessages=1,
-                    MessageAttributeNames=[
-                        "string",
-                    ],
+                    MessageAttributeNames=["string",],
                     VisibilityTimeout=30,
                     WaitTimeSeconds=20
                 )
@@ -99,7 +88,7 @@ class TempWorker:
             self.update_message_visibility(msg_response.receipt_handle, response_queue)
 
     async def get_user_job(self, user_uuid: str):
-        job = build_job_payload(
+        job = WorkerUtils.build_job_payload(
             "GET_USER",
             "MILESTONES",
             {"user_uuid": user_uuid},
@@ -115,7 +104,7 @@ class TempWorker:
         self,
         service_user_id: str
     ):
-        job = build_job_payload(
+        job = WorkerUtils.build_job_payload(
             "ALT_GET_USER",
             "MILESTONES",
             {"service_user_id": service_user_id},
@@ -131,7 +120,7 @@ class TempWorker:
         self,
         rule: ProgramRuleModelDB
     ):
-        job = build_job_payload(
+        job = WorkerUtils.build_job_payload(
             "GET_USERS_FOR_REWARD_CREATION",
             "MILESTONES",
             rule.to_dict(),
