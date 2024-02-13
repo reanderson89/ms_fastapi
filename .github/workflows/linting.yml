@@ -8,6 +8,7 @@ on:
       - master
       - main
       - staging
+      - dev
       - test*
 
 jobs:
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo (current branch)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 

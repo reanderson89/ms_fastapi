@@ -31,6 +31,9 @@ if [ "${ENV}" == "dev" ]; then
 # Localstack to this container's DNS resolver
 * * * * * /localstack_ip.sh > /localstack_ip.log 2>&1
 EOF
+else
+  # if we're on AWS this is not needed at all
+  /usr/bin/rm -f /localstack_ip.sh
 fi
 service cron status
 
