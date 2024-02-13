@@ -6,7 +6,7 @@ from mypy_boto3_sqs import SQSClient
 
 from app.worker.utils import WorkerUtils
 
-QUEUE_REGION = os.environ.get("QUEUE_REGION", "us-east-1")
+AWS_REGION = os.environ.get("AWS_REGION", "us-west-1")
 
 
 class SQSClientSingleton:
@@ -19,12 +19,12 @@ class SQSClientSingleton:
             with cls._lock:
                 if cls._instance is None:
                     endpoint_url = WorkerUtils.get_base_uri(queue_url)
-                    cls._instance: SQSClient = boto3.client("sqs", region_name=QUEUE_REGION, endpoint_url=endpoint_url)
+                    cls._instance: SQSClient = boto3.client("sqs", region_name=AWS_REGION, endpoint_url=endpoint_url)
         return cls._instance
 
     @classmethod
     def reconnect(cls, queue_url):
         with cls._lock:
             endpoint_url = WorkerUtils.get_base_uri(queue_url)
-            cls._instance: SQSClient = boto3.client("sqs", region_name=QUEUE_REGION, endpoint_url=endpoint_url)
+            cls._instance: SQSClient = boto3.client("sqs", region_name=AWS_REGION, endpoint_url=endpoint_url)
         return cls._instance

@@ -17,7 +17,7 @@ on:
       environment:
         description: "To which environment?"
         type: choice
-        default: "chaos"
+        default: "staging"
         options:
           - chaos
           - staging
@@ -229,6 +229,9 @@ jobs:
 
           # do the env substitution and fix any issues with single quotes (more details in the Rails API)
           mv ${SWARM_YAML} ${SWARM_YAML}.orig && envsubst < ${SWARM_YAML}.orig > ${SWARM_YAML}
+
+          # remove these 2 env vars which are not needed on AWS
+          cat ${SWARM_YAML} | grep -v AWS_ACCESS_KEY_ID | grep -v AWS_SECRET_ACCESS_KEY > out && mv out ${SWARM_YAML}
 
       - name: Timestamp the Docker Swarm Configuration
         if: github.event_name == 'workflow_dispatch' || needs.build.result == 'success'
