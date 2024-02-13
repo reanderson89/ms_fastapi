@@ -164,6 +164,11 @@ jobs:
         run: |
           sleep 30
 
+      # do a pip list to see what's installed
+      - name: List Installed Packages
+        run: |
+          docker exec --tty milestones_api pip list
+
       - name: Run Pytest Tests
         id: pytest
         run: |
