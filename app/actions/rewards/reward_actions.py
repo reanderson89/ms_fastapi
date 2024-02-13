@@ -38,13 +38,13 @@ MOCK = os.environ.get("MOCK", "True").lower() == "true"
 
 
 TOKEN_DATA = {
-    "exp": 1707430772,
+    "exp": 1708108005,
     "company_gid": "6cdcf917-a0da-4445-93ec-d51d662c60c6",
     "sub": "dd3085e2-a6bd-4339-a7bb-9d06c0132c34",
     "scp": "account",
     "aud": None,
-    "iat": 1707171572,
-    "jti": "de9829d5-cf97-4ad0-aa46-278bcc3fd27c"
+    "iat": 1707848805,
+    "jti": "4240cdb4-bf7d-480b-8827-54b79231c1c0"
 }
 
 
