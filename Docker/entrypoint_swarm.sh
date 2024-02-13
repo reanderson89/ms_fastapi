@@ -33,7 +33,7 @@ if [ "${ENV}" == "dev" ]; then
 EOF
 else
   # if we're on AWS this is not needed at all
-  /usr/bin/rm -f /localstack_ip.sh
+  /bin/rm -f /localstack_ip.sh
 fi
 service cron status
 

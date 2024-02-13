@@ -20,7 +20,6 @@ services:
         order: start-first
     environment:
       # No CRON
-      # this is a guess
       ACCOUNTS_QUEUE_URL: '${ACCOUNTS_QUEUE_URL}'
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
@@ -52,7 +51,7 @@ services:
       - blueboard_${ENV}
     ports:
       - 8080:80
-    entrypoint: /entrypoint.sh # this  is renamed from the swarm entrpoint script
+    entrypoint: /entrypoint.sh
   worker:
     image: ${IMAGE_TAG}
     deploy:
@@ -73,7 +72,6 @@ services:
       CRON: 'true' # must be a string, not a boolean
       # Most of these env vars are not needed by the worker instance per say, but are required by the app to start/run
       # this list is copied from above
-      # this is a guess
       ACCOUNTS_QUEUE_URL: '${ACCOUNTS_QUEUE_URL}'
       ACCOUNT_SID: ${ACCOUNT_SID}
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
@@ -103,7 +101,7 @@ services:
       YASS_URL: 'http://yass_api/v1'
     networks:
       - blueboard_${ENV}
-    entrypoint: /entrypoint.sh # this is renamed from the swarm entrpoint script
+    entrypoint: /entrypoint.sh
 
 networks:
   blueboard_${ENV}:
