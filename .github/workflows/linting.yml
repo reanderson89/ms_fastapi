@@ -100,10 +100,11 @@ jobs:
 
       - name: Update Github with job status
         if: always()
-        uses: ouzi-dev/commit-status-updater@v2
+        uses: guibranco/github-status-action-v2@v1.1.7
         with:
-          name: "Postman test results"
-          status: ${{ job.status }}
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ job.status }}
+          sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
 #
 # test by adding an unused import
