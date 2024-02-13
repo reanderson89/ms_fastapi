@@ -27,7 +27,7 @@ services:
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
       AWS_ACCESS_KEY_ID: 'foo'
-      # AWS_REGION: 'us-west-1'
+      AWS_REGION: ${AWS_REGION}
       AWS_SECRET_ACCESS_KEY: 'bar'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       ENV: ${ENV}
@@ -80,7 +80,7 @@ services:
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
       AWS_ACCESS_KEY_ID: 'foo'
-      # AWS_REGION: 'us-west-1'
+      AWS_REGION: ${AWS_REGION}
       AWS_SECRET_ACCESS_KEY: 'bar'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       ENV: ${ENV}
