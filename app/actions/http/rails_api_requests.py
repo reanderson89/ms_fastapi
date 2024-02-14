@@ -30,8 +30,16 @@ class HttpRequests:
         response = requests.put(cls.get_url(path), headers=headers, json={})
         return response.json()
 
-    @rails_auth
+    # @rails_auth
     # @handle_response
     @classmethod
-    async def delete(cls, path: str, headers: RequestHeaders = None):
+    async def delete(cls, path: str, headers: RequestHeaders = None, body: dict = None):
+        if body:
+            return requests.delete(cls.get_url(path), headers=headers, json=body)
         return requests.delete(cls.get_url(path), headers=headers)
+
+    @classmethod
+    async def patch(cls, path: str, headers: RequestHeaders = None, body: dict = None):
+        if body:
+            return requests.patch(cls.get_url(path), headers=headers, json=body)
+        return requests.patch(cls.get_url(path), headers=headers)

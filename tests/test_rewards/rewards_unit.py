@@ -4,13 +4,13 @@ import tests.testutil as utils
 from burp.utils.helper_actions import SHA224Hash
 from burp.models.reward import ProgramRuleModelDB
 from unittest.mock import patch, MagicMock, AsyncMock
-from app.actions.rewards.reward_actions import RuleActions
+from app.actions.rules.rule_actions import RuleActions
 from app.models.reward.reward_models import ProgramRuleCreate
 
 @pytest.mark.asyncio
 async def test_create_program_rule_mock_users():
-    requests_path = "app.actions.rewards.reward_actions.requests.get"
-    base_crud_path = "app.actions.rewards.reward_actions.BaseCRUD"
+    requests_path = "app.actions.rewards.staged_reward_actions.requests.get"
+    base_crud_path = "app.actions.rewards.staged_reward_actions.BaseCRUD"
     with patch(requests_path, new_callable=MagicMock) as MockRequest, \
          patch(base_crud_path, new_callable=AsyncMock) as MockCRUD:
 

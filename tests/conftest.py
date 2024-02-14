@@ -46,7 +46,7 @@ def program_rule(test_app: TestClient):
 
 
 
-    with patch("app.actions.rewards.reward_actions.requests.get", new_callable=MagicMock) as MockRequest:
+    with patch("app.actions.rewards.staged_reward_actions.requests.get", new_callable=MagicMock) as MockRequest:
         mock_rails_response = MagicMock()
         mock_rails_response.json.return_value = util.users_from_rails  # TODO: still needs to be fixed
         MockRequest.return_value = mock_rails_response

@@ -10,7 +10,8 @@ from mypy_boto3_sqs import SQSClient
 from starlette.responses import Response
 
 from app.actions.cron.cron_actions import CronActions
-from app.actions.rewards.reward_actions import RuleActions
+from app.actions.rewards.staged_reward_actions import StagedRewardActions
+from burp.models.reward import ProgramRuleModel
 from app.utilities.decorators import handle_reconnect
 from app.worker.logging_format import init_logger
 from app.worker.sqs_client_config import SQSClientSingleton
@@ -188,7 +189,7 @@ class QueueWorker:
         rule_model = body['rule_data']
         user = body['user']
         try:
-            response = await RuleActions.create_rails_reward(user, ProgramRuleModel(**rule_model))
+            response = await StagedRewardActions.create_staged_reward(user, ProgramRuleModel(**rule_model))
             return response
         except Exception as e:
             return e.args[0]

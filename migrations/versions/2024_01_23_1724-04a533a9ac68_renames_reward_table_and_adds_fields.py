@@ -39,12 +39,14 @@ def upgrade() -> None:
     sa.Column('segmented_by', sa.JSON(), nullable=True),
     sa.Column('anniversary_years', sa.JSON(), nullable=True),
     sa.Column('onboarding_period', sa.Integer(), nullable=True),
+    sa.Column('state', sa.String(), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=False),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('time_created', sa.Integer(), nullable=False),
     sa.Column('time_updated', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('uuid')
     )
+    op.create_index(op.f('ix_rule_state'), 'rule', ['state'], unique=False)
     op.create_index(op.f('ix_rule_company_id'), 'rule', ['company_id'], unique=False)
     op.create_index(op.f('ix_rule_manager_id'), 'rule', ['manager_id'], unique=False)
     op.create_index(op.f('ix_rule_rule_name'), 'rule', ['rule_name'], unique=False)
@@ -86,8 +88,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_rule_rule_name'), table_name='rule')
     op.drop_index(op.f('ix_rule_manager_id'), table_name='rule')
     op.drop_index(op.f('ix_rule_company_id'), table_name='rule')
-    op.drop_index(op.f('ix_rule_cadence_type'), table_name='rule')
-    op.drop_index(op.f('ix_rule_cadence'), table_name='rule')
+    op.drop_index(op.f('ix_rule_state'), table_name='rule')
     op.drop_table('rule')
     op.drop_column('staged_reward', 'bucket_customization_id')
     op.drop_column('staged_reward', 'bucket_customization_price')

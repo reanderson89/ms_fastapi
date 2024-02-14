@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path
-from app.actions.rewards.reward_actions import RuleActions
+from app.actions.rules.rule_actions import RuleActions
 from app.models.reward.reward_models import (
     ProgramRuleCreate,
     ProgramRuleDelete,
@@ -54,9 +54,9 @@ async def update_program_rule(
     return await RuleActions.update_program_rule(company_id, rule_uuid, rule_update)
 
 
-@router.delete("/program_rule/{company_id}/{rule_uuid}", response_model=ProgramRuleDelete)
+@router.delete("/program_rule/{company_id}/{rule_uuid}", response_model=ProgramRuleResponse)
 async def delete_program_rule(
     company_id: int = Path(...),
     rule_uuid: str = Path(...)
 ):
-    return await RuleActions.delete_program_rule(company_id, rule_uuid)
+    return await RuleActions.deactivate_program_rule(company_id, rule_uuid)

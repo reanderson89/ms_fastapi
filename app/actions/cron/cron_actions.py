@@ -6,13 +6,15 @@ from fastapi import Request, HTTPException
 from starlette import status
 from datetime import datetime, timedelta, timezone
 
-from app.actions.rewards.reward_actions import RuleActions
+from app.actions.rewards.rails_reward_actions import RailsRewardActions
+from app.actions.rewards.staged_reward_actions import StagedRewardActions
+from app.actions.rules.rule_actions import RuleActions
 from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
 
 
 # used for local development and testing
-MOCK = os.environ.get("MOCK", "True").lower() == "true"
+MOCK = os.environ.get("MOCK", "False").lower() == "true"
 if MOCK:
     rewards_sent = None
 
@@ -25,7 +27,7 @@ class CronActions:
             sendable_lookup = defaultdict(int)
             cls.rewards_sent = count()
         else:
-            sendable_awards = (await RailsRequests.get("/api/v4/sendables/requested", await RuleActions.get_headers())).json()['approved']
+            sendable_awards = (await RailsRequests.get("/api/v4/sendables/requested", await RailsRewardActions.get_headers())).json()['approved']
             sendable_lookup = {sendable['rewardable_id']: sendable['id'] for sendable in sendable_awards}
 
         company_ids: list = await RuleActions.get_distinct_company_ids()
@@ -37,7 +39,7 @@ class CronActions:
             # Loop through program_rules and determine which scheduled rewards match the rule
             for rule in program_rules:
                 today = datetime.now(timezone(timedelta(hours=-8))).strftime("%m-%d-%y")
-                staged_rewards = await RuleActions.get_staged_rewards_by_date(rule.uuid, today)
+                staged_rewards = await StagedRewardActions.get_staged_rewards_by_date(rule.uuid, today)
 
                 if staged_rewards:
                     sendable_rewards = []
@@ -69,7 +71,7 @@ class CronActions:
         if MOCK:
             next(cls.rewards_sent)
             return
-        return await RailsRequests.put(path=f"/api/v4/requests/{staged_reward.sendable_id}/send", headers=await RuleActions.get_headers())
+        return await RailsRequests.put(path=f"/api/v4/requests/{staged_reward.sendable_id}/send", headers=await RailsRewardActions.get_headers())
 
     @staticmethod
     async def authenticate(request: Request):

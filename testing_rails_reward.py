@@ -1,5 +1,6 @@
 import asyncio
-from app.actions.rewards.reward_actions import RuleActions
+from app.actions.rules.rule_actions import RuleActions
+from app.actions.rewards.staged_reward_actions import StagedRewardActions
 from app.models.reward.reward_models import ProgramRuleCreate
 
 import pprint
@@ -37,14 +38,26 @@ program_rule = ProgramRuleCreate(
     sending_managers_account_id=1,
     sending_managers_program_id=1,
     bucket_customization_id=1,
-    subject="Test Subject"
+    subject="Test Subject",
+    rule_name= "Test rule"
+    trigger_field= "birthday"
+    timing_type= "DAY_OF"
+    sending_time= "9:00 am"
+    timezone= "Pacific Time"
+    manager_id= 123
+    bucket_customization_price= 500
+    memo= "Test memo"
+    recipient_note= "Test note"
+    state= "ACTIVE"
+    created_by= 1234
 )
+
 
 
 async def main():
     program_rule_db_model = await RuleActions.to_program_rule_db_model(program_rule)
 
-    responses = await RuleActions.create_rails_reward(user_accounts, program_rule_db_model)
+    responses = await StagedRewardActions.create_staged_reward(user_accounts, program_rule_db_model)
 
     pprint.pprint(responses)
     # print(responses)

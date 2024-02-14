@@ -31,7 +31,7 @@ class TempWorker:
     def send_message(self, message: dict, queue_url: str):
         response = self.conn.send_message(
             QueueUrl=queue_url,
-            DelaySeconds=1,
+            DelaySeconds=0,
             MessageBody=str(message),
         )
         logger.milestone(response)
