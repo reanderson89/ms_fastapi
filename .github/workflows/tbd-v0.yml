@@ -3,11 +3,11 @@
 name: Tag, Build & Deploy v0 (Bend)
 
 on:
-  push:
-    tags-ignore:
-      - '**'
-    branches:
-      - dev
+  # push:
+  #   tags-ignore:
+  #     - '**'
+  #   branches:
+  #     - dev
 
   workflow_dispatch:
     inputs:
@@ -122,27 +122,13 @@ jobs:
         id: milestones-cache
         uses: ScribeMD/docker-cache@0.3.7
         with:
-          # This does not seem like it would work as expected
-          # key: docker-${{ runner.os }}-${{ hashFiles('docker-compose.yml') }}
           key: docker-${{ runner.os }}-${{ hashFiles('src/**') }}
-
-      - name: Cache Beanstalk Docker Container
-        id: beanstalk-cache
-        uses: ScribeMD/docker-cache@0.3.7
-        with:
-          # This is probably correct, since it's a 3rd party image
-          key: docker-${{ runner.os }}-${{ hashFiles('docker-compose-queue.yml') }}
 
       - name: Echo Cache Hit Status (Debugging)
         if: env.DEBUG == 'true'
         run: |
+          echo "key:  docker-${{ runner.os }}-${{ hashFiles('src/**') }}"
           echo "milestones-cache: ${{ steps.milestones-cache.outputs.cache-hit }}"
-          echo "beanstalk-cache: ${{ steps.beanstalk-cache.outputs.cache-hit }}"
-
-      - name: Build Beanstalk Docker Container
-        if: "${{ steps.beanstalk-cache.outputs.cache-hit != 'true' }}"
-        run: |
-          docker compose --file docker-compose-queue.yml build
 
       - name: Build Milestones Docker Container
         if: "${{ steps.milestones-cache.outputs.cache-hit != 'true' }}"

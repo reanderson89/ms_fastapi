@@ -8,10 +8,6 @@ services:
     deploy:
       mode: replicated
       replicas: ${REPLICAS}
-      placement:
-        constraints:
-          - node.hostname != bb-dev-1
-          - node.hostname != bb-dev-3
       restart_policy:
         condition: on-failure
       update_config:
@@ -25,9 +21,7 @@ services:
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
-      AWS_ACCESS_KEY_ID: 'foo'
-      AWS_REGION: ${AWS_REGION}
-      AWS_SECRET_ACCESS_KEY: 'bar'
+      AWS_REGION: 'us-west-1'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
@@ -57,10 +51,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-      placement:
-        constraints:
-          - node.hostname != bb-dev-1
-          - node.hostname != bb-dev-3
       restart_policy:
         condition: on-failure
       update_config:
@@ -77,9 +67,7 @@ services:
       ACCOUNT_TOKEN: ${ACCOUNT_TOKEN}
       ALEMBIC_INI_FILE: 'alembic.ini'
       ALGORITHM: 'HS256'
-      AWS_ACCESS_KEY_ID: 'foo'
-      AWS_REGION: ${AWS_REGION}
-      AWS_SECRET_ACCESS_KEY: 'bar'
+      AWS_REGION: 'us-west-1'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
