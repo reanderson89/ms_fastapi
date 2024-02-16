@@ -31,6 +31,7 @@ class RewardState(Enum):
     REMOVED = "REMOVED"
     SENT = "SENT"
     STAGED = "STAGED"
+    FAILED_TO_SEND = "FAILED_TO_SEND"
     # --Please Note--
     # The 'state' column in the Rails 'rewards' table includes the following
     # additional states not represented in this enum class: 'scheduling',
@@ -82,9 +83,16 @@ class ProgramRuleCreate(BasePydantic):
             raise ValueError('days_prior is required when timing_type is DAYS_PRIOR')
         return v
 
-    @validator("rule_type", "timing_type", "state", pre=False)
+    @validator("rule_type", "timing_type", pre=False)
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
+            return v.value
+    
+    @validator("state", pre=False)
+    def validate_state(cls, v):  # pylint: disable=no-self-argument,no-self-use
+        if isinstance(v, Enum):
+            if v.value == RuleState.INACTIVE.value:
+                raise ValueError('INACTIVE state is not allowed on create')
             return v.value
         
 
@@ -98,16 +106,16 @@ class ProgramRuleUpdate(BasePydantic):
     trigger_field: Optional[str]
     timing_type: Optional[TimingType]
     days_prior: Optional[int]
-    sending_time: Optional[str]
-    timezone: Optional[str]
-    manager_id: Optional[int]
-    sending_managers_account_id: Optional[int]
-    sending_managers_program_id: Optional[int]
-    bucket_customization_id: Optional[int]
-    bucket_customization_price: Optional[int]
-    subject: Optional[str]
-    memo: Optional[str]
-    recipient_note: Optional[str]
+    sending_time: str
+    timezone: str
+    manager_id: int
+    sending_managers_account_id: int
+    sending_managers_program_id: int
+    bucket_customization_id: int
+    bucket_customization_price: int
+    subject: str
+    memo: str
+    recipient_note: str
     company_values: Optional[list[str]]
     segmented_by: Optional[list[dict]]
     state: Optional[RuleState]
@@ -138,7 +146,13 @@ class ProgramRuleUpdate(BasePydantic):
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
-
+        
+    @validator("state", pre=False)
+    def validate_state(cls, v):  # pylint: disable=no-self-argument,no-self-use
+        if isinstance(v, Enum):
+            if v.value == RuleState.INACTIVE.value:
+                raise ValueError('INACTIVE state is not allowed on update')
+            return v.value
 
 class ProgramRuleRewardCountResponse(BasePydantic):
     staged_rewards: int
@@ -149,7 +163,7 @@ class ProgramRuleDelete(BasePydantic):
     ok: bool
     Deleted: Optional[ProgramRuleModel]
 
-class RailsRewardCreate():
+class RailsRewardCreate:
     reward_id: int
     approved_at:str
     state: RewardState
@@ -158,6 +172,7 @@ class StagedRewardCreate(BasePydantic):
     user_account_uuid: str
     rule_uuid: str
     send_on: str
+    send_at: int
     employee_id: int
     company_id: int
     program_id: int
@@ -190,3 +205,8 @@ class SegmentRuleCreate(BasePydantic):
     parent_rule: str
     segmented_by: dict[str, str]
     bucket_customization_id: int
+
+class SendStagedRewardResponse(BasePydantic):
+    reward_id: Optional[int]
+    sent: bool
+    reason: Optional[str]

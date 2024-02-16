@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
 from faker import Faker
+import random
 
 fake = Faker()
 
@@ -272,4 +273,10 @@ def mock_create_reward_response(company_id):
             # "gif_url": None,
             # "story_images_url": None
         }
+    }
+
+async def mock_send_reward():
+    return {
+        "reward_id": random.randint(10000,30000),
+        "sent": True
     }

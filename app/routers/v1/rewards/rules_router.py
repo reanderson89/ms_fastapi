@@ -3,7 +3,6 @@ from fastapi import APIRouter, Body, Depends, Path
 from app.actions.rules.rule_actions import RuleActions
 from app.models.reward.reward_models import (
     ProgramRuleCreate,
-    ProgramRuleDelete,
     ProgramRuleResponse,
     ProgramRuleUpdate,
     ProgramRuleRewardCountResponse

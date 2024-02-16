@@ -15,7 +15,7 @@ logger = init_logger()
 class StagedRewardActions:
     
     @staticmethod
-    async def to_staged_reward_db_model(user: dict, rule: ProgramRuleModel, send_on: str):
+    async def to_staged_reward_db_model(user: dict, rule: ProgramRuleModel, send_on: str, send_at: str):
         return StagedRewardModelDB(
             user_account_uuid=user['user_account_uuid'],
             employee_id=user['employee_id'],
@@ -30,7 +30,8 @@ class StagedRewardActions:
             first_name=user['first_name'],
             last_name=user['last_name'],
             email=user['email'],
-            send_on=send_on
+            send_on=send_on,
+            send_at=send_at
         )
 
     @staticmethod
@@ -74,6 +75,25 @@ class StagedRewardActions:
             next_anniversary = cls.calculate_next_anniversary(onboard_date, today)
 
         return next_anniversary.strftime("%m-%d-%y")
+    
+    @staticmethod
+    async def convert_time_to_24_hour(sending_time):
+        # Split the time string into its components
+        time_part, am_pm = sending_time.split(' ')
+        hour = int(time_part.split(':')[0])
+
+        # Adjust hour based on am/pm
+        if am_pm.lower() == 'am' and hour == 12:
+            # Midnight edge case
+            send_at = 0
+        elif am_pm.lower() == 'pm' and hour != 12:
+            # Afternoon times excluding 12 PM
+            send_at = hour + 12
+        else:
+            # Morning times and 12 PM
+            send_at = hour
+
+        return send_at
 
     @staticmethod
     def calculate_next_anniversary(date: datetime, today: datetime):
@@ -85,18 +105,23 @@ class StagedRewardActions:
         return next_anniversary
 
     @classmethod
-    async def create_staged_reward(cls, user: dict, rule: ProgramRuleModel):
-        send_on = await cls.get_send_time(user, rule)
-        db_reward = await cls.to_staged_reward_db_model(user, rule, send_on)
-        return await BaseCRUD.create(db_reward)
+    async def create_staged_reward(cls, users: list, rule: ProgramRuleModel):
+        rewards_to_create = []
+        for user in users:
+            send_on = await cls.get_send_time(user, rule)
+            send_at = await cls.convert_time_to_24_hour(rule.sending_time)
+            db_reward = await cls.to_staged_reward_db_model(user, rule, send_on, send_at)
+            rewards_to_create.append(db_reward)
+        return await BaseCRUD.create(rewards_to_create)
 
     @staticmethod
-    async def get_staged_rewards_by_date(rule_uuid: int, date: str):
+    async def get_staged_rewards_by_date_and_time(send_on: str, send_at: int):
         return await BaseCRUD.get_all_where(
             StagedRewardModelDB,
             [
-                StagedRewardModelDB.rule_uuid == rule_uuid,
-                StagedRewardModelDB.send_on == date
+                StagedRewardModelDB.send_on == send_on,
+                StagedRewardModelDB.send_at == send_at,
+                StagedRewardModelDB.state == RewardState.STAGED.value
             ],
             pagination=False
         )

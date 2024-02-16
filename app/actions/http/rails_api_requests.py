@@ -1,7 +1,6 @@
 import os
 import requests
-from .authentication.rails_api_interceptors import rails_auth
-from app.models.rails import RequestHeaders
+from app.models.rails.requests_models import RequestHeaders
 
 RAILS_API = os.environ.get("RAILS_API")
 

@@ -7,7 +7,7 @@ from app.models.reward.reward_models import (
     StagedRewardUpdate,
     RuleState
 )
-from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB, SegmentRuleModelDB, ProgramRuleModel
+from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB, ProgramRuleModel
 from burp.utils.base_crud import BaseCRUD
 from app.actions.rewards.staged_reward_actions import StagedRewardActions
 from app.worker.logging_format import init_logger
@@ -33,10 +33,7 @@ class RuleActions:
                     await StagedRewardActions.handle_delete_staged_rewards(updated_rule.company_id, updated_rule.uuid)
                     await cls.trigger_worker_reward_creation(updated_rule)
                 else:
-                    await cls.setup_staged_rewards_for_update(updated_rule)
-        elif initial_state == RuleState.INACTIVE.value and new_state == RuleState.ACTIVE.value:
-            await cls.trigger_worker_reward_creation(updated_rule)
-        
+                    await cls.setup_staged_rewards_for_update(updated_rule)        
             
     @staticmethod
     async def trigger_worker_reward_creation(rule: ProgramRuleModelDB):
@@ -90,7 +87,7 @@ class RuleActions:
     async def get_distinct_company_ids():
         return await BaseCRUD.get_all_where(
             ProgramRuleModelDB,
-            [ProgramRuleModelDB.company_id],
+            [],
             pagination=False,
             distinct_column=ProgramRuleModelDB.company_id
         )

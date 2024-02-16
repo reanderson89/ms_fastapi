@@ -1,17 +1,20 @@
 import os
 import asyncio
-from itertools import count
+from time import time
 from collections import defaultdict
 from fastapi import Request, HTTPException
 from starlette import status
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from app.actions.rewards.rails_reward_actions import RailsRewardActions
 from app.actions.rewards.staged_reward_actions import StagedRewardActions
+from app.models.reward.reward_models import StagedRewardUpdate, RewardState, SendStagedRewardResponse
 from app.actions.rules.rule_actions import RuleActions
 from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
+from app.worker.logging_format import init_logger
 
+logger = init_logger()
 
 # used for local development and testing
 MOCK = os.environ.get("MOCK", "False").lower() == "true"
@@ -21,46 +24,61 @@ if MOCK:
 
 class CronActions:
 
-    @classmethod
-    async def send_rewards(cls):
-        if MOCK:
-            sendable_lookup = defaultdict(int)
-            cls.rewards_sent = count()
+    @staticmethod
+    async def handle_staged_reward_state_update(reward: StagedRewardModelDB, updates: SendStagedRewardResponse, sent: bool):
+        if sent:
+            update_model = StagedRewardUpdate(reward_id=updates.reward_id, approved_at=int(time()), state=RewardState.SENT.value)
         else:
-            sendable_awards = (await RailsRequests.get("/api/v4/sendables/requested", await RailsRewardActions.get_headers())).json()['approved']
-            sendable_lookup = {sendable['rewardable_id']: sendable['id'] for sendable in sendable_awards}
-
-        company_ids: list = await RuleActions.get_distinct_company_ids()
-
-        for company_id in company_ids:
-            # get all companies reward rules
-            program_rules: list[ProgramRuleModelDB] = await RuleActions.get_program_rules_by_company(company_id)
-
-            # Loop through program_rules and determine which scheduled rewards match the rule
-            for rule in program_rules:
-                today = datetime.now(timezone(timedelta(hours=-8))).strftime("%m-%d-%y")
-                staged_rewards = await StagedRewardActions.get_staged_rewards_by_date(rule.uuid, today)
-
-                if staged_rewards:
-                    sendable_rewards = []
-                    # Loops through the rewards and checks their reward_id against the reward_id's from the sendable_awards.
-                    for i, reward in enumerate(staged_rewards):
-                        # Add every other reward_id to sendable_lookup
-                        if MOCK and i % 2 == 0:
-                            sendable_lookup[reward.reward_id] = reward.reward_id
-                        if reward.reward_id in sendable_lookup:
-                            reward.sendable_id = sendable_lookup[reward.reward_id]
-                            sendable_rewards.append(reward)
-                    # Send rewards to users
-                    responses = await asyncio.gather(*(cls.rails_send_rewards(user_reward, rule, company_id) for user_reward in sendable_rewards))
-                else:
-                    print(f"No rewards scheduled for today for rule {rule.uuid}")
-        if MOCK:
-            return next(cls.rewards_sent)
-        return True
+            update_model = StagedRewardUpdate(reward_id=updates.reward_id ,state=RewardState.FAILED_TO_SEND.value)
+        await StagedRewardActions.update_staged_reward(
+            reward.uuid,
+            reward.company_id,
+            reward.rule_uuid,
+            update_model
+        )
 
     @classmethod
-    async def rails_send_rewards(cls, staged_reward: StagedRewardModelDB, rule: ProgramRuleModelDB, company_id: int):
+    async def handle_rails_reward_request(cls, reward: StagedRewardModelDB, rule: ProgramRuleModelDB):
+        retry_attempts = 3
+        for attempt in range(retry_attempts):
+            try:
+                response = await RailsRewardActions.rails_reward_request(reward, rule)
+                if response.status_code == 200:
+                    response = SendStagedRewardResponse(**response.json())
+                    await cls.handle_staged_reward_state_update(reward, response, True)
+                    return
+                else:
+                    logger.milestone(f"Failed attempt {attempt+1} for reward {reward.uuid} with status {response.status_code}")
+            except Exception as e:
+                logger.milestone(f"Exception on attempt {attempt+1} for reward {reward.uuid}: {e}")
+            if attempt < retry_attempts - 1:
+                await asyncio.sleep(2 ** attempt) 
+        # Handle failure after all retries here
+        response = SendStagedRewardResponse(**response.json())
+        await cls.handle_staged_reward_state_update(reward, response, False)
+
+
+    @classmethod
+    async def send_staged_rewards(cls):
+        now_utc = datetime.now(timezone.utc)
+        today = now_utc.strftime("%m-%d-%y")
+        current_hour = now_utc.hour
+        todays_staged_rewards = await StagedRewardActions.get_staged_rewards_by_date_and_time(today, current_hour)
+        if not todays_staged_rewards:
+            return
+        
+        staged_rewards_by_rule = defaultdict(list)
+        for reward in todays_staged_rewards:
+            staged_rewards_by_rule[reward.rule_uuid].append(reward)
+        for rule_uuid, staged_rewards in staged_rewards_by_rule.items():
+            company_id = staged_rewards[0].company_id
+            rule = await RuleActions.get_program_rule(company_id, rule_uuid)
+            for reward in staged_rewards:
+                await cls.handle_rails_reward_request(reward, rule)
+
+
+    @classmethod
+    async def rails_send_rewards(cls, staged_reward: StagedRewardModelDB, rule: ProgramRuleModelDB, company_id: int, sendable_id: int):
         type = rule.rule_type
 
         # Just for logging purposes
@@ -71,7 +89,7 @@ class CronActions:
         if MOCK:
             next(cls.rewards_sent)
             return
-        return await RailsRequests.put(path=f"/api/v4/requests/{staged_reward.sendable_id}/send", headers=await RailsRewardActions.get_headers())
+        return await RailsRequests.put(path=f"/api/v4/requests/{sendable_id}/send", headers=await RailsRewardActions.get_headers())
 
     @staticmethod
     async def authenticate(request: Request):

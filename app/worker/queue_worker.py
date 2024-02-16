@@ -1,13 +1,12 @@
-import ast
 import asyncio
 import os
 import time
+import json
 from concurrent.futures import ThreadPoolExecutor
 
 from botocore.exceptions import EndpointConnectionError
 from fastapi import HTTPException
 from mypy_boto3_sqs import SQSClient
-from starlette.responses import Response
 
 from app.actions.cron.cron_actions import CronActions
 from app.actions.rewards.staged_reward_actions import StagedRewardActions
@@ -116,43 +115,53 @@ class QueueWorker:
             if "Messages" not in messages_received.keys():
                 continue
 
+
+            logger.milestone(f"Message recieved")
             start_time = time.time()
             # logger.milestone(messages_received)
             # TODO: picking off the top message (only getting one anyway)
-            msg_data = messages_received["Messages"][0]
-            msg_body_dict: dict = ast.literal_eval(msg_data.get("Body") or "")
-            receipt_handle = msg_data.get("ReceiptHandle")
-
-            try:
-                should_delete = await self.consume_job(msg_body_dict)
-
-                if should_delete:
-                    self.conn.delete_message(
-                        QueueUrl=self.default_queue,
-                        ReceiptHandle=receipt_handle
-                    )
-                else:
-                    self.update_message_visibility(receipt_handle, self.default_queue)
-
-            except HTTPException as e:
-                event_type = msg_body_dict.get("eventType")
-                msg_error = f"HTTP error processing {event_type} job: {e.detail}"
-                logger.milestone(f"[Worker] {msg_error}")
-                self.update_message_visibility(receipt_handle, self.default_queue)
-
-            except Exception as e:
-                error_name = e.__class__.__name__
-                if error_name == "ReceiptHandleIsInvalid":
-                    logger.milestone("Receipt handle is invalid.")
-                    continue
-                event_type = msg_body_dict.get("eventType")
-                msg_error = f"Error processing job . {e.__class__.__name__}: {e}"
-                logger.milestone(f"[Worker] {msg_error}")
-                self.update_message_visibility(receipt_handle, self.default_queue)
+            for msg_data in messages_received["Messages"]:
+                msg_body_dict: dict = json.loads(msg_data.get("Body") or "")
+                receipt_handle = msg_data.get("ReceiptHandle")
+                try:
+                    await self.process_job(msg_body_dict, receipt_handle)
+                except Exception as e:
+                    error_name = e.__class__.__name__
+                    if error_name == "ReceiptHandleIsInvalid":
+                        continue
+                
 
             end_time = time.time()
             duration = end_time - start_time
             logger.milestone(f"{msg_body_dict['eventType']} Message processed in {format(duration, '.5f')} seconds!")
+
+    async def process_job(self, msg_body_dict, receipt_handle):
+        try:
+            should_delete = await self.consume_job(msg_body_dict)
+
+            if should_delete:
+                self.conn.delete_message(
+                    QueueUrl=self.default_queue,
+                    ReceiptHandle=receipt_handle
+                )
+            else:
+                self.update_message_visibility(receipt_handle, self.default_queue)
+
+        except HTTPException as e:
+            event_type = msg_body_dict.get("eventType")
+            msg_error = f"HTTP error processing {event_type} job: {e.detail}"
+            logger.milestone(f"[Worker] {msg_error}")
+            self.update_message_visibility(receipt_handle, self.default_queue)
+
+        except Exception as e:
+            error_name = e.__class__.__name__
+            if error_name == "ReceiptHandleIsInvalid":
+                logger.milestone("Receipt handle is invalid.")
+                raise e
+            event_type = msg_body_dict.get("eventType")
+            msg_error = f"Error processing job . {e.__class__.__name__}: {e}"
+            logger.milestone(f"[Worker] {msg_error}")
+            self.update_message_visibility(receipt_handle, self.default_queue)
 
     async def consume_job(self, msg_data: dict):
         response = False
@@ -165,11 +174,8 @@ class QueueWorker:
                 response = True
             case "CRON_JOB":
                 response = await self.cron_job()
-            case "CREATE_REWARD_FOR_USER":
-                response = await self.create_reward_for_user(msg_data['body'])
-                if isinstance(response, Response):
-                    if not response.ok:
-                        response = response.ok
+            case "CREATE_REWARD_FOR_USERS":
+                response = await self.create_reward_for_users(msg_data['body'])
             case _:
                 # No matching event type found
                 logger.milestone(f"No matching event type found for {event_type}.")
@@ -185,11 +191,11 @@ class QueueWorker:
             logger.milestone("Cron job completed. Rewards Send.")
         return response
 
-    async def create_reward_for_user(self, body: dict):
+    async def create_reward_for_users(self, body: dict):
         rule_model = body['rule_data']
-        user = body['user']
+        users = body['users']
         try:
-            response = await StagedRewardActions.create_staged_reward(user, ProgramRuleModel(**rule_model))
+            response = await StagedRewardActions.create_staged_reward(users, ProgramRuleModel(**rule_model))
             return response
-        except Exception as e:
-            return e.args[0]
+        except Exception:
+            return False

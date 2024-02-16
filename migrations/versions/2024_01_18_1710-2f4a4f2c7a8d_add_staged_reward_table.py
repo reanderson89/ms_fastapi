@@ -23,6 +23,7 @@ def upgrade() -> None:
     sa.Column('user_account_uuid', sa.String(length=65), nullable=False),
     sa.Column('rule_uuid', sa.String(length=56), nullable=False),
     sa.Column('send_on', sa.String(length=56), nullable=False),
+    sa.Column('send_at', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('company_id', sa.Integer(), nullable=False),
     sa.Column('state', sa.String(length=56), nullable=False),
@@ -41,6 +42,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_staged_reward_program_id'), 'staged_reward', ['program_id'], unique=False)
     op.create_index(op.f('ix_staged_reward_rule_uuid'), 'staged_reward', ['rule_uuid'], unique=False)
     op.create_index(op.f('ix_staged_reward_send_on'), 'staged_reward', ['send_on'], unique=False)
+    op.create_index(op.f('ix_staged_reward_send_at'), 'staged_reward', ['send_at'], unique=False)
     op.create_index(op.f('ix_staged_reward_state'), 'staged_reward', ['state'], unique=False)
     op.create_index(op.f('ix_staged_reward_user_account_uuid'), 'staged_reward', ['user_account_uuid'], unique=False)
     op.create_index(op.f('ix_staged_reward_reward_id'), 'staged_reward', ['reward_id'], unique=False)
@@ -54,6 +56,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_staged_reward_reward_id'), table_name='staged_reward')
     op.drop_index(op.f('ix_staged_reward_user_account_uuid'), table_name='staged_reward')
     op.drop_index(op.f('ix_staged_reward_state'), table_name='staged_reward')
+    op.drop_index(op.f('ix_staged_reward_send_at'), table_name='staged_reward')
     op.drop_index(op.f('ix_staged_reward_send_on'), table_name='staged_reward')
     op.drop_index(op.f('ix_staged_reward_rule_uuid'), table_name='staged_reward')
     op.drop_index(op.f('ix_staged_reward_program_id'), table_name='staged_reward')

@@ -4,16 +4,17 @@ from fastapi.exceptions import HTTPException
 from datetime import datetime, timezone
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
 from burp.models.reward import ProgramRuleModelDB
-from app.models.rails import (
+from app.models.rails.requests_models import (
     RailsEmployee,
     RailsProgram,
     RailsBucketCustomization,
     RailsAchievementData,
     CreateRewardRequest
 )
+from burp.models.reward import StagedRewardModelDB
 from burp.utils.auth_utils import access_token_creation
 from requests.models import Response
-from app.actions.rewards.mock_responses import mock_create_reward_response
+from app.actions.rewards.mock_responses import mock_send_reward
 from app.worker.logging_format import init_logger
 
 logger = init_logger()
@@ -77,19 +78,19 @@ class RailsRewardActions:
         return headers
     
     @classmethod
-    async def rails_reward_request(cls, user: dict, program_rule: ProgramRuleModelDB):
+    async def rails_reward_request(cls, staged_reward: StagedRewardModelDB, program_rule: ProgramRuleModelDB):
         if MOCK:
             # return mock rails reward object
-            response = mock_create_reward_response(program_rule.company_id)
-            response_obj = Response()
-            response_obj.status_code = 200
-            response_obj._content = json.dumps(response).encode("utf-8")
-            return response_obj
+            rails_reward = Response()
+            response = await mock_send_reward()
+            rails_reward._content = json.dumps(response).encode("utf-8")
+            rails_reward.status_code = 200
+            return rails_reward
         else:
             employee = RailsEmployee(
-                email=user["email"],
-                first_name=user["first_name"],
-                last_name=user["last_name"]
+                email=staged_reward.email,
+                first_name=staged_reward.first_name,
+                last_name=staged_reward.last_name
             )
             bucket_customization = RailsBucketCustomization(
                 id=program_rule.bucket_customization_id
@@ -98,7 +99,7 @@ class RailsRewardActions:
                 id=program_rule.sending_managers_program_id
             )
             share_achievement_data = RailsAchievementData(
-                recipients_emails=[user["email"]],
+                recipients_emails=[staged_reward.email],
                 note=program_rule.recipient_note
             )
             create_reward = CreateRewardRequest(
@@ -108,11 +109,12 @@ class RailsRewardActions:
                 subject=program_rule.subject,
                 memo=program_rule.memo,
                 share_achievement_data=share_achievement_data,
-                company_values=program_rule.company_values
+                company_values=program_rule.company_values,
+                sending_managers_account_id=program_rule.sending_managers_account_id
             )
 
             return await RailsRequests.post(
-                path="/api/v4/company/rewards",
+                path="/api/v4/new/endpoint",
                 headers=await cls.get_headers(),
                 body=create_reward.dict()
             )

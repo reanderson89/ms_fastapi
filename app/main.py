@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from enum import Enum
 
 import uvicorn
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi_pagination import add_pagination
 
