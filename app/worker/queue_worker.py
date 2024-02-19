@@ -115,8 +115,7 @@ class QueueWorker:
             if "Messages" not in messages_received.keys():
                 continue
 
-
-            logger.milestone(f"Message recieved")
+            logger.milestone("Message recieved")
             start_time = time.time()
             # logger.milestone(messages_received)
             # TODO: picking off the top message (only getting one anyway)
@@ -129,7 +128,6 @@ class QueueWorker:
                     error_name = e.__class__.__name__
                     if error_name == "ReceiptHandleIsInvalid":
                         continue
-                
 
             end_time = time.time()
             duration = end_time - start_time

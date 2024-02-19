@@ -17,9 +17,9 @@ from app.worker.logging_format import init_logger
 logger = init_logger()
 
 # used for local development and testing
-MOCK = os.environ.get("MOCK", "False").lower() == "true"
-if MOCK:
-    rewards_sent = None
+# MOCK = os.environ.get("MOCK", "False").lower() == "true"
+# if MOCK:
+#     rewards_sent = None
 
 
 class CronActions:
@@ -29,7 +29,7 @@ class CronActions:
         if sent:
             update_model = StagedRewardUpdate(reward_id=updates.reward_id, approved_at=int(time()), state=RewardState.SENT.value)
         else:
-            update_model = StagedRewardUpdate(reward_id=updates.reward_id ,state=RewardState.FAILED_TO_SEND.value)
+            update_model = StagedRewardUpdate(reward_id=updates.reward_id, state=RewardState.FAILED_TO_SEND.value)
         await StagedRewardActions.update_staged_reward(
             reward.uuid,
             reward.company_id,
@@ -52,21 +52,20 @@ class CronActions:
             except Exception as e:
                 logger.milestone(f"Exception on attempt {attempt+1} for reward {reward.uuid}: {e}")
             if attempt < retry_attempts - 1:
-                await asyncio.sleep(2 ** attempt) 
+                await asyncio.sleep(2 ** attempt)
         # Handle failure after all retries here
         response = SendStagedRewardResponse(**response.json())
         await cls.handle_staged_reward_state_update(reward, response, False)
 
-
     @classmethod
     async def send_staged_rewards(cls):
         now_utc = datetime.now(timezone.utc)
-        today = now_utc.strftime("%m-%d-%y")
+        today = now_utc.strftime("%m-%d-%Y")
         current_hour = now_utc.hour
         todays_staged_rewards = await StagedRewardActions.get_staged_rewards_by_date_and_time(today, current_hour)
         if not todays_staged_rewards:
             return
-        
+
         staged_rewards_by_rule = defaultdict(list)
         for reward in todays_staged_rewards:
             staged_rewards_by_rule[reward.rule_uuid].append(reward)
@@ -75,7 +74,6 @@ class CronActions:
             rule = await RuleActions.get_program_rule(company_id, rule_uuid)
             for reward in staged_rewards:
                 await cls.handle_rails_reward_request(reward, rule)
-
 
     @classmethod
     async def rails_send_rewards(cls, staged_reward: StagedRewardModelDB, rule: ProgramRuleModelDB, company_id: int, sendable_id: int):
@@ -86,9 +84,9 @@ class CronActions:
         user_uuid_display = (str(user_uuid)[:6] + '...') if len(str(user_uuid)) > 6 else str(user_uuid)
         print(f"Sending {type} reward to account {user_uuid_display} from company {company_id}")
 
-        if MOCK:
-            next(cls.rewards_sent)
-            return
+        # if MOCK:
+        #     next(cls.rewards_sent)
+        #     return
         return await RailsRequests.put(path=f"/api/v4/requests/{sendable_id}/send", headers=await RailsRewardActions.get_headers())
 
     @staticmethod

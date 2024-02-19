@@ -33,8 +33,8 @@ class RuleActions:
                     await StagedRewardActions.handle_delete_staged_rewards(updated_rule.company_id, updated_rule.uuid)
                     await cls.trigger_worker_reward_creation(updated_rule)
                 else:
-                    await cls.setup_staged_rewards_for_update(updated_rule)        
-            
+                    await cls.setup_staged_rewards_for_update(updated_rule)
+
     @staticmethod
     async def trigger_worker_reward_creation(rule: ProgramRuleModelDB):
         worker = TempWorker()
@@ -56,13 +56,12 @@ class RuleActions:
         for reward in staged_rewards:
             await StagedRewardActions.update_staged_reward(reward.uuid, updated_rule.company_id, updated_rule.uuid, staged_reward_update)
 
-
     @staticmethod
     async def to_program_rule_db_model(rule_create: ProgramRuleCreate):
         return ProgramRuleModelDB(
             **rule_create.dict()
         )
-    
+
     @classmethod
     async def create_rule(cls, rule_create: ProgramRuleCreate):
         rule = await cls.to_program_rule_db_model(rule_create)
@@ -116,7 +115,7 @@ class RuleActions:
             company_id=company_id,
             rule_uuid=rule_uuid
         )
-    
+
     @classmethod
     async def update_program_rule(cls, company_id: int, rule_uuid: str, rule_update: ProgramRuleUpdate):
         current_rule = await RuleActions.get_program_rule(company_id, rule_uuid)
@@ -133,9 +132,8 @@ class RuleActions:
         await cls.handle_rule_state_change(current_rule, updated_rule)
         return updated_rule
 
-
     @staticmethod
-    async def deactivate_program_rule(company_id: int, rule_uuid: str, state = RuleState.INACTIVE.value):
+    async def deactivate_program_rule(company_id: int, rule_uuid: str, state=RuleState.INACTIVE.value):
         deactivated_rule = await BaseCRUD.update(
             ProgramRuleModelDB,
             [
@@ -146,6 +144,6 @@ class RuleActions:
         )
         if not deactivated_rule:
             return await ExceptionHandling.custom404("No rule found for update")
-        
+
         await StagedRewardActions.handle_delete_staged_rewards(company_id, rule_uuid)
         return deactivated_rule
