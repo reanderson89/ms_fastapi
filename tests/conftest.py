@@ -1,12 +1,15 @@
 import os
 from collections import namedtuple
 from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
 import tests.testutil as util
+from burp.utils.base_crud import BaseCRUD
+from burp.models.reward import ProgramRuleModelDB
+
 
 # from app.worker.temp_worker import TempWorker
 
@@ -26,6 +29,16 @@ def is_deleted(response):
     assert response.status_code == 200
 
 
+def delete_rule(rule_uuid):
+    response = BaseCRUD.non_async_delete_one(
+        ProgramRuleModelDB,
+        [
+            ProgramRuleModelDB.uuid == rule_uuid
+        ]
+    )
+    print(response)
+
+
 @pytest.fixture(scope="module")
 def test_app():
     try:
@@ -33,23 +46,12 @@ def test_app():
         yield client
     finally:
         pass
-        # response = client.delete("/v1/delete_all_message_events")
-        # is_deleted(response)
-
-
-# from unittest.mock import AsyncMock
-# @pytest.fixture
-# def mock_worker():
-#     worker = TempWorker()
-#     worker.get_users_for_reward_creation = AsyncMock()
 
 
 @pytest.fixture(scope="function")
-def program_rule(test_app: TestClient):
-    with patch("app.actions.rewards.staged_reward_actions.requests.get", new_callable=MagicMock) as MockRequest:
-        mock_rails_response = MagicMock()
-        mock_rails_response.json.return_value = util.users_from_rails  # TODO: still needs to be fixed
-        MockRequest.return_value = mock_rails_response
+def program_rule(test_app: TestClient, event_loop):
+    with patch('app.actions.rules.rule_actions.RuleActions.trigger_worker_reward_creation') as mock_reward_creation:
+        mock_reward_creation.return_value = None
         try:
             program_rule = test_app.post("/v1/program_rule", json=util.new_program_rule).json()
             yield program_rule
@@ -57,7 +59,10 @@ def program_rule(test_app: TestClient):
             raise Exception(f"program_rule creation failed, Exception: {e}")
         finally:
             if program_rule is not None:
+                # deactivate rule and delete related staged rewards
                 test_app.delete(f"/v1/program_rule/{program_rule['company_id']}/{program_rule['uuid']}")
+                # delete rule
+                delete_rule(program_rule['uuid'])
 
 
 @pytest.fixture(scope="module")

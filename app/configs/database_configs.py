@@ -12,23 +12,26 @@ class BaseDB:
     PORT: int
     DB: str
 
+
 @dataclass
 class LocalDB(BaseDB):
     # these env vars are coming from docker-compose.yml
     HOST: str = os.environ.get("POSTGRES_HOSTNAME", "localhost")
     PORT: int = os.environ.get("POSTGRES_PORT", 5433)
     USER: str = os.environ.get("POSTGRES_USER", "root")
-    PASSWD: str = os.environ.get("POSTGRES_PASSWORD", "milestones")
+    PASSWD: str = os.environ.get("POSTGRES_PASSWORD", "password")
     DB: str = os.environ.get("POSTGRES_DB", "blueboard_milestones")
+
 
 @dataclass
 class DevDB(BaseDB):
     # these env vars are coming from docker-compose.yml
-    HOST: str =  os.environ.get("POSTGRES_HOSTNAME", "0.0.0.0")
+    HOST: str = os.environ.get("POSTGRES_HOSTNAME", "0.0.0.0")
     PORT: int = os.environ.get("POSTGRES_PORT", 5432)
     USER: str = os.environ.get("POSTGRES_USER", "root")
     PASSWD: str = os.environ.get("POSTGRES_PASSWORD", "password")
     DB: str = os.environ.get("POSTGRES_DB", "blueboard_milestones")
+
 
 @dataclass
 class StagingDB(BaseDB):
@@ -39,6 +42,7 @@ class StagingDB(BaseDB):
     PASSWD: str = os.environ.get("POSTGRES_PASSWORD", "password")
     DB: str = os.environ.get("POSTGRES_DB", "blueboard_milestones")
 
+
 @dataclass
 class ProdDB(BaseDB):
     # these env vars are coming from docker-compose.yml
@@ -47,6 +51,7 @@ class ProdDB(BaseDB):
     USER: str = os.environ.get("POSTGRES_USER", "root")
     PASSWD: str = os.environ.get("POSTGRES_PASSWORD", "password")
     DB: str = os.environ.get("POSTGRES_DB", "blueboard_milestones")
+
 
 configs = {
     "local":LocalDB(),

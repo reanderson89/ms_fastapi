@@ -90,6 +90,9 @@ class QueueWorker:
                         )
                     )
                     break
+                except asyncio.CancelledError:
+                    logger.milestone("Worker cancelled.")
+                    return
                 except self.conn.exceptions.QueueDoesNotExist:
                     logger.milestone("Queue does not exist.")
                     await asyncio.sleep(RETRY_DELAY)
