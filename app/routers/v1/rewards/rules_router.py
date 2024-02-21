@@ -4,8 +4,7 @@ from app.actions.rules.rule_actions import RuleActions
 from app.models.reward.reward_models import (
     ProgramRuleCreate,
     ProgramRuleResponse,
-    ProgramRuleUpdate,
-    ProgramRuleRewardCountResponse
+    ProgramRuleUpdate
 )
 from burp.utils.auth_utils import Permissions
 
@@ -26,14 +25,6 @@ async def get_program_rule(
     rule_uuid: str = Path(...)
 ):
     return await RuleActions.get_program_rule(company_id, rule_uuid)
-
-
-@router.get("/program_rule/{company_id}/{rule_uuid}/reward_count", response_model=ProgramRuleRewardCountResponse)
-async def get_reward_count_for_rule(
-    company_id: int = Path(...),
-    rule_uuid: str = Path(...)
-):
-    return await RuleActions.get_reward_count_for_rule(company_id, rule_uuid)
 
 
 @router.post("/program_rule", response_model=ProgramRuleResponse)

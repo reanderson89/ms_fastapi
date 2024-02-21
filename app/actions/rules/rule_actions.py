@@ -3,11 +3,10 @@ from app.worker.temp_worker import TempWorker
 from app.models.reward.reward_models import (
     ProgramRuleCreate,
     ProgramRuleUpdate,
-    ProgramRuleRewardCountResponse,
     StagedRewardUpdate,
     RuleState
 )
-from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB, ProgramRuleModel
+from burp.models.reward import ProgramRuleModelDB, ProgramRuleModel
 from burp.utils.base_crud import BaseCRUD
 from app.actions.rewards.staged_reward_actions import StagedRewardActions
 from app.worker.logging_format import init_logger
@@ -101,20 +100,6 @@ class RuleActions:
             ]
         )
 
-    @staticmethod
-    async def get_reward_count_for_rule(company_id: int, rule_uuid: str):
-        count = await BaseCRUD.get_row_count(
-            StagedRewardModelDB,
-            [
-                StagedRewardModelDB.rule_uuid == rule_uuid,
-                StagedRewardModelDB.company_id == company_id
-            ]
-        )
-        return ProgramRuleRewardCountResponse(
-            staged_rewards=count,
-            company_id=company_id,
-            rule_uuid=rule_uuid
-        )
 
     @classmethod
     async def update_program_rule(cls, company_id: int, rule_uuid: str, rule_update: ProgramRuleUpdate):

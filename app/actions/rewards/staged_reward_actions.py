@@ -5,6 +5,8 @@ from app.models.reward.reward_models import (
     RewardState,
     RuleType,
     StagedRewardUpdate,
+    RewardState,
+    StagedRewardCountResponse,
     TimingType
 )
 from app.worker.logging_format import init_logger
@@ -34,6 +36,46 @@ class StagedRewardActions:
             email=user["email"],
             send_on=send_on,
             send_at=send_at
+        )
+
+    @staticmethod 
+    async def get_staged_rewards_by_rule(company_id: int, rule_uuid: str):
+        return await BaseCRUD.get_all_where(
+            StagedRewardModelDB,
+            [
+                StagedRewardModelDB.company_id == company_id,
+                StagedRewardModelDB.rule_uuid == rule_uuid,
+                StagedRewardModelDB.state == RewardState.STAGED.value
+            ],
+            pagination=False
+        )
+    
+    @classmethod
+    async def get_reward_count_for_rule(cls, company_id: int):
+        from app.actions.rules.rule_actions import RuleActions
+        company_rules = await RuleActions.get_program_rules_by_company(company_id)
+        response = {}
+        for rule in company_rules:
+            response[rule.uuid] = await BaseCRUD.get_row_count(
+                StagedRewardModelDB,
+                [
+                    StagedRewardModelDB.rule_uuid == rule.uuid,
+                    StagedRewardModelDB.company_id == company_id,
+                    StagedRewardModelDB.state == RewardState.STAGED.value
+                ]
+            )
+        return StagedRewardCountResponse(
+            rules=response
+        )
+    
+    @staticmethod
+    async def get_staged_rewards(company_id: int, query_params: dict):
+        return await BaseCRUD.get_all_where(
+            StagedRewardModelDB,
+            [
+                StagedRewardModelDB.company_id == company_id
+            ],
+            query_params
         )
 
     @staticmethod
@@ -199,6 +241,17 @@ class StagedRewardActions:
         return [date.strftime("%m-%d-%Y") for date in send_dates]
 
     @staticmethod
+    async def get_staged_rewards_by_date_and_time(send_on: str, send_at: int):
+        return await BaseCRUD.get_all_where(
+            StagedRewardModelDB,
+            [
+                StagedRewardModelDB.send_on == send_on,
+                StagedRewardModelDB.send_at == send_at,
+                StagedRewardModelDB.state == RewardState.STAGED.value
+            ],
+            pagination=False
+        )
+    
     def adjust_for_leap_year(date: datetime, current_date: datetime):
         """
         Adjust the date for leap years if necessary.

@@ -4,6 +4,7 @@ from burp.utils.auth_utils import get_token, UnAuthedMessage
 from starlette import status
 from app.routers.v1.cron.cron_router import router as cron_router
 from app.routers.v1.rewards.rules_router import router as program_rule_router
+from app.routers.v1.rewards.rewards_router import router as staged_reward_router
 
 
 ENV: str = os.environ.get("ENV", "local")
@@ -22,6 +23,7 @@ cron_routers.include_router(cron_router)
 
 api_router.include_router(cron_router)
 api_router.include_router(program_rule_router)
+api_router.include_router(staged_reward_router)
 
 
 @api_router.get("/health", status_code=418)

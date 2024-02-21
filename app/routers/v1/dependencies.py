@@ -29,9 +29,11 @@ def default_query_params(
         "filters": {},
     }
     for param in request.query_params._dict:
+        if param in ["size", "page"]:
+            continue
         if param not in params["filters"] and param not in params:
             params["filters"].update({param: request.query_params._dict.get(param)})
-    #params.update({"filters": request.query_params._dict} if request.query_params else {})
+    # params.update({"filters": request.query_params._dict} if request.query_params else {})
     return params
 
 

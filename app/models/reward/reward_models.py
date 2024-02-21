@@ -3,6 +3,7 @@ from typing import Optional
 from burp.models.base_models import BasePydantic
 from burp.models.reward import ProgramRuleModel
 from pydantic import validator
+from burp.models.reward import StagedRewardModel
 
 
 class RuleType(Enum):
@@ -157,11 +158,11 @@ class ProgramRuleUpdate(BasePydantic):
                 raise ValueError('INACTIVE state is not allowed on update')
             return v.value
 
+class StagedRewardCountResponse(BasePydantic):
+    rules: dict[str, int]
 
-class ProgramRuleRewardCountResponse(BasePydantic):
-    staged_rewards: int
-    company_id: int
-    rule_uuid: str
+class StagedRewardResponse(StagedRewardModel):
+    pass
 
 
 class ProgramRuleDelete(BasePydantic):
