@@ -1,5 +1,4 @@
 import os
-import json
 from fastapi.exceptions import HTTPException
 from datetime import datetime, timezone
 from app.actions.http.rails_api_requests import HttpRequests as RailsRequests
@@ -14,7 +13,6 @@ from app.models.rails.requests_models import (
 from burp.models.reward import StagedRewardModelDB
 from burp.utils.auth_utils import access_token_creation
 from requests.models import Response
-from app.actions.rewards.mock_responses import mock_send_reward
 from app.worker.logging_format import init_logger
 
 logger = init_logger()
@@ -78,15 +76,7 @@ class RailsRewardActions:
         return headers
     
     @classmethod
-    async def rails_reward_request(cls, staged_reward: StagedRewardModelDB, program_rule: ProgramRuleModelDB):
-        if MOCK:
-            # return mock rails reward object
-            rails_reward = Response()
-            response = await mock_send_reward()
-            rails_reward._content = json.dumps(response).encode("utf-8")
-            rails_reward.status_code = 200
-            return rails_reward
-        else:
+    async def create_rails_reward_body(cls, staged_reward: StagedRewardModelDB, program_rule: ProgramRuleModelDB):
             employee = RailsEmployee(
                 email=staged_reward.email,
                 first_name=staged_reward.first_name,
@@ -110,11 +100,13 @@ class RailsRewardActions:
                 memo=program_rule.memo,
                 share_achievement_data=share_achievement_data,
                 company_values=program_rule.company_values,
-                sending_managers_account_id=program_rule.sending_managers_account_id
+                sending_managers_account_id=program_rule.sending_managers_account_id,
+                staged_reward_uuid=staged_reward.uuid
             )
 
-            return await RailsRequests.post(
-                path="/api/v4/new/endpoint",
-                headers=await cls.get_headers(),
-                body=create_reward.dict()
-            )
+            return create_reward
+            # return await RailsRequests.post(
+            #     path="/api/v4/new/endpoint",
+            #     headers=await cls.get_headers(),
+            #     body=create_reward.dict()
+            # )

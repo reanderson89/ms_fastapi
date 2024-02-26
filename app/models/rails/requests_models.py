@@ -33,3 +33,4 @@ class CreateRewardRequest(BasePydantic):
     company_values: list[str]
     share_achievement_data: RailsAchievementData
     sending_managers_account_id: int
+    staged_reward_uuid: str

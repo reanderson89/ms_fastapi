@@ -35,6 +35,7 @@ class RewardState(Enum):
     SENT = "SENT"
     STAGED = "STAGED"
     FAILED_TO_SEND = "FAILED_TO_SEND"
+    QUEUED = "QUEUED"
     # --Please Note--
     # The 'state' column in the Rails 'rewards' table includes the following
     # additional states not represented in this enum class: 'scheduling',
@@ -216,7 +217,7 @@ class SegmentRuleCreate(BasePydantic):
     bucket_customization_id: int
 
 
-class SendStagedRewardResponse(BasePydantic):
+class RailsCreateRewardResponse(BasePydantic):
+    staged_reward_uuid: str
     reward_id: Optional[int]
     sent: bool
-    reason: Optional[str]

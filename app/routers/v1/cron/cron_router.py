@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks
 from app.actions.cron.cron_actions import CronActions
 
 router = APIRouter(tags=["Cron Jobs"])
@@ -8,9 +8,9 @@ router = APIRouter(tags=["Cron Jobs"])
 @router.get("/cron/rewards/send")
 async def send_rewards(
     background_tasks: BackgroundTasks,
-    authenticate: bool = Depends(CronActions.authenticate)
+    # authenticate: bool = Depends(CronActions.authenticate)
 ):
-    if authenticate:
+    # if authenticate:
         background_tasks.add_task(CronActions.send_staged_rewards)
         return {"message": "Great Success!"}
 

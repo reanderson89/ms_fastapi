@@ -50,6 +50,7 @@ services:
       SEGMENT_QUERY_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query"
       # SEGMENT_RESPONSE_QUEUE_URL is where YASS publishes the responses
       SEGMENT_RESPONSE_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response"
+      REWARDS_QUEUE_URL: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-rewards"
       JWT_ENFORCED: 'false'
       LOG_LEVEL: debug
       MOCK: ${MOCK}

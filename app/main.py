@@ -12,10 +12,12 @@ from app.api_routes import api_router, cron_routers
 from app.configs import run_config
 from app.middleware import LoggingMiddleware
 from app.worker.queue_worker import QueueWorker
+from app.worker.cron_worker import CronWorker
 
 
 class WorkerType(str, Enum):
     QUEUE_WORKER = "queue_worker"
+    CRON_WORKER = "cron_worker"
 
 
 async def run_worker(worker_type: WorkerType):
@@ -23,6 +25,9 @@ async def run_worker(worker_type: WorkerType):
     if worker_type == WorkerType.QUEUE_WORKER:
         queue_worker = QueueWorker()
         await queue_worker.worker()
+    elif worker_type == WorkerType.CRON_WORKER:
+        cron_worker = CronWorker()
+        await cron_worker.worker()
     else:
         raise ValueError(f"Unknown worker type: {worker_type}")
 
@@ -31,13 +36,16 @@ async def run_worker(worker_type: WorkerType):
 async def lifespan(app: FastAPI):
     """ start the worker tasks when the app starts """
     worker_task = asyncio.create_task(run_worker(WorkerType.QUEUE_WORKER))
+    cron_task = asyncio.create_task(run_worker(WorkerType.CRON_WORKER))
 
     try:
         yield
     finally:
         worker_task.cancel()
+        cron_task.cancel()
         try:
             await worker_task
+            await cron_task
         except asyncio.CancelledError:
             pass
 

@@ -10,6 +10,7 @@ QUEUES=(
   "localstack-accounts"
   "localstack-segment-query"
   "localstack-segment-response"
+  "localstack-rewards"
 )
 
 for Q_NAME in "${QUEUES[@]}"

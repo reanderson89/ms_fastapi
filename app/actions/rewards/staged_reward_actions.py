@@ -123,6 +123,15 @@ class StagedRewardActions:
             ],
             pagination=False
         )
+    
+    @staticmethod
+    async def get_staged_reward(staged_reward_uuid: str):
+        return await BaseCRUD.get_one_where(
+            StagedRewardModelDB,
+            [
+                StagedRewardModelDB.uuid == staged_reward_uuid
+            ]
+        )
 
     @staticmethod
     async def get_staged_rewards_by_rule(company_id: int, rule_uuid: str):

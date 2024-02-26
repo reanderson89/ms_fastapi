@@ -1,5 +1,7 @@
 import ast
 import os
+import json
+import random
 from time import time
 from uuid import uuid4
 
@@ -11,11 +13,14 @@ from app.worker.logging_format import init_logger
 from app.worker.sqs_client_config import SQSClientSingleton
 from app.worker.utils import WorkerUtils
 from burp.models.reward import ProgramRuleModelDB
+from app.models.rails.requests_models import CreateRewardRequest
 
 logger = init_logger("Temp Worker")
 
 SEGMENT_QUEUE = os.environ.get("SEGMENT_QUERY_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-query")
 RESPONSE_QUEUE = os.environ.get("SEGMENT_RESPONSE_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-segment-response")
+REWARDS_QUEUE = os.environ.get("REWARDS_QUEUE_URL", "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/localstack-rewards")
+
 
 
 class TempWorker:
@@ -32,7 +37,7 @@ class TempWorker:
         response = self.conn.send_message(
             QueueUrl=queue_url,
             DelaySeconds=0,
-            MessageBody=str(message),
+            MessageBody=json.dumps(message),
         )
         logger.milestone(response)
 
@@ -127,3 +132,23 @@ class TempWorker:
             RESPONSE_QUEUE
         )
         self.send_message(job, SEGMENT_QUEUE)
+
+    async def send_rails_reward_job(self, message_body: CreateRewardRequest, MOCK = False):
+        if MOCK:
+            sent = random.randint(0,1)
+            job = WorkerUtils.build_job_payload(
+                "HANDLE_POST_RAILS_REWARD_CREATE",
+                "MILESTONES",
+                {
+                    "reward_id": random.randint(10000,50000) if sent else None, # None if not created
+                    "staged_reward_uuid": message_body.staged_reward_uuid,
+                    "sent": sent
+                }
+            )
+        else:
+            job = WorkerUtils.build_job_payload(
+                "RAILS_CREATE_AND_SEND_REWARD",
+                "MILESTONES",
+                message_body.dict()
+            )
+        self.send_message(job, REWARDS_QUEUE)
