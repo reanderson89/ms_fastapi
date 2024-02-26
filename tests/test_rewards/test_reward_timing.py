@@ -9,7 +9,7 @@ def test_birthday_day_of(test_dates):
         TimingType.DAY_OF,
         current_date=test_dates.today
     )
-    assert send_times == ["12-22-2024"]
+    assert send_times == ["2024-12-22"]
 
 
 def test_birthday_days_prior(test_dates):
@@ -20,7 +20,7 @@ def test_birthday_days_prior(test_dates):
         days_prior=5,
         current_date=test_dates.today
     )
-    assert send_times == ["12-17-2024"]
+    assert send_times == ["2024-12-17"]
 
 
 def test_birthday_weekday_week(test_dates):
@@ -30,7 +30,7 @@ def test_birthday_weekday_week(test_dates):
         TimingType.WEEKDAY_WEEK,
         current_date=test_dates.today
     )
-    assert send_times == ["12-16-2024"]
+    assert send_times == ["2024-12-16"]
 
 
 def test_birthday_weekday_month(test_dates):
@@ -40,7 +40,7 @@ def test_birthday_weekday_month(test_dates):
         TimingType.WEEKDAY_MONTH,
         current_date=test_dates.today
     )
-    assert send_times == ["12-02-2024"]
+    assert send_times == ["2024-12-02"]
 
 
 def test_onboarding_day_of(test_dates):
@@ -51,7 +51,7 @@ def test_onboarding_day_of(test_dates):
         onboarding_period=91,
         current_date=test_dates.today
     )
-    assert send_times == ["05-14-2024"]
+    assert send_times == ["2024-05-14"]
 
 
 def test_anniversary_day_of(test_dates):
@@ -62,7 +62,7 @@ def test_anniversary_day_of(test_dates):
         anniversary_years=[1, 2, 3],
         current_date=test_dates.today
     )
-    assert send_times == ["01-13-2025", "01-13-2026", "01-13-2027"]
+    assert send_times == ["2025-01-13", "2026-01-13", "2027-01-13"]
 
 
 def test_anniversary_days_prior(test_dates):
@@ -74,7 +74,7 @@ def test_anniversary_days_prior(test_dates):
         anniversary_years=[1, 2, 3],
         current_date=test_dates.today
     )
-    assert send_dates == ["01-08-2025", "01-08-2026", "01-08-2027"]
+    assert send_dates == ["2025-01-08", "2026-01-08", "2027-01-08"]
 
 
 def test_anniversary_weekday_week(test_dates):
@@ -85,7 +85,7 @@ def test_anniversary_weekday_week(test_dates):
         anniversary_years=[1, 2, 3],
         current_date=test_dates.today
     )
-    assert send_dates == ["01-13-2025", "01-12-2026", "01-11-2027"]
+    assert send_dates == ["2025-01-13", "2026-01-12", "2027-01-11"]
 
 
 def test_anniversary_weekday_month(test_dates):
@@ -96,4 +96,4 @@ def test_anniversary_weekday_month(test_dates):
         anniversary_years=[1, 2, 3],
         current_date=test_dates.today
     )
-    assert send_dates == ["01-01-2025", "01-01-2026", "01-01-2027"]
+    assert send_dates == ["2025-01-01", "2026-01-01", "2027-01-01"]

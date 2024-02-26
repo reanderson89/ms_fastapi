@@ -59,7 +59,7 @@ class CronActions:
     @classmethod
     async def send_staged_rewards(cls):
         now_utc = datetime.now(timezone.utc)
-        today = now_utc.strftime("%m-%d-%Y")
+        today = now_utc.strftime("%Y-%m-%d")
         current_hour = now_utc.hour
         todays_staged_rewards = await StagedRewardActions.get_staged_rewards_by_date_and_time(today, current_hour)
         if not todays_staged_rewards:

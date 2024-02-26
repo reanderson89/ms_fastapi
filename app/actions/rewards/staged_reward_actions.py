@@ -33,6 +33,7 @@ class StagedRewardActions:
             bucket_customization_price=rule.bucket_customization_price,
             first_name=user["first_name"],
             last_name=user["last_name"],
+            full_name=f"{user['first_name']} {user['last_name']}",
             email=user["email"],
             send_on=send_on,
             send_at=send_at
@@ -188,7 +189,7 @@ class StagedRewardActions:
             trigger_value,
             rule_type,
             timing_type,
-            program_rule.days_prior,
+            days_prior=program_rule.days_prior,
             current_date=today
         )
         return next_anniversary
@@ -247,7 +248,7 @@ class StagedRewardActions:
 
         # Adjust dates based on timing_type
         send_dates = [cls.adjust_date_based_on_timing_type(date, timing_type, days_prior) for date in send_dates]
-        return [date.strftime("%m-%d-%Y") for date in send_dates]
+        return [date.strftime("%Y-%m-%d") for date in send_dates]
 
     @staticmethod
     async def get_staged_rewards_by_date_and_time(send_on: str, send_at: int):
