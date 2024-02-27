@@ -44,7 +44,7 @@ class QueueWorker:
         response = self.conn.send_message(
             QueueUrl=queue_url,
             DelaySeconds=1,
-            MessageBody=str(message),
+            MessageBody=json.dumps(message),
         )
         logger.milestone(response)
 

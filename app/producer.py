@@ -4,6 +4,7 @@ import statistics
 import sys
 import time
 import uuid
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -62,7 +63,7 @@ class JobProducer:
     def put_job(self, job, queue):
         self.conn.send_message(
             QueueUrl=queue,
-            MessageBody=str(job),
+            MessageBody=json.dumps(job),
             DelaySeconds=0
         )
 

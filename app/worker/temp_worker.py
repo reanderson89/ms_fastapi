@@ -1,4 +1,3 @@
-import ast
 import os
 import json
 import random
@@ -73,7 +72,7 @@ class TempWorker:
                 if not msg_response:
                     return None
                 msg_data = msg_response["Messages"][0]
-                msg_body_dict: dict = ast.literal_eval(msg_data.get("Body") or "")
+                msg_body_dict: dict = json.loads(msg_data.get("Body") or "")
                 receipt_handle = msg_data.get("ReceiptHandle")
                 if msg_body_dict["job_id"] == job_id:
                     self.conn.delete_message(
