@@ -171,7 +171,7 @@ class StagedRewardActions:
         sending_datetime_str = f"{sending_date} {sending_time}"
         sending_datetime = datetime.strptime(sending_datetime_str, "%Y-%m-%d %I:%M %p")
         
-        sending_timezone = ZoneInfo(timezone)
+        sending_timezone = ZoneInfo(timezone['value'])
         local_datetime = sending_datetime.replace(tzinfo=sending_timezone)
         
         utc_datetime = local_datetime.astimezone(ZoneInfo("UTC"))
@@ -220,7 +220,7 @@ class StagedRewardActions:
         trigger_date: datetime,
         rule_type: RuleType,
         timing_type: TimingType,
-        timezone: str | None = None,
+        timezone: dict | None = None,
         days_prior: int | None = None,
         anniversary_years: list | None = None,
         onboarding_period: int | None = None,
@@ -239,7 +239,7 @@ class StagedRewardActions:
         :return: A list of send dates in the format "YYYY-MM-DD".
         """
         # Initialize default values
-        timezone = timezone or "UTC"
+        timezone = timezone or {}
         days_prior = days_prior or 0
         anniversary_years = anniversary_years or []
         onboarding_period = onboarding_period or 0

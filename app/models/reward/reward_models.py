@@ -46,6 +46,10 @@ class RewardState(Enum):
     # 'redeemed', 'rejected_notification', 'completed', and 'scheduled'.
     # Ensure synchronization if these states are utilized.
 
+class Timezone(BasePydantic):
+    value: str
+    label: str
+    name: str
 
 # TODO: Review optional fields. What are the minimum req fields to create a program rule?
 class ProgramRuleCreate(BasePydantic):
@@ -56,7 +60,7 @@ class ProgramRuleCreate(BasePydantic):
     timing_type: TimingType
     days_prior: Optional[int]
     sending_time: str
-    timezone: str
+    timezone: Timezone
     manager_id: int
     sending_managers_account_id: int
     sending_managers_program_id: int
@@ -107,10 +111,10 @@ class ProgramRuleCreate(BasePydantic):
     @validator('timezone', pre=False)
     def validate_timezone(cls, v):
         try:
-            ZoneInfo(v)
+            ZoneInfo(v.value)
         except ZoneInfoNotFoundError:
-            logger.milestone(f"The given timezone: {v}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
-            v = "America/Los_Angeles"
+            logger.milestone(f"The given timezone: {v.value}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
+            v.value = "America/Los_Angeles"
         return v
 
 
@@ -125,7 +129,7 @@ class ProgramRuleUpdate(BasePydantic):
     timing_type: Optional[TimingType]
     days_prior: Optional[int]
     sending_time: str
-    timezone: str
+    timezone: Timezone
     manager_id: int
     sending_managers_account_id: int
     sending_managers_program_id: int
@@ -175,10 +179,10 @@ class ProgramRuleUpdate(BasePydantic):
     @validator('timezone', pre=False)
     def validate_timezone(cls, v):
         try:
-            ZoneInfo(v)
+            ZoneInfo(v.value)
         except ZoneInfoNotFoundError:
-            logger.milestone(f"The given timezone: {v}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
-            v = "America/Los_Angeles"
+            logger.milestone(f"The given timezone: {v.value}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
+            v.value = "America/Los_Angeles"
         return v
     
 class StagedRewardCountResponse(BasePydantic):
