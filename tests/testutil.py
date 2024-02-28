@@ -13,7 +13,11 @@ new_program_rule = {
     "onboarding_period": 0,
     "days_prior": 0,
     "sending_time": "9:00 AM",
-    "timezone": "Pacific Time (US & Canada)",
+    "timezone": {
+        "name": "Pacific Time (US & Canada)",
+        "label": "Pacific Standard Time (GMT-8:00)",
+        "value": "America/Los_Angeles"
+    },
     "manager_id": 3,
     "sending_managers_account_id": 12,
     "sending_managers_program_id": 68,
