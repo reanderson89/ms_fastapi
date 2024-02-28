@@ -1,10 +1,14 @@
+
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from enum import Enum
 from typing import Optional
 from burp.models.base_models import BasePydantic
 from burp.models.reward import ProgramRuleModel
 from pydantic import validator
 from burp.models.reward import StagedRewardModel
+from app.worker.logging_format import init_logger
 
+logger = init_logger()
 
 class RuleType(Enum):
     ANNIVERSARY = "ANNIVERSARY"
@@ -99,6 +103,15 @@ class ProgramRuleCreate(BasePydantic):
             if v.value == RuleState.INACTIVE.value:
                 raise ValueError('INACTIVE state is not allowed on create')
             return v.value
+        
+    @validator('timezone', pre=False)
+    def validate_timezone(cls, v):
+        try:
+            ZoneInfo(v)
+        except ZoneInfoNotFoundError:
+            logger.milestone(f"The given timezone: {v}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
+            v = "America/Los_Angeles"
+        return v
 
 
 class ProgramRuleResponse(ProgramRuleModel):
@@ -147,7 +160,7 @@ class ProgramRuleUpdate(BasePydantic):
             raise ValueError('days_prior is required when timing_type is DAYS_PRIOR')
         return v
 
-    @validator("rule_type", "timing_type", "state", pre=False)
+    @validator("rule_type", "timing_type", pre=False)
     def validate_award_type(cls, v):  # pylint: disable=no-self-argument,no-self-use
         if isinstance(v, Enum):
             return v.value
@@ -159,6 +172,15 @@ class ProgramRuleUpdate(BasePydantic):
                 raise ValueError('INACTIVE state is not allowed on update')
             return v.value
 
+    @validator('timezone', pre=False)
+    def validate_timezone(cls, v):
+        try:
+            ZoneInfo(v)
+        except ZoneInfoNotFoundError:
+            logger.milestone(f"The given timezone: {v}, is not a valid timezone. Defaulting to America/Los_Angeles (PST)")
+            v = "America/Los_Angeles"
+        return v
+    
 class StagedRewardCountResponse(BasePydantic):
     rules: dict[str, int]
 

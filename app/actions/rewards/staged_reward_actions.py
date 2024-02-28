@@ -1,6 +1,6 @@
 import calendar
 from datetime import datetime, timedelta  # , timezone
-
+from zoneinfo import ZoneInfo
 from app.models.reward.reward_models import (
     RewardState,
     RuleType,
@@ -108,8 +108,9 @@ class StagedRewardActions:
         for user in users:
             send_dates = await cls.get_send_times(user, rule)
             for send_on in send_dates:
-                send_at = await cls.convert_time_to_24_hour(rule.sending_time)
-                db_reward = await cls.to_staged_reward_db_model(user, rule, send_on, send_at)
+                utc_send_on, utc_send_at = await cls.adjust_send_info_utc(send_on, rule.sending_time, rule.timezone)
+                # send_at = await cls.convert_time_to_24_hour(rule.sending_time)
+                db_reward = await cls.to_staged_reward_db_model(user, rule, utc_send_on, utc_send_at)
                 rewards_to_create.append(db_reward)
         return await BaseCRUD.create(rewards_to_create)
 
@@ -166,6 +167,21 @@ class StagedRewardActions:
         return send_at
 
     @classmethod
+    async def adjust_send_info_utc(cls, sending_date, sending_time, timezone):
+        sending_datetime_str = f"{sending_date} {sending_time}"
+        sending_datetime = datetime.strptime(sending_datetime_str, "%Y-%m-%d %I:%M %p")
+        
+        sending_timezone = ZoneInfo(timezone)
+        local_datetime = sending_datetime.replace(tzinfo=sending_timezone)
+        
+        utc_datetime = local_datetime.astimezone(ZoneInfo("UTC"))
+        
+        utc_date = utc_datetime.strftime("%Y-%m-%d")
+        utc_hour = utc_datetime.hour
+            
+        return utc_date, utc_hour
+
+    @classmethod
     async def get_send_times(cls, user: dict, program_rule: ProgramRuleModel):
         rule_type = RuleType(program_rule.rule_type)
         timing_type = TimingType(program_rule.timing_type)
@@ -178,18 +194,22 @@ class StagedRewardActions:
 
         # today = datetime.now(timezone(timedelta(hours=-8))).date()
         today = datetime.now()
-        if rule_type.BIRTHDAY:
-            trigger_value = birthday
-        elif rule_type.ANNIVERSARY:
-            trigger_value = hired_on_date
-        elif rule_type.ONBOARDING:
-            trigger_value = onboard_date
+        match rule_type:
+            case RuleType.BIRTHDAY:
+                trigger_value = birthday
+            case RuleType.ANNIVERSARY:
+                trigger_value = hired_on_date
+            case RuleType.ONBOARDING:
+                trigger_value = onboard_date
 
         next_anniversary = cls.calculate_send_dates(
-            trigger_value,
-            rule_type,
-            timing_type,
+            trigger_date=trigger_value,
+            rule_type=rule_type,
+            timing_type=timing_type,
+            timezone=program_rule.timezone,
             days_prior=program_rule.days_prior,
+            anniversary_years=program_rule.anniversary_years,
+            onboarding_period=program_rule.onboarding_period,
             current_date=today
         )
         return next_anniversary
@@ -237,8 +257,6 @@ class StagedRewardActions:
             send_dates.append(send_date)
         elif rule_type == RuleType.ONBOARDING:
             send_date = trigger_date + timedelta(days=onboarding_period)
-            if send_date <= current_date:
-                send_date = send_date.replace(year=current_date.year + 1)
             send_dates.append(send_date)
         elif rule_type == RuleType.ANNIVERSARY:
             send_dates.extend(cls.calculate_anniversary_dates(trigger_date, current_date, anniversary_years))

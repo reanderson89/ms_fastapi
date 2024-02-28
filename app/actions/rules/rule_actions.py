@@ -41,7 +41,7 @@ class RuleActions:
 
     @staticmethod
     async def handle_check_keys(current_rule: ProgramRuleModelDB, updated_rule: ProgramRuleModelDB):
-        keys_to_check = {'rule_type', 'trigger_field', 'timing_type', 'anniversary_years', 'onboarding_period', 'days_prior'}
+        keys_to_check = {'rule_type', 'trigger_field', 'timing_type', 'anniversary_years', 'onboarding_period', 'days_prior', 'sending_time', 'timezone'}
         return any(getattr(updated_rule, key, None) != getattr(current_rule, key, None) for key in keys_to_check)
 
     @staticmethod
