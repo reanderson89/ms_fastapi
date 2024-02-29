@@ -14,6 +14,9 @@ services:
         parallelism: 2
         delay: 15s
         order: start-first
+    labels:
+      - com.datadoghq.tags.service=milestones-api
+      - com.datadoghq.tags.version=${TAG}
     environment:
       # No CRON
       ACCOUNTS_QUEUE_URL: ${ACCOUNTS_QUEUE_URL}
