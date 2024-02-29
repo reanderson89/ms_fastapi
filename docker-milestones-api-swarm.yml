@@ -23,6 +23,7 @@ services:
       ALGORITHM: 'HS256'
       AWS_REGION: 'us-west-1'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
+      DD_AGENT_HOST: 'shared_datadog'
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JWT_ENFORCED: 'true' # TODO this is temporary
@@ -69,6 +70,7 @@ services:
       ALGORITHM: 'HS256'
       AWS_REGION: 'us-west-1'
       BASE_URL: 'https://milestones-${ENV}.blueboard.app'
+      DD_AGENT_HOST: 'shared_datadog'
       ENV: ${ENV}
       FERNET_KEY: ${FERNET_KEY}
       JWT_ENFORCED: 'true' # TODO this is temporary
