@@ -1,7 +1,7 @@
 import os
 from time import time
 from collections import defaultdict
-from fastapi import Request, HTTPException
+from fastapi import HTTPException, Header
 from starlette import status
 from datetime import datetime, timezone
 
@@ -93,20 +93,31 @@ class CronActions:
         return await RailsRequests.put(path=f"/api/v4/requests/{sendable_id}/send", headers=await RailsRewardActions.get_headers())
 
     @staticmethod
-    async def authenticate(request: Request):
-        if request.headers.get("authorization").split(" ")[1]:
-            token = request.headers.get("authorization").split(" ")[1]
-        else:
+    async def authenticate(Authorization: str = Header(None)):
+        if not Authorization:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token and/or user-agent"
+                detail="Authorization header missing"
             )
 
-        user_agent = request.headers.get("user-agent")
-        if token == os.environ.get("CRON_TOKEN") and user_agent == "milestones-cron-send-rewards":
-            return True
-        else:
+        try:
+            scheme, token = Authorization.split()
+            if scheme.lower() != "bearer":
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid authorization scheme"
+                )
+        except ValueError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token and/or user-agent"
+                detail="Invalid authorization header format"
             )
+
+        expected_token = os.environ.get("CRON_TOKEN")
+        if token != expected_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token"
+            )
+
+        return True

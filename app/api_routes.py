@@ -8,7 +8,7 @@ from app.routers.v1.rewards.rewards_router import router as staged_reward_router
 
 
 ENV: str = os.environ.get("ENV", "local")
-JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", "False").lower()
+JWT_ENFORCED: str = os.environ.get("JWT_ENFORCED", "false").lower()
 
 if JWT_ENFORCED == "false":
     api_router = APIRouter()
@@ -21,7 +21,6 @@ else:
 cron_routers = APIRouter()
 cron_routers.include_router(cron_router)
 
-api_router.include_router(cron_router)
 api_router.include_router(program_rule_router)
 api_router.include_router(staged_reward_router)
 

@@ -67,7 +67,7 @@ if os.environ.get("ENV") == "local":
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(api_router, prefix="/v1")
-app.include_router(cron_routers, prefix="/blue")
+app.include_router(cron_routers, prefix="/cron")
 
 add_pagination(app)
 

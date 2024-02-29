@@ -1,12 +1,10 @@
-from typing import Annotated
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Path
 from app.actions.rules.rule_actions import RuleActions
 from app.models.reward.reward_models import (
     ProgramRuleCreate,
     ProgramRuleResponse,
     ProgramRuleUpdate
 )
-from burp.utils.auth_utils import Permissions
 
 
 router = APIRouter(tags=["Program Rule"])
@@ -29,7 +27,6 @@ async def get_program_rule(
 
 @router.post("/program_rule", response_model=ProgramRuleResponse)
 async def create_program_rule(
-    jwt: Annotated[str, Depends(Permissions(level="rails"))],
     rule_create: ProgramRuleCreate = Body(...)
 ):
     return await RuleActions.create_rule(rule_create)
