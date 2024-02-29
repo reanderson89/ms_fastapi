@@ -4,11 +4,13 @@ from datetime import datetime
 from unittest.mock import patch
 
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 
 import tests.testutil as util
 from burp.utils.base_crud import BaseCRUD
-from burp.models.reward import ProgramRuleModelDB
+from app.actions.rewards.staged_reward_actions import StagedRewardActions
+from burp.models.reward import ProgramRuleModelDB, StagedRewardModelDB
 
 
 # from app.worker.temp_worker import TempWorker
@@ -80,3 +82,15 @@ def test_dates():
 
     # Return the named tuple
     return TestData(birthate, hired_on, anniversary, today)
+
+@pytest_asyncio.fixture(scope="function")
+async def staged_rewards(program_rule):
+    util.staged_rewards[0]['rule_uuid'], util.staged_rewards[1]['rule_uuid'] = program_rule['uuid'], program_rule['uuid']
+    try:
+        staged_rewards = [StagedRewardModelDB(**reward) for reward in util.staged_rewards]
+        staged_rewards = await BaseCRUD.create(staged_rewards)
+        yield staged_rewards
+    finally:
+        for reward in staged_rewards:
+            await StagedRewardActions.handle_delete_staged_rewards(reward.company_id, reward.rule_uuid)
+

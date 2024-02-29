@@ -1,6 +1,9 @@
+from faker import Faker
 from collections import namedtuple
 from burp.utils.utils import SHA224Hash
+import uuid
 
+fake = Faker()
 
 new_program_rule = {
     "company_id": 1,
@@ -85,3 +88,61 @@ users_from_rails = {
         }
     ]
 }
+
+
+staged_rewards = [
+    {
+        "user_account_uuid": SHA224Hash(),
+        "employee_id": fake.random_number(digits=5, fix_len=True),
+        "company_id": 1,
+        "state": "STAGED",  # or however you might want to mock this
+        "rule_uuid": SHA224Hash(),
+        "employee_account_id": fake.random_number(digits=5, fix_len=True),
+        "gid": str(uuid.uuid4()),
+        "program_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_price": fake.random_number(digits=5, fix_len=True),
+        "first_name": "Bilbo",
+        "last_name": "Baggins",
+        "full_name": "Bilbo Baggins",  # To be filled after generating first and last names
+        "email": "burglar@lotr.com",
+        "send_on": "2025-04-12",
+        "send_at": 9,
+    },
+    {
+        "user_account_uuid": SHA224Hash(),
+        "employee_id": fake.random_number(digits=5, fix_len=True),
+        "company_id": 1,
+        "state": "STAGED",  # or however you might want to mock this
+        "rule_uuid": SHA224Hash(),
+        "employee_account_id": fake.random_number(digits=5, fix_len=True),
+        "gid": str(uuid.uuid4()),
+        "program_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_price": fake.random_number(digits=5, fix_len=True),
+        "first_name": "Gandalf",
+        "last_name": "TheGrey",
+        "full_name": "Gandalf TheGrey",  # To be filled after generating first and last names
+        "email": "mythrandir@wizard.com",
+        "send_on": "2025-04-13",
+        "send_at": 9,
+    },
+    {
+        "user_account_uuid": SHA224Hash(),
+        "employee_id": fake.random_number(digits=5, fix_len=True),
+        "company_id": 1,
+        "state": "STAGED",  # or however you might want to mock this
+        "rule_uuid": SHA224Hash(),
+        "employee_account_id": fake.random_number(digits=5, fix_len=True),
+        "gid": str(uuid.uuid4()),
+        "program_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_id": fake.random_number(digits=5, fix_len=True),
+        "bucket_customization_price": fake.random_number(digits=5, fix_len=True),
+        "first_name": "Samwise",
+        "last_name": "Gamgee",
+        "full_name": "Samwise Gamgee",  # To be filled after generating first and last names
+        "email": "samthewise@hobbit.com",
+        "send_on": "2025-04-13",
+        "send_at": 9,
+    }
+]
