@@ -38,5 +38,5 @@ fi
 service cron status
 
 # TODO decide if we want to use Datadog, e.g.
-# ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
-uvicorn app.main:app --reload --proxy-headers --host 0.0.0.0 --port 80 --use-colors
+ddtrace-run uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --use-colors
+# uvicorn app.main:app --reload --proxy-headers --host 0.0.0.0 --port 80 --use-colors

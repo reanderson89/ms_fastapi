@@ -6,7 +6,7 @@ RUN apt-get update \
   && apt-get clean
 
 # DataDog
-# RUN pip install ddtraceCOPY requirements.txt ./
+RUN pip install ddtrace
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
