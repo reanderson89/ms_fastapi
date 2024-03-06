@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi_pagination import add_pagination
 
-from app.api_routes import api_router, cron_routers
+from app.api_routes import api_router
 from app.configs import run_config
 from app.middleware import LoggingMiddleware
 from app.worker.queue_worker import QueueWorker
@@ -67,7 +67,7 @@ if os.environ.get("ENV") == "local":
 app.add_exception_handler(HTTPException, LoggingMiddleware.http_exception_handler)
 app.add_exception_handler(RequestValidationError, LoggingMiddleware.validation_exception_handler)
 app.include_router(api_router, prefix="/v1")
-app.include_router(cron_routers, prefix="/cron")
+# app.include_router(cron_routers, prefix="/cron")
 
 add_pagination(app)
 

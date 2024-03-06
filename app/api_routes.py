@@ -18,9 +18,10 @@ else:
         responses={status.HTTP_401_UNAUTHORIZED: dict(model=UnAuthedMessage)}
     )
 
-cron_routers = APIRouter()
-cron_routers.include_router(cron_router)
+# cron_routers = APIRouter()
+# cron_routers.include_router(cron_router)
 
+api_router.include_router(cron_router)
 api_router.include_router(program_rule_router)
 api_router.include_router(staged_reward_router)
 
